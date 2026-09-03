@@ -11,9 +11,22 @@ export type OccupancyHit = {
   away_opened_by: string | null;
   open_slot_count: number;
   has_side_b: boolean;
+  sport: string;
+  format: string | null;
 };
 
 export type OccupancyConflict = OccupancyHit & { reason: OccupancyReason };
+
+export type VenueDayOccupancy = {
+  match_id: string;
+  share_code: string;
+  starts_at: string;
+  duration_min: number;
+  sport: string;
+  format: string | null;
+  open_slot_count: number;
+  has_side_b: boolean;
+};
 
 export function occupancyReason(userId: string | null | undefined, hit: OccupancyHit): OccupancyReason {
   if (userId && hit.host_id === userId) return "own";
@@ -28,9 +41,9 @@ export function occupancyUserMessage(conflict: OccupancyConflict) {
     case "own":
       return `Ya publicaste una pateada a esa hora en ${venue}. Editá o compartí el link, no publiques de nuevo.`;
     case "join":
-      return `Ya hay pateada en ${venue}. Faltan ${conflict.open_slot_count}. Uníte a los cupos libres.`;
+      return `Ya hay pateada en ${venue}. Faltan ${conflict.open_slot_count} en esa formación. Uníte a ese equipo.`;
     case "open_b":
-      return `Ya hay pateada en ${venue}. El otro lado (equipo en contra) todavía se puede abrir.`;
+      return `Ya hay pateada en ${venue}. Podés armar el otro equipo en la misma cancha y hora.`;
     default:
       return `Ya hay pateada completa en ${venue} a esa hora. No se puede publicar encima.`;
   }

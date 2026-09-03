@@ -3218,11 +3218,32 @@ details.venue-group[open] > summary.venue-group-title::before {
   background: color-mix(in oklab, var(--flood) 14%, var(--paper));
   border-left: 3px solid var(--flood);
   display: grid;
-  gap: 0.65rem;
+  gap: 0.75rem;
 }
 
 .occupancy-banner p {
   margin: 0;
+}
+
+.occupancy-banner-kicker {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--ink) 62%, transparent);
+}
+
+.occupancy-banner-title {
+  font-family: var(--font-display), "Barlow Condensed", sans-serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1.15;
+}
+
+.occupancy-banner-copy {
+  display: grid;
+  gap: 0.35rem;
 }
 
 .occupancy-banner-actions {
@@ -3231,26 +3252,252 @@ details.venue-group[open] > summary.venue-group-title::before {
   gap: 0.5rem;
 }
 
+.occupancy-banner-rival {
+  display: grid;
+  gap: 0.5rem;
+  padding-top: 0.35rem;
+  border-top: 1px dashed color-mix(in oklab, var(--ink) 22%, transparent);
+}
+
+.occupancy-banner-rival-title {
+  font-family: var(--font-display), "Barlow Condensed", sans-serif;
+  font-size: 1.05rem;
+  font-weight: 650;
+  margin: 0;
+}
+
 .open-side-b-form,
 .open-side-b-block {
   display: grid;
   gap: 0.65rem;
 }
 
-.open-side-b-copy {
+.open-side-b-copy,
+.open-side-b-lead {
   margin: 0;
   color: color-mix(in oklab, var(--ink) 72%, transparent);
 }
 
 .slot-side-heading {
-  margin: 1rem 0 0.35rem;
-  font-size: 0.82rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  margin: 1rem 0 0.2rem;
+  font-family: var(--font-display), "Barlow Condensed", sans-serif;
+  font-size: 1.05rem;
+  letter-spacing: 0.02em;
+  text-transform: none;
+}
+
+.slot-side-hint {
+  margin: 0 0 0.45rem;
+  font-size: 0.88rem;
+  color: color-mix(in oklab, var(--ink) 68%, transparent);
+}
+
+.slot-sides {
+  display: grid;
+  gap: 1rem;
 }
 
 .slot-sides .slot-list {
   border-top: 1px solid var(--ink);
+}
+
+.slot-side-block.is-away {
+  padding: 0.65rem 0.7rem;
+  background: color-mix(in oklab, var(--turf) 8%, var(--paper));
+  border-left: 3px solid var(--turf);
+}
+
+.match-pitch-board {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0 0 1rem;
+}
+
+.match-pitch-board.is-compact {
+  margin-bottom: 0.15rem;
+}
+
+.match-pitch-labels {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.match-pitch-side-label {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--ink) 64%, transparent);
+}
+
+.match-pitch-svg-wrap {
+  position: relative;
+  border: 1px solid color-mix(in oklab, var(--turf-deep) 45%, transparent);
+  overflow: hidden;
+  background: var(--turf-deep);
+}
+
+.match-pitch-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 360 / 220;
+}
+
+.match-pitch-spot {
+  fill: color-mix(in oklab, var(--chalk) 78%, white);
+  stroke: color-mix(in oklab, var(--turf-deep) 55%, black);
+  stroke-width: 1.2;
+  opacity: 0;
+  animation: match-pitch-pop 0.45s ease forwards;
+}
+
+.match-pitch-spot.is-filled {
+  fill: var(--flood);
+}
+
+.match-pitch-spot.is-open {
+  fill: var(--bib);
+  stroke: #fff6;
+}
+
+.match-pitch-spot.is-invite {
+  fill: transparent;
+  stroke: var(--flood);
+  stroke-width: 2;
+  stroke-dasharray: 3 2;
+}
+
+.match-pitch-spot.is-ghost {
+  fill: transparent;
+  stroke: color-mix(in oklab, var(--chalk) 45%, transparent);
+  stroke-dasharray: 2 2;
+  opacity: 0.55;
+  animation: none;
+}
+
+.match-pitch-spot-mark {
+  fill: var(--paper);
+  font-size: 9px;
+  font-weight: 700;
+  pointer-events: none;
+}
+
+.match-pitch-invite-chip {
+  position: absolute;
+  right: 0.55rem;
+  bottom: 0.55rem;
+  margin: 0;
+  padding: 0.28rem 0.5rem;
+  background: color-mix(in oklab, var(--flood) 92%, white);
+  color: var(--ink);
+  font-family: var(--font-display), "Barlow Condensed", sans-serif;
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.match-pitch-caption {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.75rem;
+  align-items: baseline;
+  font-size: 0.9rem;
+}
+
+.match-pitch-formation {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.match-pitch-summary {
+  color: color-mix(in oklab, var(--ink) 72%, transparent);
+}
+
+@keyframes match-pitch-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.venue-day-block {
+  margin-top: 0.85rem;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.venue-day-timeline {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.venue-day-timeline-empty {
+  margin: 0;
+  font-size: 0.9rem;
+  color: color-mix(in oklab, var(--ink) 66%, transparent);
+}
+
+.venue-day-timeline-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.venue-day-chip {
+  display: grid;
+  gap: 0.1rem;
+  min-width: 7.5rem;
+  padding: 0.45rem 0.55rem;
+  text-decoration: none;
+  background: color-mix(in oklab, var(--turf) 10%, var(--paper));
+  border: 1px solid color-mix(in oklab, var(--turf-deep) 28%, transparent);
+  color: inherit;
+}
+
+.venue-day-chip:hover {
+  background: color-mix(in oklab, var(--flood) 28%, var(--paper));
+}
+
+.venue-day-chip.is-overlap {
+  border-color: var(--bib);
+  box-shadow: inset 3px 0 0 var(--bib);
+}
+
+.venue-day-chip-time {
+  font-family: var(--font-display), "Barlow Condensed", sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.venue-day-chip-meta,
+.venue-day-chip-slots {
+  font-size: 0.78rem;
+  color: color-mix(in oklab, var(--ink) 68%, transparent);
+}
+
+.venue-occupancy-section {
+  margin: 1.5rem 0 1rem;
+  display: grid;
+  gap: 0.55rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .match-pitch-spot {
+    animation: none;
+    opacity: 1;
+  }
 }
 
 .match-compose-actions {

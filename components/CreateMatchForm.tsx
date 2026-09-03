@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { useActionState, useEffect, useId, useMemo, useState } from "react";
-import { createMatchAction, lookupVenueOccupancyAction, updateMatchAction } from "@/app/actions";
+import { createMatchAction, lookupVenueOccupancyAction, listVenueDayOccupancyAction, updateMatchAction } from "@/app/actions";
 import { OccupancyBanner } from "@/components/OccupancyBanner";
+import { VenueDayTimeline } from "@/components/VenueDayTimeline";
 import { trackEvent } from "@/lib/analytics";
 import { VenueMapLazy } from "@/components/VenueMapLazy";
 import { VenuePicker } from "@/components/VenuePicker";
@@ -29,7 +30,7 @@ import {
   SPORT_RULES,
   venuesForSport,
 } from "@/lib/sport-rules";
-import type { OccupancyConflict } from "@/lib/occupancy";
+import type { OccupancyConflict, VenueDayOccupancy } from "@/lib/occupancy";
 import type { City, Venue } from "@/lib/types";
 import { mapsDirectionsUrl } from "@/lib/venue-meta";
 
@@ -117,6 +118,7 @@ export function CreateMatchForm({
   );
   const [venueId, setVenueId] = useState(edit?.venueId ?? defaultVenueId ?? "");
   const [liveOccupancy, setLiveOccupancy] = useState<OccupancyConflict | null>(null);
+  const [dayOccupancy, setDayOccupancy] = useState<VenueDayOccupancy[]>([]);
   const [editSlots, setEditSlots] = useState<EditSlotRow[]>(() =>
     (edit?.slots ?? []).map((slot) => ({
       key: slot.id,
@@ -191,6 +193,28 @@ export function CreateMatchForm({
     };
   }, [venueId, startsAt, durationMin, city.slug, edit?.matchId]);
 
+  useEffect(() => {
+    let cancelled = false;
+    const handle = window.setTimeout(() => {
+      if (!venueId || !startsAt) {
+        if (!cancelled) setDayOccupancy([]);
+        return;
+      }
+      void listVenueDayOccupancyAction({
+        citySlug: city.slug,
+        venueId,
+        dayLocal: startsAt,
+        excludeMatchId: edit?.matchId,
+      }).then((result) => {
+        if (!cancelled) setDayOccupancy(result.items ?? []);
+      });
+    }, 320);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(handle);
+    };
+  }, [venueId, startsAt, city.slug, edit?.matchId]);
+
   function chooseSport(next: Sport) {
     if (sportLocked) return;
     setSport(next);
@@ -255,6 +279,7 @@ export function CreateMatchForm({
 
   const occupancy = liveOccupancy ?? state?.occupancy ?? null;
   const occupancyBlocksSubmit = Boolean(occupancy);
+  const selectedStartsIso = datetimeLocalInZoneToDate(startsAt, city.timezone)?.toISOString() ?? null;
   const submitLabel = isEdit ? "Guardar cambios" : "Publicar hueco";
   const pendingLabel = isEdit ? "Guardando…" : "Publicando…";
   const directionsHref = selectedVenue
@@ -425,6 +450,22 @@ export function CreateMatchForm({
                   setVenueMissing(false);
                 }}
               />
+              {selectedVenue ? (
+                <div className="venue-day-block">
+                  <p className="match-compose-field-label">Horas ya tomadas en {selectedVenue.name}</p>
+                  <p className="field-help">
+                    Una pateada = esa cancha a esa hora. Si ya hay equipo, uníte o armá el rival.
+                  </p>
+                  <VenueDayTimeline
+                    items={dayOccupancy}
+                    timeZone={city.timezone}
+                    selectedStartsAtIso={selectedStartsIso}
+                    selectedDurationMin={durationMin}
+                    emptyHint="Ese día todavía está libre en esta cancha."
+                    compact
+                  />
+                </div>
+              ) : null}
             </fieldset>
 
             <div className="match-compose-actions match-compose-actions-inline">
@@ -483,6 +524,19 @@ export function CreateMatchForm({
                   </div>
                 </div>
               </div>
+              {selectedVenue ? (
+                <div className="venue-day-block">
+                  <p className="match-compose-field-label">Ocupación ese día en {selectedVenue.name}</p>
+                  <VenueDayTimeline
+                    items={dayOccupancy}
+                    timeZone={city.timezone}
+                    selectedStartsAtIso={selectedStartsIso}
+                    selectedDurationMin={durationMin}
+                    emptyHint="Ese día todavía está libre en esta cancha."
+                    compact
+                  />
+                </div>
+              ) : null}
             </fieldset>
 
             {isEdit ? (

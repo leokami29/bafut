@@ -461,14 +461,34 @@ export type Database = {
         Returns: {
           away_opened_by: string | null;
           duration_min: number;
+          format: string;
           has_side_b: boolean;
           host_id: string;
           match_id: string;
           open_slot_count: number;
           share_code: string;
+          sport: string;
           starts_at: string;
           venue_id: string;
           venue_name: string;
+        }[];
+      };
+      list_venue_day_occupancy: {
+        Args: {
+          p_day_end: string;
+          p_day_start: string;
+          p_exclude_match_id?: string;
+          p_venue_id: string;
+        };
+        Returns: {
+          duration_min: number;
+          format: string;
+          has_side_b: boolean;
+          match_id: string;
+          open_slot_count: number;
+          share_code: string;
+          sport: string;
+          starts_at: string;
         }[];
       };
       open_match_side_b: {

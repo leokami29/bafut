@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { cancelMatchAction } from "@/app/actions";
 import { JsonLd, matchJsonLd } from "@/components/JsonLd";
 import { MatchRow } from "@/components/MatchRow";
+import { MatchPitchBoard } from "@/components/MatchPitchBoard";
 import { HostShareBanner, ShareWhatsApp } from "@/components/ShareWhatsApp";
 import { SlotList } from "@/components/SlotList";
 import { OpenSideBForm } from "@/components/OpenSideBForm";
@@ -14,6 +15,7 @@ import { openSlotCount, slotIsOpen } from "@/lib/types";
 import { formatMoney, formatWhen, openSlotsPhrase } from "@/lib/format";
 import { formatLabel, genderLabel, matchStatusLabel, positionLabel, sportLabel } from "@/lib/labels";
 import type { Position } from "@/lib/constants";
+import { buildFormationFromSlots } from "@/lib/match-formation";
 import { mapsDirectionsUrl } from "@/lib/venue-meta";
 import { isSport } from "@/lib/sport-rules";
 import {
@@ -103,6 +105,13 @@ export default async function PartidoPage({ params }: Props) {
   const related = moreHere.length > 0 ? moreHere : moreSoon;
   const relatedHeading =
     moreHere.length > 0 ? "Más huecos en esta cancha" : `Más ${sportLabel[match.sport as keyof typeof sportLabel] ?? match.sport}`;
+  const hasSideB = Boolean(match.away_opened_by) || match.match_slots.some((slot) => slot.side === "b");
+  const formationBoard = buildFormationFromSlots({
+    sport: match.sport,
+    format: match.format,
+    slots: match.match_slots,
+    hasSideB,
+  });
 
   return (
     <main className="page page-match-detail" id="main">
@@ -175,6 +184,14 @@ export default async function PartidoPage({ params }: Props) {
             </div>
           ) : null}
 
+          <h2 className="subhead">Formación</h2>
+          <MatchPitchBoard
+            board={formationBoard}
+            sideATitle="Equipo que publicó"
+            sideBTitle="El otro equipo"
+            sideBEmptyHint="¿Jugás en contra?"
+          />
+
           <h2 className="subhead">Cupos</h2>
           <SlotList
             slots={match.match_slots}
@@ -183,13 +200,17 @@ export default async function PartidoPage({ params }: Props) {
             userId={userId}
             matchCancelled={cancelled}
             profileLevel={profile?.level ?? null}
-            showSides={Boolean(match.away_opened_by) || match.match_slots.some((slot) => slot.side === "b")}
+            showSides={hasSideB}
           />
           {!cancelled && !isHost && !match.away_opened_by && match.starts_at > new Date().toISOString() ? (
             <section className="open-side-b-block" aria-labelledby="open-side-b-heading">
               <h2 className="subhead" id="open-side-b-heading">
-                Otro lado
+                ¿Jugás en contra?
               </h2>
+              <p className="open-side-b-lead">
+                Misma cancha y hora. Acá armás el otro equipo. Si sos del grupo que publicó, pedí un
+                cupo arriba.
+              </p>
               {userId ? (
                 <OpenSideBForm
                   matchId={match.id}
@@ -198,8 +219,8 @@ export default async function PartidoPage({ params }: Props) {
                 />
               ) : (
                 <p>
-                  Esto es el equipo en contra. Si sos del mismo grupo, uníte.{" "}
-                  <Link href={`/entrar?next=/p/${match.share_code}`}>Entra para pedir el otro lado</Link>
+                  Entrá para pedir cupos del rival.{" "}
+                  <Link href={`/entrar?next=/p/${match.share_code}`}>Entrar</Link>
                 </p>
               )}
             </section>

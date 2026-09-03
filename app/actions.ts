@@ -16,7 +16,7 @@ import {
 } from "@/lib/constants";
 import { requireUserId } from "@/lib/auth";
 import { getCityBySlug } from "@/lib/data";
-import { datetimeLocalInZoneToDate } from "@/lib/datetime";
+import { datetimeLocalInZoneToDate, cityDayBoundsFromLocal } from "@/lib/datetime";
 import { DECLARED_LEVELS, isDeclaredLevel } from "@/lib/level-trust";
 import { isProfileComplete } from "@/lib/profile";
 import { safeNextPath } from "@/lib/safe-next";
@@ -35,11 +35,13 @@ import {
   parseOccupancyShareCode,
   type OccupancyConflict,
   type OccupancyHit,
+  type VenueDayOccupancy,
 } from "@/lib/occupancy";
 import { createClient } from "@/lib/supabase/server";
 import { normalizeWhatsapp } from "@/lib/whatsapp-contact";
 
 export type OccupancyActionState = { error?: string; occupancy?: OccupancyConflict };
+export type VenueDayOccupancyState = { items?: VenueDayOccupancy[]; error?: string };
 
 type ServerClient = Awaited<ReturnType<typeof createClient>>;
 
@@ -54,6 +56,8 @@ function mapOccupancyHit(row: {
   away_opened_by: string | null;
   open_slot_count: number;
   has_side_b: boolean;
+  sport?: string | null;
+  format?: string | null;
 }): OccupancyHit {
   return {
     match_id: row.match_id,
@@ -66,6 +70,8 @@ function mapOccupancyHit(row: {
     away_opened_by: row.away_opened_by ?? null,
     open_slot_count: row.open_slot_count,
     has_side_b: row.has_side_b,
+    sport: row.sport ?? "futbol",
+    format: row.format ?? null,
   };
 }
 
@@ -270,6 +276,48 @@ export async function lookupVenueOccupancyAction(input: {
     excludeMatchId: input.excludeMatchId && isUuidParam(input.excludeMatchId) ? input.excludeMatchId : undefined,
   });
   return occupancy ? occupancyState(occupancy) : {};
+}
+
+export async function listVenueDayOccupancyAction(input: {
+  citySlug: string;
+  venueId: string;
+  dayLocal: string;
+  excludeMatchId?: string;
+}): Promise<VenueDayOccupancyState> {
+  const city = await getCityBySlug(input.citySlug || DEFAULT_CITY_SLUG);
+  if (!city || !input.venueId || !isUuidParam(input.venueId)) {
+    return { items: [] };
+  }
+  const bounds = cityDayBoundsFromLocal(input.dayLocal, city.timezone);
+  if (!bounds) {
+    return { items: [] };
+  }
+
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("list_venue_day_occupancy", {
+    p_venue_id: input.venueId,
+    p_day_start: bounds.dayStart.toISOString(),
+    p_day_end: bounds.dayEnd.toISOString(),
+    p_exclude_match_id:
+      input.excludeMatchId && isUuidParam(input.excludeMatchId) ? input.excludeMatchId : undefined,
+  });
+
+  if (error) {
+    return { items: [], error: error.message };
+  }
+
+  const items: VenueDayOccupancy[] = (data ?? []).map((row) => ({
+    match_id: row.match_id,
+    share_code: row.share_code,
+    starts_at: row.starts_at,
+    duration_min: row.duration_min,
+    sport: row.sport,
+    format: row.format,
+    open_slot_count: row.open_slot_count,
+    has_side_b: row.has_side_b,
+  }));
+
+  return { items };
 }
 
 export async function openMatchSideBAction(formData: FormData): Promise<OccupancyActionState> {

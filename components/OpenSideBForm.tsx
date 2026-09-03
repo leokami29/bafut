@@ -28,12 +28,12 @@ export function OpenSideBForm({
       <input type="hidden" name="match_id" value={matchId} />
       <input type="hidden" name="share_code" value={shareCode} />
       <p className="open-side-b-copy">
-        Esto es el equipo <strong>en contra</strong>. Si sos del mismo grupo, uníte a los cupos
-        libres. Hora y cancha se heredan; no se pide otra.
+        Esto arma <strong>el otro equipo</strong> en la misma cancha y hora. Si sos del equipo que
+        ya publicó, pedí un cupo de ese lado — no abras el rival.
       </p>
       <div className="form-split">
         <label>
-          Cupos del otro lado
+          Cupos del rival
           <select name="open_count" defaultValue="2">
             <option value="1">1 cupo</option>
             <option value="2">2 cupos</option>
@@ -62,7 +62,7 @@ export function OpenSideBForm({
       </div>
       {state?.error ? <p className="form-error">{state.error}</p> : null}
       <button className="btn-flood" type="submit" disabled={pending}>
-        {pending ? "Abriendo…" : "Pedir el otro lado"}
+        {pending ? "Abriendo…" : "Armar el otro equipo"}
       </button>
     </form>
   );

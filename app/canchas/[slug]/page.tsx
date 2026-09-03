@@ -5,10 +5,12 @@ import type { ReactNode } from "react";
 import { JsonLd, venueJsonLd } from "@/components/JsonLd";
 import { CopyAddressButton, VenueStickyCta } from "@/components/VenueDetailActions";
 import { MatchRow } from "@/components/MatchRow";
+import { VenueDayTimeline } from "@/components/VenueDayTimeline";
 import { VenueMapLazy } from "@/components/VenueMapLazy";
 import { VenueOwnerBlock } from "@/components/VenueOwnerBlock";
 import type { Sport } from "@/lib/constants";
-import { getActiveCity, getUpcomingMatches, getVenueBySlug } from "@/lib/data";
+import { getActiveCity, getUpcomingMatches, getVenueBySlug, getVenueDayOccupancy } from "@/lib/data";
+import { cityDayBoundsFromLocal } from "@/lib/datetime";
 import { sportLabel, surfaceLabel, venueKindLabel } from "@/lib/labels";
 import { safeHttpUrl } from "@/lib/safe-http-url";
 import {
@@ -98,6 +100,27 @@ export default async function CanchaPage({ params }: Props) {
   if (!venue) {
     notFound();
   }
+
+  const todayBounds = cityDayBoundsFromLocal(new Date().toISOString(), city.timezone);
+  const tomorrowBounds = todayBounds
+    ? cityDayBoundsFromLocal(
+        new Date(todayBounds.dayEnd.getTime() + 60_000).toISOString(),
+        city.timezone,
+      )
+    : null;
+  const [todayOccupancy, tomorrowOccupancy] = todayBounds
+    ? await Promise.all([
+        getVenueDayOccupancy(venue.id, todayBounds.dayStart.toISOString(), todayBounds.dayEnd.toISOString()),
+        tomorrowBounds
+          ? getVenueDayOccupancy(
+              venue.id,
+              tomorrowBounds.dayStart.toISOString(),
+              tomorrowBounds.dayEnd.toISOString(),
+            )
+          : Promise.resolve([]),
+      ])
+    : [[], []];
+  const upcomingOccupancy = [...todayOccupancy, ...tomorrowOccupancy].slice(0, 8);
 
   const meta = mergeVenueMeta(
     resolveVenuePublicMeta(venue),
@@ -344,6 +367,20 @@ export default async function CanchaPage({ params }: Props) {
           </ul>
         </section>
       ) : null}
+
+      <section className="venue-occupancy-section" aria-labelledby="venue-occupancy-heading">
+        <div className="venue-section-head">
+          <h2 className="subhead" id="venue-occupancy-heading">
+            Hoy y mañana en esta cancha
+          </h2>
+          <p className="venue-section-meta">Horas ya tomadas · una pateada = cancha + hora</p>
+        </div>
+        <VenueDayTimeline
+          items={upcomingOccupancy}
+          timeZone={city.timezone}
+          emptyHint="Todavía no hay pateadas publicadas para hoy ni mañana."
+        />
+      </section>
 
       <section className="venue-matches" aria-labelledby="venue-matches-heading">
         <div className="venue-section-head">

@@ -137,6 +137,42 @@ export function isSameCityDay(iso: string, timezone: string, now = new Date()): 
   return cityCalendarDayKey(new Date(iso), timezone) === cityCalendarDayKey(now, timezone);
 }
 
+/**
+ * Límites UTC del día civil de `local` (datetime-local o ISO) en `timeZone`.
+ * dayEnd es exclusivo.
+ */
+export function cityDayBoundsFromLocal(
+  localOrIso: string,
+  timeZone: string,
+): { dayStart: Date; dayEnd: Date; dayKey: string } | null {
+  const trimmed = localOrIso.trim();
+  let year: number;
+  let month: number;
+  let day: number;
+  const localMatch = DATETIME_LOCAL_RE.exec(trimmed);
+  if (localMatch) {
+    year = Number(localMatch[1]);
+    month = Number(localMatch[2]);
+    day = Number(localMatch[3]);
+  } else {
+    const instant = new Date(trimmed);
+    if (Number.isNaN(instant.getTime())) return null;
+    const parts = zonedDateParts(instant, timeZone);
+    year = parts.year;
+    month = parts.month;
+    day = parts.day;
+  }
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const dayKey = `${year}-${pad(month)}-${pad(day)}`;
+  const dayStart = datetimeLocalInZoneToDate(`${dayKey}T00:00`, timeZone);
+  if (!dayStart) return null;
+  const next = new Date(Date.UTC(year, month - 1, day + 1));
+  const nextKey = `${next.getUTCFullYear()}-${pad(next.getUTCMonth() + 1)}-${pad(next.getUTCDate())}`;
+  const dayEnd = datetimeLocalInZoneToDate(`${nextKey}T00:00`, timeZone);
+  if (!dayEnd) return null;
+  return { dayStart, dayEnd, dayKey };
+}
+
 /** Empieza entre ahora y ahora + hours (inclusive del borde final). */
 export function isWithinNextHours(iso: string, hours: number, now = new Date()): boolean {
   const start = new Date(iso).getTime();
