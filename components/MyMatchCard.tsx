@@ -121,7 +121,7 @@ export function MyMatchCard({
   return (
     <article className="my-match" data-sport={sport} data-tone={tone.tone} aria-label={aria}>
       <div className="my-match-rail" aria-hidden="true">
-        <SportMark sport={sport} />
+        <SportMark sport={sport} compact />
       </div>
 
       <div className="my-match-body">
@@ -144,13 +144,11 @@ export function MyMatchCard({
           ) : null}
         </h3>
 
-        <p className="my-match-place">
+        <p className="my-match-meta">
+          <time dateTime={match.starts_at}>{when}</time>
+          <span aria-hidden="true"> · </span>
           <strong>{match.venues.name}</strong>
           {match.venues.neighborhood ? <span> · {match.venues.neighborhood}</span> : null}
-        </p>
-
-        <p className="my-match-when">
-          <time dateTime={match.starts_at}>{when}</time>
           {role === "host" && !cancelled ? (
             <span className="my-match-cups">
               {" · "}

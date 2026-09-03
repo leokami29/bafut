@@ -14,6 +14,9 @@ export const metadata: Metadata = {
 
 type Bucket = "action" | "upcoming" | "history";
 
+/** Cuántos del historial se muestran antes de “Ver más”. */
+const HISTORY_PREVIEW = 6;
+
 type Entry = MyMatchCardModel & {
   id: string;
   startsAt: string;
@@ -139,10 +142,12 @@ export default async function MisPartidosPage() {
   const action = entries.filter((e) => e.bucket === "action").sort(sortUpcoming);
   const upcoming = entries.filter((e) => e.bucket === "upcoming").sort(sortUpcoming);
   const history = entries.filter((e) => e.bucket === "history").sort(sortHistory);
+  const historyPreview = history.slice(0, HISTORY_PREVIEW);
+  const historyRest = history.slice(HISTORY_PREVIEW);
   const empty = entries.length === 0;
 
   return (
-    <main className="page page-narrow my-matches-page" id="main">
+    <main className="page page-my-matches my-matches-page" id="main">
       <header className="page-head my-matches-head">
         <p className="my-matches-kicker">Tu bitácora</p>
         <h1>Mis partidos</h1>
@@ -167,7 +172,7 @@ export default async function MisPartidosPage() {
       ) : null}
 
       {action.length > 0 ? (
-        <section className="my-matches-section" aria-labelledby="my-matches-action">
+        <section className="my-matches-section my-matches-section-action" aria-labelledby="my-matches-action">
           <div className="my-matches-section-head">
             <h2 className="subhead" id="my-matches-action">
               Te toca algo
@@ -176,7 +181,7 @@ export default async function MisPartidosPage() {
               Pedidos por revisar o feedback de nivel después de la pateada.
             </p>
           </div>
-          <ul className="my-matches-list">
+          <ul className="my-matches-list my-matches-list-action">
             {action.map((entry) => (
               <li key={entry.id}>
                 <MyMatchCard {...entry} nowIso={nowIso} />
@@ -204,7 +209,7 @@ export default async function MisPartidosPage() {
             )}
           </p>
         ) : (
-          <ul className="my-matches-list">
+          <ul className="my-matches-list my-matches-grid">
             {upcoming.map((entry) => (
               <li key={entry.id}>
                 <MyMatchCard {...entry} nowIso={nowIso} />
@@ -224,13 +229,29 @@ export default async function MisPartidosPage() {
         {history.length === 0 ? (
           <p className="empty">Todavía no hay historial.</p>
         ) : (
-          <ul className="my-matches-list">
-            {history.map((entry) => (
-              <li key={entry.id}>
-                <MyMatchCard {...entry} nowIso={nowIso} />
-              </li>
-            ))}
-          </ul>
+          <>
+            <ul className="my-matches-list my-matches-grid">
+              {historyPreview.map((entry) => (
+                <li key={entry.id}>
+                  <MyMatchCard {...entry} nowIso={nowIso} />
+                </li>
+              ))}
+            </ul>
+            {historyRest.length > 0 ? (
+              <details className="my-matches-more">
+                <summary className="my-matches-more-toggle">
+                  Ver {historyRest.length} más del historial
+                </summary>
+                <ul className="my-matches-list my-matches-grid">
+                  {historyRest.map((entry) => (
+                    <li key={entry.id}>
+                      <MyMatchCard {...entry} nowIso={nowIso} />
+                    </li>
+                  ))}
+                </ul>
+              </details>
+            ) : null}
+          </>
         )}
       </section>
     </main>
