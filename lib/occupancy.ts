@@ -39,14 +39,41 @@ export function occupancyUserMessage(conflict: OccupancyConflict) {
   const venue = conflict.venue_name || "esa cancha";
   switch (conflict.reason) {
     case "own":
-      return `Ya publicaste una pateada a esa hora en ${venue}. Editá o compartí el link, no publiques de nuevo.`;
+      return `Ya publicaste a esa hora en ${venue}. Editá o compartí el link; no lo publiques de nuevo.`;
     case "join":
-      return `Ya hay pateada en ${venue}. Faltan ${conflict.open_slot_count} en esa formación. Uníte a ese equipo.`;
+      return `Ya hay pateada en ${venue}. Faltan ${conflict.open_slot_count}: ¿vas con ellos o en contra?`;
     case "open_b":
-      return `Ya hay pateada en ${venue}. Podés armar el otro equipo en la misma cancha y hora.`;
+      return `Ya hay pateada en ${venue}. Ese equipo está armado: podés armar el rival en la misma cancha y hora.`;
     default:
-      return `Ya hay pateada completa en ${venue} a esa hora. No se puede publicar encima.`;
+      return `Ya hay pateada completa en ${venue} a esa hora. Elegí otra hora.`;
   }
+}
+
+/** Traduce errores de RPC / DB a una frase humana (sin jerga lado A/B). */
+export function humanizeSideBError(raw: string | undefined | null) {
+  const msg = (raw ?? "").trim();
+  if (!msg) return "No se pudo armar el rival. Probá de nuevo.";
+  const lower = msg.toLowerCase();
+
+  if (lower.includes("admite 1 o 2") || lower.includes("1 o 2 cupos")) {
+    return "Pedí 1 o 2 cupos para el otro equipo.";
+  }
+  if (lower.includes("equipo en contra") || lower.includes("faltan de tu grupo") || lower.includes("host")) {
+    return "Vos armaste esta pateada. Si falta gente de tu grupo, pedí cupo arriba — no armes el rival.";
+  }
+  if (lower.includes("ya está abierto") || lower.includes("ya esta abierto")) {
+    return "El otro equipo ya se armó. Pedí un cupo ahí.";
+  }
+  if (lower.includes("máximo") || lower.includes("maximo")) {
+    return "El rival ya tiene los cupos que admite.";
+  }
+  if (lower.includes("no se puede abrir") || lower.includes("así") || lower.includes("asi")) {
+    return "No se pudo armar el rival con esa acción.";
+  }
+  if (lower.includes("lado b") || lower.includes("otro lado")) {
+    return "No se pudo armar el rival. Probá de nuevo o pedí cupo en el equipo que ya está.";
+  }
+  return msg;
 }
 
 export function parseOccupancyShareCode(message: string | undefined) {

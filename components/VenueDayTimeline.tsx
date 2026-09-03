@@ -50,10 +50,10 @@ export function VenueDayTimeline({
           const format = formatLabel[item.format as Format] ?? item.format;
           const openBit =
             item.open_slot_count > 0
-              ? `faltan ${item.open_slot_count}`
+              ? `faltan ${item.open_slot_count} · unirse`
               : item.has_side_b
-                ? "completo"
-                : "equipo armado";
+                ? "lleno"
+                : "sin rival · armar";
           return (
             <li key={item.match_id}>
               <Link

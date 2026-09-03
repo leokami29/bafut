@@ -70,9 +70,9 @@ export function SlotList({
     <div className="slot-sides">
       <section className="slot-side-block" aria-labelledby="slot-side-a">
         <h3 className="slot-side-heading" id="slot-side-a">
-          Equipo que publicó
+          Con ellos
         </h3>
-        <p className="slot-side-hint">Unirse = pedir cupo acá, en esta formación.</p>
+        <p className="slot-side-hint">Pedí cupo acá si vas en ese mismo equipo.</p>
         <ol className="slot-list">
           {sideA.map((slot, index) => (
             <SlotRow
@@ -90,9 +90,9 @@ export function SlotList({
       </section>
       <section className="slot-side-block is-away" aria-labelledby="slot-side-b">
         <h3 className="slot-side-heading" id="slot-side-b">
-          El otro equipo
+          En contra
         </h3>
-        <p className="slot-side-hint">Misma cancha y hora · rival de la pateada.</p>
+        <p className="slot-side-hint">Misma cancha y hora · el rival de la pateada.</p>
         <ol className="slot-list">
           {sideB.map((slot, index) => (
             <SlotRow

@@ -454,7 +454,7 @@ export function CreateMatchForm({
                 <div className="venue-day-block">
                   <p className="match-compose-field-label">Horas ya tomadas en {selectedVenue.name}</p>
                   <p className="field-help">
-                    Una pateada = esa cancha a esa hora. Si ya hay equipo, uníte o armá el rival.
+                    Una pateada = esa cancha a esa hora. Si choca: ¿vas con ellos o en contra?
                   </p>
                   <VenueDayTimeline
                     items={dayOccupancy}

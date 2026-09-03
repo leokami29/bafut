@@ -4,10 +4,9 @@ import { notFound } from "next/navigation";
 import { cancelMatchAction } from "@/app/actions";
 import { JsonLd, matchJsonLd } from "@/components/JsonLd";
 import { MatchRow } from "@/components/MatchRow";
-import { MatchPitchBoard } from "@/components/MatchPitchBoard";
+import { MatchFormationSection } from "@/components/MatchFormationSection";
 import { HostShareBanner, ShareWhatsApp } from "@/components/ShareWhatsApp";
 import { SlotList } from "@/components/SlotList";
-import { OpenSideBForm } from "@/components/OpenSideBForm";
 import { VenueMapLazy } from "@/components/VenueMapLazy";
 import { getHostMatchCount, getMatchByCode, getProfile, getSessionUserId, getUpcomingMatches } from "@/lib/data";
 import { formatLevelOkBadge } from "@/lib/level-trust";
@@ -184,15 +183,21 @@ export default async function PartidoPage({ params }: Props) {
             </div>
           ) : null}
 
-          <h2 className="subhead">Formación</h2>
-          <MatchPitchBoard
+          <MatchFormationSection
             board={formationBoard}
-            sideATitle="Equipo que publicó"
-            sideBTitle="El otro equipo"
-            sideBEmptyHint="¿Jugás en contra?"
+            matchId={match.id}
+            shareCode={match.share_code}
+            sport={isSport(match.sport) ? match.sport : "futbol"}
+            canOpenRival={
+              !cancelled && !isHost && !match.away_opened_by && match.starts_at > new Date().toISOString()
+            }
+            userId={userId}
+            cancelled={cancelled}
           />
 
-          <h2 className="subhead">Cupos</h2>
+          <h2 className="subhead" id="cupos">
+            Cupos
+          </h2>
           <SlotList
             slots={match.match_slots}
             shareCode={match.share_code}
@@ -202,29 +207,6 @@ export default async function PartidoPage({ params }: Props) {
             profileLevel={profile?.level ?? null}
             showSides={hasSideB}
           />
-          {!cancelled && !isHost && !match.away_opened_by && match.starts_at > new Date().toISOString() ? (
-            <section className="open-side-b-block" aria-labelledby="open-side-b-heading">
-              <h2 className="subhead" id="open-side-b-heading">
-                ¿Jugás en contra?
-              </h2>
-              <p className="open-side-b-lead">
-                Misma cancha y hora. Acá armás el otro equipo. Si sos del grupo que publicó, pedí un
-                cupo arriba.
-              </p>
-              {userId ? (
-                <OpenSideBForm
-                  matchId={match.id}
-                  shareCode={match.share_code}
-                  sport={isSport(match.sport) ? match.sport : "futbol"}
-                />
-              ) : (
-                <p>
-                  Entrá para pedir cupos del rival.{" "}
-                  <Link href={`/entrar?next=/p/${match.share_code}`}>Entrar</Link>
-                </p>
-              )}
-            </section>
-          ) : null}
         </div>
 
         <section className="match-venue-block" aria-labelledby="match-venue-heading">

@@ -31,6 +31,7 @@ import {
 import { isGenderPolicy, parseCostPerPerson, parseSlotsJson } from "@/lib/match-write";
 import {
   occupancyReason,
+  humanizeSideBError,
   occupancyUserMessage,
   parseOccupancyShareCode,
   type OccupancyConflict,
@@ -332,7 +333,7 @@ export async function openMatchSideBAction(formData: FormData): Promise<Occupanc
 
   const openCount = Number(formData.get("open_count") ?? 1);
   if (openCount !== 1 && openCount !== 2) {
-    return { error: "El lado B admite 1 o 2 cupos." };
+    return { error: humanizeSideBError("El lado B admite 1 o 2 cupos.") };
   }
 
   const position = asOne(formData.get("position"), POSITIONS, "any") as Position;
@@ -346,7 +347,7 @@ export async function openMatchSideBAction(formData: FormData): Promise<Occupanc
   });
 
   if (error) {
-    return { error: error.message || "No se pudo abrir el otro lado." };
+    return { error: humanizeSideBError(error.message || "No se pudo abrir el otro lado.") };
   }
 
   const code = typeof data === "string" && isShareCode(data) ? data : shareCode;
@@ -355,7 +356,7 @@ export async function openMatchSideBAction(formData: FormData): Promise<Occupanc
     revalidatePath(`/p/${code}`);
     redirect(`/p/${code}`);
   }
-  return { error: "No se pudo abrir el otro lado." };
+  return { error: humanizeSideBError("No se pudo abrir el otro lado.") };
 }
 
 export async function updateMatchAction(formData: FormData) {

@@ -1,25 +1,109 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { cancelMatchAction } from "@/app/actions";
-import { LevelFeedbackButtons } from "@/components/LevelFeedbackButtons";
+import { MyMatchCard, type MyMatchCardModel } from "@/components/MyMatchCard";
 import { requireUserId } from "@/lib/auth";
 import { getMyClaimedMatches, getMyHostedMatches, getSubmittedLevelFeedbackClaimIds } from "@/lib/data";
-import { formatWhen, openSlotsPhrase } from "@/lib/format";
 import { isFeedbackWindow } from "@/lib/level-trust";
-import { formatLabel, matchStatusLabel, positionLabel, sportLabel } from "@/lib/labels";
-import type { Position } from "@/lib/constants";
-import { openSlotCount, pendingClaimCountForHost, slotIsOpen, type MatchDetail } from "@/lib/types";
 import { robotsNoIndex } from "@/lib/seo";
+import type { ClaimWithPlayer, MatchDetail } from "@/lib/types";
 
 export const metadata: Metadata = {
   title: "Mis partidos",
   robots: robotsNoIndex,
 };
 
+type Bucket = "action" | "upcoming" | "history";
+
+type Entry = MyMatchCardModel & {
+  id: string;
+  startsAt: string;
+  bucket: Bucket;
+};
+
 function acceptedClaimsForFeedback(match: MatchDetail) {
   return match.match_slots.flatMap((slot) =>
     slot.slot_claims.filter((claim) => claim.status === "accepted"),
   );
+}
+
+function needsHostFeedback(
+  match: MatchDetail,
+  now: Date,
+  submitted: Set<string>,
+): ClaimWithPlayer[] {
+  if (match.status === "cancelled") return [];
+  if (!isFeedbackWindow(now, match.starts_at, match.duration_min)) return [];
+  return acceptedClaimsForFeedback(match).filter((claim) => !submitted.has(claim.id));
+}
+
+function claimNeedsFeedback(
+  claim: { id: string; status: string },
+  match: MatchDetail,
+  now: Date,
+  submitted: Set<string>,
+) {
+  return (
+    claim.status === "accepted" &&
+    match.status !== "cancelled" &&
+    isFeedbackWindow(now, match.starts_at, match.duration_min) &&
+    !submitted.has(claim.id)
+  );
+}
+
+function classifyHost(match: MatchDetail, now: Date, nowIso: string, submitted: Set<string>): Entry {
+  const feedbackClaims = needsHostFeedback(match, now, submitted);
+  const pending =
+    match.status !== "cancelled" &&
+    match.starts_at > nowIso &&
+    match.match_slots.some((slot) => slot.slot_claims.some((c) => c.status === "pending"));
+  const pastOrCancelled = match.status === "cancelled" || match.starts_at <= nowIso;
+  let bucket: Bucket = "upcoming";
+  if (feedbackClaims.length > 0 || pending) bucket = "action";
+  else if (pastOrCancelled) bucket = "history";
+
+  return {
+    id: `host-${match.id}`,
+    role: "host",
+    match,
+    feedbackClaims,
+    startsAt: match.starts_at,
+    bucket,
+  };
+}
+
+function classifyClaim(
+  claim: { id: string; status: string },
+  match: MatchDetail,
+  now: Date,
+  nowIso: string,
+  submitted: Set<string>,
+): Entry {
+  const canFeedbackClaim = claimNeedsFeedback(claim, match, now, submitted);
+  const pastOrCancelled = match.status === "cancelled" || match.starts_at <= nowIso;
+  const waiting = claim.status === "pending" && !pastOrCancelled && match.status !== "cancelled";
+  let bucket: Bucket = "upcoming";
+  if (canFeedbackClaim || waiting) bucket = "action";
+  else if (pastOrCancelled || claim.status === "rejected" || claim.status === "withdrawn") {
+    bucket = "history";
+  }
+
+  return {
+    id: `claim-${claim.id}`,
+    role: "claim",
+    match,
+    claim,
+    canFeedbackClaim,
+    startsAt: match.starts_at,
+    bucket,
+  };
+}
+
+function sortUpcoming(a: Entry, b: Entry) {
+  return a.startsAt.localeCompare(b.startsAt);
+}
+
+function sortHistory(a: Entry, b: Entry) {
+  return b.startsAt.localeCompare(a.startsAt);
 }
 
 export default async function MisPartidosPage() {
@@ -30,134 +114,122 @@ export default async function MisPartidosPage() {
 
   const feedbackCandidateIds: string[] = [];
   for (const match of hosted) {
-    if (match.status === "cancelled") continue;
-    if (!isFeedbackWindow(now, match.starts_at, match.duration_min)) continue;
-    for (const claim of acceptedClaimsForFeedback(match)) {
+    for (const claim of needsHostFeedback(match, now, new Set())) {
       feedbackCandidateIds.push(claim.id);
     }
   }
   for (const { claim, match } of claimed) {
-    if (claim.status !== "accepted") continue;
-    if (match.status === "cancelled") continue;
-    if (!isFeedbackWindow(now, match.starts_at, match.duration_min)) continue;
-    feedbackCandidateIds.push(claim.id);
+    if (claimNeedsFeedback(claim, match, now, new Set())) {
+      feedbackCandidateIds.push(claim.id);
+    }
   }
 
   const submittedFeedback = await getSubmittedLevelFeedbackClaimIds(userId, [
     ...new Set(feedbackCandidateIds),
   ]);
 
+  const hostedIds = new Set(hosted.map((m) => m.id));
+  const entries: Entry[] = [
+    ...hosted.map((match) => classifyHost(match, now, nowIso, submittedFeedback)),
+    ...claimed
+      .filter(({ match }) => !hostedIds.has(match.id))
+      .map(({ claim, match }) => classifyClaim(claim, match, now, nowIso, submittedFeedback)),
+  ];
+
+  const action = entries.filter((e) => e.bucket === "action").sort(sortUpcoming);
+  const upcoming = entries.filter((e) => e.bucket === "upcoming").sort(sortUpcoming);
+  const history = entries.filter((e) => e.bucket === "history").sort(sortHistory);
+  const empty = entries.length === 0;
+
   return (
-    <main className="page page-narrow" id="main">
-      <header className="page-head">
+    <main className="page page-narrow my-matches-page" id="main">
+      <header className="page-head my-matches-head">
+        <p className="my-matches-kicker">Tu bitácora</p>
         <h1>Mis partidos</h1>
         <p>
-          Tus huecos y tus pedidos.{" "}
+          Huecos que publicaste y cupos que pediste.{" "}
           <Link href="/perfil">Volver al perfil</Link>
         </p>
+        <div className="my-matches-quick">
+          <Link className="btn-flood" href="/partidos/nuevo">
+            Publicar hueco
+          </Link>
+          <Link className="btn-ghost" href="/partidos">
+            Ver radar
+          </Link>
+        </div>
       </header>
 
-      <section className="inbox-section">
-        <h2 className="subhead">Mis huecos</h2>
-        {hosted.length === 0 ? (
+      {empty ? (
+        <p className="empty my-matches-empty">
+          Todavía no tenés movimientos. Publicá un hueco o metete a una pateada del radar.
+        </p>
+      ) : null}
+
+      {action.length > 0 ? (
+        <section className="my-matches-section" aria-labelledby="my-matches-action">
+          <div className="my-matches-section-head">
+            <h2 className="subhead" id="my-matches-action">
+              Te toca algo
+            </h2>
+            <p className="my-matches-section-copy">
+              Pedidos por revisar o feedback de nivel después de la pateada.
+            </p>
+          </div>
+          <ul className="my-matches-list">
+            {action.map((entry) => (
+              <li key={entry.id}>
+                <MyMatchCard {...entry} nowIso={nowIso} />
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
+      <section className="my-matches-section" aria-labelledby="my-matches-upcoming">
+        <div className="my-matches-section-head">
+          <h2 className="subhead" id="my-matches-upcoming">
+            Próximas pateadas
+          </h2>
+          <p className="my-matches-section-copy">Lo que viene: organizás o vas de jugador.</p>
+        </div>
+        {upcoming.length === 0 ? (
           <p className="empty">
-            Aún no publicaste. <Link href="/partidos/nuevo">Publicar hueco</Link>
+            {action.length > 0 ? (
+              <>No hay más en la agenda: lo urgente está arriba.</>
+            ) : (
+              <>
+                Nada en la agenda. <Link href="/partidos">Buscá un hueco</Link>
+              </>
+            )}
           </p>
         ) : (
-          <ul className="inbox-list">
-            {hosted.map((match) => {
-              const open = openSlotCount(match);
-              const pending = pendingClaimCountForHost(match);
-              const dominant =
-                match.match_slots.find(slotIsOpen)?.position ?? match.match_slots[0]?.position ?? "any";
-              const cancelled = match.status === "cancelled";
-              const showFeedback =
-                !cancelled && isFeedbackWindow(now, match.starts_at, match.duration_min);
-              const feedbackClaims = showFeedback
-                ? acceptedClaimsForFeedback(match).filter((claim) => !submittedFeedback.has(claim.id))
-                : [];
-              return (
-                <li key={match.id} className="inbox-item">
-                  <div>
-                    <p className="inbox-title">
-                      <Link href={`/p/${match.share_code}`}>
-                        {openSlotsPhrase(open, positionLabel[dominant as Position] ?? "Cualquiera")}
-                      </Link>
-                      {pending > 0 && !cancelled ? (
-                        <span className="nav-badge" aria-label={`${pending} pedidos pendientes`}>
-                          {pending}
-                        </span>
-                      ) : null}
-                    </p>
-                    <p className="inbox-meta">
-                      {formatWhen(match.starts_at, match.cities.timezone)} · {match.venues.name} ·{" "}
-                      {sportLabel[match.sport as keyof typeof sportLabel] ?? match.sport}{" "}
-                      {formatLabel[match.format as keyof typeof formatLabel] ?? match.format} ·{" "}
-                      {matchStatusLabel[match.status] ?? match.status}
-                    </p>
-                    {feedbackClaims.map((claim) => (
-                      <LevelFeedbackButtons
-                        key={claim.id}
-                        claimId={claim.id}
-                        aboutLabel={claim.profiles?.display_name ?? undefined}
-                      />
-                    ))}
-                  </div>
-                  {!cancelled && match.starts_at > nowIso ? (
-                    <div className="inbox-item-actions">
-                      <Link className="btn-ghost" href={`/p/${match.share_code}/editar`}>
-                        Editar
-                      </Link>
-                      <form action={cancelMatchAction}>
-                        <input type="hidden" name="match_id" value={match.id} />
-                        <input type="hidden" name="share_code" value={match.share_code} />
-                        <button className="btn-ghost" type="submit">
-                          Cancelar
-                        </button>
-                      </form>
-                    </div>
-                  ) : null}
-                </li>
-              );
-            })}
+          <ul className="my-matches-list">
+            {upcoming.map((entry) => (
+              <li key={entry.id}>
+                <MyMatchCard {...entry} nowIso={nowIso} />
+              </li>
+            ))}
           </ul>
         )}
       </section>
 
-      <section className="inbox-section">
-        <h2 className="subhead">Mis pedidos</h2>
-        {claimed.length === 0 ? (
-          <p className="empty">
-            Todavía no pediste cupo. <Link href="/partidos">Ver partidos</Link>
-          </p>
+      <section className="my-matches-section" aria-labelledby="my-matches-history">
+        <div className="my-matches-section-head">
+          <h2 className="subhead" id="my-matches-history">
+            Ya jugaron
+          </h2>
+          <p className="my-matches-section-copy">Historial reciente, cancelados y pedidos cerrados.</p>
+        </div>
+        {history.length === 0 ? (
+          <p className="empty">Todavía no hay historial.</p>
         ) : (
-          <ul className="inbox-list">
-            {claimed.map(({ claim, match }) => {
-              const canFeedback =
-                claim.status === "accepted" &&
-                match.status !== "cancelled" &&
-                isFeedbackWindow(now, match.starts_at, match.duration_min) &&
-                !submittedFeedback.has(claim.id);
-              return (
-                <li key={claim.id} className="inbox-item">
-                  <div>
-                    <p className="inbox-title">
-                      <Link href={`/p/${match.share_code}`}>{match.venues.name}</Link>
-                    </p>
-                    <p className="inbox-meta">
-                      {formatWhen(match.starts_at, match.cities.timezone)} · pedido {claim.status}
-                      {match.status === "cancelled" ? " · partido cancelado" : ""}
-                    </p>
-                    {canFeedback ? (
-                      <LevelFeedbackButtons
-                        claimId={claim.id}
-                        aboutLabel={match.profiles.display_name}
-                      />
-                    ) : null}
-                  </div>
-                </li>
-              );
-            })}
+          <ul className="my-matches-list">
+            {history.map((entry) => (
+              <li key={entry.id}>
+                <MyMatchCard {...entry} nowIso={nowIso} />
+              </li>
+            ))}
           </ul>
         )}
       </section>

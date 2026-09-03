@@ -78,3 +78,10 @@ export const matchStatusLabel: Record<string, string> = {
   open: "Abierto",
   cancelled: "Cancelado",
 };
+
+export const claimStatusLabel: Record<string, string> = {
+  pending: "Pendiente",
+  accepted: "Aceptado",
+  rejected: "Rechazado",
+  withdrawn: "Retirado",
+};
