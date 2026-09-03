@@ -51,6 +51,7 @@ export type Database = {
           id: string;
           level: string;
           match_id: string;
+          pitch_index: number | null;
           position: string;
           side: string;
         };
@@ -59,6 +60,7 @@ export type Database = {
           id?: string;
           level?: string;
           match_id: string;
+          pitch_index?: number | null;
           position?: string;
           side?: string;
         };
@@ -67,6 +69,7 @@ export type Database = {
           id?: string;
           level?: string;
           match_id?: string;
+          pitch_index?: number | null;
           position?: string;
           side?: string;
         };
@@ -89,6 +92,7 @@ export type Database = {
           currency: string;
           duration_min: number;
           format: string;
+          formation_id: string | null;
           gender_policy: string;
           host_id: string;
           id: string;
@@ -109,6 +113,7 @@ export type Database = {
           currency?: string;
           duration_min?: number;
           format?: string;
+          formation_id?: string | null;
           gender_policy?: string;
           host_id: string;
           id?: string;
@@ -129,6 +134,7 @@ export type Database = {
           currency?: string;
           duration_min?: number;
           format?: string;
+          formation_id?: string | null;
           gender_policy?: string;
           host_id?: string;
           id?: string;
@@ -510,6 +516,7 @@ export type Database = {
           p_cost_per_person: number | null;
           p_duration_min: number;
           p_format: string;
+          p_formation_id?: string | null;
           p_gender_policy: string;
           p_match_id: string;
           p_notes: string | null;

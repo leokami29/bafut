@@ -1,5 +1,10 @@
 import { SPORTS, type Format, type Sport } from "@/lib/constants";
 import {
+  formationsForSportFormat,
+  soccerFormationsByFormat,
+  type FormationEntry,
+} from "@/lib/formations-catalog";
+import {
   BASQUET_SLOT_ROLES,
   getHeroHeadline,
   type HeroMissingRole,
@@ -15,6 +20,7 @@ export type PitchSetup = {
   formation: number[];
   label: string;
   includeGk: boolean;
+  formationId?: string;
 };
 
 /** Ancho del viewBox SVG — usado para espejar formación al lado derecho. */
@@ -23,62 +29,28 @@ export const PITCH_VIEWBOX_WIDTH = 360;
 type SoccerFormat = "5v5" | "6v6" | "7v7" | "8v8" | "11v11";
 
 /** Formaciones realistas por formato (líneas de campo sin arquero). */
-export const SOCCER_FORMATIONS: Record<SoccerFormat, number[][]> = {
-  "5v5": [
-    [2, 1, 1],
-    [1, 2, 1],
-    [2, 2],
-    [1, 1, 2],
-    [3, 1],
-  ],
-  "6v6": [
-    [2, 2, 1],
-    [3, 1, 1],
-    [2, 1, 2],
-    [1, 2, 2],
-    [3, 2],
-  ],
-  "7v7": [
-    [2, 2, 2],
-    [3, 2, 1],
-    [2, 3, 1],
-    [3, 1, 2],
-    [1, 3, 2],
-  ],
-  "8v8": [
-    [3, 2, 2],
-    [2, 3, 2],
-    [2, 2, 3],
-    [3, 3, 1],
-    [4, 2, 1],
-  ],
-  "11v11": [
-    [4, 4, 2],
-    [4, 3, 3],
-    [3, 5, 2],
-    [5, 3, 2],
-    [3, 4, 3],
-    [4, 2, 3, 1],
-  ],
-};
+export const SOCCER_FORMATIONS: Record<SoccerFormat, number[][]> = soccerFormationsByFormat();
 
-const FUTSAL_FORMATIONS: number[][] = [
-  [1, 2, 1],
-  [2, 1, 1],
-  [1, 1, 2],
-  [2, 2],
-];
+function linesFromCatalog(sport: Sport, format: Format | null): number[][] {
+  if (!format) return [[2, 1, 2]];
+  return formationsForSportFormat(sport, format).map((f) => f.lines);
+}
 
-const BASKET_FORMATIONS: number[][] = [
-  [2, 1, 2],
-  [1, 2, 2],
-  [2, 2, 1],
-  [1, 3, 1],
-];
+const FUTSAL_FORMATIONS: number[][] = linesFromCatalog("futbol_sala", "5v5");
+const BASKET_FORMATIONS: number[][] = linesFromCatalog("basquet", "5v5");
+const VOLLEY_FORMATIONS: number[][] = linesFromCatalog("voleibol", "6v6");
+const PADEL_FORMATIONS: number[][] = linesFromCatalog("padel", "2v2");
 
-const VOLLEY_FORMATIONS: number[][] = [[3, 3]];
-
-const PADEL_FORMATIONS: number[][] = [[2], [1, 1]];
+export function pitchSetupFromEntry(entry: FormationEntry): PitchSetup {
+  return {
+    sport: entry.sport,
+    format: entry.format,
+    formation: entry.lines,
+    label: entry.name ? `${entry.label} · ${entry.name}` : entry.label,
+    includeGk: entry.includeGk,
+    formationId: entry.id,
+  };
+}
 
 function pickRandom<T>(items: readonly T[]): T {
   return items[Math.floor(Math.random() * items.length)]!;

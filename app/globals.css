@@ -4636,3 +4636,85 @@ details.venue-group[open] > summary.venue-group-title::before {
   }
 }
 
+
+.formation-picker {
+  display: grid;
+  gap: 0.75rem;
+  padding-top: 0.35rem;
+  border-top: 1px dashed color-mix(in oklab, var(--turf) 28%, transparent);
+}
+
+.formation-picker .is-ghost-chip {
+  border-style: dashed;
+  opacity: 0.92;
+}
+
+.formation-preview {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.formation-preview-label {
+  margin: 0;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--ink) 70%, transparent);
+}
+
+.formation-preview-svg {
+  width: 100%;
+  max-width: 320px;
+  aspect-ratio: 360 / 220;
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, #d9f2a5 35%, transparent);
+}
+
+.formation-hole {
+  fill: color-mix(in oklab, var(--paper) 72%, #0a5c41);
+  stroke: #d9f2a5;
+  stroke-width: 1.4;
+  transition: r 120ms ease, fill 120ms ease;
+}
+
+.formation-hole.is-open {
+  fill: var(--bib);
+  stroke: #ffe8a3;
+}
+
+.formation-hole-mark {
+  fill: #1a1a12;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--font-mono), monospace;
+}
+
+.formation-open-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.formation-open-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 0.65rem 1rem;
+  padding: 0.55rem 0.7rem;
+  background: color-mix(in oklab, var(--paper) 88%, var(--turf));
+  border-left: 2px solid var(--bib);
+}
+
+.formation-open-row > span {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+}
+
+.formation-open-row label {
+  flex: 1;
+  min-width: 8rem;
+}

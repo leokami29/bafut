@@ -110,6 +110,7 @@ export default async function PartidoPage({ params }: Props) {
     format: match.format,
     slots: match.match_slots,
     hasSideB,
+    formationId: match.formation_id,
   });
 
   return (
@@ -166,7 +167,13 @@ export default async function PartidoPage({ params }: Props) {
           {match.notes ? <p className="notes">{match.notes}</p> : null}
 
           {isHost && !cancelled && open > 0 ? <HostShareBanner {...shareProps} /> : null}
-          {!cancelled ? <ShareWhatsApp {...shareProps} sticky={isHost && open > 0} /> : null}
+          {!cancelled ? (
+            <ShareWhatsApp
+              {...shareProps}
+              hidePrimary={isHost && open > 0}
+              sticky={isHost && open > 0}
+            />
+          ) : null}
 
           {canCancel ? (
             <div className="match-host-actions">

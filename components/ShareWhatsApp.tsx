@@ -13,22 +13,26 @@ export function ShareWhatsApp(props: {
   price: string;
   shareCode: string;
   sticky?: boolean;
+  /** When true, WhatsApp CTA lives elsewhere (e.g. HostShareBanner). Only show Copiar link. */
+  hidePrimary?: boolean;
 }) {
   const text = matchShareText(props);
   const href = whatsappShareHref(text);
   const pageUrl = matchUrl(props.shareCode);
   const [copied, setCopied] = useState(false);
   const [showSticky, setShowSticky] = useState(false);
+  const showPrimary = !props.hidePrimary;
+  const enableSticky = Boolean(props.sticky && showPrimary);
 
   useEffect(() => {
-    if (!props.sticky) return;
+    if (!enableSticky) return;
     function onScroll() {
       setShowSticky(window.scrollY > 280);
     }
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, [props.sticky]);
+  }, [enableSticky]);
 
   async function shareWhatsApp() {
     trackEvent("match_share_clicked", { method: "whatsapp" });
@@ -48,9 +52,11 @@ export function ShareWhatsApp(props: {
 
   const row = (
     <div className="share-row">
-      <button type="button" className="btn-flood" onClick={() => void shareWhatsApp()}>
-        Mandar al grupo
-      </button>
+      {showPrimary ? (
+        <button type="button" className="btn-flood" onClick={() => void shareWhatsApp()}>
+          Mandar al grupo
+        </button>
+      ) : null}
       <button type="button" className="btn-ghost" onClick={() => void copyLink()}>
         {copied ? "Link copiado" : "Copiar link"}
       </button>
@@ -60,7 +66,7 @@ export function ShareWhatsApp(props: {
   return (
     <>
       {row}
-      {props.sticky && showSticky ? (
+      {enableSticky && showSticky ? (
         <div className="share-sticky" role="region" aria-label="Compartir partido">
           <button type="button" className="btn-flood" onClick={() => void shareWhatsApp()}>
             Mandar al grupo
@@ -87,7 +93,13 @@ export function HostShareBanner(props: {
       <p className="host-banner-text">
         <strong>Ya quedó publicado.</strong> Mándalo al grupo de WhatsApp para que entren.
       </p>
-      <a className="btn-flood" href={href} target="_blank" rel="noopener noreferrer">
+      <a
+        className="btn-flood"
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={() => trackEvent("match_share_clicked", { method: "whatsapp" })}
+      >
         Mandar al grupo
       </a>
     </aside>

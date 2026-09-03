@@ -28,7 +28,13 @@ import {
   positionAllowedForSport,
   SPORT_RULES,
 } from "@/lib/sport-rules";
-import { isGenderPolicy, parseCostPerPerson, parseSlotsJson } from "@/lib/match-write";
+import {
+  isGenderPolicy,
+  parseCostPerPerson,
+  parsePitchSlotsJson,
+  parseSlotsJson,
+  resolveFormationIdInput,
+} from "@/lib/match-write";
 import {
   occupancyReason,
   humanizeSideBError,
@@ -183,11 +189,21 @@ export async function createMatchAction(formData: FormData) {
     return { error: "Esa posición no aplica para el deporte." };
   }
 
-  const openCountRaw = Number(formData.get("open_count") ?? "");
-  if (!Number.isInteger(openCountRaw) || openCountRaw < 1 || openCountRaw > 12) {
-    return { error: "Los cupos deben ser un número entero entre 1 y 12." };
+  const formationResolved = resolveFormationIdInput(
+    String(formData.get("formation_id") ?? ""),
+    sport,
+    format,
+  );
+  if (formationResolved && typeof formationResolved === "object" && "error" in formationResolved) {
+    return { error: formationResolved.error };
   }
-  const openCount = openCountRaw;
+  const formationId = typeof formationResolved === "string" ? formationResolved : null;
+
+  const pitchParsed = parsePitchSlotsJson(String(formData.get("pitch_slots_json") ?? ""), sport);
+  if (pitchParsed && "error" in pitchParsed) {
+    return { error: pitchParsed.error };
+  }
+
   const needKeeper = formData.get("need_keeper") === "on" && SPORT_RULES[sport].hasKeeper;
   const level = asOne(formData.get("level"), LEVELS, "any");
   const costParsed = parseCostPerPerson(String(formData.get("cost_per_person") ?? ""));
@@ -197,6 +213,34 @@ export async function createMatchAction(formData: FormData) {
   const notes = String(formData.get("notes") ?? "").trim();
   if (notes.length > 500) {
     return { error: "La nota es demasiado larga (máx. 500 caracteres)." };
+  }
+
+  let slotsPayload: Array<{
+    match_id?: string;
+    position: Position;
+    level: string;
+    side: "a";
+    pitch_index?: number | null;
+  }>;
+
+  if (pitchParsed && "slots" in pitchParsed) {
+    slotsPayload = pitchParsed.slots.map((slot) => ({
+      position: slot.position,
+      level: slot.level,
+      side: "a" as const,
+      pitch_index: slot.pitch_index,
+    }));
+  } else {
+    const openCountRaw = Number(formData.get("open_count") ?? "");
+    if (!Number.isInteger(openCountRaw) || openCountRaw < 1 || openCountRaw > 12) {
+      return { error: "Los cupos deben ser un número entero entre 1 y 12." };
+    }
+    slotsPayload = Array.from({ length: openCountRaw }, (_, index) => ({
+      position: (needKeeper && index === 0 ? "gk" : position) as Position,
+      level,
+      side: "a" as const,
+      pitch_index: null,
+    }));
   }
 
   const { data: match, error } = await supabase
@@ -209,6 +253,7 @@ export async function createMatchAction(formData: FormData) {
       duration_min: durationMin,
       sport,
       format,
+      formation_id: formationId,
       cost_per_person: typeof costParsed === "number" ? costParsed : null,
       gender_policy: asOne(formData.get("gender_policy"), GENDERS, "mixed"),
       notes: notes || null,
@@ -234,12 +279,7 @@ export async function createMatchAction(formData: FormData) {
     };
   }
 
-  const slots = Array.from({ length: openCount }, (_, index) => ({
-    match_id: match.id,
-    position: needKeeper && index === 0 ? "gk" : position,
-    level,
-    side: "a" as const,
-  }));
+  const slots = slotsPayload.map((slot) => ({ ...slot, match_id: match.id }));
 
   const { error: slotError } = await supabase.from("match_slots").insert(slots);
   if (slotError) {
@@ -438,6 +478,16 @@ export async function updateMatchAction(formData: FormData) {
     return { error: parsedSlots.error };
   }
 
+  const formationResolved = resolveFormationIdInput(
+    String(formData.get("formation_id") ?? ""),
+    sport,
+    format,
+  );
+  if (formationResolved && typeof formationResolved === "object" && "error" in formationResolved) {
+    return { error: formationResolved.error };
+  }
+  const formationId = typeof formationResolved === "string" ? formationResolved : null;
+
   const { error } = await supabase.rpc("update_match", {
     p_match_id: matchId,
     p_venue_id: venueId,
@@ -449,6 +499,7 @@ export async function updateMatchAction(formData: FormData) {
     p_cost_per_person: typeof costParsed === "number" ? costParsed : null,
     p_notes: notes || null,
     p_slots: parsedSlots.slots,
+    p_formation_id: formationId,
   });
 
   if (error) {

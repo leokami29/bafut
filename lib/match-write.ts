@@ -1,10 +1,12 @@
 import { GENDERS, LEVELS, type Level, type Position } from "@/lib/constants";
+import { getFormationById } from "@/lib/formations-catalog";
 import { isPosition, positionAllowedForSport, type Sport } from "@/lib/sport-rules";
 
 export type SlotWrite = {
   id: string | null;
   position: Position;
   level: Level;
+  pitch_index?: number | null;
 };
 
 export function parseSlotsJson(raw: string, sport: Sport): { error: string } | { slots: SlotWrite[] } {
@@ -20,6 +22,7 @@ export function parseSlotsJson(raw: string, sport: Sport): { error: string } | {
 
   const slots: SlotWrite[] = [];
   const seen = new Set<string>();
+  const seenPitch = new Set<number>();
 
   for (const item of parsed) {
     if (!item || typeof item !== "object") {
@@ -48,14 +51,85 @@ export function parseSlotsJson(raw: string, sport: Sport): { error: string } | {
       return { error: "Nivel no válido." };
     }
 
+    let pitch_index: number | null = null;
+    if (rec.pitch_index != null && rec.pitch_index !== "") {
+      const n = Number(rec.pitch_index);
+      if (!Number.isInteger(n) || n < 0 || n > 15) {
+        return { error: "Índice de cancha inválido." };
+      }
+      if (seenPitch.has(n)) {
+        return { error: "Huecos duplicados en la cancha." };
+      }
+      seenPitch.add(n);
+      pitch_index = n;
+    }
+
     slots.push({
       id,
       position: positionRaw,
       level: levelRaw as Level,
+      pitch_index,
     });
   }
 
   return { slots };
+}
+
+export function parsePitchSlotsJson(
+  raw: string,
+  sport: Sport,
+): { error: string } | { slots: Array<{ position: Position; level: Level; pitch_index: number }> } | null {
+  const trimmed = raw.trim();
+  if (!trimmed) return null;
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(trimmed);
+  } catch {
+    return { error: "Los huecos de cancha no son válidos." };
+  }
+  if (!Array.isArray(parsed) || parsed.length < 1 || parsed.length > 12) {
+    return { error: "Marcá entre 1 y 12 huecos en la cancha." };
+  }
+  const slots: Array<{ position: Position; level: Level; pitch_index: number }> = [];
+  const seen = new Set<number>();
+  for (const item of parsed) {
+    if (!item || typeof item !== "object") return { error: "Hueco inválido." };
+    const rec = item as Record<string, unknown>;
+    const pitch = Number(rec.pitch_index);
+    if (!Number.isInteger(pitch) || pitch < 0 || pitch > 15 || seen.has(pitch)) {
+      return { error: "Índice de cancha inválido." };
+    }
+    seen.add(pitch);
+    const positionRaw = typeof rec.position === "string" ? rec.position : "any";
+    if (!isPosition(positionRaw) || !positionAllowedForSport(sport, positionRaw)) {
+      return { error: "Esa posición no aplica para el deporte." };
+    }
+    const levelRaw = typeof rec.level === "string" ? rec.level : "any";
+    if (!(LEVELS as readonly string[]).includes(levelRaw)) {
+      return { error: "Nivel no válido." };
+    }
+    slots.push({
+      pitch_index: pitch,
+      position: positionRaw,
+      level: levelRaw as Level,
+    });
+  }
+  return { slots };
+}
+
+export function resolveFormationIdInput(
+  raw: string,
+  sport: Sport,
+  format: string,
+): string | null | { error: string } {
+  const id = raw.trim();
+  if (!id) return null;
+  if (id.length > 80) return { error: "Formación no válida." };
+  const entry = getFormationById(id);
+  if (!entry || entry.sport !== sport || entry.format !== format) {
+    return { error: "Esa formación no aplica para el deporte/formato." };
+  }
+  return entry.id;
 }
 
 export function parseCostPerPerson(raw: string): number | null | { error: string } {

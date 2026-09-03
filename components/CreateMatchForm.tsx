@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useActionState, useEffect, useId, useMemo, useState } from "react";
 import { createMatchAction, lookupVenueOccupancyAction, listVenueDayOccupancyAction, updateMatchAction } from "@/app/actions";
 import { OccupancyBanner } from "@/components/OccupancyBanner";
+import { FormationPicker, type PitchOpenSlot } from "@/components/FormationPicker";
 import { VenueDayTimeline } from "@/components/VenueDayTimeline";
 import { trackEvent } from "@/lib/analytics";
 import { VenueMapLazy } from "@/components/VenueMapLazy";
@@ -20,6 +21,7 @@ import {
   type Sport,
 } from "@/lib/constants";
 import { datetimeLocalInZoneToDate, defaultStartsAtLocal } from "@/lib/datetime";
+import { defaultFormationId } from "@/lib/formations-catalog";
 import { formatMoney, formatWhen } from "@/lib/format";
 import { formatLabel, genderLabel, levelLabel, positionLabel, sportLabel } from "@/lib/labels";
 import {
@@ -42,6 +44,7 @@ export type MatchEditSlot = {
   level: string;
   accepted: boolean;
   pending: boolean;
+  pitchIndex?: number | null;
 };
 
 export type MatchEditInitial = {
@@ -49,6 +52,7 @@ export type MatchEditInitial = {
   shareCode: string;
   sport: Sport;
   format: Format;
+  formationId?: string | null;
   venueId: string;
   startsAtLocal: string;
   durationMin: number;
@@ -65,6 +69,7 @@ type EditSlotRow = {
   level: string;
   accepted: boolean;
   pending: boolean;
+  pitchIndex: number | null;
 };
 
 function initialDuration(value: number | undefined): DurationMin {
@@ -104,6 +109,10 @@ export function CreateMatchForm({
 
   const [sport, setSport] = useState<Sport>(initialSport);
   const [format, setFormat] = useState<Format>(edit?.format ?? defaultFormatForSport(initialSport));
+  const [formationId, setFormationId] = useState(
+    () => edit?.formationId || defaultFormationId(initialSport, edit?.format ?? defaultFormatForSport(initialSport)),
+  );
+  const [pitchOpenSlots, setPitchOpenSlots] = useState<PitchOpenSlot[]>([]);
   const [position, setPosition] = useState("any");
   const [step, setStep] = useState<1 | 2>(1);
   const [openCount, setOpenCount] = useState(2);
@@ -127,6 +136,7 @@ export function CreateMatchForm({
       level: slot.level,
       accepted: slot.accepted,
       pending: slot.pending,
+      pitchIndex: slot.pitchIndex ?? null,
     })),
   );
 
@@ -218,7 +228,10 @@ export function CreateMatchForm({
   function chooseSport(next: Sport) {
     if (sportLocked) return;
     setSport(next);
-    setFormat(defaultFormatForSport(next));
+    const nextFormat = defaultFormatForSport(next);
+    setFormat(nextFormat);
+    setFormationId(defaultFormationId(next, nextFormat));
+    setPitchOpenSlots([]);
     setPosition("any");
     setVenueMissing(false);
     setVenueId("");
@@ -228,6 +241,12 @@ export function CreateMatchForm({
         position: positionAllowedForSport(next, row.position as never) ? row.position : "any",
       })),
     );
+  }
+
+  function chooseFormat(next: Format) {
+    setFormat(next);
+    setFormationId(defaultFormationId(sport, next));
+    setPitchOpenSlots([]);
   }
 
   function goToStep2(form: HTMLFormElement) {
@@ -253,6 +272,7 @@ export function CreateMatchForm({
         level: "any",
         accepted: false,
         pending: false,
+        pitchIndex: null,
       },
     ]);
   }
@@ -309,6 +329,7 @@ export function CreateMatchForm({
                 id: row.id,
                 position: positionAllowedForSport(sport, row.position as never) ? row.position : "any",
                 level: row.level,
+                pitch_index: row.pitchIndex,
               })),
             )}
           />
@@ -423,13 +444,23 @@ export function CreateMatchForm({
                     type="button"
                     className={activeFormat === item ? "is-on" : undefined}
                     aria-pressed={activeFormat === item}
-                    onClick={() => setFormat(item)}
+                    onClick={() => chooseFormat(item)}
                   >
                     {formatLabel[item]}
                   </button>
                 ))}
                 </div>
               </div>
+
+              <FormationPicker
+                sport={sport}
+                format={activeFormat}
+                formationId={formationId}
+                onFormationIdChange={setFormationId}
+                openSlots={isEdit ? [] : pitchOpenSlots}
+                onOpenSlotsChange={isEdit ? () => undefined : setPitchOpenSlots}
+                interactive={!isEdit}
+              />
             </fieldset>
 
             <fieldset className="match-compose-group">
@@ -631,7 +662,11 @@ export function CreateMatchForm({
             ) : (
               <fieldset className="match-compose-group">
                 <legend className="match-compose-legend">Cupos</legend>
-                <p className="field-help">Cuántos faltan para cerrar el partido.</p>
+                <p className="field-help">
+                  {pitchOpenSlots.length > 0
+                    ? "Estás usando huecos marcados en la cancha. Los cupos rápidos se ignoran."
+                    : "Cuántos faltan para cerrar el partido (cualquiera), o marcá huecos arriba en la formación."}
+                </p>
 
                 <label htmlFor={openId}>
                   Faltan <span className="req-mark" aria-hidden="true">*</span>
@@ -642,8 +677,12 @@ export function CreateMatchForm({
                     min={1}
                     max={12}
                     value={openCount}
-                    onChange={(e) => setOpenCount(Number(e.target.value))}
+                    onChange={(e) => {
+                      setOpenCount(Number(e.target.value));
+                      setPitchOpenSlots([]);
+                    }}
                     inputMode="numeric"
+                    disabled={pitchOpenSlots.length > 0}
                   />
                 </label>
 
@@ -652,9 +691,12 @@ export function CreateMatchForm({
                     <button
                       key={n}
                       type="button"
-                      className={openCount === n ? "is-on" : undefined}
-                      aria-pressed={openCount === n}
-                      onClick={() => setOpenCount(n)}
+                      className={openCount === n && pitchOpenSlots.length === 0 ? "is-on" : undefined}
+                      aria-pressed={openCount === n && pitchOpenSlots.length === 0}
+                      onClick={() => {
+                        setOpenCount(n);
+                        setPitchOpenSlots([]);
+                      }}
                     >
                       {n} cupos
                     </button>

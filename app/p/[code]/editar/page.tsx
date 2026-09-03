@@ -60,6 +60,7 @@ export default async function EditarPartidoPage({ params }: Props) {
             shareCode: match.share_code,
             sport,
             format: match.format as Format,
+            formationId: match.formation_id,
             venueId: match.venue_id,
             startsAtLocal: isoToDatetimeLocalInZone(match.starts_at, match.cities.timezone),
             durationMin: match.duration_min,
@@ -74,6 +75,7 @@ export default async function EditarPartidoPage({ params }: Props) {
               level: slot.level,
               accepted: !slotIsOpen(slot),
               pending: slot.slot_claims.some((claim) => claim.status === "pending"),
+              pitchIndex: slot.pitch_index,
             })),
           }}
         />
