@@ -5,7 +5,8 @@ import { cancelMatchAction } from "@/app/actions";
 import { JsonLd, matchJsonLd } from "@/components/JsonLd";
 import { HostShareBanner, ShareWhatsApp } from "@/components/ShareWhatsApp";
 import { SlotList } from "@/components/SlotList";
-import { getHostMatchCount, getMatchByCode, getSessionUserId } from "@/lib/data";
+import { getHostMatchCount, getMatchByCode, getProfile, getSessionUserId } from "@/lib/data";
+import { formatLevelOkBadge } from "@/lib/level-trust";
 import { openSlotCount, slotIsOpen } from "@/lib/types";
 import { formatMoney, formatWhen, openSlotsPhrase } from "@/lib/format";
 import { formatLabel, genderLabel, matchStatusLabel, positionLabel, sportLabel } from "@/lib/labels";
@@ -55,7 +56,10 @@ export default async function PartidoPage({ params }: Props) {
     notFound();
   }
 
-  const hostMatchCount = await getHostMatchCount(match.host_id);
+  const [hostMatchCount, profile] = await Promise.all([
+    getHostMatchCount(match.host_id),
+    userId ? getProfile(userId) : Promise.resolve(null),
+  ]);
   const cancelled = match.status === "cancelled";
   const open = cancelled ? 0 : openSlotCount(match);
   const dominant =
@@ -66,6 +70,10 @@ export default async function PartidoPage({ params }: Props) {
   const isHost = userId === match.host_id;
   const canCancel = isHost && !cancelled && match.starts_at > new Date().toISOString();
   const hostName = match.profiles.display_name;
+  const levelOkBadge = formatLevelOkBadge(
+    match.profiles.level_ok_count ?? 0,
+    match.profiles.level_feedback_count ?? 0,
+  );
   const shareProps = {
     openCount: open,
     position,
@@ -105,6 +113,11 @@ export default async function PartidoPage({ params }: Props) {
           Armó {hostMatchCount} pateadas
         </p>
       ) : null}
+      {levelOkBadge ? (
+        <p className="host-level-badge" role="status">
+          {levelOkBadge}
+        </p>
+      ) : null}
       {match.notes ? <p className="notes">{match.notes}</p> : null}
 
       {isHost && !cancelled && open > 0 ? <HostShareBanner {...shareProps} /> : null}
@@ -127,6 +140,7 @@ export default async function PartidoPage({ params }: Props) {
         isHost={isHost}
         userId={userId}
         matchCancelled={cancelled}
+        profileLevel={profile?.level ?? null}
       />
 
       <p className="foot-link">

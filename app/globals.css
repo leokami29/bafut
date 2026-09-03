@@ -921,7 +921,59 @@ h2,
   font-weight: 650;
 }
 
+.claim-level-meta {
+  margin: 0.15rem 0 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
 .claim-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.claim-form {
+  display: grid;
+  gap: 0.45rem;
+  justify-items: stretch;
+  width: min(12rem, 100%);
+}
+
+.claim-level-field {
+  display: grid;
+  gap: 0.2rem;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.claim-level-field select {
+  width: 100%;
+}
+
+.claim-ack {
+  display: flex;
+  gap: 0.4rem;
+  align-items: flex-start;
+  font-size: 0.78rem;
+  line-height: 1.35;
+  color: var(--ink);
+}
+
+.claim-ack input {
+  margin-top: 0.15rem;
+}
+
+.level-feedback {
+  margin-top: 0.55rem;
+}
+
+.level-feedback-prompt {
+  margin: 0 0 0.35rem;
+  font-size: 0.9rem;
+}
+
+.level-feedback-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
@@ -1249,6 +1301,18 @@ h2,
   font-size: 0.72rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
+  color: var(--turf);
+  border: 1px solid color-mix(in oklab, var(--turf) 45%, transparent);
+}
+
+.host-level-badge {
+  display: inline-flex;
+  align-items: center;
+  margin: 0.35rem 0.5rem 0 0;
+  padding: 0.2rem 0.55rem;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
   color: var(--turf);
   border: 1px solid color-mix(in oklab, var(--turf) 45%, transparent);
 }
