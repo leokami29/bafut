@@ -24,7 +24,6 @@ export function NavLinks({
   pendingCount?: number;
 }) {
   const pathname = usePathname();
-  const apoyarActive = pathname.startsWith("/apoyar");
   const pedidosActive = pathname.startsWith("/perfil/partidos");
   const perfilActive = pathname === "/perfil";
 
@@ -40,13 +39,6 @@ export function NavLinks({
           {label}
         </Link>
       ))}
-      <Link
-        href="/apoyar"
-        aria-current={apoyarActive ? "page" : undefined}
-        className={`nav-link-donate site-nav-donate${apoyarActive ? " is-active" : ""}`}
-      >
-        Apoyar
-      </Link>
       {userId ? (
         <>
           <Link

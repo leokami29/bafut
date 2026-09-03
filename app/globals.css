@@ -233,7 +233,8 @@ textarea {
 }
 
 .city-switch {
-  flex-shrink: 0;
+  flex-shrink: 1;
+  min-width: 0;
 }
 
 .city-switch select {
@@ -2610,10 +2611,6 @@ details.venue-group[open] > summary.venue-group-title::before {
 
   .site-nav-links {
     display: flex;
-  }
-
-  .site-header-donate {
-    display: none;
   }
 
   .site-nav {

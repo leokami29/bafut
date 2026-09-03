@@ -26,6 +26,7 @@ export function SiteHeader({
         <Link href="/" className="brand-mark" aria-label="BaFut inicio">
           BaFut
         </Link>
+        {cities.length > 0 ? <CitySwitcher cities={cities} current={city?.slug} /> : null}
       </div>
 
       <nav className="site-nav" aria-label="Principal">
@@ -33,15 +34,13 @@ export function SiteHeader({
           <NavLinks userId={userId} pendingCount={pendingCount} />
         </div>
 
-        <HeaderDonateLink />
-
         {userId ? (
           <form action={signOutAction} className="site-nav-signout">
             <button type="submit">Salir</button>
           </form>
         ) : null}
 
-        {cities.length > 0 ? <CitySwitcher cities={cities} current={city?.slug} /> : null}
+        <HeaderDonateLink />
       </nav>
     </header>
   );
