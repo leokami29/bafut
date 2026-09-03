@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { trackEvent } from "@/lib/analytics";
 import { matchShareText, whatsappShareHref } from "@/lib/whatsapp";
 
 export function ShareWhatsApp(props: {
@@ -30,10 +31,12 @@ export function ShareWhatsApp(props: {
   }, [props.sticky]);
 
   async function shareWhatsApp() {
+    trackEvent("match_share_clicked", { method: "whatsapp" });
     window.open(href, "_blank", "noopener,noreferrer");
   }
 
   async function copyLink() {
+    trackEvent("match_share_clicked", { method: "copy_link" });
     const url = pageUrl || `/p/${props.shareCode}`;
     const full = url.startsWith("http") ? url : `${window.location.origin}${url}`;
     try {

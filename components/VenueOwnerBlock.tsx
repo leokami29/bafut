@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { siteUrl } from "@/lib/env";
+import { VenueOwnerCta } from "@/components/VenueOwnerCta";
 import { whatsappChatHref } from "@/lib/whatsapp-contact";
 
 function ownerWhatsappHref(venueName: string, venueSlug: string) {
@@ -29,10 +30,14 @@ export function VenueOwnerBlock({
   venueName,
   venueSlug,
   hasActivity,
+  matchCount = 0,
+  openSlots = 0,
 }: {
   venueName: string;
   venueSlug: string;
   hasActivity: boolean;
+  matchCount?: number;
+  openSlots?: number;
 }) {
   const wa = ownerWhatsappHref(venueName, venueSlug);
   const mail = ownerEmailHref(venueName, venueSlug);
@@ -40,6 +45,12 @@ export function VenueOwnerBlock({
   return (
     <aside className="venue-owner-block" aria-labelledby="venue-owner-heading">
       <h2 id="venue-owner-heading">¿Sos el dueño?</h2>
+      {matchCount > 0 && (
+        <p className="venue-section-meta">
+          Ahora hay {matchCount} {matchCount === 1 ? "hueco abierto" : "huecos abiertos"}
+          {openSlots > 0 && ` · ${openSlots} ${openSlots === 1 ? "cupo" : "cupos"}`}
+        </p>
+      )}
       <p>
         {hasActivity
           ? "Acá se ven las pateadas que se arman en tu cancha. BaFut no cobra el alquiler ni reserva por vos: concentra la demanda."
@@ -48,14 +59,14 @@ export function VenueOwnerBlock({
       {wa || mail ? (
         <div className="venue-owner-actions">
           {wa ? (
-            <a className="btn-flood" href={wa} target="_blank" rel="noopener noreferrer">
+            <VenueOwnerCta className="btn-flood" href={wa} target="_blank" rel="noopener noreferrer" method="whatsapp">
               Escribir por WhatsApp
-            </a>
+            </VenueOwnerCta>
           ) : null}
           {mail ? (
-            <a className="btn-ghost" href={mail}>
+            <VenueOwnerCta className="btn-ghost" href={mail} method="email">
               Escribir por correo
-            </a>
+            </VenueOwnerCta>
           ) : null}
         </div>
       ) : null}

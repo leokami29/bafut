@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Barlow_Condensed, IBM_Plex_Mono, Outfit } from "next/font/google";
+import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import { MobileNav } from "@/components/MobileNav";
 import { PwaRegister } from "@/components/PwaRegister";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -59,6 +60,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         <a href="#main" className="skip-link">
           Saltar al contenido
         </a>
+        <GoogleAnalytics />
         <PwaRegister />
         <SiteHeader city={city} cities={cities} userId={userId} pendingCount={pendingCount} />
         {children}

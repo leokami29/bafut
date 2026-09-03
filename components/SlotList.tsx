@@ -7,6 +7,7 @@ import {
   respondClaimAction,
   withdrawClaimAction,
 } from "@/app/actions";
+import { trackEvent } from "@/lib/analytics";
 import { levelLabel, positionLabel } from "@/lib/labels";
 import type { Level, Position } from "@/lib/constants";
 import { slotIsOpen, type SlotWithClaims } from "@/lib/types";
@@ -94,11 +95,17 @@ function SlotRow({
   matchCancelled: boolean;
 }) {
   const [claimState, claimAction, claimPending] = useActionState(
-    async (_prev: ClaimState, formData: FormData) => claimSlotAction(formData),
+    async (_prev: ClaimState, formData: FormData) => {
+      trackEvent("claim_slot_clicked");
+      return claimSlotAction(formData);
+    },
     null,
   );
   const [respondState, respondAction, respondPending] = useActionState(
-    async (_prev: ClaimState, formData: FormData) => respondClaimAction(formData),
+    async (_prev: ClaimState, formData: FormData) => {
+      trackEvent("claim_respond_clicked", { response: String(formData.get("status")) });
+      return respondClaimAction(formData);
+    },
     null,
   );
   const [withdrawState, withdrawAction, withdrawPending] = useActionState(
@@ -144,8 +151,9 @@ function SlotRow({
           <input type="hidden" name="slot_id" value={slot.id} />
           <input type="hidden" name="share_code" value={shareCode} />
           <button className="btn-bib" type="submit" disabled={claimPending}>
-            {claimPending ? "Pidiendo…" : "Pedir el cupo"}
+            {claimPending ? "Pidiendo…" : "Pedir cupo"}
           </button>
+          <small className="slot-reassurance">Sin pago — el host confirma</small>
         </form>
       ) : null}
 

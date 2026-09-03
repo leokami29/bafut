@@ -5,12 +5,14 @@ import { useEffect, useMemo, useState } from "react";
 import type { Sport } from "@/lib/constants";
 import type { Venue } from "@/lib/types";
 import { sportLabel, venueKindLabel } from "@/lib/labels";
-import { venueDemandLabel, type VenueDemand } from "@/lib/venue-demand";
+import { venueDemandLabel, venueDemandScore, type VenueDemand } from "@/lib/venue-demand";
+import { trackEvent } from "@/lib/analytics";
 import { VenueMapLazy } from "@/components/VenueMapLazy";
 
 type KindFilter = "all" | "alquiler" | "publica" | "club";
 type SportFilter = "all" | Sport;
 type MobileView = "both" | "list" | "map";
+type SortMode = "relevancia" | "az";
 
 function formatSports(sports: string[] | undefined) {
   if (!sports?.length) return "";
@@ -30,19 +32,32 @@ function VenueListLink({
     .filter(Boolean)
     .join(" · ");
   const demandText = demand ? venueDemandLabel(demand) : null;
+  const showPublishCta = demand && demand.matchCount > 0;
 
   return (
-    <Link
-      href={`/canchas/${venue.slug}`}
-      onMouseEnter={onActivate}
-      onFocus={onActivate}
-    >
-      <span className="venue-list-main">
-        <strong>{venue.name}</strong>
-        {demandText ? <span className="venue-list-demand">{demandText}</span> : null}
-      </span>
-      {meta ? <span className="venue-list-meta">{meta}</span> : null}
-    </Link>
+    <div className="venue-list-row">
+      <Link
+        href={`/canchas/${venue.slug}`}
+        className="venue-list-link"
+        onMouseEnter={onActivate}
+        onFocus={onActivate}
+      >
+        <span className="venue-list-main">
+          <strong>{venue.name}</strong>
+          {demandText ? <span className="venue-list-demand">{demandText}</span> : null}
+        </span>
+        {meta ? <span className="venue-list-meta">{meta}</span> : null}
+      </Link>
+      {showPublishCta ? (
+        <Link
+          href={`/partidos/nuevo?venue=${venue.slug}`}
+          className="btn-ghost venue-publish-cta"
+          onClick={() => trackEvent("canchas_venue_publish_cta_clicked", { venue_slug: venue.slug })}
+        >
+          Publicar aquí
+        </Link>
+      ) : null}
+    </div>
   );
 }
 
@@ -77,6 +92,17 @@ export function VenueDirectory({
   const [mobileView, setMobileView] = useState<MobileView>("both");
   const [focusId, setFocusId] = useState<string | undefined>();
   const [filtersOpen, setFiltersOpen] = useState(false);
+
+  const hasDemand = useMemo(
+    () => Object.values(demandByVenueId).some((d) => d.matchCount > 0),
+    [demandByVenueId],
+  );
+  const [sort, setSort] = useState<SortMode>(hasDemand ? "relevancia" : "az");
+
+  const handleSortChange = (mode: SortMode) => {
+    setSort(mode);
+    trackEvent("canchas_sort_applied", { sort: mode });
+  };
 
   const availableSports = useMemo(() => {
     const set = new Set<Sport>();
@@ -120,8 +146,18 @@ export function VenueDirectory({
       list.push(venue);
       map.set(key, list);
     }
-    return [...map.entries()].sort(([a], [b]) => a.localeCompare(b, "es"));
-  }, [filtered]);
+    const entries = [...map.entries()].sort(([a], [b]) => a.localeCompare(b, "es"));
+    if (sort === "relevancia") {
+      for (const [, list] of entries) {
+        list.sort((a, b) => venueDemandScore(demandByVenueId[b.id]) - venueDemandScore(demandByVenueId[a.id]));
+      }
+    } else {
+      for (const [, list] of entries) {
+        list.sort((a, b) => a.name.localeCompare(b.name, "es"));
+      }
+    }
+    return entries;
+  }, [filtered, sort, demandByVenueId]);
 
   const showMap = isDesktop || mobileView !== "list";
   const showList = isDesktop || mobileView !== "map";
@@ -242,6 +278,23 @@ export function VenueDirectory({
             aria-controls="venue-list"
           />
         </label>
+
+        <div className="venue-filter-row venue-sort-row">
+          <span className="venue-filter-label" id="venue-sort-label">Orden</span>
+          <div className="filter-chips" role="group" aria-labelledby="venue-sort-label">
+            {([["relevancia", "Relevancia"], ["az", "A-Z"]] as const).map(([value, label]) => (
+              <button
+                key={value}
+                type="button"
+                className={sort === value ? "is-on" : undefined}
+                aria-pressed={sort === value}
+                onClick={() => handleSortChange(value)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
 
         {isDesktop ? filterControls : null}
 

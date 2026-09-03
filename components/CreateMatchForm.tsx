@@ -2,6 +2,7 @@
 
 import { useActionState, useId, useMemo, useState } from "react";
 import { createMatchAction } from "@/app/actions";
+import { trackEvent } from "@/lib/analytics";
 import { VenuePicker } from "@/components/VenuePicker";
 import { GENDERS, LEVELS, SPORTS, type Format, type Sport } from "@/lib/constants";
 import { defaultStartsAtLocal } from "@/lib/datetime";
@@ -37,6 +38,8 @@ export function CreateMatchForm({
   const [format, setFormat] = useState<Format>(defaultFormatForSport(initialSport));
   const [position, setPosition] = useState("any");
   const [step, setStep] = useState<1 | 2>(1);
+  const [openCount, setOpenCount] = useState(2);
+  const [costPerPerson, setCostPerPerson] = useState<string>("");
   const [venueMissing, setVenueMissing] = useState(false);
 
   const sportVenues = useMemo(() => venuesForSport(venues, sport), [venues, sport]);
@@ -47,7 +50,10 @@ export function CreateMatchForm({
   const activePosition = positionAllowedForSport(sport, position as never) ? position : "any";
 
   const [state, action, pending] = useActionState(
-    async (_prev: State, formData: FormData) => createMatchAction(formData),
+    async (_prev: State, formData: FormData) => {
+      trackEvent("match_publish_submit", { sport, format: activeFormat });
+      return createMatchAction(formData);
+    },
     null,
   );
 
@@ -235,7 +241,8 @@ export function CreateMatchForm({
                 name="open_count"
                 min={1}
                 max={12}
-                defaultValue={2}
+                value={openCount}
+                onChange={(e) => setOpenCount(Number(e.target.value))}
                 inputMode="numeric"
               />
             </label>
@@ -247,10 +254,32 @@ export function CreateMatchForm({
                 name="cost_per_person"
                 min={0}
                 step={500}
+                value={costPerPerson}
+                onChange={(e) => setCostPerPerson(e.target.value)}
                 placeholder="15000"
                 inputMode="numeric"
               />
             </label>
+          </div>
+
+          <div className="filter-chips">
+            {[2, 4, 6].map((n) => (
+              <button
+                key={n}
+                type="button"
+                className={openCount === n ? "is-on" : undefined}
+                onClick={() => setOpenCount(n)}
+              >
+                {n} cupos
+              </button>
+            ))}
+            <button
+              type="button"
+              className={costPerPerson === "0" ? "is-on" : undefined}
+              onClick={() => setCostPerPerson("0")}
+            >
+              Gratis
+            </button>
           </div>
         </fieldset>
 

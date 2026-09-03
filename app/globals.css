@@ -1554,7 +1554,30 @@ details.venue-group[open] > summary.venue-group-title::before {
   color: color-mix(in oklab, var(--ink) 50%, transparent);
 }
 
-.venue-list-compact a {
+.venue-list-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.venue-list-row .venue-list-link {
+  flex: 1;
+  min-width: 0;
+}
+
+.venue-publish-cta {
+  flex-shrink: 0;
+  font-size: 0.72rem;
+  padding: 0.15rem 0.5rem;
+  white-space: nowrap;
+}
+
+.venue-sort-row {
+  margin-bottom: 0.25rem;
+}
+
+.venue-list-compact a,
+.venue-list-compact .venue-list-link {
   grid-template-columns: 1fr auto;
   align-items: center;
   padding: 0.5rem 0.1rem;
@@ -3087,4 +3110,13 @@ details.venue-group[open] > summary.venue-group-title::before {
   .pitch-field-wrap {
     opacity: 1;
   }
+}
+
+/* Slot reassurance helper text */
+.slot-reassurance {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-align: center;
 }

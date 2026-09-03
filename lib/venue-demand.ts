@@ -47,6 +47,11 @@ export function venueDemandLabel(demand: VenueDemand): string | null {
   return cupos ? `${proximos} · ${cupos}` : proximos;
 }
 
+export function venueDemandScore(demand: VenueDemand | undefined): number {
+  if (!demand) return 0;
+  return demand.todayCount * 2 + demand.matchCount;
+}
+
 export function venuesWithDemandCount(demandByVenueId: Record<string, VenueDemand>): number {
   return Object.values(demandByVenueId).filter((d) => d.matchCount > 0).length;
 }
