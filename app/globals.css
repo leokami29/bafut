@@ -1561,6 +1561,20 @@ details.venue-group[open] > summary.venue-group-title::before {
   font-size: 0.92rem;
 }
 
+.venue-list-main {
+  display: grid;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.venue-list-demand {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--turf);
+}
+
 .venue-list-meta {
   font-family: var(--font-mono), monospace;
   font-size: 0.72rem;

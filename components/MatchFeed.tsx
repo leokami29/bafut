@@ -14,6 +14,7 @@ import {
 } from "@/lib/datetime";
 import { sportLabel, timePeriodLabel } from "@/lib/labels";
 import { openSlotCount, type MatchDetail } from "@/lib/types";
+import { aggregateVenueDemand, venuesWithDemandCount } from "@/lib/venue-demand";
 
 const PERIOD_ORDER: MatchTimePeriod[] = ["manana", "tarde", "noche"];
 
@@ -97,6 +98,10 @@ export function MatchFeed({
   const [sportFilter, setSportFilter] = useState<Sport | "all">("all");
 
   const open = useMemo(() => matches.filter(hasOpenSlot), [matches]);
+  const canchasConHuecos = useMemo(
+    () => venuesWithDemandCount(aggregateVenueDemand(matches, timezone)),
+    [matches, timezone],
+  );
 
   const timeFiltered = useMemo(() => {
     if (timeFilter === "3h") {
@@ -231,7 +236,9 @@ export function MatchFeed({
               Publicar hueco
             </Link>
             <Link className="text-link" href="/canchas">
-              Ver canchas de {cityName}
+              {canchasConHuecos > 0
+                ? `${canchasConHuecos} canchas con huecos`
+                : `Ver canchas de ${cityName}`}
             </Link>
           </div>
         </div>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { VenueDirectory } from "@/components/VenueDirectory";
-import { getActiveCity, getVenuesByCity } from "@/lib/data";
+import { getActiveCity, getUpcomingMatches, getVenuesByCity } from "@/lib/data";
+import { aggregateVenueDemand } from "@/lib/venue-demand";
 
 export const metadata: Metadata = {
   title: "Canchas",
@@ -15,18 +16,29 @@ export default async function CanchasPage() {
       </main>
     );
   }
-  const venues = await getVenuesByCity(city.id);
+  const [venues, matches] = await Promise.all([
+    getVenuesByCity(city.id),
+    getUpcomingMatches(city.id),
+  ]);
+  const demandByVenueId = aggregateVenueDemand(matches, city.timezone);
+  const withDemand = Object.values(demandByVenueId).filter((d) => d.matchCount > 0).length;
 
   return (
     <main className="page page-canchas" id="main">
       <header className="page-head page-head-compact">
-        <p className="eyebrow">{city.name}</p>
+        <p className="eyebrow">Dónde se está armando</p>
         <h1>Canchas</h1>
         <p className="lede">
-          {venues.length} canchas en el mapa. BaFut no reserva: marcas el punto y armas el partido.
+          {withDemand > 0
+            ? `${venues.length} canchas en ${city.name} · ${withDemand} con huecos abiertos en la lista.`
+            : `${venues.length} canchas en ${city.name}. BaFut no reserva: marcas el punto y armas la pateada.`}
         </p>
       </header>
-      <VenueDirectory venues={venues} center={{ lat: city.lat, lng: city.lng }} />
+      <VenueDirectory
+        venues={venues}
+        center={{ lat: city.lat, lng: city.lng }}
+        demandByVenueId={demandByVenueId}
+      />
     </main>
   );
 }

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { MatchRow } from "@/components/MatchRow";
 import { getActiveCity, getUpcomingMatches } from "@/lib/data";
 import { isSameCityDay } from "@/lib/datetime";
+import { aggregateVenueDemand, venuesWithDemandCount } from "@/lib/venue-demand";
 
 export async function HomeFeed() {
   const city = await getActiveCity();
@@ -9,6 +10,7 @@ export async function HomeFeed() {
   const timezone = city?.timezone ?? "America/Bogota";
   const today = matches.filter((match) => isSameCityDay(match.starts_at, timezone)).slice(0, 3);
   const cityName = city?.name ?? "la ciudad";
+  const canchasConHuecos = venuesWithDemandCount(aggregateVenueDemand(matches, timezone));
 
   return (
     <section className="sheet home-sheet" aria-labelledby="hoy-title">
@@ -50,7 +52,9 @@ export async function HomeFeed() {
         )}
 
         <Link className="text-link text-link-muted" href="/canchas">
-          Ver canchas de {cityName}
+          {canchasConHuecos > 0
+            ? `${canchasConHuecos} canchas con huecos`
+            : `Ver canchas de ${cityName}`}
         </Link>
       </div>
     </section>
