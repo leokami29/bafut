@@ -103,106 +103,110 @@ export default async function PartidoPage({ params }: Props) {
     moreHere.length > 0 ? "Más huecos en esta cancha" : `Más ${sportLabel[match.sport as keyof typeof sportLabel] ?? match.sport}`;
 
   return (
-    <main className="page page-narrow page-match-detail" id="main">
+    <main className="page page-match-detail" id="main">
       <JsonLd data={matchJsonLd(match)} />
-      <header className="match-detail-head">
-        <div className="match-status-row">
-          <p className="eyebrow">{match.cities.name}</p>
-          <span className={`status-chip ${cancelled ? "is-full" : open > 0 ? "is-open" : "is-full"}`}>
-            {cancelled ? matchStatusLabel.cancelled : open > 0 ? "Abierto" : "Completo"}
-          </span>
-        </div>
-        <h1>{cancelled ? "Partido cancelado" : openSlotsPhrase(open, position)}</h1>
-        <p className="lede match-detail-when">{when}</p>
-      </header>
+      <div className="match-detail-layout">
+        <div className="match-detail-primary">
+          <header className="match-detail-head">
+            <div className="match-status-row">
+              <p className="eyebrow">{match.cities.name}</p>
+              <span className={`status-chip ${cancelled ? "is-full" : open > 0 ? "is-open" : "is-full"}`}>
+                {cancelled ? matchStatusLabel.cancelled : open > 0 ? "Abierto" : "Completo"}
+              </span>
+            </div>
+            <h1>{cancelled ? "Partido cancelado" : openSlotsPhrase(open, position)}</h1>
+            <p className="lede match-detail-when">{when}</p>
+          </header>
 
-      <dl className="match-stat-strip" aria-label="Datos del partido">
-        <div>
-          <dt>Deporte</dt>
-          <dd>
-            {sportLabel[match.sport as keyof typeof sportLabel] ?? match.sport}{" "}
-            {formatLabel[match.format as keyof typeof formatLabel] ?? match.format}
-          </dd>
-        </div>
-        <div>
-          <dt>Quién juega</dt>
-          <dd>{genderLabel[match.gender_policy as keyof typeof genderLabel] ?? match.gender_policy}</dd>
-        </div>
-        <div>
-          <dt>Por persona</dt>
-          <dd>{price}</dd>
-        </div>
-        <div>
-          <dt>Duración</dt>
-          <dd>{match.duration_min} min</dd>
-        </div>
-      </dl>
+          <dl className="match-stat-strip" aria-label="Datos del partido">
+            <div>
+              <dt>Deporte</dt>
+              <dd>
+                {sportLabel[match.sport as keyof typeof sportLabel] ?? match.sport}{" "}
+                {formatLabel[match.format as keyof typeof formatLabel] ?? match.format}
+              </dd>
+            </div>
+            <div>
+              <dt>Quién juega</dt>
+              <dd>{genderLabel[match.gender_policy as keyof typeof genderLabel] ?? match.gender_policy}</dd>
+            </div>
+            <div>
+              <dt>Por persona</dt>
+              <dd>{price}</dd>
+            </div>
+            <div>
+              <dt>Duración</dt>
+              <dd>{match.duration_min} min</dd>
+            </div>
+          </dl>
 
-      <p className="match-host-line">
-        Organiza <strong>{hostName}</strong>
-        {hostMatchCount >= 3 ? (
-          <span className="host-armo-badge" role="status">
-            Armó {hostMatchCount} pateadas
-          </span>
-        ) : null}
-        {levelOkBadge ? (
-          <span className="host-level-badge" role="status">
-            {levelOkBadge}
-          </span>
-        ) : null}
-      </p>
-      {match.notes ? <p className="notes">{match.notes}</p> : null}
-
-      {isHost && !cancelled && open > 0 ? <HostShareBanner {...shareProps} /> : null}
-      {!cancelled ? <ShareWhatsApp {...shareProps} sticky={isHost && open > 0} /> : null}
-
-      {canCancel ? (
-        <form action={cancelMatchAction} className="cancel-match-form">
-          <input type="hidden" name="match_id" value={match.id} />
-          <input type="hidden" name="share_code" value={match.share_code} />
-          <button className="btn-ghost" type="submit">
-            Cancelar partido
-          </button>
-        </form>
-      ) : null}
-
-      <h2 className="subhead">Cupos</h2>
-      <SlotList
-        slots={match.match_slots}
-        shareCode={match.share_code}
-        isHost={isHost}
-        userId={userId}
-        matchCancelled={cancelled}
-        profileLevel={profile?.level ?? null}
-      />
-
-      <section className="match-venue-block" aria-labelledby="match-venue-heading">
-        <div className="match-venue-copy">
-          <h2 className="subhead" id="match-venue-heading">
-            Dónde se juega
-          </h2>
-          <p className="match-venue-name">
-            <Link href={`/canchas/${match.venues.slug}`}>{match.venues.name}</Link>
+          <p className="match-host-line">
+            Organiza <strong>{hostName}</strong>
+            {hostMatchCount >= 3 ? (
+              <span className="host-armo-badge" role="status">
+                Armó {hostMatchCount} pateadas
+              </span>
+            ) : null}
+            {levelOkBadge ? (
+              <span className="host-level-badge" role="status">
+                {levelOkBadge}
+              </span>
+            ) : null}
           </p>
-          <p className="match-venue-meta">
-            {[match.venues.neighborhood, match.venues.address].filter(Boolean).join(" · ") || match.cities.name}
-          </p>
-          <p className="venue-map-foot">
-            <a href={directionsHref} target="_blank" rel="noopener noreferrer">
-              Cómo llegar
-            </a>
-            {" · "}
-            <Link href={`/canchas/${match.venues.slug}`}>Ficha de la cancha</Link>
-          </p>
-        </div>
-        <div className="venue-map-wrap venue-map-detail match-venue-map">
-          <VenueMapLazy
-            venues={[match.venues]}
-            center={{ lat: match.venues.lat, lng: match.venues.lng }}
-            focusId={match.venues.id}
+          {match.notes ? <p className="notes">{match.notes}</p> : null}
+
+          {isHost && !cancelled && open > 0 ? <HostShareBanner {...shareProps} /> : null}
+          {!cancelled ? <ShareWhatsApp {...shareProps} sticky={isHost && open > 0} /> : null}
+
+          {canCancel ? (
+            <form action={cancelMatchAction} className="cancel-match-form">
+              <input type="hidden" name="match_id" value={match.id} />
+              <input type="hidden" name="share_code" value={match.share_code} />
+              <button className="btn-ghost" type="submit">
+                Cancelar partido
+              </button>
+            </form>
+          ) : null}
+
+          <h2 className="subhead">Cupos</h2>
+          <SlotList
+            slots={match.match_slots}
+            shareCode={match.share_code}
+            isHost={isHost}
+            userId={userId}
+            matchCancelled={cancelled}
+            profileLevel={profile?.level ?? null}
           />
         </div>
-      </section>
+
+        <section className="match-venue-block" aria-labelledby="match-venue-heading">
+          <div className="match-venue-copy">
+            <h2 className="subhead" id="match-venue-heading">
+              Dónde se juega
+            </h2>
+            <p className="match-venue-name">
+              <Link href={`/canchas/${match.venues.slug}`}>{match.venues.name}</Link>
+            </p>
+            <p className="match-venue-meta">
+              {[match.venues.neighborhood, match.venues.address].filter(Boolean).join(" · ") || match.cities.name}
+            </p>
+            <p className="venue-map-foot">
+              <a href={directionsHref} target="_blank" rel="noopener noreferrer">
+                Cómo llegar
+              </a>
+              {" · "}
+              <Link href={`/canchas/${match.venues.slug}`}>Ficha de la cancha</Link>
+            </p>
+          </div>
+          <div className="venue-map-wrap venue-map-detail match-venue-map">
+            <VenueMapLazy
+              venues={[match.venues]}
+              center={{ lat: match.venues.lat, lng: match.venues.lng }}
+              focusId={match.venues.id}
+            />
+          </div>
+        </section>
+      </div>
 
       {related.length > 0 ? (
         <section className="match-related" aria-labelledby="match-related-heading">

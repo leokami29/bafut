@@ -1357,7 +1357,19 @@ h2,
 }
 
 .page-match-detail {
+  width: 100%;
+  max-width: 72rem;
+  margin-inline: auto;
   padding-bottom: 3rem;
+}
+
+.match-detail-layout {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.match-detail-primary {
+  min-width: 0;
 }
 
 .match-detail-head h1 {
@@ -1408,9 +1420,9 @@ h2,
 }
 
 .match-venue-block {
-  margin-top: 2rem;
   display: grid;
   gap: 0.85rem;
+  align-content: start;
 }
 
 .match-venue-name {
@@ -1434,16 +1446,28 @@ h2,
 }
 
 @media (min-width: 720px) {
-  .page-match-detail.page-narrow {
-    max-width: 44rem;
+  .match-detail-layout {
+    grid-template-columns: minmax(0, 1.15fr) minmax(18rem, 0.9fr);
+    align-items: start;
+    gap: 1.75rem 2.25rem;
   }
 
   .match-stat-strip {
     grid-template-columns: repeat(4, 1fr);
   }
 
+  .match-venue-block {
+    position: sticky;
+    top: 5.5rem;
+  }
+
+  .match-venue-block .subhead {
+    margin-top: 0;
+  }
+
   .match-venue-map .venue-map {
-    min-height: 260px;
+    height: min(52vh, 420px);
+    min-height: 300px;
   }
 }
 

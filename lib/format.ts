@@ -1,4 +1,4 @@
-import { zonedDateParts } from "@/lib/datetime";
+import { APP_LOCALE, zonedDateParts } from "@/lib/datetime";
 
 const WEEKDAYS_ES = ["dom", "lun", "mar", "mié", "jue", "vie", "sáb"] as const;
 const MONTHS_ES = [
@@ -29,7 +29,7 @@ export function formatMoney(amount: number | null, currency = "COP") {
   if (amount == null) {
     return "A convenir";
   }
-  return new Intl.NumberFormat("es-CO", {
+  return new Intl.NumberFormat(APP_LOCALE, {
     style: "currency",
     currency,
     maximumFractionDigits: 0,
