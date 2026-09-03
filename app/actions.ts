@@ -16,6 +16,7 @@ import {
 } from "@/lib/constants";
 import { requireUserId } from "@/lib/auth";
 import { getCityBySlug } from "@/lib/data";
+import { DECLARED_LEVELS, isDeclaredLevel } from "@/lib/level-trust";
 import { isProfileComplete } from "@/lib/profile";
 import { safeNextPath } from "@/lib/safe-next";
 import {
@@ -154,6 +155,9 @@ export async function createMatchAction(formData: FormData) {
 export async function claimSlotAction(formData: FormData) {
   const slotId = String(formData.get("slot_id") ?? "");
   const shareCode = String(formData.get("share_code") ?? "");
+  const declaredRaw = String(formData.get("declared_level") ?? "");
+  const declaredLevel = isDeclaredLevel(declaredRaw) ? declaredRaw : "mid";
+  const levelAck = formData.get("level_ack") === "on" || formData.get("level_ack") === "true";
   const { supabase, userId } = await requireUserId(shareCode ? `/p/${shareCode}` : "/partidos");
 
   const profile = await (async () => {
@@ -177,13 +181,42 @@ export async function claimSlotAction(formData: FormData) {
     redirect(`/perfil?next=${encodeURIComponent(`/p/${shareCode}`)}`);
   }
 
-  const { error } = await supabase.rpc("claim_slot", { p_slot_id: slotId });
+  if (!DECLARED_LEVELS.includes(declaredLevel)) {
+    return { error: "Elige un nivel válido." };
+  }
+
+  const { error } = await supabase.rpc("claim_slot", {
+    p_slot_id: slotId,
+    p_declared_level: declaredLevel,
+    p_level_ack: levelAck,
+  });
   if (error) {
     return { error: error.message || "Ese cupo ya no está o ya lo pediste." };
   }
 
   revalidatePath(`/p/${shareCode}`);
   revalidatePath("/partidos");
+  revalidatePath("/perfil/partidos");
+  return { ok: true };
+}
+
+export async function submitLevelFeedbackAction(formData: FormData) {
+  const claimId = String(formData.get("claim_id") ?? "");
+  const levelOkRaw = String(formData.get("level_ok") ?? "");
+  const levelOk = levelOkRaw === "true" || levelOkRaw === "1";
+  if (levelOkRaw !== "true" && levelOkRaw !== "false" && levelOkRaw !== "1" && levelOkRaw !== "0") {
+    return { error: "Respuesta no válida." };
+  }
+
+  const { supabase } = await requireUserId("/perfil/partidos");
+  const { error } = await supabase.rpc("submit_level_feedback", {
+    p_claim_id: claimId,
+    p_level_ok: levelOk,
+  });
+  if (error) {
+    return { error: error.message || "No se pudo guardar el feedback." };
+  }
+
   revalidatePath("/perfil/partidos");
   return { ok: true };
 }

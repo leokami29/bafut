@@ -19,7 +19,9 @@ export type SlotWithClaims = MatchSlot & {
 export type MatchDetail = Match & {
   venues: Venue;
   cities: City;
-  profiles: Pick<Profile, "id" | "display_name">;
+  /** Feed omit level counters; match detail may include them for the host badge. */
+  profiles: Pick<Profile, "id" | "display_name"> &
+    Partial<Pick<Profile, "level_feedback_count" | "level_ok_count">>;
   match_slots: SlotWithClaims[];
 };
 

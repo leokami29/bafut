@@ -1,42 +1,127 @@
 # BaFut
 
-Partidos abiertos y “falta un jugador”.
+[![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
 
-BaFut no reserva canchas ni reemplaza WhatsApp. El organizador publica un hueco (cancha, hora, posición) y alguien pide el cupo. El host confirma. Barranquilla es la primera ciudad de datos; el motor es genérico.
+Partidos abiertos y “falta un jugador” en Barranquilla. El organizador publica un hueco (cancha, hora, posición); alguien pide el cupo; el host confirma. BaFut no reserva canchas ni reemplaza WhatsApp: concentra la demanda y el link se comparte por donde ya se organizan.
 
-## Loop
+**Demo:** [bafut.macuttech.com](https://bafut.macuttech.com)
 
-1. Publicar partido
-2. Marcar cupos faltantes
-3. Pedir el cupo
-4. El host confirma
-5. Compartir `/p/{codigo}` por WhatsApp
+## Qué hace
+
+- Feed de partidos abiertos del día / ciudad
+- Publicar un partido con cancha, deporte, formato y cupos faltantes
+- Pedir cupo y confirmación del host
+- Link compartible `/p/{codigo}` (pensado para WhatsApp)
+- Directorio de canchas (`/canchas`) con detalle y mapa
+- Multideporte: fútbol, fútbol sala, básquet, voleibol y pádel
+- Selector de ciudad (cookie `bafut_city`; Barranquilla es la primera)
+- Auth por magic link (Supabase) y perfil básico
+- Página de apoyo / donaciones opcionales (`/apoyar`)
+
+**Fuera de alcance (por ahora):** pagos, chat in-app, reserva real con la cancha, app nativa.
+
+## Stack
+
+| Pieza | Uso |
+| --- | --- |
+| [Next.js](https://nextjs.org/) 16 (App Router) + React 19 | App web |
+| [Supabase](https://supabase.com/) (Auth + Postgres) | Datos y sesión |
+| [MapLibre GL](https://maplibre.org/) | Mapas de canchas |
+| Tailwind CSS 4 + TypeScript | UI y tipado |
 
 ## Arranque local
 
-1. Copia `.env.example` a `.env.local` con la URL y la publishable key de tu proyecto Supabase.
-2. En el dashboard de Auth (solo desarrollo): Site URL `http://localhost:3005` y Redirect `http://localhost:3005/auth/callback`.
-3. Aplica `supabase/migrations/20260902120000_init_core_schema.sql` y `supabase/seed.sql`.
-4. `npm install` y `npm run dev`.
+Requisitos: Node.js 20+ y un proyecto Supabase.
 
-## Auth en producción (Supabase Dashboard)
+1. Clona el repo e instala dependencias:
 
-Los correos de magic link / confirmación los arma Supabase con el **Site URL** del dashboard. El cliente también envía `emailRedirectTo` (canónico vía `NEXT_PUBLIC_SITE_URL` / `siteUrl()`).
+   ```bash
+   npm install
+   ```
+
+2. Copia las variables de entorno:
+
+   ```bash
+   cp .env.example .env.local
+   ```
+
+   Variables relevantes (sin valores secretos):
+
+   | Variable | Obligatoria | Notas |
+   | --- | --- | --- |
+   | `NEXT_PUBLIC_SUPABASE_URL` | Sí | URL del proyecto Supabase |
+   | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Sí | Publishable key del cliente |
+   | `NEXT_PUBLIC_SITE_URL` | Sí | Local: `http://localhost:3005` |
+   | `NEXT_PUBLIC_DONATE_*` | No | Ko-fi / GitHub Sponsors / Nequi |
+   | `NEXT_PUBLIC_VENUE_OWNER_*` | No | WhatsApp / email para dueños de cancha |
+   | `NEXT_PUBLIC_GA4_MEASUREMENT_ID` | No | Google Analytics 4 |
+
+3. Aplica las migraciones en `supabase/migrations/` (orden de nombre de archivo) y, si hace falta datos base, `supabase/seed.sql`.
+
+4. En el dashboard de Supabase Auth (desarrollo):
+
+   - **Site URL:** `http://localhost:3005`
+   - **Redirect URLs:** `http://localhost:3005/auth/callback`
+
+5. Arranca el servidor de desarrollo (puerto **3005**):
+
+   ```bash
+   npm run dev
+   ```
+
+   Abre [http://localhost:3005](http://localhost:3005).
+
+### Auth en producción
+
+Los correos de magic link los arma Supabase con el **Site URL** del dashboard. El cliente también envía `emailRedirectTo` vía `NEXT_PUBLIC_SITE_URL`.
 
 En **Authentication → URL configuration**:
 
 1. **Site URL** = `https://bafut.macuttech.com`
-2. **Redirect URLs** (allowlist), al menos:
+2. **Redirect URLs**, al menos:
    - `https://bafut.macuttech.com/auth/callback`
-   - `https://bafut.macuttech.com/auth/callback/**` (si el dashboard lo admite)
    - En local: `http://localhost:3005/auth/callback`
 
-En Railway / hosting: `NEXT_PUBLIC_SITE_URL=https://bafut.macuttech.com` (build-time para el cliente).
+En el hosting (p. ej. Railway): `NEXT_PUBLIC_SITE_URL=https://bafut.macuttech.com` en build-time.
+
+## Scripts
+
+| Comando | Descripción |
+| --- | --- |
+| `npm run dev` | Dev server en el puerto 3005 |
+| `npm run build` | Build de producción |
+| `npm start` | Sirve el build (`next start`) |
+| `npm run lint` | ESLint |
+
+## Estructura
+
+```
+app/           # Rutas App Router (/, /canchas, /partidos, /p/[code], auth…)
+components/    # UI (feed, mapa, nav, forms…)
+lib/           # Datos, reglas de deporte, Supabase, SEO
+hooks/         # Hooks de cliente
+supabase/      # Migraciones SQL y seed
+public/        # Estáticos y service worker
+types/         # Tipos compartidos
+```
 
 ## Añadir otra ciudad
 
-Inserta una fila en `cities` y sus `venues`. No hace falta ramificar código. El selector de ciudad guarda una cookie `bafut_city`.
+Inserta una fila en `cities` y sus `venues`. No hace falta ramificar código. El selector guarda la ciudad en la cookie `bafut_city`.
 
-## Fuera de este corte
+## Contribuir
 
-Pagos, chat, reserva real con la cancha, app nativa.
+Issues y PRs son bienvenidos. Mantén el alcance acotado: el producto junta huecos y demanda; no es un booking engine.
+
+1. Fork y branch desde `main`
+2. `npm install` → `npm run lint` → `npm run build` si tocaste rutas o datos
+3. Abre un PR con el *por qué* del cambio
+
+## Licencia
+
+[MIT](./LICENSE) © 2026 BaFut contributors.
+
+## Crédito
+
+Hecho por [Macuttech](https://www.macuttech.com/).

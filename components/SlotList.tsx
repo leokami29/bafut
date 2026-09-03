@@ -10,6 +10,12 @@ import {
 import { trackEvent } from "@/lib/analytics";
 import { levelLabel, positionLabel } from "@/lib/labels";
 import type { Level, Position } from "@/lib/constants";
+import {
+  DECLARED_LEVELS,
+  defaultDeclaredLevel,
+  isMismatch,
+  type DeclaredLevel,
+} from "@/lib/level-trust";
 import { slotIsOpen, type SlotWithClaims } from "@/lib/types";
 import { whatsappChatHref } from "@/lib/whatsapp-contact";
 
@@ -21,12 +27,14 @@ export function SlotList({
   isHost,
   userId,
   matchCancelled = false,
+  profileLevel = null,
 }: {
   slots: SlotWithClaims[];
   shareCode: string;
   isHost: boolean;
   userId: string | null;
   matchCancelled?: boolean;
+  profileLevel?: string | null;
 }) {
   return (
     <ol className="slot-list">
@@ -39,6 +47,7 @@ export function SlotList({
           isHost={isHost}
           userId={userId}
           matchCancelled={matchCancelled}
+          profileLevel={profileLevel}
         />
       ))}
     </ol>
@@ -86,6 +95,7 @@ function SlotRow({
   isHost,
   userId,
   matchCancelled,
+  profileLevel,
 }: {
   slot: SlotWithClaims;
   index: number;
@@ -93,10 +103,17 @@ function SlotRow({
   isHost: boolean;
   userId: string | null;
   matchCancelled: boolean;
+  profileLevel: string | null;
 }) {
+  const [declared, setDeclared] = useState<DeclaredLevel>(() => defaultDeclaredLevel(profileLevel));
+  const mismatch = isMismatch(slot.level, declared);
+
   const [claimState, claimAction, claimPending] = useActionState(
     async (_prev: ClaimState, formData: FormData) => {
       trackEvent("claim_slot_clicked");
+      if (formData.get("level_ack") === "on") {
+        trackEvent("claim_level_mismatch_ack");
+      }
       return claimSlotAction(formData);
     },
     null,
@@ -147,9 +164,30 @@ function SlotRow({
       </div>
 
       {open && !isHost && !mine && userId ? (
-        <form action={claimAction}>
+        <form action={claimAction} className="claim-form">
           <input type="hidden" name="slot_id" value={slot.id} />
           <input type="hidden" name="share_code" value={shareCode} />
+          <label className="claim-level-field">
+            Tu nivel
+            <select
+              name="declared_level"
+              value={declared}
+              onChange={(event) => setDeclared(event.target.value as DeclaredLevel)}
+            >
+              {DECLARED_LEVELS.map((level) => (
+                <option key={level} value={level}>
+                  {levelLabel[level]}
+                </option>
+              ))}
+            </select>
+          </label>
+          {mismatch ? (
+            <label className="claim-ack">
+              <input type="checkbox" name="level_ack" required />
+              El hueco pide {levelLabel[slot.level as Level] ?? slot.level}. Confirmo que igual
+              quiero pedir.
+            </label>
+          ) : null}
           <button className="btn-bib" type="submit" disabled={claimPending}>
             {claimPending ? "Pidiendo…" : "Pedir cupo"}
           </button>
@@ -184,27 +222,49 @@ function SlotRow({
         <div className="claim-inbox-wrap">
           <p className="claim-inbox-label">Piden cupo:</p>
           <ul className="claim-inbox">
-            {pending.map((claim) => (
-              <li key={claim.id}>
-                <span className="claim-name">{claim.profiles?.display_name ?? "Jugador"}</span>
-                <div className="claim-actions">
-                  <form action={respondAction}>
-                    <input type="hidden" name="claim_id" value={claim.id} />
-                    <input type="hidden" name="share_code" value={shareCode} />
-                    <button className="btn-bib" name="status" value="accepted" type="submit" disabled={respondPending}>
-                      Confirmar
-                    </button>
-                  </form>
-                  <form action={respondAction}>
-                    <input type="hidden" name="claim_id" value={claim.id} />
-                    <input type="hidden" name="share_code" value={shareCode} />
-                    <button className="btn-ghost" name="status" value="rejected" type="submit" disabled={respondPending}>
-                      No
-                    </button>
-                  </form>
-                </div>
-              </li>
-            ))}
+            {pending.map((claim) => {
+              const declaredLabel =
+                levelLabel[claim.declared_level as Level] ?? claim.declared_level;
+              const slotLabel = levelLabel[slot.level as Level] ?? slot.level;
+              const claimMismatch = isMismatch(slot.level, claim.declared_level);
+              return (
+                <li key={claim.id}>
+                  <span className="claim-name">{claim.profiles?.display_name ?? "Jugador"}</span>
+                  <p className="claim-level-meta">
+                    declarado {declaredLabel} · hueco {slotLabel}
+                    {claimMismatch ? " · si no cierra, rechaza" : ""}
+                  </p>
+                  <div className="claim-actions">
+                    <form action={respondAction}>
+                      <input type="hidden" name="claim_id" value={claim.id} />
+                      <input type="hidden" name="share_code" value={shareCode} />
+                      <button
+                        className="btn-bib"
+                        name="status"
+                        value="accepted"
+                        type="submit"
+                        disabled={respondPending}
+                      >
+                        Confirmar
+                      </button>
+                    </form>
+                    <form action={respondAction}>
+                      <input type="hidden" name="claim_id" value={claim.id} />
+                      <input type="hidden" name="share_code" value={shareCode} />
+                      <button
+                        className="btn-ghost"
+                        name="status"
+                        value="rejected"
+                        type="submit"
+                        disabled={respondPending}
+                      >
+                        No
+                      </button>
+                    </form>
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         </div>
       ) : null}

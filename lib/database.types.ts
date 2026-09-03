@@ -179,6 +179,65 @@ export type Database = {
           },
         ];
       };
+      match_level_feedback: {
+        Row: {
+          about_user_id: string;
+          claim_id: string;
+          created_at: string;
+          from_user_id: string;
+          id: string;
+          level_ok: boolean;
+          match_id: string;
+        };
+        Insert: {
+          about_user_id: string;
+          claim_id: string;
+          created_at?: string;
+          from_user_id: string;
+          id?: string;
+          level_ok: boolean;
+          match_id: string;
+        };
+        Update: {
+          about_user_id?: string;
+          claim_id?: string;
+          created_at?: string;
+          from_user_id?: string;
+          id?: string;
+          level_ok?: boolean;
+          match_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "match_level_feedback_about_user_id_fkey";
+            columns: ["about_user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "match_level_feedback_claim_id_fkey";
+            columns: ["claim_id"];
+            isOneToOne: false;
+            referencedRelation: "slot_claims";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "match_level_feedback_from_user_id_fkey";
+            columns: ["from_user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "match_level_feedback_match_id_fkey";
+            columns: ["match_id"];
+            isOneToOne: false;
+            referencedRelation: "matches";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       profiles: {
         Row: {
           city_id: string | null;
@@ -186,6 +245,8 @@ export type Database = {
           display_name: string;
           id: string;
           level: string;
+          level_feedback_count: number;
+          level_ok_count: number;
           preferred_position: string;
           preferred_sport: string;
           updated_at: string;
@@ -196,6 +257,8 @@ export type Database = {
           display_name: string;
           id: string;
           level?: string;
+          level_feedback_count?: number;
+          level_ok_count?: number;
           preferred_position?: string;
           preferred_sport?: string;
           updated_at?: string;
@@ -206,6 +269,8 @@ export type Database = {
           display_name?: string;
           id?: string;
           level?: string;
+          level_feedback_count?: number;
+          level_ok_count?: number;
           preferred_position?: string;
           preferred_sport?: string;
           updated_at?: string;
@@ -223,7 +288,9 @@ export type Database = {
       slot_claims: {
         Row: {
           created_at: string;
+          declared_level: string;
           id: string;
+          level_ack_at: string | null;
           match_id: string;
           player_id: string;
           slot_id: string;
@@ -232,7 +299,9 @@ export type Database = {
         };
         Insert: {
           created_at?: string;
+          declared_level?: string;
           id?: string;
+          level_ack_at?: string | null;
           match_id: string;
           player_id: string;
           slot_id: string;
@@ -241,7 +310,9 @@ export type Database = {
         };
         Update: {
           created_at?: string;
+          declared_level?: string;
           id?: string;
+          level_ack_at?: string | null;
           match_id?: string;
           player_id?: string;
           slot_id?: string;
@@ -345,7 +416,14 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
-      claim_slot: { Args: { p_slot_id: string }; Returns: string };
+      claim_slot: {
+        Args: {
+          p_declared_level: string;
+          p_level_ack: boolean;
+          p_slot_id: string;
+        };
+        Returns: string;
+      };
       get_match_contact: {
         Args: { p_claim_id: string };
         Returns: { display_name: string; whatsapp: string | null }[];
@@ -355,6 +433,10 @@ export type Database = {
         Returns: string[];
       };
       respond_claim: { Args: { p_claim_id: string; p_status: string }; Returns: undefined };
+      submit_level_feedback: {
+        Args: { p_claim_id: string; p_level_ok: boolean };
+        Returns: string;
+      };
       withdraw_claim: { Args: { p_claim_id: string }; Returns: undefined };
     };
     Enums: {

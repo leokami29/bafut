@@ -21,6 +21,21 @@ const matchSelect = `
   )
 `;
 
+/** Detail-only: includes host level-trust counters. Do not use on radar feed. */
+const matchDetailSelect = `
+  *,
+  venues (*),
+  cities (*),
+  profiles!host_id (id, display_name, level_feedback_count, level_ok_count),
+  match_slots (
+    *,
+    slot_claims (
+      *,
+      profiles (id, display_name)
+    )
+  )
+`;
+
 export const getCities = cache(async () => {
   const supabase = await createClient();
   const { data, error } = await supabase.from("cities").select("*").order("name");
@@ -108,7 +123,7 @@ export const getMatchByCode = cache(async (shareCode: string) => {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("matches")
-    .select(matchSelect)
+    .select(matchDetailSelect)
     .eq("share_code", shareCode)
     .maybeSingle();
   if (error) {
@@ -161,17 +176,36 @@ export const getHostPendingClaimCount = cache(async (userId: string) => {
 
 export const getMyHostedMatches = cache(async (userId: string) => {
   const supabase = await createClient();
+  // Look back far enough to cover the post-match level-feedback window (end + 7d).
+  const lookbackMs = 8 * 24 * 60 * 60 * 1000;
   const { data, error } = await supabase
     .from("matches")
     .select(matchSelect)
     .eq("host_id", userId)
-    .gte("starts_at", new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString())
+    .gte("starts_at", new Date(Date.now() - lookbackMs).toISOString())
     .order("starts_at", { ascending: false })
     .limit(40);
   if (error) {
     throw error;
   }
   return (data ?? []) as MatchDetail[];
+});
+
+/** Claim ids for which the user already submitted level feedback. */
+export const getSubmittedLevelFeedbackClaimIds = cache(async (userId: string, claimIds: string[]) => {
+  if (claimIds.length === 0) {
+    return new Set<string>();
+  }
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("match_level_feedback")
+    .select("claim_id")
+    .eq("from_user_id", userId)
+    .in("claim_id", claimIds);
+  if (error) {
+    throw error;
+  }
+  return new Set((data ?? []).map((row) => row.claim_id));
 });
 
 export const getMyClaimedMatches = cache(async (userId: string) => {
