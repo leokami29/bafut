@@ -8,7 +8,7 @@ export function HomeHowItWorks() {
               1
             </span>
             <strong>Publicás el hueco</strong>
-            <span>Cancha, hora y posición que falta.</span>
+            <span>Cancha, hora y posición que falta — no el alquiler.</span>
           </li>
           <li className="how-step">
             <span className="how-step-num" aria-hidden="true">

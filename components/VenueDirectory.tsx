@@ -10,7 +10,13 @@ import { VenueMapLazy } from "@/components/VenueMapLazy";
 
 type KindFilter = "all" | "alquiler" | "publica" | "club";
 type SportFilter = "all" | Sport;
+type DemandFilter = "all" | "huecos";
 type MobileView = "both" | "list" | "map";
+
+function demandSortKey(demand: VenueDemand | undefined) {
+  if (!demand || demand.matchCount <= 0) return 0;
+  return demand.todayCount * 1000 + demand.openSlots * 10 + demand.matchCount;
+}
 
 function formatSports(sports: string[] | undefined) {
   if (!sports?.length) return "";
@@ -73,10 +79,15 @@ export function VenueDirectory({
   const [query, setQuery] = useState("");
   const [kind, setKind] = useState<KindFilter>("all");
   const [sport, setSport] = useState<SportFilter>("all");
+  const [demandFilter, setDemandFilter] = useState<DemandFilter>("all");
   const [neighborhood, setNeighborhood] = useState<string>("all");
   const [mobileView, setMobileView] = useState<MobileView>("both");
   const [focusId, setFocusId] = useState<string | undefined>();
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const venuesWithGaps = useMemo(
+    () => venues.filter((venue) => (demandByVenueId[venue.id]?.matchCount ?? 0) > 0).length,
+    [venues, demandByVenueId],
+  );
 
   const availableSports = useMemo(() => {
     const set = new Set<Sport>();
@@ -105,12 +116,13 @@ export function VenueDirectory({
     return venues.filter((venue) => {
       if (kind !== "all" && venue.venue_kind !== kind) return false;
       if (sport !== "all" && !venue.sports?.includes(sport)) return false;
+      if (demandFilter === "huecos" && !(demandByVenueId[venue.id]?.matchCount > 0)) return false;
       if (neighborhood !== "all" && venue.neighborhood !== neighborhood) return false;
       if (!q) return true;
       const hay = `${venue.name} ${venue.neighborhood ?? ""} ${venue.address ?? ""}`.toLowerCase();
       return hay.includes(q);
     });
-  }, [venues, query, kind, sport, neighborhood]);
+  }, [venues, query, kind, sport, demandFilter, neighborhood, demandByVenueId]);
 
   const grouped = useMemo(() => {
     const map = new Map<string, Venue[]>();
@@ -120,15 +132,32 @@ export function VenueDirectory({
       list.push(venue);
       map.set(key, list);
     }
-    return [...map.entries()].sort(([a], [b]) => a.localeCompare(b, "es"));
-  }, [filtered]);
+    return [...map.entries()]
+      .map(([barrio, list]) => {
+        const sorted = [...list].sort((a, b) => {
+          const demandDelta =
+            demandSortKey(demandByVenueId[b.id]) - demandSortKey(demandByVenueId[a.id]);
+          if (demandDelta !== 0) return demandDelta;
+          return a.name.localeCompare(b.name, "es");
+        });
+        return [barrio, sorted] as const;
+      })
+      .sort(([a], [b]) => a.localeCompare(b, "es"));
+  }, [filtered, demandByVenueId]);
 
   const showMap = isDesktop || mobileView !== "list";
   const showList = isDesktop || mobileView !== "map";
   const hasActiveFilter =
-    query.trim() !== "" || kind !== "all" || sport !== "all" || neighborhood !== "all";
+    query.trim() !== "" ||
+    kind !== "all" ||
+    sport !== "all" ||
+    demandFilter !== "all" ||
+    neighborhood !== "all";
   const activeFilterCount =
-    (kind !== "all" ? 1 : 0) + (sport !== "all" ? 1 : 0) + (neighborhood !== "all" ? 1 : 0);
+    (kind !== "all" ? 1 : 0) +
+    (sport !== "all" ? 1 : 0) +
+    (demandFilter !== "all" ? 1 : 0) +
+    (neighborhood !== "all" ? 1 : 0);
 
   const groupDefaultOpen = (barrio: string) =>
     isDesktop || neighborhood === barrio || (hasActiveFilter && grouped.length <= 4);
@@ -194,6 +223,36 @@ export function VenueDirectory({
                 {sportLabel[value]}
               </button>
             ))}
+          </div>
+        </div>
+      ) : null}
+
+      {venuesWithGaps > 0 ? (
+        <div className="venue-filter-row">
+          <span className="venue-filter-label" id="venue-filter-demand-label">
+            Actividad
+          </span>
+          <div
+            className="filter-chips"
+            role="group"
+            aria-labelledby="venue-filter-demand-label"
+          >
+            <button
+              type="button"
+              className={demandFilter === "all" ? "is-on" : undefined}
+              aria-pressed={demandFilter === "all"}
+              onClick={() => setDemandFilter("all")}
+            >
+              Todas
+            </button>
+            <button
+              type="button"
+              className={demandFilter === "huecos" ? "is-on" : undefined}
+              aria-pressed={demandFilter === "huecos"}
+              onClick={() => setDemandFilter("huecos")}
+            >
+              Con huecos ({venuesWithGaps})
+            </button>
           </div>
         </div>
       ) : null}

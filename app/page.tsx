@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { HeroBanner } from "@/components/HeroBanner";
+import { HomeDifferential } from "@/components/HomeDifferential";
 import { HomeFeed } from "@/components/HomeFeed";
 import { HomeFeedSkeleton } from "@/components/HomeFeedSkeleton";
 import { HomeHowItWorks } from "@/components/HomeHowItWorks";
@@ -16,6 +17,8 @@ export default async function HomePage() {
       </section>
 
       <HomeHowItWorks />
+
+      <HomeDifferential cityName={cityName} />
 
       <Suspense fallback={<HomeFeedSkeleton cityName={cityName} />}>
         <HomeFeed />

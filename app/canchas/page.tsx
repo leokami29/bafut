@@ -30,7 +30,7 @@ export default async function CanchasPage() {
         <h1>Canchas</h1>
         <p className="lede">
           {withDemand > 0
-            ? `${venues.length} canchas en ${city.name} · ${withDemand} con huecos abiertos en la lista.`
+            ? `${venues.length} canchas en ${city.name} · ${withDemand} con huecos abiertos. BaFut no reserva: muestra dónde se arma la pateada.`
             : `${venues.length} canchas en ${city.name}. BaFut no reserva: marcas el punto y armas la pateada.`}
         </p>
       </header>

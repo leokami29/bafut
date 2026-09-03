@@ -4,6 +4,11 @@ Partidos abiertos y “falta un jugador”.
 
 BaFut no reserva canchas ni reemplaza WhatsApp. El organizador publica un hueco (cancha, hora, posición) y alguien pide el cupo. El host confirma. Barranquilla es la primera ciudad de datos; el motor es genérico.
 
+## Punto diferencial
+
+- **Jugadores / hosts:** lista pública del hueco (posición + hora + cancha), no otra app de chat.
+- **Dueños de cancha:** la demanda de pateadas aparece en la ficha (`/duenos`, `/canchas/[slug]`). Sin comisión de alquiler ni reserva intermediada.
+
 ## Loop
 
 1. Publicar partido
