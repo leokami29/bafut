@@ -1317,6 +1317,97 @@ h2,
   border: 1px solid color-mix(in oklab, var(--turf) 45%, transparent);
 }
 
+.page-match-detail {
+  padding-bottom: 3rem;
+}
+
+.match-detail-head h1 {
+  margin-bottom: 0.35rem;
+}
+
+.match-detail-when {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.match-stat-strip {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.85rem 1rem;
+  margin: 1.15rem 0 1rem;
+  padding: 0.9rem 0;
+  border-top: 1px solid color-mix(in oklab, var(--ink) 16%, transparent);
+  border-bottom: 1px solid color-mix(in oklab, var(--ink) 16%, transparent);
+}
+
+.match-stat-strip dt {
+  margin: 0;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--ink) 48%, transparent);
+}
+
+.match-stat-strip dd {
+  margin: 0.2rem 0 0;
+  font-size: 0.98rem;
+}
+
+.match-host-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.65rem;
+  margin: 0 0 1rem;
+  line-height: 1.4;
+}
+
+.match-host-line .host-armo-badge,
+.match-host-line .host-level-badge {
+  margin: 0;
+}
+
+.match-venue-block {
+  margin-top: 2rem;
+  display: grid;
+  gap: 0.85rem;
+}
+
+.match-venue-name {
+  margin: 0 0 0.25rem;
+  font-size: 1.15rem;
+}
+
+.match-venue-name a {
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in oklab, var(--turf) 40%, transparent);
+}
+
+.match-venue-meta {
+  margin: 0 0 0.45rem;
+  color: color-mix(in oklab, var(--ink) 68%, transparent);
+  line-height: 1.4;
+}
+
+.match-related {
+  margin-top: 0.5rem;
+}
+
+@media (min-width: 720px) {
+  .page-match-detail.page-narrow {
+    max-width: 44rem;
+  }
+
+  .match-stat-strip {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .match-venue-map .venue-map {
+    min-height: 260px;
+  }
+}
+
 .venue-owner-block {
   margin: 2rem 0 1.25rem;
   padding: 1.15rem 1.2rem;

@@ -3,14 +3,17 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cancelMatchAction } from "@/app/actions";
 import { JsonLd, matchJsonLd } from "@/components/JsonLd";
+import { MatchRow } from "@/components/MatchRow";
 import { HostShareBanner, ShareWhatsApp } from "@/components/ShareWhatsApp";
 import { SlotList } from "@/components/SlotList";
-import { getHostMatchCount, getMatchByCode, getProfile, getSessionUserId } from "@/lib/data";
+import { VenueMapLazy } from "@/components/VenueMapLazy";
+import { getHostMatchCount, getMatchByCode, getProfile, getSessionUserId, getUpcomingMatches } from "@/lib/data";
 import { formatLevelOkBadge } from "@/lib/level-trust";
 import { openSlotCount, slotIsOpen } from "@/lib/types";
 import { formatMoney, formatWhen, openSlotsPhrase } from "@/lib/format";
 import { formatLabel, genderLabel, matchStatusLabel, positionLabel, sportLabel } from "@/lib/labels";
 import type { Position } from "@/lib/constants";
+import { mapsDirectionsUrl } from "@/lib/venue-meta";
 import {
   absoluteUrl,
   defaultOg,
@@ -56,9 +59,10 @@ export default async function PartidoPage({ params }: Props) {
     notFound();
   }
 
-  const [hostMatchCount, profile] = await Promise.all([
+  const [hostMatchCount, profile, upcoming] = await Promise.all([
     getHostMatchCount(match.host_id),
     userId ? getProfile(userId) : Promise.resolve(null),
+    getUpcomingMatches(match.city_id),
   ]);
   const cancelled = match.status === "cancelled";
   const open = cancelled ? 0 : openSlotCount(match);
@@ -83,41 +87,70 @@ export default async function PartidoPage({ params }: Props) {
     price,
     shareCode: match.share_code,
   };
+  const directionsHref = mapsDirectionsUrl(
+    match.venues.lat,
+    match.venues.lng,
+    match.venues.address ? `${match.venues.name}, ${match.venues.address}` : match.venues.name,
+  );
+  const moreHere = upcoming
+    .filter((item) => item.id !== match.id && item.venue_id === match.venue_id)
+    .slice(0, 3);
+  const moreSoon = upcoming
+    .filter((item) => item.id !== match.id && item.sport === match.sport && item.venue_id !== match.venue_id)
+    .slice(0, 3);
+  const related = moreHere.length > 0 ? moreHere : moreSoon;
+  const relatedHeading =
+    moreHere.length > 0 ? "Más huecos en esta cancha" : `Más ${sportLabel[match.sport as keyof typeof sportLabel] ?? match.sport}`;
 
   return (
-    <main className="page page-narrow" id="main">
+    <main className="page page-narrow page-match-detail" id="main">
       <JsonLd data={matchJsonLd(match)} />
-      <div className="match-status-row">
-        <p className="eyebrow">{match.cities.name}</p>
-        <span className={`status-chip ${cancelled ? "is-full" : open > 0 ? "is-open" : "is-full"}`}>
-          {cancelled ? matchStatusLabel.cancelled : open > 0 ? "Abierto" : "Completo"}
-        </span>
-      </div>
-      <h1>{cancelled ? "Partido cancelado" : openSlotsPhrase(open, position)}</h1>
-      <p className="lede">
-        {when} · {match.venues.name}
-        {match.venues.neighborhood ? ` · ${match.venues.neighborhood}` : ""}
+      <header className="match-detail-head">
+        <div className="match-status-row">
+          <p className="eyebrow">{match.cities.name}</p>
+          <span className={`status-chip ${cancelled ? "is-full" : open > 0 ? "is-open" : "is-full"}`}>
+            {cancelled ? matchStatusLabel.cancelled : open > 0 ? "Abierto" : "Completo"}
+          </span>
+        </div>
+        <h1>{cancelled ? "Partido cancelado" : openSlotsPhrase(open, position)}</h1>
+        <p className="lede match-detail-when">{when}</p>
+      </header>
+
+      <dl className="match-stat-strip" aria-label="Datos del partido">
+        <div>
+          <dt>Deporte</dt>
+          <dd>
+            {sportLabel[match.sport as keyof typeof sportLabel] ?? match.sport}{" "}
+            {formatLabel[match.format as keyof typeof formatLabel] ?? match.format}
+          </dd>
+        </div>
+        <div>
+          <dt>Quién juega</dt>
+          <dd>{genderLabel[match.gender_policy as keyof typeof genderLabel] ?? match.gender_policy}</dd>
+        </div>
+        <div>
+          <dt>Por persona</dt>
+          <dd>{price}</dd>
+        </div>
+        <div>
+          <dt>Duración</dt>
+          <dd>{match.duration_min} min</dd>
+        </div>
+      </dl>
+
+      <p className="match-host-line">
+        Organiza <strong>{hostName}</strong>
+        {hostMatchCount >= 3 ? (
+          <span className="host-armo-badge" role="status">
+            Armó {hostMatchCount} pateadas
+          </span>
+        ) : null}
+        {levelOkBadge ? (
+          <span className="host-level-badge" role="status">
+            {levelOkBadge}
+          </span>
+        ) : null}
       </p>
-      <p className="match-facts">
-        {sportLabel[match.sport as keyof typeof sportLabel] ?? match.sport}{" "}
-        {formatLabel[match.format as keyof typeof formatLabel] ?? match.format}
-        {" · "}
-        {genderLabel[match.gender_policy as keyof typeof genderLabel] ?? match.gender_policy}
-        {" · "}
-        {price}
-        {" · "}
-        organiza {hostName}
-      </p>
-      {hostMatchCount >= 3 ? (
-        <p className="host-armo-badge" role="status">
-          Armó {hostMatchCount} pateadas
-        </p>
-      ) : null}
-      {levelOkBadge ? (
-        <p className="host-level-badge" role="status">
-          {levelOkBadge}
-        </p>
-      ) : null}
       {match.notes ? <p className="notes">{match.notes}</p> : null}
 
       {isHost && !cancelled && open > 0 ? <HostShareBanner {...shareProps} /> : null}
@@ -143,10 +176,53 @@ export default async function PartidoPage({ params }: Props) {
         profileLevel={profile?.level ?? null}
       />
 
+      <section className="match-venue-block" aria-labelledby="match-venue-heading">
+        <div className="match-venue-copy">
+          <h2 className="subhead" id="match-venue-heading">
+            Dónde se juega
+          </h2>
+          <p className="match-venue-name">
+            <Link href={`/canchas/${match.venues.slug}`}>{match.venues.name}</Link>
+          </p>
+          <p className="match-venue-meta">
+            {[match.venues.neighborhood, match.venues.address].filter(Boolean).join(" · ") || match.cities.name}
+          </p>
+          <p className="venue-map-foot">
+            <a href={directionsHref} target="_blank" rel="noopener noreferrer">
+              Cómo llegar
+            </a>
+            {" · "}
+            <Link href={`/canchas/${match.venues.slug}`}>Ficha de la cancha</Link>
+          </p>
+        </div>
+        <div className="venue-map-wrap venue-map-detail match-venue-map">
+          <VenueMapLazy
+            venues={[match.venues]}
+            center={{ lat: match.venues.lat, lng: match.venues.lng }}
+            focusId={match.venues.id}
+          />
+        </div>
+      </section>
+
+      {related.length > 0 ? (
+        <section className="match-related" aria-labelledby="match-related-heading">
+          <h2 className="subhead" id="match-related-heading">
+            {relatedHeading}
+          </h2>
+          <ul className="roster">
+            {related.map((item) => (
+              <li key={item.id}>
+                <MatchRow match={item} />
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
       <p className="foot-link">
-        <Link href={`/canchas/${match.venues.slug}`}>{match.venues.name}</Link>
+        <Link href="/partidos?filtro=hoy">Radar de hoy</Link>
         {" · "}
-        <Link href="/partidos">Más partidos</Link>
+        <Link href="/canchas">Canchas</Link>
       </p>
     </main>
   );
