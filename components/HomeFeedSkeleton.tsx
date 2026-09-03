@@ -6,16 +6,16 @@ type HomeFeedSkeletonProps = {
 
 export function HomeFeedSkeleton({ cityName = "la ciudad" }: HomeFeedSkeletonProps) {
   return (
-    <section className="sheet home-sheet" aria-labelledby="hoy-title" aria-busy="true">
-      <div className="home-inner">
+    <section className="sheet home-sheet" id="proximas" aria-labelledby="hoy-title" aria-busy="true">
+      <div className="home-inner home-inner-wide">
         <header className="sheet-head sheet-head-row">
           <div>
-            <p className="eyebrow">Feed</p>
-            <h2 id="hoy-title">Hoy en {cityName}</h2>
-            <p className="sheet-lede">Huecos abiertos para entrar hoy.</p>
+            <p className="eyebrow">Radar</p>
+            <h2 id="hoy-title">Próximas pateadas</h2>
+            <p className="sheet-lede">Cargando huecos en {cityName}…</p>
           </div>
         </header>
-        <RosterSkeleton rows={3} />
+        <RosterSkeleton rows={4} />
         <p className="sr-only">Cargando partidos…</p>
       </div>
     </section>

@@ -82,10 +82,11 @@ export function usePitchSetup(options: UsePitchSetupOptions = {}): PitchSetupSta
   }, [scheduleRotation]);
 
   useEffect(() => {
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const frame = requestAnimationFrame(() => {
       applyRandomSetup();
       readyRef.current = true;
-      if (rotate) scheduleRotation();
+      if (rotate && !prefersReducedMotion) scheduleRotation();
     });
     return () => {
       cancelAnimationFrame(frame);
@@ -97,16 +98,30 @@ export function usePitchSetup(options: UsePitchSetupOptions = {}): PitchSetupSta
   useEffect(() => {
     if (!rotate) return;
 
+    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+
     const onVisibilityChange = () => {
-      if (document.hidden) {
+      if (document.hidden || motionQuery.matches) {
         clearRotateTimeout();
         return;
       }
       if (readyRef.current) scheduleRotation();
     };
 
+    const onMotionPreferenceChange = () => {
+      if (motionQuery.matches) {
+        clearRotateTimeout();
+        return;
+      }
+      if (readyRef.current && !document.hidden) scheduleRotation();
+    };
+
     document.addEventListener("visibilitychange", onVisibilityChange);
-    return () => document.removeEventListener("visibilitychange", onVisibilityChange);
+    motionQuery.addEventListener("change", onMotionPreferenceChange);
+    return () => {
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+      motionQuery.removeEventListener("change", onMotionPreferenceChange);
+    };
   }, [clearRotateTimeout, rotate, scheduleRotation]);
 
   return {

@@ -20,6 +20,12 @@ function HeroSportChip({ sport }: { sport: Sport | null }) {
   useEffect(() => {
     if (sport === displayed) return undefined;
 
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setDisplayed(sport);
+      setVisible(true);
+      return undefined;
+    }
+
     let swapTimer: number | undefined;
     const fadeTimer = window.setTimeout(() => {
       setVisible(false);
@@ -62,14 +68,16 @@ export function HeroBanner({ cityName }: HeroBannerProps) {
         rotationKey={pitch.rotationKey}
       />
       <div className="hero-copy">
-        <span className="hero-city-badge">{cityName}</span>
-        <HeroSportChip sport={sport} />
+        <div className="hero-meta">
+          <span className="hero-city-badge">{cityName}</span>
+          <HeroSportChip sport={sport} />
+        </div>
         <p className="brand-hero" aria-hidden="true">
           BaFut
         </p>
-        <h1>Pateadas y huecos en {cityName}</h1>
+        <h1>El radar de huecos en {cityName}</h1>
         <p className="hero-lede">
-          Publica el hueco de tu cancha o pide el cupo. {cityName} primero.
+          Entrá a una pateada abierta o publicá el cupo que te falta. Hoy, cerca, sin grupo eterno de WhatsApp.
         </p>
         <div className="hero-ctas">
           <Link
@@ -81,10 +89,10 @@ export function HeroBanner({ cityName }: HeroBannerProps) {
           </Link>
           <Link
             className="btn-ghost btn-secondary"
-            href="/partidos"
-            aria-label="Ver partidos de hoy"
+            href="#proximas"
+            aria-label="Ver huecos cercanos"
           >
-            Partidos de hoy
+            Ver huecos
           </Link>
         </div>
       </div>

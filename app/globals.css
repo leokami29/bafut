@@ -51,8 +51,10 @@ button:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
+  /* Anillo flood + sombra turf: contraste en paper, flood y hero */
   outline: 2px solid var(--flood);
   outline-offset: 2px;
+  box-shadow: 0 0 0 4px var(--turf-deep);
 }
 
 .skip-link {
@@ -68,6 +70,8 @@ textarea:focus-visible {
 
 .skip-link:focus {
   top: 0.75rem;
+  outline: 2px solid var(--turf-deep);
+  outline-offset: 2px;
 }
 
 button,
@@ -309,7 +313,7 @@ textarea {
   display: flex;
   min-height: calc(100svh - 4.2rem);
   min-height: calc(100dvh - 4.2rem);
-  max-width: 38rem;
+  max-width: min(42rem, 100%);
   flex-direction: column;
   justify-content: flex-end;
   gap: 0.35rem;
@@ -319,11 +323,20 @@ textarea {
   margin-bottom: clamp(3.5rem, 10vh, 6rem);
 }
 
+.hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+  margin-bottom: 0.2rem;
+  animation: rise 0.75s ease both;
+}
+
 .hero-city-badge {
   display: inline-flex;
-  align-self: flex-start;
   align-items: center;
-  margin: 0 0 0.15rem;
+  min-height: 2rem;
+  margin: 0;
   padding: 0.28rem 0.65rem;
   font-family: var(--font-mono), ui-monospace, monospace;
   font-size: 0.72rem;
@@ -333,13 +346,13 @@ textarea {
   color: var(--chalk);
   background: color-mix(in oklab, var(--flood) 16%, transparent);
   border: 1px solid color-mix(in oklab, var(--flood) 42%, transparent);
-  animation: rise 0.9s ease both;
 }
 
 .hero-sport-chip {
   display: inline-flex;
-  align-self: flex-start;
-  margin: 0 0 0.35rem;
+  align-items: center;
+  min-height: 2rem;
+  margin: 0;
   padding: 0.2rem 0.55rem;
   font-family: var(--font-mono), ui-monospace, monospace;
   font-size: 0.68rem;
@@ -375,15 +388,15 @@ textarea {
 }
 
 .hero h1 {
-  margin: 0.5rem 0 0.5rem;
-  max-width: 16ch;
+  margin: 0.35rem 0 0.55rem;
+  max-width: 18ch;
   font-family: var(--font-display), sans-serif;
-  font-size: clamp(1.8rem, 4.4vw, 3rem);
+  font-size: clamp(1.65rem, 4.2vw, 2.75rem);
   font-weight: 700;
   line-height: 0.95;
   text-transform: uppercase;
   text-wrap: balance;
-  animation: rise 0.9s ease 0.12s both;
+  animation: rise 0.85s ease 0.1s both;
 }
 
 .hero h1.hero-headline {
@@ -403,12 +416,12 @@ textarea {
 }
 
 .hero-lede {
-  margin: 0 0 1.15rem;
-  max-width: 34ch;
-  font-size: 1rem;
+  margin: 0 0 1.25rem;
+  max-width: 36ch;
+  font-size: 1.05rem;
   line-height: 1.5;
-  color: var(--chalk);
-  animation: rise 0.9s ease 0.2s both;
+  color: color-mix(in oklab, var(--chalk) 92%, transparent);
+  animation: rise 0.85s ease 0.18s both;
 }
 
 .hero-ctas,
@@ -416,12 +429,38 @@ textarea {
   display: flex;
   flex-direction: column;
   gap: 0.65rem;
-  animation: rise 0.9s ease 0.28s both;
+  animation: rise 0.85s ease 0.26s both;
 }
 
 .hero-ctas .btn-flood,
 .hero-ctas .btn-ghost {
   width: 100%;
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.hero-ctas .btn-flood:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px color-mix(in oklab, var(--flood) 35%, transparent);
+}
+
+.hero-ctas .btn-flood:hover:focus-visible,
+.hero-ctas .btn-ghost:hover:focus-visible {
+  box-shadow:
+    0 0 0 4px var(--turf-deep),
+    0 6px 18px color-mix(in oklab, var(--flood) 35%, transparent);
+}
+
+.hero-ctas .btn-flood:active {
+  transform: translateY(0);
+}
+
+.hero-ctas .btn-ghost:hover {
+  background: color-mix(in oklab, var(--chalk) 12%, transparent);
 }
 
 .hero-ctas .btn-primary {
@@ -473,13 +512,18 @@ textarea {
   margin-inline: auto;
 }
 
+.home-inner-wide {
+  max-width: 72rem;
+}
+
 .sheet,
 .page {
   padding: 2.5rem 1.25rem calc(4rem + env(safe-area-inset-bottom));
 }
 
 .home-sheet {
-  padding-top: 2rem;
+  padding-top: 2.25rem;
+  scroll-margin-top: 5rem;
 }
 
 .sheet-head,
@@ -529,14 +573,41 @@ textarea {
 }
 
 .text-link-muted {
-  color: color-mix(in oklab, var(--ink) 55%, transparent);
+  color: color-mix(in oklab, var(--ink) 72%, transparent);
   font-size: 0.92rem;
 }
 
 .how-it-works {
-  padding: 0 1.25rem;
-  background: color-mix(in oklab, var(--turf) 4%, var(--paper));
+  padding: 2rem 1.25rem 2.25rem;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--turf) 7%, var(--paper)) 0%,
+      color-mix(in oklab, var(--turf) 3%, var(--paper)) 100%
+    );
   border-block: 1px solid color-mix(in oklab, var(--ink) 12%, transparent);
+}
+
+.how-it-works .home-inner {
+  max-width: 72rem;
+}
+
+.how-head {
+  margin-bottom: 1.25rem;
+  max-width: 40rem;
+}
+
+.how-head h2 {
+  margin: 0;
+  font-size: clamp(1.35rem, 3.2vw, 1.75rem);
+}
+
+.how-lede {
+  margin: 0.45rem 0 0;
+  max-width: 42ch;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: color-mix(in oklab, var(--ink) 68%, transparent);
 }
 
 .how-steps {
@@ -549,10 +620,23 @@ textarea {
 
 .how-step {
   display: grid;
-  gap: 0.2rem;
-  padding: 1rem 0;
+  gap: 0.25rem;
+  padding: 1.1rem 0;
   border-bottom: 1px solid color-mix(in oklab, var(--ink) 10%, transparent);
   line-height: 1.4;
+  animation: rise 0.7s ease both;
+}
+
+.how-step:nth-child(1) {
+  animation-delay: 0.04s;
+}
+
+.how-step:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.how-step:nth-child(3) {
+  animation-delay: 0.16s;
 }
 
 .how-step:last-child {
@@ -561,20 +645,20 @@ textarea {
 
 .how-step strong {
   font-family: var(--font-display), sans-serif;
-  font-size: 1rem;
+  font-size: 1.05rem;
   letter-spacing: 0.03em;
   text-transform: uppercase;
 }
 
 .how-step span:not(.how-step-num) {
-  font-size: 0.92rem;
-  color: color-mix(in oklab, var(--ink) 62%, transparent);
+  font-size: 0.95rem;
+  color: color-mix(in oklab, var(--ink) 70%, transparent);
 }
 
 .how-step-num {
   font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 0.68rem;
-  letter-spacing: 0.1em;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--turf);
 }
@@ -629,7 +713,7 @@ h2,
 }
 
 .empty-home {
-  padding: 1.25rem 1rem;
+  padding: 1.35rem 1.1rem;
   background: color-mix(in oklab, var(--turf) 5%, var(--paper));
   border-left: 3px solid var(--turf);
 }
@@ -640,6 +724,70 @@ h2,
   font-size: 1.15rem;
   letter-spacing: 0.03em;
   text-transform: uppercase;
+}
+
+.empty-home-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.empty-home-actions .btn-flood,
+.empty-home-actions .btn-ghost {
+  min-height: 2.75rem;
+  min-width: 11rem;
+  text-decoration: none;
+}
+
+.empty-home-ghost {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.home-sport-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0 0 1rem;
+  padding: 0;
+}
+
+.home-sport-strip li {
+  display: flex;
+}
+
+.home-roster > .home-roster-item {
+  list-style: none;
+}
+
+.home-roster .match-row {
+  animation: rise 0.55s ease both;
+  animation-delay: calc(var(--home-stagger, 0) * 45ms);
+}
+
+.home-feed-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-top: 1.15rem;
+}
+
+.home-feed-actions .text-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  margin-top: 0;
+  padding: 0.35rem 0;
+}
+
+@media (min-width: 480px) {
+  .home-feed-actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+  }
 }
 
 .roster,
@@ -4168,13 +4316,16 @@ details.venue-group[open] > summary.venue-group-title::before {
   .pitch-spots .spot-question,
   .pitch-formation-label,
   .pitch-field-wrap,
+  .hero-meta,
   .hero-city-badge,
   .hero-sport-chip,
   .brand-hero,
   .hero h1,
   .hero-lede,
   .hero-ctas,
+  .how-step,
   .match-row,
+  .home-roster .match-row,
   .sk,
   .venue-toolbar .filter-chips button,
   .venue-filters-sheet .filter-chips button,
@@ -4187,6 +4338,17 @@ details.venue-group[open] > summary.venue-group-title::before {
   .site-footer a {
     animation: none;
     transition: none;
+  }
+
+  .hero-ctas .btn-flood:hover,
+  .hero-ctas .btn-flood:active {
+    transform: none;
+    box-shadow: none;
+  }
+
+  .hero-sport-chip {
+    opacity: 1;
+    transform: none;
   }
 
   .venue-toolbar .filter-chips button:active:not(.is-on),
