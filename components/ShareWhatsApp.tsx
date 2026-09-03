@@ -5,8 +5,7 @@ import { trackEvent } from "@/lib/analytics";
 import { matchShareText, matchUrl, whatsappShareHref } from "@/lib/whatsapp";
 
 export function ShareWhatsApp(props: {
-  openCount: number;
-  position: string;
+  hole: string;
   when: string;
   venue: string;
   neighborhood?: string | null;
@@ -78,8 +77,7 @@ export function ShareWhatsApp(props: {
 }
 
 export function HostShareBanner(props: {
-  openCount: number;
-  position: string;
+  hole: string;
   when: string;
   venue: string;
   neighborhood?: string | null;

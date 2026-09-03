@@ -10,10 +10,9 @@ import { SlotList } from "@/components/SlotList";
 import { VenueMapLazy } from "@/components/VenueMapLazy";
 import { getHostMatchCount, getMatchByCode, getProfile, getSessionUserId, getUpcomingMatches } from "@/lib/data";
 import { formatLevelOkBadge } from "@/lib/level-trust";
-import { openSlotCount, slotIsOpen } from "@/lib/types";
+import { openSlotCount, openSlotPositions } from "@/lib/types";
 import { formatMoney, formatWhen, openSlotsPhrase } from "@/lib/format";
-import { formatLabel, genderLabel, matchStatusLabel, positionLabel, sportLabel } from "@/lib/labels";
-import type { Position } from "@/lib/constants";
+import { formatLabel, genderLabel, matchStatusLabel, sportLabel } from "@/lib/labels";
 import { buildFormationFromSlots } from "@/lib/match-formation";
 import { mapsDirectionsUrl } from "@/lib/venue-meta";
 import { isSport } from "@/lib/sport-rules";
@@ -35,11 +34,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!match) {
     return { title: "Partido", robots: robotsNoIndex };
   }
-  const open = openSlotCount(match);
-  const dominant =
-    match.match_slots.find(slotIsOpen)?.position ?? match.match_slots[0]?.position ?? "any";
-  const position = positionLabel[dominant as Position] ?? "Cualquiera";
-  const title = `${openSlotsPhrase(open, position)} en ${match.venues.name}`;
+  const hole = openSlotsPhrase(openSlotPositions(match));
+  const title = `${hole} en ${match.venues.name}`;
   const sport = sportLabel[match.sport as keyof typeof sportLabel] ?? match.sport;
   const description = `${formatWhen(match.starts_at, match.cities.timezone)} · ${match.venues.neighborhood ?? match.cities.name} · ${sport}`;
   const url = absoluteUrl(`/p/${match.share_code}`);
@@ -69,9 +65,7 @@ export default async function PartidoPage({ params }: Props) {
   ]);
   const cancelled = match.status === "cancelled";
   const open = cancelled ? 0 : openSlotCount(match);
-  const dominant =
-    match.match_slots.find(slotIsOpen)?.position ?? match.match_slots[0]?.position ?? "any";
-  const position = positionLabel[dominant as Position] ?? "Cualquiera";
+  const hole = cancelled ? "Completo" : openSlotsPhrase(openSlotPositions(match));
   const when = formatWhen(match.starts_at, match.cities.timezone);
   const price = formatMoney(match.cost_per_person, match.currency);
   const isHost = userId === match.host_id;
@@ -82,8 +76,7 @@ export default async function PartidoPage({ params }: Props) {
     match.profiles.level_feedback_count ?? 0,
   );
   const shareProps = {
-    openCount: open,
-    position,
+    hole,
     when,
     venue: match.venues.name,
     neighborhood: match.venues.neighborhood,
@@ -125,7 +118,7 @@ export default async function PartidoPage({ params }: Props) {
                 {cancelled ? matchStatusLabel.cancelled : open > 0 ? "Abierto" : "Completo"}
               </span>
             </div>
-            <h1>{cancelled ? "Partido cancelado" : openSlotsPhrase(open, position)}</h1>
+            <h1>{cancelled ? "Partido cancelado" : hole}</h1>
             <p className="lede match-detail-when">{when}</p>
           </header>
 

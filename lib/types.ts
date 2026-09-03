@@ -33,6 +33,11 @@ export function openSlotCount(match: Pick<MatchDetail, "match_slots">) {
   return match.match_slots.filter(slotIsOpen).length;
 }
 
+/** Posiciones de cupos aún abiertos (para copy agrupado). */
+export function openSlotPositions(match: Pick<MatchDetail, "match_slots">) {
+  return match.match_slots.filter(slotIsOpen).map((slot) => slot.position);
+}
+
 export function pendingClaimCountForHost(match: Pick<MatchDetail, "match_slots">) {
   return match.match_slots.reduce(
     (sum, slot) => sum + slot.slot_claims.filter((claim) => claim.status === "pending").length,

@@ -2,20 +2,19 @@ import Link from "next/link";
 import { cancelMatchAction } from "@/app/actions";
 import { LevelFeedbackButtons } from "@/components/LevelFeedbackButtons";
 import { SportMark } from "@/components/SportMark";
-import type { Format, Position, Sport } from "@/lib/constants";
+import type { Format, Sport } from "@/lib/constants";
 import { formatMoney, formatWhen, openSlotsPhrase } from "@/lib/format";
 import { isSport } from "@/lib/sport-rules";
 import {
   claimStatusLabel,
   formatLabel,
   matchStatusLabel,
-  positionLabel,
   sportLabel,
 } from "@/lib/labels";
 import {
   openSlotCount,
+  openSlotPositions,
   pendingClaimCountForHost,
-  slotIsOpen,
   type ClaimWithPlayer,
   type MatchDetail,
 } from "@/lib/types";
@@ -80,12 +79,10 @@ export function MyMatchCard({
   const past = match.starts_at <= nowIso;
   const open = openSlotCount(match);
   const pending = pendingClaimCountForHost(match);
-  const dominant =
-    match.match_slots.find(slotIsOpen)?.position ?? match.match_slots[0]?.position ?? "any";
   const when = formatWhen(match.starts_at, match.cities.timezone);
   const format = formatLabel[match.format as Format] ?? match.format;
   const sportName = sportLabel[sport];
-  const hole = openSlotsPhrase(open, positionLabel[dominant as Position] ?? "Cualquiera");
+  const hole = openSlotsPhrase(openSlotPositions(match));
   const price = formatMoney(match.cost_per_person, match.currency);
   const tone = statusTone({
     cancelled,
@@ -99,8 +96,7 @@ export function MyMatchCard({
   const shareHref = canShare
     ? whatsappShareHref(
         matchShareText({
-          openCount: open,
-          position: positionLabel[dominant as Position] ?? "Cualquiera",
+          hole,
           when,
           venue: match.venues.name,
           neighborhood: match.venues.neighborhood,

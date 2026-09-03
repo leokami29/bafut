@@ -1,9 +1,8 @@
 import { ImageResponse } from "next/og";
 import { getMatchByCode } from "@/lib/data";
-import { openSlotCount, slotIsOpen } from "@/lib/types";
+import { openSlotPositions } from "@/lib/types";
 import { formatWhen, openSlotsPhrase } from "@/lib/format";
-import { positionLabel, sportLabel } from "@/lib/labels";
-import type { Position } from "@/lib/constants";
+import { sportLabel } from "@/lib/labels";
 
 export const alt = "Pateada en BaFut";
 export const size = { width: 1200, height: 630 };
@@ -15,16 +14,7 @@ export default async function Image({ params }: Props) {
   const { code } = await params;
   const match = await getMatchByCode(code);
 
-  const title = match
-    ? openSlotsPhrase(
-        openSlotCount(match),
-        positionLabel[
-          (match.match_slots.find(slotIsOpen)?.position ??
-            match.match_slots[0]?.position ??
-            "any") as Position
-        ] ?? "Cualquiera",
-      )
-    : "Pateada en BaFut";
+  const title = match ? openSlotsPhrase(openSlotPositions(match)) : "Pateada en BaFut";
 
   const subtitle = match
     ? `${formatWhen(match.starts_at, match.cities.timezone)} · ${match.venues.name}`

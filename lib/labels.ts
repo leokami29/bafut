@@ -41,6 +41,39 @@ export const positionLabel: Record<Position, string> = {
   reves: "Revés",
 };
 
+/** Plurales para copy de cupos (“2 delanteros”). */
+export const positionLabelPlural: Record<Position, string> = {
+  any: "Cualquiera",
+  gk: "Arqueros",
+  def: "Defensas",
+  mid: "Medios",
+  fwd: "Delanteros",
+  cierre: "Cierres",
+  ala: "Alas",
+  pivot: "Pívots",
+  base: "Bases",
+  escolta: "Escoltas",
+  ala_pivot: "Ala-pívots",
+  armador: "Armadores",
+  central: "Centrales",
+  opuesto: "Opuestos",
+  receptor: "Receptores",
+  libero: "Líberos",
+  drive: "Drives",
+  reves: "Revés",
+};
+
+/** “1 arquero” / “2 delanteros” (minúsculas). */
+export function positionCountLabel(position: string, count: number) {
+  const key = position as Position;
+  const singular = (positionLabel[key] ?? position).toLowerCase();
+  if (count === 1) {
+    return `1 ${singular}`;
+  }
+  const plural = (positionLabelPlural[key] ?? `${singular}s`).toLowerCase();
+  return `${count} ${plural}`;
+}
+
 export const levelLabel: Record<Level, string> = {
   any: "Da igual",
   low: "Bajo",

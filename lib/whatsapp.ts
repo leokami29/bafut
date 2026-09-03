@@ -9,20 +9,14 @@ export function whatsappShareHref(text: string) {
 }
 
 export function matchShareText(input: {
-  openCount: number;
-  position: string;
+  hole: string;
   when: string;
   venue: string;
   neighborhood?: string | null;
   price: string;
   shareCode: string;
 }) {
-  const hole =
-    input.openCount <= 0
-      ? "Partido armado"
-      : input.openCount === 1
-        ? `Falta 1 ${input.position.toLowerCase()}`
-        : `Faltan ${input.openCount}`;
+  const hole = input.hole === "Completo" ? "Partido armado" : input.hole;
   const place = input.neighborhood
     ? `${input.venue} (${input.neighborhood})`
     : input.venue;

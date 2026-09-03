@@ -1,16 +1,12 @@
 import Link from "next/link";
 import { formatMoney, formatWhen, openSlotsPhrase } from "@/lib/format";
-import { formatLabel, positionLabel, sportLabel } from "@/lib/labels";
-import type { Format, Position, Sport } from "@/lib/constants";
-import { openSlotCount, slotIsOpen, type MatchDetail } from "@/lib/types";
+import { formatLabel, sportLabel } from "@/lib/labels";
+import type { Format, Sport } from "@/lib/constants";
+import { openSlotCount, openSlotPositions, type MatchDetail } from "@/lib/types";
 
 export function MatchRow({ match }: { match: MatchDetail }) {
   const open = openSlotCount(match);
-  const dominant =
-    match.match_slots.find(slotIsOpen)?.position ??
-    match.match_slots[0]?.position ??
-    "any";
-  const phrase = openSlotsPhrase(open, positionLabel[dominant as Position] ?? "Cualquiera");
+  const phrase = openSlotsPhrase(openSlotPositions(match));
   const when = formatWhen(match.starts_at, match.cities.timezone);
   const sport = sportLabel[match.sport as Sport] ?? match.sport;
   const format = formatLabel[match.format as Format] ?? match.format;
