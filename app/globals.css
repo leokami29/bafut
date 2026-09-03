@@ -95,12 +95,20 @@ textarea {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  padding: 0.85rem 1.25rem;
-  padding-top: max(0.85rem, env(safe-area-inset-top));
+  gap: 0.75rem 1rem;
+  padding: 0.7rem 1rem;
+  padding-top: max(0.7rem, env(safe-area-inset-top));
   background: var(--turf-deep);
   color: var(--chalk);
   box-shadow: none;
+}
+
+.site-header-start {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-width: 0;
+  flex-shrink: 0;
 }
 
 .site-header-field {
@@ -133,27 +141,30 @@ textarea {
 
 .brand-mark {
   font-family: var(--font-display), sans-serif;
-  font-size: 1.35rem;
+  font-size: clamp(1.15rem, 2.4vw, 1.35rem);
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   text-decoration: none;
+  white-space: nowrap;
 }
 
 .site-nav {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
   justify-content: flex-end;
-  gap: 0.85rem 1rem;
-  font-size: 0.92rem;
+  gap: 0.45rem 0.7rem;
+  min-width: 0;
+  font-size: 0.9rem;
 }
 
 .site-nav-links {
-  display: flex;
-  flex-wrap: wrap;
+  display: none;
+  flex-wrap: nowrap;
   align-items: center;
-  gap: 0.85rem 1rem;
+  gap: 0.45rem 0.7rem;
+  min-width: 0;
 }
 
 .site-nav a,
@@ -163,9 +174,10 @@ textarea {
   color: inherit;
   cursor: pointer;
   text-decoration: none;
-  min-height: 2.75rem;
+  min-height: 2.5rem;
   display: inline-flex;
   align-items: center;
+  white-space: nowrap;
 }
 
 .site-nav a:hover,
@@ -178,8 +190,50 @@ textarea {
   box-shadow: inset 0 -2px 0 var(--flood);
 }
 
+.site-nav a.nav-link-donate,
+.site-header-donate {
+  color: var(--turf-deep);
+  background: var(--flood);
+  border: 1px solid color-mix(in oklab, var(--flood) 70%, #000);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  box-shadow: none;
+  text-decoration: none;
+  min-height: 2rem;
+  padding: 0.15rem 0.7rem;
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.site-nav a.nav-link-donate:hover,
+.site-nav a.nav-link-donate.is-active,
+.site-header-donate:hover,
+.site-header-donate.is-active {
+  color: var(--turf-deep);
+  background: color-mix(in oklab, var(--flood) 82%, white);
+  box-shadow: none;
+}
+
+.site-header-paper .site-nav a.nav-link-donate,
+.site-header-paper .site-header-donate {
+  color: var(--turf-deep);
+}
+
 .site-nav-signout {
   display: none;
+}
+
+.nav-label-short {
+  display: none;
+}
+
+.nav-label-long {
+  display: inline;
+}
+
+.city-switch {
+  flex-shrink: 0;
 }
 
 .city-switch select {
@@ -188,11 +242,14 @@ textarea {
   border-bottom: 1px solid var(--line);
   color: var(--chalk);
   padding: 0.15rem 0;
+  max-width: 9.5rem;
+  font-size: 0.85rem;
 }
 
 .hero {
   position: relative;
   min-height: 100svh;
+  min-height: 100dvh;
   margin-top: -4.2rem;
   padding: 4.2rem 1.25rem 2.5rem;
   overflow: hidden;
@@ -205,6 +262,7 @@ textarea {
   inset: 0;
   width: 100%;
   height: 100%;
+  overflow: hidden;
 }
 
 .pitch-field-wrap {
@@ -229,15 +287,18 @@ textarea {
 
 .pitch-formation-label {
   position: absolute;
-  right: 1.25rem;
-  bottom: 1.1rem;
+  right: 1rem;
+  bottom: max(1rem, env(safe-area-inset-bottom));
   z-index: 0;
+  max-width: min(42vw, 12rem);
   font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 0.68rem;
-  letter-spacing: 0.12em;
+  font-size: clamp(0.58rem, 2.2vw, 0.72rem);
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: rgba(217, 242, 165, 0.55);
   pointer-events: none;
+  text-align: right;
+  line-height: 1.25;
   animation: rise 0.7s ease 0.55s both;
 }
 
@@ -246,16 +307,15 @@ textarea {
   z-index: 1;
   display: flex;
   min-height: calc(100svh - 4.2rem);
+  min-height: calc(100dvh - 4.2rem);
   max-width: 38rem;
   flex-direction: column;
   justify-content: flex-end;
   gap: 0.35rem;
-  padding: 1.25rem 1rem 1.5rem;
+  padding: 1.25rem 1rem max(1.5rem, env(safe-area-inset-bottom));
   margin-right: auto;
   margin-top: auto;
-  margin-bottom: 6vh;
-  background: rgba(7, 56, 40, 0.88);
-  border-left: 3px solid var(--flood);
+  margin-bottom: clamp(3.5rem, 10vh, 6rem);
 }
 
 .hero-city-badge {
@@ -762,6 +822,24 @@ h2,
   min-height: 8rem;
 }
 
+.venue-picker-native {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.venue-picker {
+  position: relative;
+  display: grid;
+  gap: 0.65rem;
+}
+
 .form-split {
   display: grid;
   gap: 1rem;
@@ -1150,6 +1228,55 @@ h2,
   color: color-mix(in oklab, var(--ink) 50%, transparent);
 }
 
+.match-group-proximos {
+  margin-top: 1.75rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid color-mix(in oklab, var(--turf) 20%, transparent);
+}
+
+.match-group-lede {
+  margin: 0 0 0.85rem;
+  font-size: 0.92rem;
+  color: color-mix(in oklab, var(--ink) 65%, transparent);
+}
+
+.host-armo-badge {
+  display: inline-flex;
+  align-items: center;
+  margin: 0.35rem 0 0;
+  padding: 0.2rem 0.55rem;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--turf);
+  border: 1px solid color-mix(in oklab, var(--turf) 45%, transparent);
+}
+
+.venue-owner-block {
+  margin: 2rem 0 1.25rem;
+  padding: 1.15rem 1.2rem;
+  border-left: 3px solid var(--flood);
+  background: color-mix(in oklab, var(--flood) 12%, var(--paper));
+}
+
+.venue-owner-block h2 {
+  margin: 0 0 0.45rem;
+  font-size: 1.15rem;
+}
+
+.venue-owner-block p {
+  margin: 0;
+  line-height: 1.45;
+}
+
+.venue-owner-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: 0.9rem;
+}
+
 .empty-partidos {
   padding: 1.25rem 1rem;
   background: color-mix(in oklab, var(--turf) 5%, var(--paper));
@@ -1189,16 +1316,33 @@ h2,
 
 .venue-toolbar {
   display: grid;
-  gap: 0.65rem;
-  margin-bottom: 1rem;
-  padding: 0.85rem 1rem;
+  gap: 0.85rem;
+  margin-bottom: 1.15rem;
+  padding: 0.95rem 1rem 1rem;
   background: color-mix(in oklab, var(--turf) 6%, var(--paper));
   border-left: 3px solid var(--turf);
 }
 
 .venue-toolbar-filters {
   display: grid;
-  gap: 0.65rem;
+  gap: 0.75rem;
+}
+
+.venue-filter-row {
+  display: grid;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.venue-filter-label {
+  display: block;
+  margin: 0;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--ink) 58%, transparent);
 }
 
 .venue-toolbar-meta {
@@ -1206,28 +1350,133 @@ h2,
   flex-wrap: wrap;
   align-items: center;
   gap: 0.65rem 1rem;
+  padding-top: 0.15rem;
+  border-top: 1px solid color-mix(in oklab, var(--turf) 18%, transparent);
 }
 
 .venue-toolbar .filter-chips,
-.venue-toolbar .view-toggle {
+.venue-toolbar .view-toggle,
+.venue-filters-sheet .filter-chips {
   margin: 0;
 }
 
-.venue-search input,
+.venue-toolbar .filter-chips,
+.venue-filters-sheet .filter-chips {
+  gap: 0.4rem;
+}
+
+.venue-toolbar .filter-chips button,
+.venue-filters-sheet .filter-chips button {
+  min-height: 2.75rem;
+  min-width: 2.75rem;
+  padding: 0.5rem 0.9rem;
+  touch-action: manipulation;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.venue-toolbar .filter-chips button:active:not(.is-on),
+.venue-filters-sheet .filter-chips button:active:not(.is-on) {
+  transform: scale(0.97);
+}
+
+.venue-search {
+  display: grid;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.venue-search input {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid color-mix(in oklab, var(--ink) 22%, transparent);
+  background: color-mix(in oklab, var(--paper) 70%, white);
+  color: var(--ink);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 1rem;
+  line-height: 1.35;
+  touch-action: manipulation;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.venue-search input::placeholder {
+  color: color-mix(in oklab, var(--ink) 45%, transparent);
+}
+
+.venue-search input:hover {
+  border-color: color-mix(in oklab, var(--turf) 40%, transparent);
+}
+
+.venue-search input:focus-visible {
+  outline: 2px solid var(--flood);
+  outline-offset: 2px;
+  border-color: var(--turf);
+  background: var(--paper);
+}
+
+.venue-filter-select {
+  min-width: 0;
+  max-width: 22rem;
+}
+
 .venue-filter-select select {
   width: 100%;
-  min-height: 2.5rem;
-  padding: 0.55rem 0.65rem;
-  border: 0;
-  border-bottom: 1px solid var(--ink);
-  background: transparent;
+  min-height: 2.75rem;
+  padding: 0.55rem 2.25rem 0.55rem 0.85rem;
+  border: 1px solid color-mix(in oklab, var(--ink) 22%, transparent);
+  background-color: color-mix(in oklab, var(--paper) 70%, white);
+  color: var(--ink);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.35;
+  cursor: pointer;
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, var(--turf) 50%),
+    linear-gradient(135deg, var(--turf) 50%, transparent 50%);
+  background-position:
+    calc(100% - 1.05rem) calc(50% - 0.15rem),
+    calc(100% - 0.7rem) calc(50% - 0.15rem);
+  background-size: 0.35rem 0.35rem;
+  background-repeat: no-repeat;
+  touch-action: manipulation;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.venue-filter-select select:hover {
+  border-color: color-mix(in oklab, var(--turf) 40%, transparent);
+}
+
+.venue-filter-select select:focus-visible {
+  outline: 2px solid var(--flood);
+  outline-offset: 2px;
+  border-color: var(--turf);
 }
 
 .venue-count {
   margin: 0;
   font-family: var(--font-mono), monospace;
-  font-size: 0.78rem;
-  color: color-mix(in oklab, var(--ink) 55%, transparent);
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+  color: color-mix(in oklab, var(--ink) 62%, transparent);
+  font-variant-numeric: tabular-nums;
+}
+
+.venue-count-num {
+  color: var(--turf-deep);
+  font-weight: 700;
+}
+
+.venue-count-drawer {
+  margin: 0;
 }
 
 .venue-layout {
@@ -1837,17 +2086,37 @@ details.venue-group[open] > summary.venue-group-title::before {
   }
 
   .venue-toolbar {
-    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
-    align-items: start;
+    gap: 0.9rem;
+    padding: 1.05rem 1.15rem 1.1rem;
+  }
+
+  .venue-filter-row {
+    grid-template-columns: 4.5rem minmax(0, 1fr);
+    align-items: center;
+    gap: 0.65rem 0.85rem;
+  }
+
+  .venue-filter-row-select {
+    align-items: center;
+  }
+
+  .venue-search {
+    grid-template-columns: 4.5rem minmax(0, 1fr);
+    align-items: center;
+    gap: 0.65rem 0.85rem;
+  }
+
+  .venue-search .venue-filter-label,
+  .venue-filter-row .venue-filter-label {
+    padding-top: 0;
   }
 
   .venue-toolbar-meta {
-    grid-column: 1 / -1;
+    justify-content: space-between;
   }
 
-  .venue-toolbar-filters {
-    grid-template-columns: 1fr auto;
-    align-items: center;
+  .venue-filter-select {
+    max-width: 18rem;
   }
 
   .form-split {
@@ -1894,8 +2163,11 @@ details.venue-group[open] > summary.venue-group-title::before {
   }
 
   .pitch-formation-label {
-    left: 2.5rem;
+    left: auto;
+    right: 2.5rem;
     bottom: 1.4rem;
+    max-width: none;
+    text-align: right;
   }
 
   .hero-copy {
@@ -1909,7 +2181,7 @@ details.venue-group[open] > summary.venue-group-title::before {
   }
 
   .site-nav-signout {
-    display: block;
+    display: none;
   }
 }
 
@@ -1943,9 +2215,52 @@ details.venue-group[open] > summary.venue-group-title::before {
   }
 }
 
-@media (max-width: 719px) {
+@media (max-width: 899px) {
+  .hero {
+    padding-bottom: calc(2.5rem + 3.25rem + env(safe-area-inset-bottom));
+  }
+
+  .hero-copy {
+    min-height: calc(100svh - 4.2rem - 3.25rem);
+    min-height: calc(100dvh - 4.2rem - 3.25rem);
+    margin-bottom: clamp(1.25rem, 4vh, 2.5rem);
+    padding-bottom: 1rem;
+  }
+
+  .hero-pitch .pitch-field {
+    transform-origin: 100% 45%;
+  }
+
+  .hero-pitch .pitch-lines {
+    stroke-width: 2.2;
+  }
+
+  .hero-pitch .pitch-lines > * {
+    vector-effect: non-scaling-stroke;
+  }
+
+  .hero-pitch .pitch-spots .hole {
+    stroke-width: 2.8;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .hero-pitch .pitch-spots .spot-question {
+    font-size: 12px;
+  }
+
+  .pitch-formation-label {
+    top: max(4.75rem, calc(env(safe-area-inset-top) + 3.6rem));
+    right: 0.85rem;
+    bottom: auto;
+    max-width: 46vw;
+  }
+
   .site-nav-links {
     display: none;
+  }
+
+  .site-header-donate {
+    display: inline-flex;
   }
 
   .mobile-nav {
@@ -1955,7 +2270,7 @@ details.venue-group[open] > summary.venue-group-title::before {
     bottom: 0;
     z-index: 28;
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 0;
     padding-bottom: env(safe-area-inset-bottom);
     background: var(--turf-deep);
@@ -1967,9 +2282,9 @@ details.venue-group[open] > summary.venue-group-title::before {
     align-items: center;
     justify-content: center;
     min-height: 3.25rem;
-    padding: 0.35rem 0.25rem;
+    padding: 0.35rem 0.35rem;
     color: var(--chalk);
-    font-size: 0.78rem;
+    font-size: clamp(0.72rem, 2.8vw, 0.8rem);
     text-decoration: none;
     text-transform: uppercase;
     letter-spacing: 0.04em;
@@ -2018,6 +2333,143 @@ details.venue-group[open] > summary.venue-group-title::before {
     border-left: 0;
     border-block: 1px solid color-mix(in oklab, var(--turf) 25%, transparent);
     box-shadow: 0 4px 12px color-mix(in oklab, var(--ink) 8%, transparent);
+  }
+
+  .venue-toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    margin-inline: -1.25rem;
+    padding-inline: 1.25rem;
+    border-left: 0;
+    border-block: 1px solid color-mix(in oklab, var(--turf) 25%, transparent);
+    box-shadow: 0 4px 12px color-mix(in oklab, var(--ink) 8%, transparent);
+  }
+}
+
+@media (min-width: 900px) {
+  .site-header {
+    padding: 0.85rem 1.5rem;
+    padding-top: max(0.85rem, env(safe-area-inset-top));
+  }
+
+  .site-nav-links {
+    display: flex;
+  }
+
+  .site-header-donate {
+    display: none;
+  }
+
+  .site-nav {
+    gap: 0.55rem 0.85rem;
+    font-size: 0.88rem;
+  }
+
+  .site-nav-links {
+    gap: 0.55rem 0.85rem;
+  }
+
+  .nav-label-long {
+    display: none;
+  }
+
+  .nav-label-short {
+    display: inline;
+  }
+
+  .city-switch select {
+    max-width: 11rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 719px) {
+  .hero-pitch .pitch-field {
+    width: 128%;
+    max-width: none;
+    height: 108%;
+    margin-left: auto;
+    margin-right: -8%;
+    transform: translateX(2%) scale(1.04);
+    transform-origin: 100% 42%;
+  }
+
+  .brand-hero {
+    font-size: clamp(3rem, 16vw, 5.5rem);
+  }
+
+  .hero h1 {
+    font-size: clamp(1.65rem, 7.2vw, 2.35rem);
+    max-width: 14ch;
+  }
+
+  .hero-lede {
+    max-width: 30ch;
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-height: 700px) and (orientation: landscape) {
+  .hero {
+    min-height: 100svh;
+    min-height: 100dvh;
+  }
+
+  .hero-copy {
+    min-height: auto;
+    justify-content: center;
+    margin-bottom: 1rem;
+    padding-top: 3.5rem;
+    gap: 0.25rem;
+  }
+
+  .brand-hero {
+    font-size: clamp(2.4rem, 10vw, 4rem);
+  }
+
+  .hero h1 {
+    font-size: clamp(1.35rem, 4vw, 2rem);
+    margin-top: 0.25rem;
+  }
+
+  .hero-lede {
+    margin-bottom: 0.75rem;
+  }
+
+  .pitch-formation-label {
+    top: 4.2rem;
+  }
+}
+
+@media (min-width: 1100px) {
+  .site-nav {
+    gap: 0.75rem 1.05rem;
+    font-size: 0.92rem;
+  }
+
+  .site-nav-links {
+    gap: 0.75rem 1.05rem;
+  }
+
+  .nav-label-long {
+    display: inline;
+  }
+
+  .nav-label-short {
+    display: none;
+  }
+
+  .site-nav-signout {
+    display: block;
+  }
+
+  .city-switch select {
+    max-width: none;
+  }
+
+  .hero-pitch .pitch-field {
+    transform: none;
   }
 }
 
@@ -2082,6 +2534,11 @@ details.venue-group[open] > summary.venue-group-title::before {
   padding: 0.55rem 0.65rem;
   font: inherit;
   cursor: pointer;
+  min-height: 2.75rem;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
 }
 
 .create-steps button.is-on {
@@ -2099,6 +2556,331 @@ details.venue-group[open] > summary.venue-group-title::before {
   gap: 0.75rem;
   align-items: center;
   flex-wrap: wrap;
+}
+
+/* —— Publicar partido / hueco (page-scoped) —— */
+.page-nuevo-partido {
+  padding-bottom: calc(5.5rem + env(safe-area-inset-bottom));
+}
+
+.match-compose-head .lede {
+  margin: 0.35rem 0 0;
+  color: color-mix(in oklab, var(--ink) 78%, transparent);
+}
+
+.match-compose-preselect {
+  display: grid;
+  gap: 0.15rem;
+  margin: 1rem 0 0;
+  padding: 0.7rem 0.85rem;
+  background: color-mix(in oklab, var(--turf) 8%, var(--paper));
+  border-left: 3px solid var(--turf);
+}
+
+.match-compose-preselect-label {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--turf);
+}
+
+.match-compose-preselect-name {
+  font-weight: 650;
+}
+
+.match-compose {
+  gap: 1.25rem;
+}
+
+.match-compose-progress {
+  display: grid;
+  gap: 0.55rem;
+  margin-bottom: 0.25rem;
+}
+
+.match-compose-progress-track {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.35rem;
+  height: 3px;
+}
+
+.match-compose-progress-track span {
+  background: color-mix(in oklab, var(--ink) 12%, transparent);
+  transition: background 0.2s ease;
+}
+
+.match-compose-progress-track span.is-on {
+  background: var(--turf);
+}
+
+.match-compose .create-steps {
+  margin-bottom: 0;
+}
+
+.match-compose .create-steps button {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+  text-align: left;
+  font-size: 0.92rem;
+  padding: 0.65rem 0.75rem;
+}
+
+.match-compose-step-num {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  color: color-mix(in oklab, var(--ink) 55%, transparent);
+}
+
+.match-compose .create-steps button.is-on .match-compose-step-num {
+  color: var(--turf);
+}
+
+.match-compose-group {
+  margin: 0;
+  padding: 0 0 0.35rem;
+  border: 0;
+  border-bottom: 1px solid color-mix(in oklab, var(--ink) 12%, transparent);
+  display: grid;
+  gap: 0.85rem;
+}
+
+.match-compose-group:last-of-type {
+  border-bottom: 0;
+}
+
+.match-compose-legend {
+  padding: 0;
+  margin: 0 0 0.15rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--turf);
+}
+
+.match-compose .field-help {
+  margin: -0.15rem 0 0;
+}
+
+.match-compose .req-mark {
+  color: var(--bib);
+  font-weight: 700;
+}
+
+.match-compose .field-optional {
+  font-weight: 400;
+  font-size: 0.85em;
+  color: color-mix(in oklab, var(--ink) 55%, transparent);
+  text-transform: none;
+  letter-spacing: 0;
+  font-family: var(--font-sans), sans-serif;
+}
+
+.match-compose-banner-error {
+  padding: 0.75rem 0.85rem;
+  background: color-mix(in oklab, var(--bib) 10%, var(--paper));
+  border-left: 3px solid var(--bib);
+  animation: rise 0.25s ease both;
+}
+
+.match-compose-banner-error .form-error {
+  margin: 0;
+}
+
+.match-compose-actions {
+  margin-top: 0.35rem;
+}
+
+.match-compose-actions-inline .btn-flood,
+.match-compose-actions-inline .create-step-next {
+  min-height: 2.85rem;
+}
+
+.match-compose-actions-inline .btn-ghost {
+  min-height: 2.85rem;
+  min-width: 5.5rem;
+}
+
+.match-compose-sticky {
+  display: none;
+}
+
+.venue-picker.is-invalid .venue-picker-list {
+  outline: 2px solid var(--bib);
+  outline-offset: 2px;
+}
+
+.venue-picker-head {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.venue-picker-chosen {
+  margin: 0;
+  padding: 0.55rem 0.65rem;
+  font-size: 0.92rem;
+  background: color-mix(in oklab, var(--chalk) 55%, var(--paper));
+  border-left: 3px solid var(--turf);
+}
+
+.venue-picker-chosen-meta {
+  font-weight: 400;
+  color: color-mix(in oklab, var(--ink) 65%, transparent);
+}
+
+.venue-picker-list {
+  max-height: min(18rem, 48vh);
+  overflow: auto;
+  overscroll-behavior: contain;
+  border: 1px solid color-mix(in oklab, var(--ink) 18%, transparent);
+  background: color-mix(in oklab, var(--paper) 70%, white);
+  -webkit-overflow-scrolling: touch;
+}
+
+.venue-picker-group {
+  border-bottom: 1px solid color-mix(in oklab, var(--ink) 10%, transparent);
+}
+
+.venue-picker-group:last-child {
+  border-bottom: 0;
+}
+
+.venue-picker-group-label {
+  margin: 0;
+  padding: 0.45rem 0.7rem 0.25rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--ink) 55%, transparent);
+  position: sticky;
+  top: 0;
+  background: color-mix(in oklab, var(--paper) 92%, white);
+  z-index: 1;
+}
+
+.venue-picker-options {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.venue-picker-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.65rem 0.75rem;
+  border: 0;
+  border-bottom: 1px solid color-mix(in oklab, var(--ink) 8%, transparent);
+  background: transparent;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  transition: background 0.15s ease;
+}
+
+.venue-picker-option input[type="radio"] {
+  flex-shrink: 0;
+  width: 1.15rem;
+  height: 1.15rem;
+  min-height: 0;
+  margin: 0.2rem 0 0;
+  padding: 0;
+  accent-color: var(--turf);
+  border: 0;
+  border-bottom: 0;
+}
+
+.venue-picker-option-text {
+  display: grid;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.venue-picker-options li:last-child .venue-picker-option {
+  border-bottom: 0;
+}
+
+.venue-picker-option:hover,
+.venue-picker-option:focus-within {
+  background: color-mix(in oklab, var(--turf) 8%, transparent);
+}
+
+.venue-picker-option.is-on {
+  background: color-mix(in oklab, var(--turf) 14%, transparent);
+  box-shadow: inset 3px 0 0 var(--turf);
+}
+
+.venue-picker-option-name {
+  font-weight: 600;
+}
+
+.venue-picker-option-meta {
+  font-size: 0.82rem;
+  color: color-mix(in oklab, var(--ink) 58%, transparent);
+}
+
+@media (min-width: 720px) {
+  .match-compose .form-split {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .venue-picker-list {
+    max-height: 20rem;
+  }
+}
+
+@media (max-width: 899px) {
+  .page-nuevo-partido {
+    padding-bottom: calc(9.5rem + env(safe-area-inset-bottom));
+  }
+
+  .match-compose-actions-inline {
+    display: none;
+  }
+
+  .match-compose-sticky {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: calc(3.25rem + env(safe-area-inset-bottom));
+    z-index: 24;
+    display: block;
+    padding: 0.65rem 1rem;
+    background: color-mix(in oklab, var(--paper) 94%, transparent);
+    border-top: 1px solid color-mix(in oklab, var(--ink) 15%, transparent);
+    backdrop-filter: blur(8px);
+  }
+
+  .match-compose-sticky .btn-flood {
+    width: 100%;
+    min-height: 2.85rem;
+    font-weight: 650;
+  }
+
+  .match-compose-sticky-row {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.65rem;
+    align-items: center;
+  }
+
+  .match-compose-sticky-row .btn-ghost {
+    min-height: 2.85rem;
+    min-width: 4.75rem;
+  }
+
+  .match-compose-sticky-row .btn-flood {
+    width: 100%;
+  }
 }
 
 .inbox-section {
@@ -2206,10 +2988,15 @@ details.venue-group[open] > summary.venue-group-title::before {
   width: 100%;
   max-height: 85vh;
   overflow: auto;
+  overscroll-behavior: contain;
   background: var(--paper);
-  padding: 1rem 1.25rem 1.5rem;
+  padding: 1rem 1.25rem calc(1.5rem + env(safe-area-inset-bottom));
   border-radius: 1rem 1rem 0 0;
   display: grid;
+  gap: 1rem;
+}
+
+.venue-filters-sheet .venue-toolbar-filters {
   gap: 1rem;
 }
 
@@ -2227,6 +3014,7 @@ details.venue-group[open] > summary.venue-group-title::before {
 
 .venue-filters-trigger {
   white-space: nowrap;
+  min-height: 2.75rem;
 }
 
 @media (max-width: 899px) {
@@ -2253,9 +3041,22 @@ details.venue-group[open] > summary.venue-group-title::before {
   .hero-lede,
   .hero-ctas,
   .match-row,
-  .sk {
+  .sk,
+  .venue-toolbar .filter-chips button,
+  .venue-filters-sheet .filter-chips button,
+  .venue-search input,
+  .venue-filter-select select,
+  .match-compose-banner-error,
+  .match-compose .create-steps button,
+  .match-compose-progress-track span,
+  .venue-picker-option {
     animation: none;
     transition: none;
+  }
+
+  .venue-toolbar .filter-chips button:active:not(.is-on),
+  .venue-filters-sheet .filter-chips button:active:not(.is-on) {
+    transform: none;
   }
 
   .pitch-lines {

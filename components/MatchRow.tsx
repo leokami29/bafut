@@ -15,8 +15,9 @@ export function MatchRow({ match }: { match: MatchDetail }) {
   const sport = sportLabel[match.sport as Sport] ?? match.sport;
   const format = formatLabel[match.format as Format] ?? match.format;
   const price = formatMoney(match.cost_per_person, match.currency);
+  const hostName = match.profiles?.display_name?.trim() || "Host";
 
-  const ariaLabel = `${when}. ${match.venues.name}, ${match.venues.neighborhood}. ${phrase}. ${sport}, ${format}, ${price}.`;
+  const ariaLabel = `${when}. ${match.venues.name}, ${match.venues.neighborhood}. ${phrase}. ${sport}, ${format}, ${price}. Organiza ${hostName}.`;
 
   return (
     <Link href={`/p/${match.share_code}`} className="match-row" aria-label={ariaLabel}>
@@ -34,6 +35,7 @@ export function MatchRow({ match }: { match: MatchDetail }) {
       </span>
       <span className="match-row-meta">
         {format} · {price}
+        <span className="match-row-host"> · organiza {hostName}</span>
       </span>
     </Link>
   );

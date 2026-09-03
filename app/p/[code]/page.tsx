@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { cancelMatchAction } from "@/app/actions";
 import { HostShareBanner, ShareWhatsApp } from "@/components/ShareWhatsApp";
 import { SlotList } from "@/components/SlotList";
-import { getMatchByCode, getSessionUserId } from "@/lib/data";
+import { getHostMatchCount, getMatchByCode, getSessionUserId } from "@/lib/data";
 import { openSlotCount, slotIsOpen } from "@/lib/types";
 import { formatMoney, formatWhen, openSlotsPhrase } from "@/lib/format";
 import { formatLabel, genderLabel, matchStatusLabel, positionLabel, sportLabel } from "@/lib/labels";
@@ -35,6 +35,7 @@ export default async function PartidoPage({ params }: Props) {
     notFound();
   }
 
+  const hostMatchCount = await getHostMatchCount(match.host_id);
   const cancelled = match.status === "cancelled";
   const open = cancelled ? 0 : openSlotCount(match);
   const dominant =
@@ -44,6 +45,7 @@ export default async function PartidoPage({ params }: Props) {
   const price = formatMoney(match.cost_per_person, match.currency);
   const isHost = userId === match.host_id;
   const canCancel = isHost && !cancelled && match.starts_at > new Date().toISOString();
+  const hostName = match.profiles.display_name;
   const shareProps = {
     openCount: open,
     position,
@@ -75,8 +77,13 @@ export default async function PartidoPage({ params }: Props) {
         {" · "}
         {price}
         {" · "}
-        organiza {match.profiles.display_name}
+        organiza {hostName}
       </p>
+      {hostMatchCount >= 3 ? (
+        <p className="host-armo-badge" role="status">
+          Armó {hostMatchCount} pateadas
+        </p>
+      ) : null}
       {match.notes ? <p className="notes">{match.notes}</p> : null}
 
       {isHost && !cancelled && open > 0 ? <HostShareBanner {...shareProps} /> : null}

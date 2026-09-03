@@ -30,3 +30,25 @@ export function getMatchTimePeriod(iso: string, timezone: string): MatchTimePeri
   if (hour >= 12 && hour < 18) return "tarde";
   return "noche";
 }
+
+function cityCalendarDayKey(date: Date, timezone: string): string {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: timezone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(date);
+}
+
+/** Mismo día civil en el timezone de la ciudad. */
+export function isSameCityDay(iso: string, timezone: string, now = new Date()): boolean {
+  return cityCalendarDayKey(new Date(iso), timezone) === cityCalendarDayKey(now, timezone);
+}
+
+/** Empieza entre ahora y ahora + hours (inclusive del borde final). */
+export function isWithinNextHours(iso: string, hours: number, now = new Date()): boolean {
+  const start = new Date(iso).getTime();
+  const t = now.getTime();
+  if (Number.isNaN(start) || hours <= 0) return false;
+  return start >= t && start <= t + hours * 60 * 60 * 1000;
+}

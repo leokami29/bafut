@@ -117,6 +117,20 @@ export const getMatchByCode = cache(async (shareCode: string) => {
   return data as MatchDetail | null;
 });
 
+/** Partidos armados por el host (excluye cancelados). Solo para señal en detalle. */
+export const getHostMatchCount = cache(async (hostId: string) => {
+  const supabase = await createClient();
+  const { count, error } = await supabase
+    .from("matches")
+    .select("id", { count: "exact", head: true })
+    .eq("host_id", hostId)
+    .neq("status", "cancelled");
+  if (error) {
+    throw error;
+  }
+  return count ?? 0;
+});
+
 export const getProfile = cache(async (userId: string): Promise<ProfileWithContact | null> => {
   const supabase = await createClient();
   const [{ data: profile, error }, { data: contact }] = await Promise.all([

@@ -13,6 +13,7 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     "tmp-app/**",
     "lib/database.types.ts",
+    "data/scrapes/**",
   ]),
 ]);
 

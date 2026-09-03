@@ -5,14 +5,17 @@ import type { ReactNode } from "react";
 import { CopyAddressButton, VenueStickyCta } from "@/components/VenueDetailActions";
 import { MatchRow } from "@/components/MatchRow";
 import { VenueMapLazy } from "@/components/VenueMapLazy";
+import { VenueOwnerBlock } from "@/components/VenueOwnerBlock";
 import { getActiveCity, getUpcomingMatches, getVenueBySlug } from "@/lib/data";
 import { sportLabel, surfaceLabel, venueKindLabel } from "@/lib/labels";
 import type { Sport } from "@/lib/constants";
+import { openSlotCount, pendingClaimCountForHost } from "@/lib/types";
 import {
   enrichmentToMeta,
   getVenueEnrichment,
   mergeVenueMeta,
 } from "@/lib/venue-enrichment";
+import { safeHttpUrl } from "@/lib/safe-http-url";
 import {
   formatHoursLines,
   mapsDirectionsUrl,
@@ -77,6 +80,19 @@ export default async function CanchaPage({ params }: Props) {
     enrichmentToMeta(getVenueEnrichment(slug)),
   );
   const here = matches.filter((match) => match.venue_id === venue.id);
+  const openSlotsHere = here.reduce((sum, match) => sum + openSlotCount(match), 0);
+  const pendingHere = here.reduce((sum, match) => sum + pendingClaimCountForHost(match), 0);
+  const demandBits = [
+    here.length > 0
+      ? `${here.length} ${here.length === 1 ? "partido" : "partidos"}`
+      : null,
+    openSlotsHere > 0
+      ? `${openSlotsHere} ${openSlotsHere === 1 ? "cupo abierto" : "cupos abiertos"}`
+      : null,
+    pendingHere > 0
+      ? `${pendingHere} ${pendingHere === 1 ? "pidiendo cupo" : "pidiendo cupo"}`
+      : null,
+  ].filter(Boolean);
   const publishHref = `/partidos/nuevo?venue=${venue.slug}`;
   const directionsHref = mapsDirectionsUrl(
     venue.lat,
@@ -86,6 +102,7 @@ export default async function CanchaPage({ params }: Props) {
   const kind = venueKindLabel[venue.venue_kind] ?? venue.venue_kind;
   const surface = surfaceLabel[venue.surface] ?? venue.surface;
   const phoneLink = meta.phone ? phoneHref(meta.phone) : undefined;
+  const websiteUrl = safeHttpUrl(meta.website);
   const description = meta.description;
   const descriptionLong = description != null && description.length > 180;
   const hoursLines = formatHoursLines(meta.hours);
@@ -168,10 +185,12 @@ export default async function CanchaPage({ params }: Props) {
               <InfoRow
                 label="Sitio web"
                 value={
-                  meta.website ? (
-                    <a href={meta.website} target="_blank" rel="noopener noreferrer">
-                      {meta.website.replace(/^https?:\/\//, "").replace(/\/$/, "")}
+                  websiteUrl ? (
+                    <a href={websiteUrl} target="_blank" rel="noopener noreferrer">
+                      {websiteUrl.replace(/^https?:\/\//, "").replace(/\/$/, "")}
                     </a>
+                  ) : meta.website ? (
+                    meta.website.replace(/^https?:\/\//, "").replace(/\/$/, "")
                   ) : null
                 }
                 empty="Sin sitio web registrado"
@@ -302,12 +321,10 @@ export default async function CanchaPage({ params }: Props) {
       <section className="venue-matches" aria-labelledby="venue-matches-heading">
         <div className="venue-section-head">
           <h2 className="subhead" id="venue-matches-heading">
-            Partidos próximos
+            Huecos abiertos aquí
           </h2>
-          {here.length > 0 ? (
-            <p className="venue-section-meta">
-              {here.length} {here.length === 1 ? "partido" : "partidos"} en esta cancha
-            </p>
+          {demandBits.length > 0 ? (
+            <p className="venue-section-meta">{demandBits.join(" · ")}</p>
           ) : null}
         </div>
         {here.length > 0 ? (
@@ -326,10 +343,12 @@ export default async function CanchaPage({ params }: Props) {
         )}
       </section>
 
+      <VenueOwnerBlock venueName={venue.name} venueSlug={venue.slug} hasActivity={here.length > 0} />
+
       <p className="foot-link">
         <Link href="/canchas">Ver todas las canchas</Link>
         {" · "}
-        <Link href="/partidos">Partidos abiertos</Link>
+        <Link href="/partidos?filtro=hoy">Radar de hoy</Link>
       </p>
 
       <VenueStickyCta href={publishHref} label="Publicar hueco aquí" />
