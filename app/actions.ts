@@ -29,7 +29,76 @@ import {
   SPORT_RULES,
 } from "@/lib/sport-rules";
 import { isGenderPolicy, parseCostPerPerson, parseSlotsJson } from "@/lib/match-write";
+import {
+  occupancyReason,
+  occupancyUserMessage,
+  parseOccupancyShareCode,
+  type OccupancyConflict,
+  type OccupancyHit,
+} from "@/lib/occupancy";
+import { createClient } from "@/lib/supabase/server";
 import { normalizeWhatsapp } from "@/lib/whatsapp-contact";
+
+export type OccupancyActionState = { error?: string; occupancy?: OccupancyConflict };
+
+type ServerClient = Awaited<ReturnType<typeof createClient>>;
+
+function mapOccupancyHit(row: {
+  match_id: string;
+  share_code: string;
+  host_id: string;
+  starts_at: string;
+  duration_min: number;
+  venue_id: string;
+  venue_name: string;
+  away_opened_by: string | null;
+  open_slot_count: number;
+  has_side_b: boolean;
+}): OccupancyHit {
+  return {
+    match_id: row.match_id,
+    share_code: row.share_code,
+    host_id: row.host_id,
+    starts_at: row.starts_at,
+    duration_min: row.duration_min,
+    venue_id: row.venue_id,
+    venue_name: row.venue_name,
+    away_opened_by: row.away_opened_by ?? null,
+    open_slot_count: row.open_slot_count,
+    has_side_b: row.has_side_b,
+  };
+}
+
+async function findVenueOccupancy(
+  supabase: ServerClient,
+  userId: string | null,
+  params: {
+    venueId: string;
+    startsAt: Date;
+    durationMin: number;
+    excludeMatchId?: string;
+  },
+): Promise<OccupancyConflict | null> {
+  const { data, error } = await supabase.rpc("lookup_venue_occupancy", {
+    p_venue_id: params.venueId,
+    p_starts_at: params.startsAt.toISOString(),
+    p_duration_min: params.durationMin,
+    p_exclude_match_id: params.excludeMatchId,
+  });
+  if (error) {
+    return null;
+  }
+  const row = Array.isArray(data) ? data[0] : data;
+  if (!row) {
+    return null;
+  }
+  const hit = mapOccupancyHit(row);
+  return { ...hit, reason: occupancyReason(userId, hit) };
+}
+
+function occupancyState(conflict: OccupancyConflict): OccupancyActionState {
+  return { error: occupancyUserMessage(conflict), occupancy: conflict };
+}
 
 function asOne<T extends readonly string[]>(value: FormDataEntryValue | null, allowed: T, fallback: T[number]) {
   if (typeof value !== "string" || !allowed.includes(value as T[number])) {
@@ -93,6 +162,15 @@ export async function createMatchAction(formData: FormData) {
     return { error: "La duración debe ser 30, 60 o 90 minutos." };
   }
 
+  const occupancy = await findVenueOccupancy(supabase, userId, {
+    venueId,
+    startsAt,
+    durationMin,
+  });
+  if (occupancy) {
+    return occupancyState(occupancy);
+  }
+
   const position = asOne(formData.get("position"), POSITIONS, "any") as Position;
   if (!positionAllowedForSport(sport, position)) {
     return { error: "Esa posición no aplica para el deporte." };
@@ -134,6 +212,14 @@ export async function createMatchAction(formData: FormData) {
 
   if (error || !match) {
     const rateLimited = /demasiados partidos/i.test(error?.message ?? "");
+    if (error?.code === "23P01" || /occupy|exclusion/i.test(error?.message ?? "")) {
+      const raced = await findVenueOccupancy(supabase, userId, {
+        venueId,
+        startsAt,
+        durationMin,
+      });
+      if (raced) return occupancyState(raced);
+    }
     return {
       error: rateLimited
         ? "Publicaste demasiados partidos en poco tiempo. Espera un rato."
@@ -145,6 +231,7 @@ export async function createMatchAction(formData: FormData) {
     match_id: match.id,
     position: needKeeper && index === 0 ? "gk" : position,
     level,
+    side: "a" as const,
   }));
 
   const { error: slotError } = await supabase.from("match_slots").insert(slots);
@@ -155,6 +242,72 @@ export async function createMatchAction(formData: FormData) {
 
   revalidatePath("/partidos");
   redirect(`/p/${match.share_code}`);
+}
+
+export async function lookupVenueOccupancyAction(input: {
+  citySlug: string;
+  venueId: string;
+  startsAt: string;
+  durationMin: number;
+  excludeMatchId?: string;
+}): Promise<OccupancyActionState> {
+  const city = await getCityBySlug(input.citySlug || DEFAULT_CITY_SLUG);
+  if (!city || !input.venueId || !isDuration(input.durationMin)) {
+    return {};
+  }
+  const startsAt = datetimeLocalInZoneToDate(input.startsAt, city.timezone);
+  if (!startsAt) {
+    return {};
+  }
+
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getClaims();
+  const userId = data?.claims?.sub ?? null;
+  const occupancy = await findVenueOccupancy(supabase, userId, {
+    venueId: input.venueId,
+    startsAt,
+    durationMin: input.durationMin,
+    excludeMatchId: input.excludeMatchId && isUuidParam(input.excludeMatchId) ? input.excludeMatchId : undefined,
+  });
+  return occupancy ? occupancyState(occupancy) : {};
+}
+
+export async function openMatchSideBAction(formData: FormData): Promise<OccupancyActionState> {
+  const matchId = String(formData.get("match_id") ?? "").trim();
+  const shareCode = String(formData.get("share_code") ?? "").trim();
+  const nextPath = shareCode && isShareCode(shareCode) ? `/p/${shareCode}` : "/partidos";
+  const { supabase } = await requireUserId(nextPath);
+
+  if (!isUuidParam(matchId)) {
+    return { error: "Partido no válido." };
+  }
+
+  const openCount = Number(formData.get("open_count") ?? 1);
+  if (openCount !== 1 && openCount !== 2) {
+    return { error: "El lado B admite 1 o 2 cupos." };
+  }
+
+  const position = asOne(formData.get("position"), POSITIONS, "any") as Position;
+  const level = asOne(formData.get("level"), LEVELS, "any");
+
+  const { data, error } = await supabase.rpc("open_match_side_b", {
+    p_match_id: matchId,
+    p_open_count: openCount,
+    p_position: position,
+    p_level: level,
+  });
+
+  if (error) {
+    return { error: error.message || "No se pudo abrir el otro lado." };
+  }
+
+  const code = typeof data === "string" && isShareCode(data) ? data : shareCode;
+  revalidatePath("/partidos");
+  if (code) {
+    revalidatePath(`/p/${code}`);
+    redirect(`/p/${code}`);
+  }
+  return { error: "No se pudo abrir el otro lado." };
 }
 
 export async function updateMatchAction(formData: FormData) {
@@ -250,6 +403,17 @@ export async function updateMatchAction(formData: FormData) {
   });
 
   if (error) {
+    const occupiedCode = parseOccupancyShareCode(error.message);
+    if (occupiedCode || error.message === "OCCUPANCY") {
+      const raced = await findVenueOccupancy(supabase, userId, {
+        venueId,
+        startsAt,
+        durationMin,
+        excludeMatchId: matchId,
+      });
+      if (raced) return occupancyState(raced);
+      return { error: "Esa cancha ya está ocupada a esa hora." };
+    }
     const rateLimited = /espera un momento|demasiados/i.test(error.message ?? "");
     return {
       error: error.message

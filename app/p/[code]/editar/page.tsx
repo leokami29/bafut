@@ -66,7 +66,9 @@ export default async function EditarPartidoPage({ params }: Props) {
             costPerPerson: match.cost_per_person,
             genderPolicy: match.gender_policy,
             notes: match.notes,
-            slots: match.match_slots.map((slot) => ({
+            slots: match.match_slots
+              .filter((slot) => slot.side !== "b")
+              .map((slot) => ({
               id: slot.id,
               position: slot.position,
               level: slot.level,

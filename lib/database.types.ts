@@ -52,6 +52,7 @@ export type Database = {
           level: string;
           match_id: string;
           position: string;
+          side: string;
         };
         Insert: {
           created_at?: string;
@@ -59,6 +60,7 @@ export type Database = {
           level?: string;
           match_id: string;
           position?: string;
+          side?: string;
         };
         Update: {
           created_at?: string;
@@ -66,6 +68,7 @@ export type Database = {
           level?: string;
           match_id?: string;
           position?: string;
+          side?: string;
         };
         Relationships: [
           {
@@ -79,6 +82,7 @@ export type Database = {
       };
       matches: {
         Row: {
+          away_opened_by: string | null;
           city_id: string;
           cost_per_person: number | null;
           created_at: string;
@@ -89,6 +93,7 @@ export type Database = {
           host_id: string;
           id: string;
           notes: string | null;
+          occupy_range: unknown;
           share_code: string;
           sport: string;
           starts_at: string;
@@ -97,6 +102,7 @@ export type Database = {
           venue_id: string;
         };
         Insert: {
+          away_opened_by?: string | null;
           city_id: string;
           cost_per_person?: number | null;
           created_at?: string;
@@ -107,6 +113,7 @@ export type Database = {
           host_id: string;
           id?: string;
           notes?: string | null;
+          occupy_range?: unknown;
           share_code?: string;
           sport?: string;
           starts_at: string;
@@ -115,6 +122,7 @@ export type Database = {
           venue_id: string;
         };
         Update: {
+          away_opened_by?: string | null;
           city_id?: string;
           cost_per_person?: number | null;
           created_at?: string;
@@ -125,6 +133,7 @@ export type Database = {
           host_id?: string;
           id?: string;
           notes?: string | null;
+          occupy_range?: unknown;
           share_code?: string;
           sport?: string;
           starts_at?: string;
@@ -133,6 +142,13 @@ export type Database = {
           venue_id?: string;
         };
         Relationships: [
+          {
+            foreignKeyName: "matches_away_opened_by_fkey";
+            columns: ["away_opened_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
           {
             foreignKeyName: "matches_city_id_fkey";
             columns: ["city_id"];
@@ -434,6 +450,35 @@ export type Database = {
       list_upcoming_open_match_ids: {
         Args: { p_city_id: string; p_limit?: number };
         Returns: string[];
+      };
+      lookup_venue_occupancy: {
+        Args: {
+          p_duration_min: number;
+          p_exclude_match_id?: string;
+          p_starts_at: string;
+          p_venue_id: string;
+        };
+        Returns: {
+          away_opened_by: string | null;
+          duration_min: number;
+          has_side_b: boolean;
+          host_id: string;
+          match_id: string;
+          open_slot_count: number;
+          share_code: string;
+          starts_at: string;
+          venue_id: string;
+          venue_name: string;
+        }[];
+      };
+      open_match_side_b: {
+        Args: {
+          p_level?: string;
+          p_match_id: string;
+          p_open_count: number;
+          p_position?: string;
+        };
+        Returns: string;
       };
       respond_claim: { Args: { p_claim_id: string; p_status: string }; Returns: undefined };
       submit_level_feedback: {

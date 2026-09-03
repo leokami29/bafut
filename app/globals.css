@@ -3213,6 +3213,46 @@ details.venue-group[open] > summary.venue-group-title::before {
   background: color-mix(in oklab, var(--flood) 28%, var(--paper));
 }
 
+.occupancy-banner {
+  padding: 0.85rem 0.9rem;
+  background: color-mix(in oklab, var(--flood) 14%, var(--paper));
+  border-left: 3px solid var(--flood);
+  display: grid;
+  gap: 0.65rem;
+}
+
+.occupancy-banner p {
+  margin: 0;
+}
+
+.occupancy-banner-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.open-side-b-form,
+.open-side-b-block {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.open-side-b-copy {
+  margin: 0;
+  color: color-mix(in oklab, var(--ink) 72%, transparent);
+}
+
+.slot-side-heading {
+  margin: 1rem 0 0.35rem;
+  font-size: 0.82rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.slot-sides .slot-list {
+  border-top: 1px solid var(--ink);
+}
+
 .match-compose-actions {
   margin-top: 0.35rem;
 }

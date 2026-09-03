@@ -28,6 +28,7 @@ export function SlotList({
   userId,
   matchCancelled = false,
   profileLevel = null,
+  showSides = false,
 }: {
   slots: SlotWithClaims[];
   shareCode: string;
@@ -35,22 +36,77 @@ export function SlotList({
   userId: string | null;
   matchCancelled?: boolean;
   profileLevel?: string | null;
+  showSides?: boolean;
 }) {
+  const ordered = [...slots].sort((a, b) => {
+    const sideA = a.side === "b" ? 1 : 0;
+    const sideB = b.side === "b" ? 1 : 0;
+    if (sideA !== sideB) return sideA - sideB;
+    return a.created_at.localeCompare(b.created_at);
+  });
+  const sideA = ordered.filter((slot) => slot.side !== "b");
+  const sideB = ordered.filter((slot) => slot.side === "b");
+
+  if (!showSides || sideB.length === 0) {
+    return (
+      <ol className="slot-list">
+        {ordered.map((slot, index) => (
+          <SlotRow
+            key={slot.id}
+            slot={slot}
+            index={index}
+            shareCode={shareCode}
+            isHost={isHost}
+            userId={userId}
+            matchCancelled={matchCancelled}
+            profileLevel={profileLevel}
+          />
+        ))}
+      </ol>
+    );
+  }
+
   return (
-    <ol className="slot-list">
-      {slots.map((slot, index) => (
-        <SlotRow
-          key={slot.id}
-          slot={slot}
-          index={index}
-          shareCode={shareCode}
-          isHost={isHost}
-          userId={userId}
-          matchCancelled={matchCancelled}
-          profileLevel={profileLevel}
-        />
-      ))}
-    </ol>
+    <div className="slot-sides">
+      <section className="slot-side-block" aria-labelledby="slot-side-a">
+        <h3 className="slot-side-heading" id="slot-side-a">
+          Lado A
+        </h3>
+        <ol className="slot-list">
+          {sideA.map((slot, index) => (
+            <SlotRow
+              key={slot.id}
+              slot={slot}
+              index={index}
+              shareCode={shareCode}
+              isHost={isHost}
+              userId={userId}
+              matchCancelled={matchCancelled}
+              profileLevel={profileLevel}
+            />
+          ))}
+        </ol>
+      </section>
+      <section className="slot-side-block" aria-labelledby="slot-side-b">
+        <h3 className="slot-side-heading" id="slot-side-b">
+          Lado B · en contra
+        </h3>
+        <ol className="slot-list">
+          {sideB.map((slot, index) => (
+            <SlotRow
+              key={slot.id}
+              slot={slot}
+              index={index}
+              shareCode={shareCode}
+              isHost={isHost}
+              userId={userId}
+              matchCancelled={matchCancelled}
+              profileLevel={profileLevel}
+            />
+          ))}
+        </ol>
+      </section>
+    </div>
   );
 }
 

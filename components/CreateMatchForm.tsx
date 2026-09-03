@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useId, useMemo, useState } from "react";
-import { createMatchAction, updateMatchAction } from "@/app/actions";
+import { useActionState, useEffect, useId, useMemo, useState } from "react";
+import { createMatchAction, lookupVenueOccupancyAction, updateMatchAction } from "@/app/actions";
+import { OccupancyBanner } from "@/components/OccupancyBanner";
 import { trackEvent } from "@/lib/analytics";
 import { VenueMapLazy } from "@/components/VenueMapLazy";
 import { VenuePicker } from "@/components/VenuePicker";
@@ -28,10 +29,11 @@ import {
   SPORT_RULES,
   venuesForSport,
 } from "@/lib/sport-rules";
+import type { OccupancyConflict } from "@/lib/occupancy";
 import type { City, Venue } from "@/lib/types";
 import { mapsDirectionsUrl } from "@/lib/venue-meta";
 
-type State = { error?: string } | null;
+type State = { error?: string; occupancy?: OccupancyConflict } | null;
 
 export type MatchEditSlot = {
   id: string;
@@ -114,6 +116,7 @@ export function CreateMatchForm({
     edit ? edit.startsAtLocal : defaultStartsAtLocal(),
   );
   const [venueId, setVenueId] = useState(edit?.venueId ?? defaultVenueId ?? "");
+  const [liveOccupancy, setLiveOccupancy] = useState<OccupancyConflict | null>(null);
   const [editSlots, setEditSlots] = useState<EditSlotRow[]>(() =>
     (edit?.slots ?? []).map((slot) => ({
       key: slot.id,
@@ -164,6 +167,29 @@ export function CreateMatchForm({
     },
     null,
   );
+
+  useEffect(() => {
+    let cancelled = false;
+    const handle = window.setTimeout(() => {
+      if (!venueId || !startsAt) {
+        if (!cancelled) setLiveOccupancy(null);
+        return;
+      }
+      void lookupVenueOccupancyAction({
+        citySlug: city.slug,
+        venueId,
+        startsAt,
+        durationMin,
+        excludeMatchId: edit?.matchId,
+      }).then((result) => {
+        if (!cancelled) setLiveOccupancy(result.occupancy ?? null);
+      });
+    }, 280);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(handle);
+    };
+  }, [venueId, startsAt, durationMin, city.slug, edit?.matchId]);
 
   function chooseSport(next: Sport) {
     if (sportLocked) return;
@@ -227,6 +253,8 @@ export function CreateMatchForm({
   const genderId = `${formId}-gender`;
   const notesId = `${formId}-notes`;
 
+  const occupancy = liveOccupancy ?? state?.occupancy ?? null;
+  const occupancyBlocksSubmit = Boolean(occupancy);
   const submitLabel = isEdit ? "Guardar cambios" : "Publicar hueco";
   const pendingLabel = isEdit ? "Guardando…" : "Publicando…";
   const directionsHref = selectedVenue
@@ -300,7 +328,11 @@ export function CreateMatchForm({
         </div>
       </div>
 
-      {state?.error ? (
+      {occupancy ? (
+        <OccupancyBanner occupancy={occupancy} timeZone={city.timezone} sport={sport} isEdit={isEdit} />
+      ) : null}
+
+      {state?.error && !occupancy ? (
         <div className="match-compose-banner-error" role="alert">
           <p className="form-error">{state.error}</p>
         </div>
@@ -682,7 +714,7 @@ export function CreateMatchForm({
               <button className="btn-ghost" type="button" onClick={() => setStep(1)}>
                 Atrás
               </button>
-              <button className="btn-flood" type="submit" disabled={pending || sportVenues.length === 0}>
+              <button className="btn-flood" type="submit" disabled={pending || sportVenues.length === 0 || occupancyBlocksSubmit}>
                 {pending ? pendingLabel : submitLabel}
               </button>
             </div>
@@ -770,7 +802,7 @@ export function CreateMatchForm({
             <button className="btn-ghost" type="button" onClick={() => setStep(1)}>
               Atrás
             </button>
-            <button className="btn-flood" type="submit" disabled={pending || sportVenues.length === 0}>
+            <button className="btn-flood" type="submit" disabled={pending || sportVenues.length === 0 || occupancyBlocksSubmit}>
               {pending ? pendingLabel : submitLabel}
             </button>
           </div>

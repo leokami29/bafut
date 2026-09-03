@@ -6,6 +6,7 @@ import { JsonLd, matchJsonLd } from "@/components/JsonLd";
 import { MatchRow } from "@/components/MatchRow";
 import { HostShareBanner, ShareWhatsApp } from "@/components/ShareWhatsApp";
 import { SlotList } from "@/components/SlotList";
+import { OpenSideBForm } from "@/components/OpenSideBForm";
 import { VenueMapLazy } from "@/components/VenueMapLazy";
 import { getHostMatchCount, getMatchByCode, getProfile, getSessionUserId, getUpcomingMatches } from "@/lib/data";
 import { formatLevelOkBadge } from "@/lib/level-trust";
@@ -14,6 +15,7 @@ import { formatMoney, formatWhen, openSlotsPhrase } from "@/lib/format";
 import { formatLabel, genderLabel, matchStatusLabel, positionLabel, sportLabel } from "@/lib/labels";
 import type { Position } from "@/lib/constants";
 import { mapsDirectionsUrl } from "@/lib/venue-meta";
+import { isSport } from "@/lib/sport-rules";
 import {
   absoluteUrl,
   defaultOg,
@@ -181,7 +183,27 @@ export default async function PartidoPage({ params }: Props) {
             userId={userId}
             matchCancelled={cancelled}
             profileLevel={profile?.level ?? null}
+            showSides={Boolean(match.away_opened_by) || match.match_slots.some((slot) => slot.side === "b")}
           />
+          {!cancelled && !isHost && !match.away_opened_by && match.starts_at > new Date().toISOString() ? (
+            <section className="open-side-b-block" aria-labelledby="open-side-b-heading">
+              <h2 className="subhead" id="open-side-b-heading">
+                Otro lado
+              </h2>
+              {userId ? (
+                <OpenSideBForm
+                  matchId={match.id}
+                  shareCode={match.share_code}
+                  sport={isSport(match.sport) ? match.sport : "futbol"}
+                />
+              ) : (
+                <p>
+                  Esto es el equipo en contra. Si sos del mismo grupo, uníte.{" "}
+                  <Link href={`/entrar?next=/p/${match.share_code}`}>Entra para pedir el otro lado</Link>
+                </p>
+              )}
+            </section>
+          ) : null}
         </div>
 
         <section className="match-venue-block" aria-labelledby="match-venue-heading">
