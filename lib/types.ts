@@ -1,0 +1,31 @@
+import type { Tables } from "@/lib/database.types";
+
+export type City = Tables<"cities">;
+export type Venue = Tables<"venues">;
+export type Profile = Tables<"profiles">;
+export type Match = Tables<"matches">;
+export type MatchSlot = Tables<"match_slots">;
+export type SlotClaim = Tables<"slot_claims">;
+
+export type ClaimWithPlayer = SlotClaim & {
+  profiles: Pick<Profile, "id" | "display_name"> | null;
+};
+
+export type SlotWithClaims = MatchSlot & {
+  slot_claims: ClaimWithPlayer[];
+};
+
+export type MatchDetail = Match & {
+  venues: Venue;
+  cities: City;
+  profiles: Pick<Profile, "id" | "display_name">;
+  match_slots: SlotWithClaims[];
+};
+
+export function slotIsOpen(slot: SlotWithClaims) {
+  return !slot.slot_claims.some((claim) => claim.status === "accepted");
+}
+
+export function openSlotCount(match: Pick<MatchDetail, "match_slots">) {
+  return match.match_slots.filter(slotIsOpen).length;
+}
