@@ -3,8 +3,9 @@ import Link from "next/link";
 import { ProfileForm } from "@/components/ProfileForm";
 import { requireUserId } from "@/lib/auth";
 import { DEFAULT_CITY_SLUG } from "@/lib/constants";
-import { getActiveCity, getCities, getProfile } from "@/lib/data";
+import { getActiveCity, getCities, getHostPendingClaimCount, getProfile } from "@/lib/data";
 import { profileCompletenessHint } from "@/lib/profile";
+import { safeNextPath } from "@/lib/safe-next";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
@@ -18,11 +19,13 @@ export default async function PerfilPage({
 }) {
   const { userId } = await requireUserId("/perfil");
   const { next } = await searchParams;
-  const [profile, cities, city, supabase] = await Promise.all([
+  const nextPath = safeNextPath(next, "");
+  const [profile, cities, city, supabase, pendingCount] = await Promise.all([
     getProfile(userId),
     getCities(),
     getActiveCity(),
     createClient(),
+    getHostPendingClaimCount(userId),
   ]);
 
   if (!profile) {
@@ -43,15 +46,28 @@ export default async function PerfilPage({
     <main className="page page-narrow" id="main">
       <header className="page-head">
         <h1>Tu ficha</h1>
-        <p>Nombre, posición y nivel. Lo mínimo para que el host sepa quién pide el cupo.</p>
-        {next ? (
+        <p>Nombre, WhatsApp y nivel. Lo mínimo para que el host sepa quién pide el cupo.</p>
+        {nextPath ? (
           <p className="form-ok" role="status">
-            Cuando guardes, volvemos al partido.{" "}
-            <Link href={next}>Ir ahora</Link>
+            Cuando guardes, volvemos al partido.
           </p>
         ) : null}
+        <p className="profile-links">
+          <Link href="/perfil/partidos">
+            Mis partidos
+            {pendingCount > 0 ? ` (${pendingCount} pendientes)` : ""}
+          </Link>
+          {" · "}
+          <Link href="/apoyar">BaFut es open source</Link>
+        </p>
       </header>
-      <ProfileForm profile={profile} cities={cities} citySlug={citySlug} completenessHint={hint} />
+      <ProfileForm
+        profile={profile}
+        cities={cities}
+        citySlug={citySlug}
+        completenessHint={hint}
+        nextPath={nextPath || undefined}
+      />
     </main>
   );
 }

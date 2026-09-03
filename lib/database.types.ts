@@ -92,6 +92,7 @@ export type Database = {
           share_code: string;
           sport: string;
           starts_at: string;
+          status: string;
           venue_id: string;
         };
         Insert: {
@@ -108,6 +109,7 @@ export type Database = {
           share_code?: string;
           sport?: string;
           starts_at: string;
+          status?: string;
           venue_id: string;
         };
         Update: {
@@ -124,6 +126,7 @@ export type Database = {
           share_code?: string;
           sport?: string;
           starts_at?: string;
+          status?: string;
           venue_id?: string;
         };
         Relationships: [
@@ -146,6 +149,32 @@ export type Database = {
             columns: ["venue_id"];
             isOneToOne: false;
             referencedRelation: "venues";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      profile_contacts: {
+        Row: {
+          updated_at: string;
+          user_id: string;
+          whatsapp: string;
+        };
+        Insert: {
+          updated_at?: string;
+          user_id: string;
+          whatsapp: string;
+        };
+        Update: {
+          updated_at?: string;
+          user_id?: string;
+          whatsapp?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "profile_contacts_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: true;
+            referencedRelation: "profiles";
             referencedColumns: ["id"];
           },
         ];
@@ -255,10 +284,13 @@ export type Database = {
           name: string;
           neighborhood: string | null;
           notes: string | null;
+          phone: string | null;
+          rating: number | null;
           slug: string;
           sports: string[];
           surface: string;
           venue_kind: string;
+          website: string | null;
         };
         Insert: {
           address?: string | null;
@@ -271,10 +303,13 @@ export type Database = {
           name: string;
           neighborhood?: string | null;
           notes?: string | null;
+          phone?: string | null;
+          rating?: number | null;
           slug: string;
           sports?: string[];
           surface?: string;
           venue_kind?: string;
+          website?: string | null;
         };
         Update: {
           address?: string | null;
@@ -287,10 +322,13 @@ export type Database = {
           name?: string;
           neighborhood?: string | null;
           notes?: string | null;
+          phone?: string | null;
+          rating?: number | null;
           slug?: string;
           sports?: string[];
           surface?: string;
           venue_kind?: string;
+          website?: string | null;
         };
         Relationships: [
           {
@@ -308,6 +346,15 @@ export type Database = {
     };
     Functions: {
       claim_slot: { Args: { p_slot_id: string }; Returns: string };
+      get_match_contact: {
+        Args: { p_claim_id: string };
+        Returns: { display_name: string; whatsapp: string | null }[];
+      };
+      list_upcoming_open_match_ids: {
+        Args: { p_city_id: string; p_limit?: number };
+        Returns: string[];
+      };
+      withdraw_claim: { Args: { p_claim_id: string }; Returns: undefined };
     };
     Enums: {
       [_ in never]: never;

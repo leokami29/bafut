@@ -1,10 +1,11 @@
-import { FORMATS, SPORTS, type Format, type Sport } from "@/lib/constants";
+import { SPORTS, type Format, type Sport } from "@/lib/constants";
 import {
   BASQUET_SLOT_ROLES,
   getHeroHeadline,
   type HeroMissingRole,
   type HeroRoleBySport,
 } from "@/lib/hero-copy";
+import { formatsForSport } from "@/lib/sport-rules";
 
 export type DotPosition = { x: number; y: number; isHole?: boolean };
 
@@ -19,8 +20,10 @@ export type PitchSetup = {
 /** Ancho del viewBox SVG — usado para espejar formación al lado derecho. */
 export const PITCH_VIEWBOX_WIDTH = 360;
 
+type SoccerFormat = "5v5" | "6v6" | "7v7" | "8v8" | "11v11";
+
 /** Formaciones realistas por formato (líneas de campo sin arquero). */
-export const SOCCER_FORMATIONS: Record<Format, number[][]> = {
+export const SOCCER_FORMATIONS: Record<SoccerFormat, number[][]> = {
   "5v5": [
     [2, 1, 1],
     [1, 2, 1],
@@ -281,7 +284,7 @@ export function pickRandomPitchSetup(): PitchSetup {
   const sport = pickRandom(SPORTS);
 
   if (sport === "futbol") {
-    const format = pickRandom(FORMATS);
+    const format = pickRandom(formatsForSport("futbol")) as SoccerFormat;
     const formation = pickRandom(SOCCER_FORMATIONS[format]);
     return {
       sport,

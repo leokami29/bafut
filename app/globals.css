@@ -1325,6 +1325,113 @@ details.venue-group[open] > summary.venue-group-title::before {
   gap: 0.35rem 0.75rem;
 }
 
+.venue-hours-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.15rem;
+  font-size: 0.92rem;
+}
+
+.venue-photos-section,
+.venue-reviews-section {
+  margin: 1.75rem 0 0.5rem;
+}
+
+.venue-photo-grid {
+  margin: 0.75rem 0 0.35rem;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.venue-photo {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  background: color-mix(in oklab, var(--ink) 6%, var(--paper));
+  border: 1px solid color-mix(in oklab, var(--ink) 12%, transparent);
+}
+
+.venue-review-list {
+  margin: 0.75rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.85rem;
+}
+
+.venue-review {
+  padding: 0.85rem 0;
+  border-top: 1px solid color-mix(in oklab, var(--ink) 12%, transparent);
+}
+
+.venue-review:first-child {
+  border-top: 0;
+  padding-top: 0.25rem;
+}
+
+.venue-review-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 0.75rem;
+  margin-bottom: 0.35rem;
+}
+
+.venue-review-author {
+  font-size: 0.95rem;
+}
+
+.venue-review-stars {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.78rem;
+  color: var(--turf-deep);
+}
+
+.venue-review-date {
+  font-size: 0.8rem;
+  color: color-mix(in oklab, var(--ink) 55%, transparent);
+}
+
+.venue-review-text {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.venue-review-owner {
+  margin: 0.55rem 0 0;
+  padding: 0.55rem 0.7rem;
+  font-size: 0.88rem;
+  line-height: 1.4;
+  background: color-mix(in oklab, var(--turf) 6%, var(--paper));
+  border-left: 2px solid color-mix(in oklab, var(--turf) 45%, transparent);
+}
+
+.venue-review-owner-label {
+  font-weight: 600;
+}
+
+@media (min-width: 720px) {
+  .venue-photo-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .venue-review-list {
+    grid-template-columns: 1fr 1fr;
+    column-gap: 1.5rem;
+  }
+
+  .venue-review {
+    border-top: 1px solid color-mix(in oklab, var(--ink) 12%, transparent);
+  }
+}
+
 .page-venue-detail {
   width: 100%;
   max-width: 72rem;
@@ -1911,6 +2018,224 @@ details.venue-group[open] > summary.venue-group-title::before {
     border-left: 0;
     border-block: 1px solid color-mix(in oklab, var(--turf) 25%, transparent);
     box-shadow: 0 4px 12px color-mix(in oklab, var(--ink) 8%, transparent);
+  }
+}
+
+/* —— Potenciar: loop, badge, donaciones, PWA —— */
+.nav-label-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.nav-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.15rem;
+  height: 1.15rem;
+  padding: 0 0.3rem;
+  border-radius: 999px;
+  background: var(--flood);
+  color: var(--chalk);
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.site-footer {
+  margin-top: 2.5rem;
+  padding: 1.25rem 1.25rem calc(1.25rem + env(safe-area-inset-bottom));
+  border-top: 1px solid color-mix(in oklab, var(--turf) 22%, transparent);
+  color: color-mix(in oklab, var(--ink) 70%, transparent);
+  font-size: 0.9rem;
+}
+
+.site-footer a {
+  color: var(--turf);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.profile-links {
+  margin-top: 0.75rem;
+  font-size: 0.95rem;
+}
+
+.field-help {
+  margin: -0.35rem 0 0.5rem;
+  font-size: 0.85rem;
+  color: color-mix(in oklab, var(--ink) 65%, transparent);
+}
+
+.create-steps {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.35rem;
+  margin-bottom: 0.75rem;
+}
+
+.create-steps button {
+  border: 1px solid color-mix(in oklab, var(--turf) 30%, transparent);
+  background: transparent;
+  color: var(--ink);
+  padding: 0.55rem 0.65rem;
+  font: inherit;
+  cursor: pointer;
+}
+
+.create-steps button.is-on {
+  background: color-mix(in oklab, var(--turf) 14%, transparent);
+  border-color: var(--turf);
+  font-weight: 600;
+}
+
+.create-step-next {
+  width: 100%;
+}
+
+.form-actions-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.inbox-section {
+  margin-top: 1.75rem;
+}
+
+.inbox-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.85rem;
+}
+
+.inbox-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid color-mix(in oklab, var(--turf) 18%, transparent);
+}
+
+.inbox-title {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0;
+  font-weight: 650;
+}
+
+.inbox-meta {
+  margin: 0.25rem 0 0;
+  font-size: 0.9rem;
+  color: color-mix(in oklab, var(--ink) 68%, transparent);
+}
+
+.donate-list {
+  list-style: none;
+  padding: 0;
+  margin: 1.5rem 0;
+  display: grid;
+  gap: 1.25rem;
+}
+
+.donate-blurb {
+  margin: 0.45rem 0 0;
+  font-size: 0.9rem;
+  color: color-mix(in oklab, var(--ink) 68%, transparent);
+}
+
+.cancel-match-form {
+  margin: 0.75rem 0 1rem;
+}
+
+.city-toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(4.5rem + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  z-index: 60;
+  margin: 0;
+  padding: 0.65rem 1rem;
+  border-radius: 999px;
+  background: var(--turf);
+  color: var(--chalk);
+  font-size: 0.9rem;
+  box-shadow: 0 8px 24px color-mix(in oklab, var(--ink) 25%, transparent);
+}
+
+.pwa-install-banner {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.25rem;
+  background: color-mix(in oklab, var(--turf) 92%, black);
+  color: var(--chalk);
+}
+
+.pwa-install-banner p {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.pwa-install-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.venue-filters-drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  background: color-mix(in oklab, var(--ink) 45%, transparent);
+  display: flex;
+  align-items: flex-end;
+}
+
+.venue-filters-sheet {
+  width: 100%;
+  max-height: 85vh;
+  overflow: auto;
+  background: var(--paper);
+  padding: 1rem 1.25rem 1.5rem;
+  border-radius: 1rem 1rem 0 0;
+  display: grid;
+  gap: 1rem;
+}
+
+.venue-filters-sheet-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.venue-filters-sheet-head h2 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.venue-filters-trigger {
+  white-space: nowrap;
+}
+
+@media (max-width: 899px) {
+  .site-footer {
+    padding-bottom: calc(5rem + env(safe-area-inset-bottom));
+  }
+
+  .city-toast {
+    bottom: calc(5.25rem + env(safe-area-inset-bottom));
   }
 }
 

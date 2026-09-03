@@ -2,9 +2,9 @@ import { cache } from "react";
 import { cookies } from "next/headers";
 import { CITY_COOKIE, DEFAULT_CITY_SLUG } from "@/lib/constants";
 import { createClient } from "@/lib/supabase/server";
-import type { MatchDetail } from "@/lib/types";
+import type { MatchDetail, ProfileWithContact } from "@/lib/types";
 
-export type { City, Venue, Profile, Match, MatchSlot, SlotClaim, MatchDetail } from "@/lib/types";
+export type { City, Venue, Profile, Match, MatchSlot, SlotClaim, MatchDetail, ProfileWithContact } from "@/lib/types";
 export { openSlotCount, slotIsOpen } from "@/lib/types";
 
 const matchSelect = `
@@ -79,16 +79,29 @@ export const getVenueBySlug = cache(async (cityId: string, slug: string) => {
 
 export const getUpcomingMatches = cache(async (cityId: string) => {
   const supabase = await createClient();
+  const { data: ids, error: rpcError } = await supabase.rpc("list_upcoming_open_match_ids", {
+    p_city_id: cityId,
+    p_limit: 50,
+  });
+  if (rpcError) {
+    throw rpcError;
+  }
+  const matchIds = ids ?? [];
+  if (matchIds.length === 0) {
+    return [] as MatchDetail[];
+  }
+
   const { data, error } = await supabase
     .from("matches")
     .select(matchSelect)
-    .eq("city_id", cityId)
-    .gte("starts_at", new Date().toISOString())
+    .in("id", matchIds)
     .order("starts_at");
   if (error) {
     throw error;
   }
-  return (data ?? []) as MatchDetail[];
+
+  const byId = new Map((data ?? []).map((row) => [row.id, row as MatchDetail]));
+  return matchIds.map((id) => byId.get(id)).filter((row): row is MatchDetail => Boolean(row));
 });
 
 export const getMatchByCode = cache(async (shareCode: string) => {
@@ -104,13 +117,77 @@ export const getMatchByCode = cache(async (shareCode: string) => {
   return data as MatchDetail | null;
 });
 
-export const getProfile = cache(async (userId: string) => {
+export const getProfile = cache(async (userId: string): Promise<ProfileWithContact | null> => {
   const supabase = await createClient();
-  const { data, error } = await supabase.from("profiles").select("*").eq("id", userId).maybeSingle();
+  const [{ data: profile, error }, { data: contact }] = await Promise.all([
+    supabase.from("profiles").select("*").eq("id", userId).maybeSingle(),
+    supabase.from("profile_contacts").select("whatsapp").eq("user_id", userId).maybeSingle(),
+  ]);
   if (error) {
     throw error;
   }
-  return data;
+  if (!profile) {
+    return null;
+  }
+  return { ...profile, whatsapp: contact?.whatsapp ?? null };
+});
+
+export const getHostPendingClaimCount = cache(async (userId: string) => {
+  const supabase = await createClient();
+  const { count, error } = await supabase
+    .from("slot_claims")
+    .select("id, matches!inner(host_id)", { count: "exact", head: true })
+    .eq("status", "pending")
+    .eq("matches.host_id", userId);
+  if (error) {
+    throw error;
+  }
+  return count ?? 0;
+});
+
+export const getMyHostedMatches = cache(async (userId: string) => {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("matches")
+    .select(matchSelect)
+    .eq("host_id", userId)
+    .gte("starts_at", new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString())
+    .order("starts_at", { ascending: false })
+    .limit(40);
+  if (error) {
+    throw error;
+  }
+  return (data ?? []) as MatchDetail[];
+});
+
+export const getMyClaimedMatches = cache(async (userId: string) => {
+  const supabase = await createClient();
+  const { data: claims, error: claimsError } = await supabase
+    .from("slot_claims")
+    .select("id, status, match_id, created_at")
+    .eq("player_id", userId)
+    .in("status", ["pending", "accepted", "rejected", "withdrawn"])
+    .order("created_at", { ascending: false })
+    .limit(40);
+  if (claimsError) {
+    throw claimsError;
+  }
+  const matchIds = [...new Set((claims ?? []).map((c) => c.match_id))];
+  if (matchIds.length === 0) {
+    return [];
+  }
+  const { data: matches, error } = await supabase.from("matches").select(matchSelect).in("id", matchIds);
+  if (error) {
+    throw error;
+  }
+  const byId = new Map((matches ?? []).map((row) => [row.id, row as MatchDetail]));
+  return (claims ?? [])
+    .map((claim) => {
+      const match = byId.get(claim.match_id);
+      if (!match) return null;
+      return { claim, match };
+    })
+    .filter((row): row is { claim: NonNullable<(typeof claims)[number]>; match: MatchDetail } => Boolean(row));
 });
 
 export async function getSessionUserId() {

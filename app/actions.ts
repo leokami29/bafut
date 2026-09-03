@@ -3,10 +3,30 @@
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { CITY_COOKIE, DEFAULT_CITY_SLUG, FORMATS, GENDERS, LEVELS, POSITIONS, SPORTS } from "@/lib/constants";
+import {
+  CITY_COOKIE,
+  DEFAULT_CITY_SLUG,
+  GENDERS,
+  LEVELS,
+  POSITIONS,
+  SPORTS,
+  type Format,
+  type Position,
+  type Sport,
+} from "@/lib/constants";
 import { requireUserId } from "@/lib/auth";
 import { getCityBySlug } from "@/lib/data";
 import { isProfileComplete } from "@/lib/profile";
+import { safeNextPath } from "@/lib/safe-next";
+import {
+  defaultFormatForSport,
+  formatAllowedForSport,
+  isDuration,
+  isSport,
+  positionAllowedForSport,
+  SPORT_RULES,
+} from "@/lib/sport-rules";
+import { normalizeWhatsapp } from "@/lib/whatsapp-contact";
 
 function asOne<T extends readonly string[]>(value: FormDataEntryValue | null, allowed: T, fallback: T[number]) {
   if (typeof value !== "string" || !allowed.includes(value as T[number])) {
@@ -41,9 +61,42 @@ export async function createMatchAction(formData: FormData) {
     return { error: "Elige cancha y una hora que todavía no haya pasado." };
   }
 
+  const sportRaw = String(formData.get("sport") ?? "");
+  if (!isSport(sportRaw)) {
+    return { error: "Elige un deporte válido." };
+  }
+  const sport: Sport = sportRaw;
+
+  const { data: venue, error: venueError } = await supabase
+    .from("venues")
+    .select("id, city_id, sports")
+    .eq("id", venueId)
+    .maybeSingle();
+
+  if (venueError || !venue || venue.city_id !== city.id) {
+    return { error: "Esa cancha no está en la ciudad activa." };
+  }
+  if (!venue.sports?.includes(sport)) {
+    return { error: "Esa cancha no ofrece ese deporte." };
+  }
+
+  const format = asOne(formData.get("format"), SPORT_RULES[sport].formats, defaultFormatForSport(sport)) as Format;
+  if (!formatAllowedForSport(sport, format)) {
+    return { error: "Ese formato no aplica para el deporte." };
+  }
+
+  const durationMin = Number(formData.get("duration_min") ?? 60);
+  if (!isDuration(durationMin)) {
+    return { error: "La duración debe ser 30, 60 o 90 minutos." };
+  }
+
+  const position = asOne(formData.get("position"), POSITIONS, "any") as Position;
+  if (!positionAllowedForSport(sport, position)) {
+    return { error: "Esa posición no aplica para el deporte." };
+  }
+
   const openCount = Math.min(12, Math.max(1, Number(formData.get("open_count") ?? 1)));
-  const needKeeper = formData.get("need_keeper") === "on";
-  const position = asOne(formData.get("position"), POSITIONS, "any");
+  const needKeeper = formData.get("need_keeper") === "on" && SPORT_RULES[sport].hasKeeper;
   const level = asOne(formData.get("level"), LEVELS, "any");
   const costRaw = String(formData.get("cost_per_person") ?? "").replace(/\D/g, "");
 
@@ -54,12 +107,13 @@ export async function createMatchAction(formData: FormData) {
       venue_id: venueId,
       host_id: userId,
       starts_at: startsAt.toISOString(),
-      duration_min: Number(formData.get("duration_min") ?? 60),
-      sport: asOne(formData.get("sport"), SPORTS, "futbol"),
-      format: asOne(formData.get("format"), FORMATS, "5v5"),
+      duration_min: durationMin,
+      sport,
+      format,
       cost_per_person: costRaw ? Number(costRaw) : null,
       gender_policy: asOne(formData.get("gender_policy"), GENDERS, "mixed"),
       notes: String(formData.get("notes") ?? "").trim() || null,
+      status: "open",
     })
     .select("id, share_code")
     .single();
@@ -89,28 +143,35 @@ export async function claimSlotAction(formData: FormData) {
   const shareCode = String(formData.get("share_code") ?? "");
   const { supabase, userId } = await requireUserId(shareCode ? `/p/${shareCode}` : "/partidos");
 
-  const { data: profile, error: profileError } = await supabase
-    .from("profiles")
-    .select("display_name")
-    .eq("id", userId)
-    .maybeSingle();
-  if (profileError || !profile) {
+  const profile = await (async () => {
+    const { data, error } = await supabase.from("profiles").select("display_name").eq("id", userId).maybeSingle();
+    if (error || !data) return null;
+    const { data: contact } = await supabase
+      .from("profile_contacts")
+      .select("whatsapp")
+      .eq("user_id", userId)
+      .maybeSingle();
+    return { ...data, whatsapp: contact?.whatsapp ?? null };
+  })();
+
+  if (!profile) {
     return { error: "No encontramos tu perfil." };
   }
 
   const { data: authData } = await supabase.auth.getUser();
   const email = authData.user?.email ?? null;
   if (!isProfileComplete(profile, email)) {
-    redirect(`/perfil?next=/p/${shareCode}`);
+    redirect(`/perfil?next=${encodeURIComponent(`/p/${shareCode}`)}`);
   }
 
   const { error } = await supabase.rpc("claim_slot", { p_slot_id: slotId });
   if (error) {
-    return { error: "Ese cupo ya no está o ya lo pediste." };
+    return { error: error.message || "Ese cupo ya no está o ya lo pediste." };
   }
 
   revalidatePath(`/p/${shareCode}`);
   revalidatePath("/partidos");
+  revalidatePath("/perfil/partidos");
   return { ok: true };
 }
 
@@ -141,14 +202,86 @@ export async function respondClaimAction(formData: FormData) {
 
   revalidatePath(`/p/${shareCode}`);
   revalidatePath("/partidos");
+  revalidatePath("/perfil/partidos");
   return { ok: true };
 }
 
+export async function withdrawClaimAction(formData: FormData) {
+  const claimId = String(formData.get("claim_id") ?? "");
+  const shareCode = String(formData.get("share_code") ?? "");
+  const { supabase } = await requireUserId(shareCode ? `/p/${shareCode}` : "/perfil/partidos");
+
+  const { error } = await supabase.rpc("withdraw_claim", { p_claim_id: claimId });
+  if (error) {
+    return { error: error.message || "No se pudo retirar el pedido." };
+  }
+
+  if (shareCode) revalidatePath(`/p/${shareCode}`);
+  revalidatePath("/partidos");
+  revalidatePath("/perfil/partidos");
+  return { ok: true };
+}
+
+export async function cancelMatchAction(formData: FormData): Promise<void> {
+  const matchId = String(formData.get("match_id") ?? "");
+  const shareCode = String(formData.get("share_code") ?? "");
+  const { supabase, userId } = await requireUserId(shareCode ? `/p/${shareCode}` : "/perfil/partidos");
+
+  const { data: match } = await supabase
+    .from("matches")
+    .select("id, host_id, share_code, status")
+    .eq("id", matchId)
+    .maybeSingle();
+
+  if (!match || match.host_id !== userId) {
+    return;
+  }
+  if (match.status === "cancelled") {
+    return;
+  }
+
+  await supabase.from("matches").update({ status: "cancelled" }).eq("id", match.id);
+
+  revalidatePath(`/p/${match.share_code}`);
+  revalidatePath("/partidos");
+  revalidatePath("/perfil/partidos");
+}
+
+export async function getMatchContactAction(claimId: string) {
+  const { supabase } = await requireUserId();
+  const { data, error } = await supabase.rpc("get_match_contact", { p_claim_id: claimId });
+  if (error) {
+    return { error: "No se pudo cargar el contacto." };
+  }
+  const row = Array.isArray(data) ? data[0] : data;
+  if (!row?.whatsapp) {
+    return { error: "Todavía no hay WhatsApp de la otra parte." };
+  }
+  return {
+    ok: true as const,
+    displayName: row.display_name as string,
+    whatsapp: row.whatsapp as string,
+  };
+}
+
 export async function updateProfileAction(formData: FormData) {
+  const nextRaw = String(formData.get("next") ?? "");
+  const nextPath = safeNextPath(nextRaw, "/perfil");
   const { supabase, userId } = await requireUserId("/perfil");
   const displayName = String(formData.get("display_name") ?? "").trim();
   if (displayName.length < 2) {
     return { error: "Pon un nombre para que te reconozcan en la cancha." };
+  }
+
+  const whatsapp = normalizeWhatsapp(String(formData.get("whatsapp") ?? ""));
+  if (!whatsapp) {
+    return { error: "Pon un WhatsApp válido (celular colombiano de 10 dígitos)." };
+  }
+
+  const preferredSport = asOne(formData.get("preferred_sport"), SPORTS, "futbol") as Sport;
+  let preferredPosition = asOne(formData.get("preferred_position"), POSITIONS, "any") as Position;
+  if (!positionAllowedForSport(preferredSport, preferredPosition)) {
+    preferredPosition = "any";
   }
 
   const city = await getCityBySlug(String(formData.get("city_slug") ?? DEFAULT_CITY_SLUG));
@@ -157,8 +290,8 @@ export async function updateProfileAction(formData: FormData) {
     .update({
       display_name: displayName,
       city_id: city?.id ?? null,
-      preferred_sport: asOne(formData.get("preferred_sport"), SPORTS, "futbol"),
-      preferred_position: asOne(formData.get("preferred_position"), POSITIONS, "any"),
+      preferred_sport: preferredSport,
+      preferred_position: preferredPosition,
       level: asOne(formData.get("level"), LEVELS, "mid"),
       updated_at: new Date().toISOString(),
     })
@@ -166,6 +299,15 @@ export async function updateProfileAction(formData: FormData) {
 
   if (error) {
     return { error: "No se pudo guardar el perfil." };
+  }
+
+  const { error: contactError } = await supabase.from("profile_contacts").upsert({
+    user_id: userId,
+    whatsapp,
+    updated_at: new Date().toISOString(),
+  });
+  if (contactError) {
+    return { error: "Se guardó el nombre, pero no el WhatsApp. Inténtalo de nuevo." };
   }
 
   if (city?.slug) {
@@ -178,6 +320,9 @@ export async function updateProfileAction(formData: FormData) {
 
   revalidatePath("/");
   revalidatePath("/perfil");
+  if (nextPath !== "/perfil") {
+    redirect(nextPath);
+  }
   return { ok: true };
 }
 

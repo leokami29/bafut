@@ -6,12 +6,23 @@ import type { Venue } from "@/lib/types";
 export function VenuePicker({
   venues,
   defaultVenueId,
+  emptyHint = "Ninguna cancha coincide. Borra la búsqueda.",
 }: {
   venues: Venue[];
   defaultVenueId?: string;
+  emptyHint?: string;
 }) {
   const [query, setQuery] = useState("");
-  const [selected, setSelected] = useState(defaultVenueId ?? "");
+  const [selected, setSelected] = useState(() =>
+    defaultVenueId && venues.some((v) => v.id === defaultVenueId) ? defaultVenueId : "",
+  );
+
+  const effectiveSelected =
+    selected && venues.some((v) => v.id === selected)
+      ? selected
+      : defaultVenueId && venues.some((v) => v.id === defaultVenueId)
+        ? defaultVenueId
+        : "";
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -39,19 +50,21 @@ export function VenuePicker({
         Cancha
         <input
           type="search"
-          placeholder={`Buscar entre ${venues.length} canchas…`}
+          placeholder={venues.length ? `Buscar entre ${venues.length} canchas…` : "Sin canchas para este deporte"}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           aria-controls="venue-picker-select"
+          disabled={venues.length === 0}
         />
       </label>
       <select
         id="venue-picker-select"
         name="venue_id"
         required
-        value={selected}
+        value={effectiveSelected}
         onChange={(e) => setSelected(e.target.value)}
-        size={Math.min(8, Math.max(4, grouped.reduce((n, [, list]) => n + list.length, 0)))}
+        size={Math.min(8, Math.max(4, grouped.reduce((n, [, list]) => n + list.length, 0) || 4))}
+        disabled={venues.length === 0}
       >
         <option value="" disabled>
           Elige dónde van a jugar
@@ -66,9 +79,9 @@ export function VenuePicker({
           </optgroup>
         ))}
       </select>
-      {filtered.length === 0 ? (
+      {venues.length === 0 || filtered.length === 0 ? (
         <p className="form-error" role="status">
-          Ninguna cancha coincide. Borra la búsqueda.
+          {venues.length === 0 ? emptyHint : "Ninguna cancha coincide. Borra la búsqueda."}
         </p>
       ) : null}
     </div>

@@ -8,7 +8,17 @@ import { VenueMapLazy } from "@/components/VenueMapLazy";
 import { getActiveCity, getUpcomingMatches, getVenueBySlug } from "@/lib/data";
 import { sportLabel, surfaceLabel, venueKindLabel } from "@/lib/labels";
 import type { Sport } from "@/lib/constants";
-import { mapsDirectionsUrl, parseVenueNotes, phoneHref } from "@/lib/venue-meta";
+import {
+  enrichmentToMeta,
+  getVenueEnrichment,
+  mergeVenueMeta,
+} from "@/lib/venue-enrichment";
+import {
+  formatHoursLines,
+  mapsDirectionsUrl,
+  phoneHref,
+  resolveVenuePublicMeta,
+} from "@/lib/venue-meta";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -19,7 +29,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!venue) {
     return { title: "Cancha" };
   }
-  const meta = parseVenueNotes(venue.notes);
+  const meta = mergeVenueMeta(
+    resolveVenuePublicMeta(venue),
+    enrichmentToMeta(getVenueEnrichment(slug)),
+  );
   const place = venue.neighborhood ? `${venue.neighborhood}, ${city?.name}` : city?.name;
   return {
     title: venue.name,
@@ -59,7 +72,10 @@ export default async function CanchaPage({ params }: Props) {
     notFound();
   }
 
-  const meta = parseVenueNotes(venue.notes);
+  const meta = mergeVenueMeta(
+    resolveVenuePublicMeta(venue),
+    enrichmentToMeta(getVenueEnrichment(slug)),
+  );
   const here = matches.filter((match) => match.venue_id === venue.id);
   const publishHref = `/partidos/nuevo?venue=${venue.slug}`;
   const directionsHref = mapsDirectionsUrl(
@@ -72,6 +88,9 @@ export default async function CanchaPage({ params }: Props) {
   const phoneLink = meta.phone ? phoneHref(meta.phone) : undefined;
   const description = meta.description;
   const descriptionLong = description != null && description.length > 180;
+  const hoursLines = formatHoursLines(meta.hours);
+  const photos = meta.images.slice(0, 4);
+  const reviews = meta.reviews.slice(0, 8);
 
   return (
     <main className="page page-venue-detail" id="main">
@@ -158,7 +177,18 @@ export default async function CanchaPage({ params }: Props) {
                 empty="Sin sitio web registrado"
               />
               <InfoRow label="Superficie" value={surface} />
-              {meta.hours ? <InfoRow label="Horario" value={meta.hours} /> : null}
+              {hoursLines.length > 0 ? (
+                <InfoRow
+                  label="Horario"
+                  value={
+                    <ul className="venue-hours-list">
+                      {hoursLines.map((line) => (
+                        <li key={line}>{line}</li>
+                      ))}
+                    </ul>
+                  }
+                />
+              ) : null}
             </dl>
           </section>
         </div>
@@ -198,6 +228,74 @@ export default async function CanchaPage({ params }: Props) {
           ) : (
             <p className="notes">{description}</p>
           )}
+        </section>
+      ) : null}
+
+      {photos.length > 0 ? (
+        <section className="venue-photos-section" aria-labelledby="venue-photos-heading">
+          <h2 className="subhead" id="venue-photos-heading">
+            Fotos
+          </h2>
+          <ul className="venue-photo-grid">
+            {photos.map((src) => (
+              <li key={src}>
+                {/* Google Maps CDN; plain img avoids next/image remote config */}
+                <img
+                  src={src}
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                  referrerPolicy="no-referrer"
+                  className="venue-photo"
+                />
+              </li>
+            ))}
+          </ul>
+          {meta.source === "google" ? (
+            <p className="venue-section-meta">Fotos desde Google Maps</p>
+          ) : null}
+        </section>
+      ) : null}
+
+      {reviews.length > 0 ? (
+        <section className="venue-reviews-section" aria-labelledby="venue-reviews-heading">
+          <div className="venue-section-head">
+            <h2 className="subhead" id="venue-reviews-heading">
+              Comentarios de Google
+            </h2>
+            <p className="venue-section-meta">
+              {meta.reviewCount != null
+                ? `${reviews.length} de ${meta.reviewCount} reseñas`
+                : `${reviews.length} reseñas recientes`}
+            </p>
+          </div>
+          <ul className="venue-review-list">
+            {reviews.map((review, index) => (
+              <li
+                key={`${review.author ?? "anon"}-${review.date ?? index}-${index}`}
+                className="venue-review"
+              >
+                <div className="venue-review-head">
+                  <strong className="venue-review-author">
+                    {review.author?.trim() || "Usuario de Google"}
+                  </strong>
+                  {review.rating != null ? (
+                    <span className="venue-review-stars" aria-label={`${review.rating} de 5`}>
+                      ★ {Number(review.rating).toFixed(0)}
+                    </span>
+                  ) : null}
+                  {review.date ? <span className="venue-review-date">{review.date}</span> : null}
+                </div>
+                {review.text ? <p className="venue-review-text">{review.text}</p> : null}
+                {review.ownerResponse ? (
+                  <p className="venue-review-owner">
+                    <span className="venue-review-owner-label">Respuesta del dueño:</span>{" "}
+                    {review.ownerResponse}
+                  </p>
+                ) : null}
+              </li>
+            ))}
+          </ul>
         </section>
       ) : null}
 

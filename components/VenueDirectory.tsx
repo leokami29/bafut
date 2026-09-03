@@ -44,6 +44,7 @@ export function VenueDirectory({
   const [neighborhood, setNeighborhood] = useState<string>("all");
   const [mobileView, setMobileView] = useState<MobileView>("both");
   const [focusId, setFocusId] = useState<string | undefined>();
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   const availableSports = useMemo(() => {
     const set = new Set<Sport>();
@@ -94,9 +95,74 @@ export function VenueDirectory({
   const showList = isDesktop || mobileView !== "map";
   const hasActiveFilter =
     query.trim() !== "" || kind !== "all" || sport !== "all" || neighborhood !== "all";
+  const activeFilterCount =
+    (kind !== "all" ? 1 : 0) + (sport !== "all" ? 1 : 0) + (neighborhood !== "all" ? 1 : 0);
 
   const groupDefaultOpen = (barrio: string) =>
     isDesktop || neighborhood === barrio || (hasActiveFilter && grouped.length <= 4);
+
+  const filterControls = (
+    <>
+      <div className="filter-chips" role="group" aria-label="Tipo de cancha">
+        {(
+          [
+            ["all", "Todas"],
+            ["alquiler", "Alquiler"],
+            ["publica", "Pública"],
+            ["club", "Club"],
+          ] as const
+        ).map(([value, label]) => (
+          <button
+            key={value}
+            type="button"
+            className={kind === value ? "is-on" : undefined}
+            aria-pressed={kind === value}
+            onClick={() => setKind(value)}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {availableSports.length > 1 ? (
+        <div className="filter-chips filter-chips-sport" role="group" aria-label="Deporte">
+          <button
+            type="button"
+            className={sport === "all" ? "is-on" : undefined}
+            aria-pressed={sport === "all"}
+            onClick={() => setSport("all")}
+          >
+            Todos
+          </button>
+          {availableSports.map((value) => (
+            <button
+              key={value}
+              type="button"
+              className={sport === value ? "is-on" : undefined}
+              aria-pressed={sport === value}
+              onClick={() => setSport(value)}
+            >
+              {sportLabel[value]}
+            </button>
+          ))}
+        </div>
+      ) : null}
+
+      {neighborhoods.length > 1 ? (
+        <label className="venue-filter-select">
+          <span className="sr-only">Barrio</span>
+          <select value={neighborhood} onChange={(e) => setNeighborhood(e.target.value)}>
+            <option value="all">Todos los barrios</option>
+            {neighborhoods.map((n) => (
+              <option key={n} value={n}>
+                {n}
+              </option>
+            ))}
+          </select>
+        </label>
+      ) : null}
+    </>
+  );
 
   return (
     <div className="venue-directory">
@@ -112,66 +178,7 @@ export function VenueDirectory({
           />
         </label>
 
-        <div className="venue-toolbar-filters">
-          <div className="filter-chips" role="group" aria-label="Tipo de cancha">
-            {(
-              [
-                ["all", "Todas"],
-                ["alquiler", "Alquiler"],
-                ["publica", "Pública"],
-                ["club", "Club"],
-              ] as const
-            ).map(([value, label]) => (
-              <button
-                key={value}
-                type="button"
-                className={kind === value ? "is-on" : undefined}
-                aria-pressed={kind === value}
-                onClick={() => setKind(value)}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-
-          {availableSports.length > 1 ? (
-            <div className="filter-chips filter-chips-sport" role="group" aria-label="Deporte">
-              <button
-                type="button"
-                className={sport === "all" ? "is-on" : undefined}
-                aria-pressed={sport === "all"}
-                onClick={() => setSport("all")}
-              >
-                Todos
-              </button>
-              {availableSports.map((value) => (
-                <button
-                  key={value}
-                  type="button"
-                  className={sport === value ? "is-on" : undefined}
-                  aria-pressed={sport === value}
-                  onClick={() => setSport(value)}
-                >
-                  {sportLabel[value]}
-                </button>
-              ))}
-            </div>
-          ) : null}
-
-          {neighborhoods.length > 1 ? (
-            <label className="venue-filter-select">
-              <span className="sr-only">Barrio</span>
-              <select value={neighborhood} onChange={(e) => setNeighborhood(e.target.value)}>
-                <option value="all">Todos los barrios</option>
-                {neighborhoods.map((n) => (
-                  <option key={n} value={n}>
-                    {n}
-                  </option>
-                ))}
-              </select>
-            </label>
-          ) : null}
-        </div>
+        {isDesktop ? <div className="venue-toolbar-filters">{filterControls}</div> : null}
 
         <div className="venue-toolbar-meta">
           <p className="venue-count" aria-live="polite">
@@ -179,28 +186,55 @@ export function VenueDirectory({
           </p>
 
           {!isDesktop ? (
-            <div className="view-toggle view-toggle-mobile" role="group" aria-label="Vista">
-              {(
-                [
-                  ["both", "Mapa y lista"],
-                  ["map", "Solo mapa"],
-                  ["list", "Solo lista"],
-                ] as const
-              ).map(([value, label]) => (
-                <button
-                  key={value}
-                  type="button"
-                  className={mobileView === value ? "is-on" : undefined}
-                  aria-pressed={mobileView === value}
-                  onClick={() => setMobileView(value)}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
+            <>
+              <button
+                type="button"
+                className="btn-ghost venue-filters-trigger"
+                aria-expanded={filtersOpen}
+                onClick={() => setFiltersOpen(true)}
+              >
+                Filtros{activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}
+              </button>
+              <div className="view-toggle view-toggle-mobile" role="group" aria-label="Vista">
+                {(
+                  [
+                    ["both", "Mapa y lista"],
+                    ["map", "Solo mapa"],
+                    ["list", "Solo lista"],
+                  ] as const
+                ).map(([value, label]) => (
+                  <button
+                    key={value}
+                    type="button"
+                    className={mobileView === value ? "is-on" : undefined}
+                    aria-pressed={mobileView === value}
+                    onClick={() => setMobileView(value)}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </>
           ) : null}
         </div>
       </div>
+
+      {!isDesktop && filtersOpen ? (
+        <div className="venue-filters-drawer" role="dialog" aria-modal="true" aria-label="Filtros de canchas">
+          <div className="venue-filters-sheet">
+            <div className="venue-filters-sheet-head">
+              <h2>Filtros</h2>
+              <button type="button" className="btn-ghost" onClick={() => setFiltersOpen(false)}>
+                Cerrar
+              </button>
+            </div>
+            <div className="venue-toolbar-filters">{filterControls}</div>
+            <button type="button" className="btn-flood" onClick={() => setFiltersOpen(false)}>
+              Ver {filtered.length} canchas
+            </button>
+          </div>
+        </div>
+      ) : null}
 
       <div className={`venue-layout${showMap && showList ? " has-both" : ""}`}>
         {showList ? (

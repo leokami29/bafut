@@ -1,21 +1,10 @@
 import type { Metadata } from "next";
 import { AuthForm } from "@/components/AuthForm";
+import { safeNextPath } from "@/lib/safe-next";
 
 export const metadata: Metadata = {
   title: "Entrar",
 };
-
-function resolveNextPath(next?: string, callbackUrl?: string) {
-  const candidate = next ?? callbackUrl;
-  if (!candidate) return "/";
-  if (candidate.startsWith("/")) return candidate;
-  try {
-    const url = new URL(candidate);
-    return `${url.pathname}${url.search}` || "/";
-  } catch {
-    return "/";
-  }
-}
 
 export default async function EntrarPage({
   searchParams,
@@ -23,7 +12,7 @@ export default async function EntrarPage({
   searchParams: Promise<{ next?: string; callbackUrl?: string }>;
 }) {
   const { next, callbackUrl } = await searchParams;
-  const nextPath = resolveNextPath(next, callbackUrl);
+  const nextPath = safeNextPath(next ?? callbackUrl, "/");
   const claiming = nextPath.startsWith("/p/");
 
   return (
@@ -32,8 +21,8 @@ export default async function EntrarPage({
         <h1>{claiming ? "Entra para pedir el cupo" : "Entra a BaFut"}</h1>
         <p>
           {claiming
-            ? "Un correo basta. Completa tu nombre en el perfil para que el host sepa quién llega."
-            : "Correo y listo. Tu nombre en la lista es lo que ve el host cuando pides cupo."}
+            ? "Un correo basta. Completa tu nombre y WhatsApp para que el host sepa quién llega."
+            : "Correo y listo. Tu nombre y WhatsApp son lo que ve el host cuando confirma el cupo."}
         </p>
       </header>
       <AuthForm nextPath={nextPath} />

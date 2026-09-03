@@ -10,6 +10,9 @@ export const sportLabel: Record<Sport, string> = {
 };
 
 export const formatLabel: Record<Format, string> = {
+  "2v2": "2 vs 2",
+  "3v3": "3 vs 3",
+  "4v4": "4 vs 4",
   "5v5": "5 vs 5",
   "6v6": "6 vs 6",
   "7v7": "7 vs 7",
@@ -23,6 +26,19 @@ export const positionLabel: Record<Position, string> = {
   def: "Defensa",
   mid: "Medio",
   fwd: "Delantero",
+  cierre: "Cierre",
+  ala: "Ala",
+  pivot: "Pívot",
+  base: "Base",
+  escolta: "Escolta",
+  ala_pivot: "Ala-pívot",
+  armador: "Armador",
+  central: "Central",
+  opuesto: "Opuesto",
+  receptor: "Receptor",
+  libero: "Líbero",
+  drive: "Drive",
+  reves: "Revés",
 };
 
 export const levelLabel: Record<Level, string> = {
@@ -56,4 +72,9 @@ export const timePeriodLabel: Record<MatchTimePeriod, string> = {
   manana: "Mañana",
   tarde: "Tarde",
   noche: "Noche",
+};
+
+export const matchStatusLabel: Record<string, string> = {
+  open: "Abierto",
+  cancelled: "Cancelado",
 };

@@ -1,10 +1,16 @@
 "use client";
 
-import { useActionState } from "react";
-import { claimSlotAction, respondClaimAction } from "@/app/actions";
+import { useActionState, useEffect, useState, useTransition } from "react";
+import {
+  claimSlotAction,
+  getMatchContactAction,
+  respondClaimAction,
+  withdrawClaimAction,
+} from "@/app/actions";
 import { levelLabel, positionLabel } from "@/lib/labels";
 import type { Level, Position } from "@/lib/constants";
 import { slotIsOpen, type SlotWithClaims } from "@/lib/types";
+import { whatsappChatHref } from "@/lib/whatsapp-contact";
 
 type ClaimState = { error?: string; ok?: boolean } | null;
 
@@ -13,11 +19,13 @@ export function SlotList({
   shareCode,
   isHost,
   userId,
+  matchCancelled = false,
 }: {
   slots: SlotWithClaims[];
   shareCode: string;
   isHost: boolean;
   userId: string | null;
+  matchCancelled?: boolean;
 }) {
   return (
     <ol className="slot-list">
@@ -29,10 +37,45 @@ export function SlotList({
           shareCode={shareCode}
           isHost={isHost}
           userId={userId}
+          matchCancelled={matchCancelled}
         />
       ))}
     </ol>
   );
+}
+
+function ContactLink({ claimId, label }: { claimId: string; label: string }) {
+  const [href, setHref] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [pending, startTransition] = useTransition();
+
+  useEffect(() => {
+    startTransition(async () => {
+      const result = await getMatchContactAction(claimId);
+      if ("whatsapp" in result && result.whatsapp) {
+        setHref(
+          whatsappChatHref(
+            result.whatsapp,
+            `Hola ${result.displayName}, nos confirmamos el cupo en BaFut.`,
+          ),
+        );
+      } else {
+        setError(result.error ?? "Sin WhatsApp");
+      }
+    });
+  }, [claimId]);
+
+  if (href) {
+    return (
+      <a className="btn-bib" href={href} target="_blank" rel="noopener noreferrer">
+        WhatsApp a {label}
+      </a>
+    );
+  }
+  if (error) {
+    return <p className="form-error">{error}</p>;
+  }
+  return <p className="slot-mine">{pending ? "Cargando WhatsApp…" : "…"}</p>;
 }
 
 function SlotRow({
@@ -41,12 +84,14 @@ function SlotRow({
   shareCode,
   isHost,
   userId,
+  matchCancelled,
 }: {
   slot: SlotWithClaims;
   index: number;
   shareCode: string;
   isHost: boolean;
   userId: string | null;
+  matchCancelled: boolean;
 }) {
   const [claimState, claimAction, claimPending] = useActionState(
     async (_prev: ClaimState, formData: FormData) => claimSlotAction(formData),
@@ -56,8 +101,12 @@ function SlotRow({
     async (_prev: ClaimState, formData: FormData) => respondClaimAction(formData),
     null,
   );
+  const [withdrawState, withdrawAction, withdrawPending] = useActionState(
+    async (_prev: ClaimState, formData: FormData) => withdrawClaimAction(formData),
+    null,
+  );
 
-  const open = slotIsOpen(slot);
+  const open = slotIsOpen(slot) && !matchCancelled;
   const accepted = slot.slot_claims.find((claim) => claim.status === "accepted");
   const mine = slot.slot_claims.find((claim) => claim.player_id === userId);
   const pending = slot.slot_claims.filter((claim) => claim.status === "pending");
@@ -67,12 +116,17 @@ function SlotRow({
       <div>
         <p className="slot-index">Cupo {index + 1}</p>
         <p className="slot-need">
-          {positionLabel[slot.position as Position]} · {levelLabel[slot.level as Level]}
+          {positionLabel[slot.position as Position] ?? slot.position} ·{" "}
+          {levelLabel[slot.level as Level] ?? slot.level}
         </p>
         {accepted ? <p className="slot-filled">Entra {accepted.profiles?.display_name}</p> : null}
         {mine && !accepted ? (
           <p className="slot-mine">
-            {mine.status === "pending" ? "Pediste este cupo. Espera confirmación." : "No quedó este cupo."}
+            {mine.status === "pending"
+              ? "Pediste este cupo. Espera confirmación."
+              : mine.status === "withdrawn"
+                ? "Retiraste el pedido."
+                : "No quedó este cupo."}
           </p>
         ) : null}
         <div aria-live="polite">
@@ -80,6 +134,8 @@ function SlotRow({
           {claimState?.error ? <p className="form-error">{claimState.error}</p> : null}
           {respondState?.ok ? <p className="form-ok">Actualizado.</p> : null}
           {respondState?.error ? <p className="form-error">{respondState.error}</p> : null}
+          {withdrawState?.ok ? <p className="form-ok">Pedido retirado.</p> : null}
+          {withdrawState?.error ? <p className="form-error">{withdrawState.error}</p> : null}
         </div>
       </div>
 
@@ -99,7 +155,24 @@ function SlotRow({
         </a>
       ) : null}
 
-      {isHost && pending.length > 0 ? (
+      {mine?.status === "pending" && !isHost ? (
+        <form action={withdrawAction}>
+          <input type="hidden" name="claim_id" value={mine.id} />
+          <input type="hidden" name="share_code" value={shareCode} />
+          <button className="btn-ghost" type="submit" disabled={withdrawPending}>
+            {withdrawPending ? "Retirando…" : "Retirar pedido"}
+          </button>
+        </form>
+      ) : null}
+
+      {accepted && !matchCancelled && userId && (isHost || mine?.id === accepted.id) ? (
+        <ContactLink
+          claimId={accepted.id}
+          label={isHost ? (accepted.profiles?.display_name ?? "jugador") : "host"}
+        />
+      ) : null}
+
+      {isHost && !matchCancelled && pending.length > 0 ? (
         <div className="claim-inbox-wrap">
           <p className="claim-inbox-label">Piden cupo:</p>
           <ul className="claim-inbox">

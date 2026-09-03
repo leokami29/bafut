@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { cancelMatchAction } from "@/app/actions";
 import { HostShareBanner, ShareWhatsApp } from "@/components/ShareWhatsApp";
 import { SlotList } from "@/components/SlotList";
 import { getMatchByCode, getSessionUserId } from "@/lib/data";
 import { openSlotCount, slotIsOpen } from "@/lib/types";
 import { formatMoney, formatWhen, openSlotsPhrase } from "@/lib/format";
-import { formatLabel, genderLabel, positionLabel, sportLabel } from "@/lib/labels";
+import { formatLabel, genderLabel, matchStatusLabel, positionLabel, sportLabel } from "@/lib/labels";
 import type { Position } from "@/lib/constants";
 
 type Props = { params: Promise<{ code: string }> };
@@ -34,13 +35,15 @@ export default async function PartidoPage({ params }: Props) {
     notFound();
   }
 
-  const open = openSlotCount(match);
+  const cancelled = match.status === "cancelled";
+  const open = cancelled ? 0 : openSlotCount(match);
   const dominant =
     match.match_slots.find(slotIsOpen)?.position ?? match.match_slots[0]?.position ?? "any";
   const position = positionLabel[dominant as Position] ?? "Cualquiera";
   const when = formatWhen(match.starts_at, match.cities.timezone);
   const price = formatMoney(match.cost_per_person, match.currency);
   const isHost = userId === match.host_id;
+  const canCancel = isHost && !cancelled && match.starts_at > new Date().toISOString();
   const shareProps = {
     openCount: open,
     position,
@@ -55,11 +58,11 @@ export default async function PartidoPage({ params }: Props) {
     <main className="page page-narrow" id="main">
       <div className="match-status-row">
         <p className="eyebrow">{match.cities.name}</p>
-        <span className={`status-chip ${open > 0 ? "is-open" : "is-full"}`}>
-          {open > 0 ? "Abierto" : "Completo"}
+        <span className={`status-chip ${cancelled ? "is-full" : open > 0 ? "is-open" : "is-full"}`}>
+          {cancelled ? matchStatusLabel.cancelled : open > 0 ? "Abierto" : "Completo"}
         </span>
       </div>
-      <h1>{openSlotsPhrase(open, position)}</h1>
+      <h1>{cancelled ? "Partido cancelado" : openSlotsPhrase(open, position)}</h1>
       <p className="lede">
         {when} · {match.venues.name}
         {match.venues.neighborhood ? ` · ${match.venues.neighborhood}` : ""}
@@ -76,12 +79,27 @@ export default async function PartidoPage({ params }: Props) {
       </p>
       {match.notes ? <p className="notes">{match.notes}</p> : null}
 
-      {isHost && open > 0 ? <HostShareBanner {...shareProps} /> : null}
+      {isHost && !cancelled && open > 0 ? <HostShareBanner {...shareProps} /> : null}
+      {!cancelled ? <ShareWhatsApp {...shareProps} sticky={isHost && open > 0} /> : null}
 
-      <ShareWhatsApp {...shareProps} sticky={isHost && open > 0} />
+      {canCancel ? (
+        <form action={cancelMatchAction} className="cancel-match-form">
+          <input type="hidden" name="match_id" value={match.id} />
+          <input type="hidden" name="share_code" value={match.share_code} />
+          <button className="btn-ghost" type="submit">
+            Cancelar partido
+          </button>
+        </form>
+      ) : null}
 
       <h2 className="subhead">Cupos</h2>
-      <SlotList slots={match.match_slots} shareCode={match.share_code} isHost={isHost} userId={userId} />
+      <SlotList
+        slots={match.match_slots}
+        shareCode={match.share_code}
+        isHost={isHost}
+        userId={userId}
+        matchCancelled={cancelled}
+      />
 
       <p className="foot-link">
         <Link href={`/canchas/${match.venues.slug}`}>{match.venues.name}</Link>

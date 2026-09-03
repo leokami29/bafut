@@ -8,11 +8,13 @@ export function SiteHeader({
   city,
   cities,
   userId,
+  pendingCount = 0,
   tone = "field",
 }: {
   city: City | null;
   cities: City[];
   userId: string | null;
+  pendingCount?: number;
   tone?: "field" | "paper";
 }) {
   const light = tone === "field";
@@ -24,7 +26,7 @@ export function SiteHeader({
       </Link>
       <nav className="site-nav" aria-label="Principal">
         <div className="site-nav-links">
-          <NavLinks userId={userId} />
+          <NavLinks userId={userId} pendingCount={pendingCount} />
         </div>
         {userId ? (
           <form action={signOutAction} className="site-nav-signout">

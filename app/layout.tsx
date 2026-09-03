@@ -2,8 +2,9 @@ import type { Metadata, Viewport } from "next";
 import { Barlow_Condensed, IBM_Plex_Mono, Outfit } from "next/font/google";
 import { MobileNav } from "@/components/MobileNav";
 import { PwaRegister } from "@/components/PwaRegister";
+import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
-import { getActiveCity, getCities, getSessionUserId } from "@/lib/data";
+import { getActiveCity, getCities, getHostPendingClaimCount, getSessionUserId } from "@/lib/data";
 import "./globals.css";
 
 const display = Barlow_Condensed({
@@ -50,6 +51,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
     getCities(),
     getSessionUserId(),
   ]);
+  const pendingCount = userId ? await getHostPendingClaimCount(userId) : 0;
 
   return (
     <html lang="es" className={`${display.variable} ${sans.variable} ${mono.variable}`} suppressHydrationWarning>
@@ -58,9 +60,10 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
           Saltar al contenido
         </a>
         <PwaRegister />
-        <SiteHeader city={city} cities={cities} userId={userId} />
+        <SiteHeader city={city} cities={cities} userId={userId} pendingCount={pendingCount} />
         {children}
-        <MobileNav userId={userId} />
+        <SiteFooter />
+        <MobileNav userId={userId} pendingCount={pendingCount} />
       </body>
     </html>
   );

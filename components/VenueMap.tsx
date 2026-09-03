@@ -1,9 +1,12 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { Venue } from "@/lib/types";
+
+type FeatureProps = { id: string; slug: string; name: string };
 
 export function VenueMap({
   venues,
@@ -15,6 +18,7 @@ export function VenueMap({
   focusId?: string;
 }) {
   const root = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
   useEffect(() => {
     if (!root.current) {
@@ -36,17 +40,103 @@ export function VenueMap({
         layers: [{ id: "osm", type: "raster", source: "osm" }],
       },
       center: [center.lng, center.lat],
-      zoom: focusId ? 14 : 12,
+      zoom: focusId ? 14 : 11.5,
       attributionControl: { compact: true },
     });
 
-    const markers = venues.map((venue) => {
-      const el = document.createElement("a");
-      el.href = `/canchas/${venue.slug}`;
-      el.className = venue.id === focusId ? "map-pin is-focus" : "map-pin";
-      el.title = venue.name;
-      el.setAttribute("aria-label", venue.name);
-      return new maplibregl.Marker({ element: el }).setLngLat([venue.lng, venue.lat]).addTo(map);
+    const geojson: GeoJSON.FeatureCollection<GeoJSON.Point, FeatureProps> = {
+      type: "FeatureCollection",
+      features: venues.map((venue) => ({
+        type: "Feature",
+        properties: { id: venue.id, slug: venue.slug, name: venue.name },
+        geometry: { type: "Point", coordinates: [venue.lng, venue.lat] },
+      })),
+    };
+
+    map.on("load", () => {
+      map.addSource("venues", {
+        type: "geojson",
+        data: geojson,
+        cluster: true,
+        clusterMaxZoom: 14,
+        clusterRadius: 48,
+      });
+
+      map.addLayer({
+        id: "clusters",
+        type: "circle",
+        source: "venues",
+        filter: ["has", "point_count"],
+        paint: {
+          "circle-color": "#0C6B4C",
+          "circle-radius": ["step", ["get", "point_count"], 16, 8, 20, 25, 26],
+          "circle-stroke-width": 2,
+          "circle-stroke-color": "#F4F7F2",
+        },
+      });
+
+      map.addLayer({
+        id: "cluster-count",
+        type: "symbol",
+        source: "venues",
+        filter: ["has", "point_count"],
+        layout: {
+          "text-field": "{point_count_abbreviated}",
+          "text-size": 13,
+        },
+        paint: {
+          "text-color": "#F4F7F2",
+        },
+      });
+
+      map.addLayer({
+        id: "unclustered",
+        type: "circle",
+        source: "venues",
+        filter: ["!", ["has", "point_count"]],
+        paint: {
+          "circle-color": [
+            "case",
+            ["==", ["get", "id"], focusId ?? ""],
+            "#E8F56A",
+            "#F4F7F2",
+          ],
+          "circle-radius": ["case", ["==", ["get", "id"], focusId ?? ""], 9, 7],
+          "circle-stroke-width": 2,
+          "circle-stroke-color": "#0C6B4C",
+        },
+      });
+
+      map.on("click", "clusters", (e) => {
+        const features = map.queryRenderedFeatures(e.point, { layers: ["clusters"] });
+        const clusterId = features[0]?.properties?.cluster_id as number | undefined;
+        const source = map.getSource("venues") as maplibregl.GeoJSONSource;
+        if (clusterId == null) return;
+        void source.getClusterExpansionZoom(clusterId).then((zoom) => {
+          const coords = (features[0]?.geometry as GeoJSON.Point).coordinates as [number, number];
+          map.easeTo({ center: coords, zoom });
+        });
+      });
+
+      map.on("click", "unclustered", (e) => {
+        const slug = e.features?.[0]?.properties?.slug;
+        if (typeof slug === "string") {
+          router.push(`/canchas/${slug}`);
+        }
+      });
+
+      map.on("mouseenter", "clusters", () => {
+        map.getCanvas().style.cursor = "pointer";
+      });
+      map.on("mouseleave", "clusters", () => {
+        map.getCanvas().style.cursor = "";
+      });
+      map.on("mouseenter", "unclustered", () => {
+        map.getCanvas().style.cursor = "pointer";
+      });
+      map.on("mouseleave", "unclustered", () => {
+        map.getCanvas().style.cursor = "";
+      });
     });
 
     if (focusId) {
@@ -57,10 +147,9 @@ export function VenueMap({
     }
 
     return () => {
-      markers.forEach((marker) => marker.remove());
       map.remove();
     };
-  }, [venues, center.lat, center.lng, focusId]);
+  }, [venues, center.lat, center.lng, focusId, router]);
 
   return <div ref={root} className="venue-map" />;
 }
