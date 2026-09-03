@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { CreateMatchForm } from "@/components/CreateMatchForm";
 import { CitySwitcher } from "@/components/CitySwitcher";
 import { requireUserId } from "@/lib/auth";
@@ -21,7 +22,10 @@ export default async function NuevoPartidoPage({
 
   if (!city) {
     return (
-      <main className="page page-narrow page-nuevo-partido" id="main">
+      <main className="page page-nuevo-partido" id="main">
+        <p className="venue-back">
+          <Link href="/partidos">← Partidos</Link>
+        </p>
         <header className="page-head match-compose-head">
           <p className="eyebrow">Publicar</p>
           <h1>No hay ciudad activa</h1>
@@ -38,19 +42,23 @@ export default async function NuevoPartidoPage({
   ]);
 
   return (
-    <main className="page page-narrow page-nuevo-partido" id="main">
+    <main className="page page-nuevo-partido" id="main">
+      <p className="venue-back">
+        <Link href="/partidos">← Partidos</Link>
+      </p>
       <header className="page-head match-compose-head">
-        <p className="eyebrow">Publicar</p>
+        <p className="eyebrow">Publicar · {city.name}</p>
         <h1>Publicar un hueco</h1>
         <p className="lede">
           Arma el partido: deporte, cancha, hora y cupos. El link se comparte al grupo.
         </p>
-        {preselected ? (
-          <p className="match-compose-preselect" role="status">
-            <span className="match-compose-preselect-label">Cancha lista</span>
-            <span className="match-compose-preselect-name">{preselected.name}</span>
-          </p>
-        ) : null}
+        <div className="venue-badges" aria-label="Contexto del hueco">
+          <span className="venue-badge is-neighborhood">{city.name}</span>
+          {preselected ? <span className="venue-badge">{preselected.name}</span> : null}
+          {preselected?.neighborhood ? (
+            <span className="venue-badge">{preselected.neighborhood}</span>
+          ) : null}
+        </div>
       </header>
       <CreateMatchForm city={city} venues={venues} defaultVenueId={preselected?.id} />
     </main>

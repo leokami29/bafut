@@ -12,10 +12,12 @@ export function VenueMap({
   venues,
   center,
   focusId,
+  navigateOnClick = true,
 }: {
   venues: Venue[];
   center: { lat: number; lng: number };
   focusId?: string;
+  navigateOnClick?: boolean;
 }) {
   const root = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -119,6 +121,7 @@ export function VenueMap({
       });
 
       map.on("click", "unclustered", (e) => {
+        if (!navigateOnClick) return;
         const slug = e.features?.[0]?.properties?.slug;
         if (typeof slug === "string") {
           router.push(`/canchas/${slug}`);
@@ -132,6 +135,7 @@ export function VenueMap({
         map.getCanvas().style.cursor = "";
       });
       map.on("mouseenter", "unclustered", () => {
+        if (!navigateOnClick) return;
         map.getCanvas().style.cursor = "pointer";
       });
       map.on("mouseleave", "unclustered", () => {
@@ -149,7 +153,7 @@ export function VenueMap({
     return () => {
       map.remove();
     };
-  }, [venues, center.lat, center.lng, focusId, router]);
+  }, [venues, center.lat, center.lng, focusId, navigateOnClick, router]);
 
   return <div ref={root} className="venue-map" />;
 }

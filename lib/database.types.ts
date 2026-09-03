@@ -93,6 +93,7 @@ export type Database = {
           sport: string;
           starts_at: string;
           status: string;
+          updated_at: string;
           venue_id: string;
         };
         Insert: {
@@ -110,6 +111,7 @@ export type Database = {
           sport?: string;
           starts_at: string;
           status?: string;
+          updated_at?: string;
           venue_id: string;
         };
         Update: {
@@ -127,6 +129,7 @@ export type Database = {
           sport?: string;
           starts_at?: string;
           status?: string;
+          updated_at?: string;
           venue_id?: string;
         };
         Relationships: [
@@ -436,6 +439,21 @@ export type Database = {
       submit_level_feedback: {
         Args: { p_claim_id: string; p_level_ok: boolean };
         Returns: string;
+      };
+      update_match: {
+        Args: {
+          p_cost_per_person: number | null;
+          p_duration_min: number;
+          p_format: string;
+          p_gender_policy: string;
+          p_match_id: string;
+          p_notes: string | null;
+          p_slots: Json;
+          p_sport: string;
+          p_starts_at: string;
+          p_venue_id: string;
+        };
+        Returns: undefined;
       };
       withdraw_claim: { Args: { p_claim_id: string }; Returns: undefined };
     };

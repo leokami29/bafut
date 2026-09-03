@@ -39,3 +39,23 @@ export function pendingClaimCountForHost(match: Pick<MatchDetail, "match_slots">
     0,
   );
 }
+
+export function acceptedClaimCount(match: Pick<MatchDetail, "match_slots">) {
+  return match.match_slots.reduce(
+    (sum, slot) => sum + slot.slot_claims.filter((claim) => claim.status === "accepted").length,
+    0,
+  );
+}
+
+export function matchCanBeHostEdited(
+  match: Pick<Match, "host_id" | "status" | "starts_at">,
+  userId: string | null | undefined,
+  now = new Date(),
+) {
+  return (
+    Boolean(userId) &&
+    match.host_id === userId &&
+    match.status === "open" &&
+    match.starts_at > now.toISOString()
+  );
+}

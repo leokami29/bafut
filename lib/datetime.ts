@@ -3,8 +3,53 @@ export function defaultStartsAtLocal(): string {
   const d = new Date();
   d.setMinutes(0, 0, 0);
   d.setHours(d.getHours() + 1);
+  return toDatetimeLocalValue(d);
+}
+
+/** Hora civil del partido en el timezone de la ciudad, para datetime-local. */
+export function isoToDatetimeLocalInZone(iso: string, timeZone: string): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return defaultStartsAtLocal();
+  const { year, month, day, hour, minute } = zonedDateParts(d, timeZone);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${year}-${pad(month)}-${pad(day)}T${pad(hour)}:${pad(minute)}`;
+}
+
+function toDatetimeLocalValue(d: Date): string {
   const pad = (n: number) => String(n).padStart(2, "0");
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+const DATETIME_LOCAL_RE = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/;
+
+/**
+ * Interpreta `datetime-local` como hora civil de `timeZone` y devuelve el instante UTC.
+ */
+export function datetimeLocalInZoneToDate(local: string, timeZone: string): Date | null {
+  const match = DATETIME_LOCAL_RE.exec(local.trim());
+  if (!match) return null;
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const hour = Number(match[4]);
+  const minute = Number(match[5]);
+  if ([year, month, day, hour, minute].some((n) => Number.isNaN(n))) return null;
+
+  let utc = Date.UTC(year, month - 1, day, hour, minute, 0);
+  for (let i = 0; i < 4; i++) {
+    const parts = zonedDateParts(new Date(utc), timeZone);
+    const got = Date.UTC(parts.year, parts.month - 1, parts.day, parts.hour, parts.minute, 0);
+    const want = Date.UTC(year, month - 1, day, hour, minute, 0);
+    const delta = want - got;
+    if (delta === 0) break;
+    utc += delta;
+  }
+
+  const parts = zonedDateParts(new Date(utc), timeZone);
+  if (parts.year !== year || parts.month !== month || parts.day !== day || parts.hour !== hour || parts.minute !== minute) {
+    return null;
+  }
+  return new Date(utc);
 }
 
 export type MatchTimePeriod = "manana" | "tarde" | "noche";

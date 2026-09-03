@@ -104,13 +104,18 @@ export default async function MisPartidosPage() {
                     ))}
                   </div>
                   {!cancelled && match.starts_at > nowIso ? (
-                    <form action={cancelMatchAction}>
-                      <input type="hidden" name="match_id" value={match.id} />
-                      <input type="hidden" name="share_code" value={match.share_code} />
-                      <button className="btn-ghost" type="submit">
-                        Cancelar
-                      </button>
-                    </form>
+                    <div className="inbox-item-actions">
+                      <Link className="btn-ghost" href={`/p/${match.share_code}/editar`}>
+                        Editar
+                      </Link>
+                      <form action={cancelMatchAction}>
+                        <input type="hidden" name="match_id" value={match.id} />
+                        <input type="hidden" name="share_code" value={match.share_code} />
+                        <button className="btn-ghost" type="submit">
+                          Cancelar
+                        </button>
+                      </form>
+                    </div>
                   ) : null}
                 </li>
               );

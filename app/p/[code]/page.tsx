@@ -159,13 +159,18 @@ export default async function PartidoPage({ params }: Props) {
           {!cancelled ? <ShareWhatsApp {...shareProps} sticky={isHost && open > 0} /> : null}
 
           {canCancel ? (
-            <form action={cancelMatchAction} className="cancel-match-form">
-              <input type="hidden" name="match_id" value={match.id} />
-              <input type="hidden" name="share_code" value={match.share_code} />
-              <button className="btn-ghost" type="submit">
-                Cancelar partido
-              </button>
-            </form>
+            <div className="match-host-actions">
+              <Link className="btn-flood" href={`/p/${match.share_code}/editar`}>
+                Editar
+              </Link>
+              <form action={cancelMatchAction} className="cancel-match-form">
+                <input type="hidden" name="match_id" value={match.id} />
+                <input type="hidden" name="share_code" value={match.share_code} />
+                <button className="btn-ghost" type="submit">
+                  Cancelar partido
+                </button>
+              </form>
+            </div>
           ) : null}
 
           <h2 className="subhead">Cupos</h2>

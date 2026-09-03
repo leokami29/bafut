@@ -2999,12 +2999,21 @@ details.venue-group[open] > summary.venue-group-title::before {
 }
 
 /* —— Publicar partido / hueco (page-scoped) —— */
-.page-nuevo-partido {
+.page-nuevo-partido,
+.page-editar-partido {
+  width: 100%;
+  max-width: 72rem;
+  margin-inline: auto;
   padding-bottom: calc(5.5rem + env(safe-area-inset-bottom));
 }
 
+.page-nuevo-partido .page-head,
+.page-editar-partido .page-head {
+  max-width: none;
+}
+
 .match-compose-head .lede {
-  margin: 0.35rem 0 0;
+  margin: 0.35rem 0 0.75rem;
   color: color-mix(in oklab, var(--ink) 78%, transparent);
 }
 
@@ -3031,6 +3040,70 @@ details.venue-group[open] > summary.venue-group-title::before {
 
 .match-compose {
   gap: 1.25rem;
+}
+
+.match-compose-layout {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.match-compose-primary {
+  min-width: 0;
+  display: grid;
+  gap: 1rem;
+}
+
+.match-compose-primary .create-step.is-active {
+  display: grid;
+  gap: 1rem;
+}
+
+.match-compose-aside {
+  display: grid;
+  gap: 0.85rem;
+  align-content: start;
+}
+
+.match-compose-stats {
+  margin: 0;
+}
+
+.match-compose-venue .subhead {
+  margin-top: 0;
+}
+
+.match-compose-aside-empty {
+  padding: 1rem 1.05rem;
+  background: color-mix(in oklab, var(--turf) 5%, var(--paper));
+  border-left: 3px solid var(--turf);
+}
+
+.match-compose-aside-empty p {
+  margin: 0;
+  line-height: 1.45;
+}
+
+.match-compose-aside-kicker {
+  margin: 0 0 0.35rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--turf);
+}
+
+.match-compose-chips {
+  margin: 0;
+}
+
+.match-compose-chips button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.match-compose-field-label {
+  margin: 0 0 0.35rem;
+  font-size: 0.92rem;
 }
 
 .match-compose-progress {
@@ -3082,15 +3155,12 @@ details.venue-group[open] > summary.venue-group-title::before {
 
 .match-compose-group {
   margin: 0;
-  padding: 0 0 0.35rem;
+  padding: 1rem;
   border: 0;
-  border-bottom: 1px solid color-mix(in oklab, var(--ink) 12%, transparent);
+  border-left: 3px solid var(--turf);
+  background: color-mix(in oklab, var(--turf) 5%, var(--paper));
   display: grid;
   gap: 0.85rem;
-}
-
-.match-compose-group:last-of-type {
-  border-bottom: 0;
 }
 
 .match-compose-legend {
@@ -3130,6 +3200,20 @@ details.venue-group[open] > summary.venue-group-title::before {
 
 .match-compose-banner-error .form-error {
   margin: 0;
+}
+
+.match-compose-banner-warn {
+  padding: 0.75rem 0.85rem;
+  background: color-mix(in oklab, var(--flood) 16%, var(--paper));
+  border-left: 3px solid var(--flood);
+}
+
+.match-compose-banner-warn p {
+  margin: 0;
+}
+
+.match-compose-banner-warn.is-strong {
+  background: color-mix(in oklab, var(--flood) 28%, var(--paper));
 }
 
 .match-compose-actions {
@@ -3273,13 +3357,34 @@ details.venue-group[open] > summary.venue-group-title::before {
     grid-template-columns: 1fr 1fr;
   }
 
+  .match-compose-layout {
+    grid-template-columns: minmax(0, 1.15fr) minmax(18rem, 0.9fr);
+    align-items: start;
+    gap: 1.75rem 2.25rem;
+  }
+
+  .match-compose-aside {
+    position: sticky;
+    top: 5.5rem;
+  }
+
+  .match-compose-stats {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .match-compose-venue .venue-map {
+    height: min(42vh, 340px);
+    min-height: 240px;
+  }
+
   .venue-picker-list {
     max-height: 20rem;
   }
 }
 
 @media (max-width: 899px) {
-  .page-nuevo-partido {
+  .page-nuevo-partido,
+  .page-editar-partido {
     padding-bottom: calc(9.5rem + env(safe-area-inset-bottom));
   }
 
@@ -3372,8 +3477,80 @@ details.venue-group[open] > summary.venue-group-title::before {
   color: color-mix(in oklab, var(--ink) 68%, transparent);
 }
 
+.slot-edit-list {
+  list-style: none;
+  margin: 0 0 0.75rem;
+  padding: 0;
+  display: grid;
+  gap: 0.85rem;
+}
+
+.slot-edit-row {
+  display: grid;
+  gap: 0.55rem;
+  padding: 0.7rem 0.75rem;
+  background: color-mix(in oklab, var(--chalk) 50%, var(--paper));
+  border-left: 3px solid var(--turf);
+}
+
+.slot-edit-label {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 650;
+}
+
+.slot-edit-tag {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.15rem 0.4rem;
+  background: color-mix(in oklab, var(--turf) 18%, transparent);
+}
+
+.slot-edit-tag.is-pending {
+  background: color-mix(in oklab, var(--flood) 22%, transparent);
+}
+
+.slot-edit-remove {
+  min-height: 2.75rem;
+  justify-self: start;
+}
+
+.match-host-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  align-items: center;
+  margin: 0.75rem 0 1rem;
+}
+
+.match-host-actions .cancel-match-form {
+  margin: 0;
+}
+
 .cancel-match-form {
   margin: 0.75rem 0 1rem;
+}
+
+.match-host-actions .btn-flood,
+.match-host-actions .btn-ghost {
+  min-height: 2.75rem;
+}
+
+.inbox-item-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  align-items: center;
+}
+
+.inbox-item-actions .btn-ghost {
+  min-height: 2.75rem;
 }
 
 .city-toast {

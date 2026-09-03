@@ -16,6 +16,7 @@ import {
 } from "@/lib/constants";
 import { requireUserId } from "@/lib/auth";
 import { getCityBySlug } from "@/lib/data";
+import { datetimeLocalInZoneToDate } from "@/lib/datetime";
 import { DECLARED_LEVELS, isDeclaredLevel } from "@/lib/level-trust";
 import { isProfileComplete } from "@/lib/profile";
 import { safeNextPath } from "@/lib/safe-next";
@@ -27,6 +28,7 @@ import {
   positionAllowedForSport,
   SPORT_RULES,
 } from "@/lib/sport-rules";
+import { isGenderPolicy, parseCostPerPerson, parseSlotsJson } from "@/lib/match-write";
 import { normalizeWhatsapp } from "@/lib/whatsapp-contact";
 
 function asOne<T extends readonly string[]>(value: FormDataEntryValue | null, allowed: T, fallback: T[number]) {
@@ -57,8 +59,8 @@ export async function createMatchAction(formData: FormData) {
 
   const venueId = String(formData.get("venue_id") ?? "");
   const startsRaw = String(formData.get("starts_at") ?? "");
-  const startsAt = new Date(startsRaw);
-  if (!venueId || Number.isNaN(startsAt.getTime()) || startsAt.getTime() <= Date.now()) {
+  const startsAt = datetimeLocalInZoneToDate(startsRaw, city.timezone);
+  if (!venueId || !startsAt || startsAt.getTime() <= Date.now()) {
     return { error: "Elige cancha y una hora que todavía no haya pasado." };
   }
 
@@ -103,7 +105,10 @@ export async function createMatchAction(formData: FormData) {
   const openCount = openCountRaw;
   const needKeeper = formData.get("need_keeper") === "on" && SPORT_RULES[sport].hasKeeper;
   const level = asOne(formData.get("level"), LEVELS, "any");
-  const costRaw = String(formData.get("cost_per_person") ?? "").replace(/\D/g, "");
+  const costParsed = parseCostPerPerson(String(formData.get("cost_per_person") ?? ""));
+  if (costParsed && typeof costParsed === "object" && "error" in costParsed) {
+    return { error: costParsed.error };
+  }
   const notes = String(formData.get("notes") ?? "").trim();
   if (notes.length > 500) {
     return { error: "La nota es demasiado larga (máx. 500 caracteres)." };
@@ -119,7 +124,7 @@ export async function createMatchAction(formData: FormData) {
       duration_min: durationMin,
       sport,
       format,
-      cost_per_person: costRaw ? Number(costRaw) : null,
+      cost_per_person: typeof costParsed === "number" ? costParsed : null,
       gender_policy: asOne(formData.get("gender_policy"), GENDERS, "mixed"),
       notes: notes || null,
       status: "open",
@@ -150,6 +155,124 @@ export async function createMatchAction(formData: FormData) {
 
   revalidatePath("/partidos");
   redirect(`/p/${match.share_code}`);
+}
+
+export async function updateMatchAction(formData: FormData) {
+  const matchId = String(formData.get("match_id") ?? "").trim();
+  const shareCode = String(formData.get("share_code") ?? "").trim();
+  if (!isUuidParam(matchId) || !isShareCode(shareCode)) {
+    return { error: "Partido no válido." };
+  }
+
+  const { supabase, userId } = await requireUserId(`/p/${shareCode}/editar`);
+
+  const { data: match, error: matchError } = await supabase
+    .from("matches")
+    .select("id, host_id, status, starts_at, city_id, share_code")
+    .eq("id", matchId)
+    .maybeSingle();
+
+  if (matchError || !match || match.host_id !== userId || match.share_code !== shareCode) {
+    return { error: "No podés editar ese partido." };
+  }
+  if (match.status !== "open" || match.starts_at <= new Date().toISOString()) {
+    return { error: "Ese partido ya no se puede editar." };
+  }
+
+  const { data: cityRow } = await supabase.from("cities").select("timezone").eq("id", match.city_id).maybeSingle();
+  const venueId = String(formData.get("venue_id") ?? "");
+  const startsRaw = String(formData.get("starts_at") ?? "");
+  const startsAt = datetimeLocalInZoneToDate(startsRaw, cityRow?.timezone ?? "America/Bogota");
+  if (!venueId || !isUuidParam(venueId) || !startsAt || startsAt.getTime() <= Date.now()) {
+    return { error: "Elige cancha y una hora que todavía no haya pasado." };
+  }
+
+  const sportRaw = String(formData.get("sport") ?? "");
+  if (!isSport(sportRaw)) {
+    return { error: "Elige un deporte válido." };
+  }
+  const sport: Sport = sportRaw;
+
+  const { data: venue, error: venueError } = await supabase
+    .from("venues")
+    .select("id, city_id, sports")
+    .eq("id", venueId)
+    .maybeSingle();
+
+  if (venueError || !venue || venue.city_id !== match.city_id) {
+    return { error: "Esa cancha no está en la ciudad del partido." };
+  }
+  if (!venue.sports?.includes(sport)) {
+    return { error: "Esa cancha no ofrece ese deporte." };
+  }
+
+  const format = asOne(formData.get("format"), SPORT_RULES[sport].formats, defaultFormatForSport(sport)) as Format;
+  if (!formatAllowedForSport(sport, format)) {
+    return { error: "Ese formato no aplica para el deporte." };
+  }
+
+  const durationMin = Number(formData.get("duration_min") ?? 60);
+  if (!isDuration(durationMin)) {
+    return { error: "La duración debe ser 30, 60 o 90 minutos." };
+  }
+
+  const genderRaw = String(formData.get("gender_policy") ?? "mixed");
+  if (!isGenderPolicy(genderRaw)) {
+    return { error: "Elige quién juega." };
+  }
+
+  const costParsed = parseCostPerPerson(String(formData.get("cost_per_person") ?? ""));
+  if (costParsed && typeof costParsed === "object" && "error" in costParsed) {
+    return { error: costParsed.error };
+  }
+
+  const notes = String(formData.get("notes") ?? "").trim();
+  if (notes.length > 500) {
+    return { error: "La nota es demasiado larga (máx. 500 caracteres)." };
+  }
+
+  const parsedSlots = parseSlotsJson(String(formData.get("slots_json") ?? ""), sport);
+  if ("error" in parsedSlots) {
+    return { error: parsedSlots.error };
+  }
+
+  const { error } = await supabase.rpc("update_match", {
+    p_match_id: matchId,
+    p_venue_id: venueId,
+    p_starts_at: startsAt.toISOString(),
+    p_duration_min: durationMin,
+    p_sport: sport,
+    p_format: format,
+    p_gender_policy: genderRaw,
+    p_cost_per_person: typeof costParsed === "number" ? costParsed : null,
+    p_notes: notes || null,
+    p_slots: parsedSlots.slots,
+  });
+
+  if (error) {
+    const rateLimited = /espera un momento|demasiados/i.test(error.message ?? "");
+    return {
+      error: error.message
+        ? error.message
+        : rateLimited
+          ? "Espera un momento y volvé a guardar."
+          : "No se pudo guardar el partido. Revisa los datos.",
+    };
+  }
+
+  revalidatePath(`/p/${shareCode}`);
+  revalidatePath(`/p/${shareCode}/editar`);
+  revalidatePath("/partidos");
+  revalidatePath("/perfil/partidos");
+  redirect(`/p/${shareCode}`);
+}
+
+function isUuidParam(value: string) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
+}
+
+function isShareCode(value: string) {
+  return /^[a-f0-9]{8}$/.test(value);
 }
 
 export async function claimSlotAction(formData: FormData) {
