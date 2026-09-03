@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { AuthForm } from "@/components/AuthForm";
 import { safeNextPath } from "@/lib/safe-next";
+import { robotsNoIndexNoFollow } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "Entrar",
+  robots: robotsNoIndexNoFollow,
 };
 
 export default async function EntrarPage({

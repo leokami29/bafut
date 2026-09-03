@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { trackEvent } from "@/lib/analytics";
-import { matchShareText, whatsappShareHref } from "@/lib/whatsapp";
+import { matchShareText, matchUrl, whatsappShareHref } from "@/lib/whatsapp";
 
 export function ShareWhatsApp(props: {
   openCount: number;
@@ -16,7 +16,7 @@ export function ShareWhatsApp(props: {
 }) {
   const text = matchShareText(props);
   const href = whatsappShareHref(text);
-  const pageUrl = typeof window !== "undefined" ? `${window.location.origin}/p/${props.shareCode}` : "";
+  const pageUrl = matchUrl(props.shareCode);
   const [copied, setCopied] = useState(false);
   const [showSticky, setShowSticky] = useState(false);
 
@@ -37,14 +37,12 @@ export function ShareWhatsApp(props: {
 
   async function copyLink() {
     trackEvent("match_share_clicked", { method: "copy_link" });
-    const url = pageUrl || `/p/${props.shareCode}`;
-    const full = url.startsWith("http") ? url : `${window.location.origin}${url}`;
     try {
-      await navigator.clipboard.writeText(full);
+      await navigator.clipboard.writeText(pageUrl);
       setCopied(true);
       window.setTimeout(() => setCopied(false), 2500);
     } catch {
-      window.prompt("Copia el link del partido:", full);
+      window.prompt("Copia el link del partido:", pageUrl);
     }
   }
 

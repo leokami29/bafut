@@ -4,10 +4,30 @@ import { Suspense } from "react";
 import { MatchFeed } from "@/components/MatchFeed";
 import { RosterSkeleton } from "@/components/RosterSkeleton";
 import { getActiveCity, getUpcomingMatches } from "@/lib/data";
+import {
+  RADAR_DESCRIPTION,
+  RADAR_TITLE,
+  absoluteUrl,
+  defaultOg,
+  defaultTwitter,
+  fullTitle,
+} from "@/lib/seo";
+
+const partidosUrl = absoluteUrl("/partidos");
 
 export const metadata: Metadata = {
-  title: "Radar",
-  description: "Huecos abiertos hoy para armar la pateada en Barranquilla.",
+  title: RADAR_TITLE,
+  description: RADAR_DESCRIPTION,
+  alternates: { canonical: partidosUrl },
+  openGraph: defaultOg({
+    title: fullTitle(RADAR_TITLE),
+    description: RADAR_DESCRIPTION,
+    url: partidosUrl,
+  }),
+  twitter: defaultTwitter({
+    title: fullTitle(RADAR_TITLE),
+    description: RADAR_DESCRIPTION,
+  }),
 };
 
 export default async function PartidosPage() {

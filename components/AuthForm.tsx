@@ -2,6 +2,7 @@
 
 import { useRef, useState, type FormEvent, type KeyboardEvent } from "react";
 import { useRouter } from "next/navigation";
+import { siteUrl } from "@/lib/env";
 import { createClient } from "@/lib/supabase/client";
 
 export function AuthForm({ nextPath }: { nextPath: string }) {
@@ -35,7 +36,7 @@ export function AuthForm({ nextPath }: { nextPath: string }) {
     setError(null);
     setMessage(null);
     const supabase = createClient();
-    const redirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(nextPath)}`;
+    const redirectTo = `${siteUrl().replace(/\/$/, "")}/auth/callback?next=${encodeURIComponent(nextPath)}`;
 
     if (mode === "magic") {
       const { error: magicError } = await supabase.auth.signInWithOtp({

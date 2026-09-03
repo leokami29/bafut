@@ -1,10 +1,31 @@
 import type { Metadata } from "next";
 import { VenueDirectory } from "@/components/VenueDirectory";
 import { getActiveCity, getUpcomingMatches, getVenuesByCity } from "@/lib/data";
+import {
+  DIRECTORY_DESCRIPTION,
+  DIRECTORY_TITLE,
+  absoluteUrl,
+  defaultOg,
+  defaultTwitter,
+  fullTitle,
+} from "@/lib/seo";
 import { aggregateVenueDemand } from "@/lib/venue-demand";
 
+const canchasUrl = absoluteUrl("/canchas");
+
 export const metadata: Metadata = {
-  title: "Canchas",
+  title: DIRECTORY_TITLE,
+  description: DIRECTORY_DESCRIPTION,
+  alternates: { canonical: canchasUrl },
+  openGraph: defaultOg({
+    title: fullTitle(DIRECTORY_TITLE),
+    description: DIRECTORY_DESCRIPTION,
+    url: canchasUrl,
+  }),
+  twitter: defaultTwitter({
+    title: fullTitle(DIRECTORY_TITLE),
+    description: DIRECTORY_DESCRIPTION,
+  }),
 };
 
 export default async function CanchasPage() {

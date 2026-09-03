@@ -2,20 +2,28 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
+import { JsonLd, venueJsonLd } from "@/components/JsonLd";
 import { CopyAddressButton, VenueStickyCta } from "@/components/VenueDetailActions";
 import { MatchRow } from "@/components/MatchRow";
 import { VenueMapLazy } from "@/components/VenueMapLazy";
 import { VenueOwnerBlock } from "@/components/VenueOwnerBlock";
+import type { Sport } from "@/lib/constants";
 import { getActiveCity, getUpcomingMatches, getVenueBySlug } from "@/lib/data";
 import { sportLabel, surfaceLabel, venueKindLabel } from "@/lib/labels";
-import type { Sport } from "@/lib/constants";
+import { safeHttpUrl } from "@/lib/safe-http-url";
+import {
+  absoluteUrl,
+  defaultOg,
+  defaultTwitter,
+  fullTitle,
+  venuePageTitle,
+} from "@/lib/seo";
 import { openSlotCount, pendingClaimCountForHost } from "@/lib/types";
 import {
   enrichmentToMeta,
   getVenueEnrichment,
   mergeVenueMeta,
 } from "@/lib/venue-enrichment";
-import { safeHttpUrl } from "@/lib/safe-http-url";
 import {
   formatHoursLines,
   mapsDirectionsUrl,
@@ -36,10 +44,26 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     resolveVenuePublicMeta(venue),
     enrichmentToMeta(getVenueEnrichment(slug)),
   );
-  const place = venue.neighborhood ? `${venue.neighborhood}, ${city?.name}` : city?.name;
+  const cityName = city?.name ?? "Barranquilla";
+  const title = venuePageTitle(venue.name, venue.neighborhood);
+  const place = venue.neighborhood ? `${venue.neighborhood}, ${cityName}` : cityName;
+  const description =
+    meta.description?.trim() ||
+    `Cancha en ${place}. Huecos abiertos aquí: publicá y concentrá la demanda en BaFut.`;
+  const url = absoluteUrl(`/canchas/${venue.slug}`);
+  const photo = meta.images[0];
+  const ogTitle = fullTitle(title);
   return {
-    title: venue.name,
-    description: meta.description ?? `Cancha en ${place}. Publicá tu hueco en BaFut.`,
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: defaultOg({
+      title: ogTitle,
+      description,
+      url,
+      images: photo ? [{ url: photo, alt: `${venue.name}, ${venue.neighborhood ?? cityName}` }] : undefined,
+    }),
+    twitter: defaultTwitter({ title: ogTitle, description }),
   };
 }
 
@@ -109,8 +133,11 @@ export default async function CanchaPage({ params }: Props) {
   const photos = meta.images.slice(0, 4);
   const reviews = meta.reviews.slice(0, 8);
 
+  const photoAlt = `${venue.name}, ${venue.neighborhood ?? city.name}`;
+
   return (
     <main className="page page-venue-detail" id="main">
+      <JsonLd data={venueJsonLd(venue, city.name)} />
       <p className="venue-back">
         <Link href="/canchas">← Directorio de canchas</Link>
       </p>
@@ -256,12 +283,12 @@ export default async function CanchaPage({ params }: Props) {
             Fotos
           </h2>
           <ul className="venue-photo-grid">
-            {photos.map((src) => (
+            {photos.map((src, index) => (
               <li key={src}>
                 {/* Google Maps CDN; plain img avoids next/image remote config */}
                 <img
                   src={src}
-                  alt=""
+                  alt={index === 0 ? photoAlt : ""}
                   loading="lazy"
                   decoding="async"
                   referrerPolicy="no-referrer"

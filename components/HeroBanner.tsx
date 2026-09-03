@@ -13,38 +13,6 @@ type HeroBannerProps = {
 
 const HEADLINE_FADE_MS = 280;
 
-function HeroHeadline({ headline }: { headline: string }) {
-  const [displayed, setDisplayed] = useState(headline);
-  const [visible, setVisible] = useState(true);
-
-  useEffect(() => {
-    if (headline === displayed) return undefined;
-
-    let swapTimer: number | undefined;
-    const fadeTimer = window.setTimeout(() => {
-      setVisible(false);
-      swapTimer = window.setTimeout(() => {
-        setDisplayed(headline);
-        setVisible(true);
-      }, HEADLINE_FADE_MS);
-    }, 0);
-
-    return () => {
-      window.clearTimeout(fadeTimer);
-      if (swapTimer !== undefined) window.clearTimeout(swapTimer);
-    };
-  }, [displayed, headline]);
-
-  return (
-    <h1
-      className={`hero-headline ${visible ? "is-visible" : "is-fading"}`}
-      suppressHydrationWarning
-    >
-      {displayed}
-    </h1>
-  );
-}
-
 function HeroSportChip({ sport }: { sport: Sport | null }) {
   const [displayed, setDisplayed] = useState<Sport | null>(sport);
   const [visible, setVisible] = useState(true);
@@ -99,7 +67,7 @@ export function HeroBanner({ cityName }: HeroBannerProps) {
         <p className="brand-hero" aria-hidden="true">
           BaFut
         </p>
-        <HeroHeadline headline={pitch.headline} />
+        <h1>Pateadas y huecos en {cityName}</h1>
         <p className="hero-lede">
           Publica el hueco de tu cancha o pide el cupo. {cityName} primero.
         </p>

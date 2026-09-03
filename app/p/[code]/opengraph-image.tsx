@@ -5,7 +5,7 @@ import { formatWhen, openSlotsPhrase } from "@/lib/format";
 import { positionLabel, sportLabel } from "@/lib/labels";
 import type { Position } from "@/lib/constants";
 
-export const alt = "Partido en BaFut";
+export const alt = "Pateada en BaFut";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -24,11 +24,11 @@ export default async function Image({ params }: Props) {
             "any") as Position
         ] ?? "Cualquiera",
       )
-    : "Partido en BaFut";
+    : "Pateada en BaFut";
 
   const subtitle = match
     ? `${formatWhen(match.starts_at, match.cities.timezone)} · ${match.venues.name}`
-    : "Falta un jugador. Encuéntralo.";
+    : "Hay un hueco. Entrá.";
 
   const sport = match
     ? sportLabel[match.sport as keyof typeof sportLabel] ?? match.sport
@@ -57,7 +57,7 @@ export default async function Image({ params }: Props) {
           </div>
           <div style={{ display: "flex", fontSize: 30, opacity: 0.9, maxWidth: 980 }}>{subtitle}</div>
         </div>
-        <div style={{ display: "flex", fontSize: 24, opacity: 0.75 }}>Sin teléfonos. Solo el hueco.</div>
+        <div style={{ display: "flex", fontSize: 24, opacity: 0.75 }}>Pateada abierta. Solo el hueco.</div>
       </div>
     ),
     { ...size },

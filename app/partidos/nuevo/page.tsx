@@ -3,9 +3,11 @@ import { CreateMatchForm } from "@/components/CreateMatchForm";
 import { CitySwitcher } from "@/components/CitySwitcher";
 import { requireUserId } from "@/lib/auth";
 import { getActiveCity, getCities, getVenueBySlug, getVenuesByCity } from "@/lib/data";
+import { robotsNoIndex } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "Publicar hueco",
+  robots: robotsNoIndex,
 };
 
 export default async function NuevoPartidoPage({

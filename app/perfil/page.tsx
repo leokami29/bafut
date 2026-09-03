@@ -7,9 +7,11 @@ import { getActiveCity, getCities, getHostPendingClaimCount, getProfile } from "
 import { profileCompletenessHint } from "@/lib/profile";
 import { safeNextPath } from "@/lib/safe-next";
 import { createClient } from "@/lib/supabase/server";
+import { robotsNoIndex } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "Perfil",
+  robots: robotsNoIndex,
 };
 
 export default async function PerfilPage({

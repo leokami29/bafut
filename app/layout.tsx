@@ -6,6 +6,15 @@ import { PwaRegister } from "@/components/PwaRegister";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { getActiveCity, getCities, getHostPendingClaimCount, getSessionUserId } from "@/lib/data";
+import { siteUrl } from "@/lib/env";
+import {
+  DEFAULT_DESCRIPTION,
+  DEFAULT_TITLE,
+  SITE_NAME,
+  TITLE_TEMPLATE,
+  defaultOg,
+  defaultTwitter,
+} from "@/lib/seo";
 import "./globals.css";
 
 const display = Barlow_Condensed({
@@ -26,15 +35,22 @@ const mono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl()),
   title: {
-    default: "BaFut",
-    template: "%s · BaFut",
+    default: DEFAULT_TITLE,
+    template: TITLE_TEMPLATE,
   },
-  description: "Falta un jugador. Encuéntralo. Partidos abiertos en canchas, empezando por Barranquilla.",
-  applicationName: "BaFut",
+  description: DEFAULT_DESCRIPTION,
+  applicationName: SITE_NAME,
+  robots: { index: true, follow: true },
+  icons: {
+    icon: "/icon.svg",
+  },
+  openGraph: defaultOg(),
+  twitter: defaultTwitter(),
   appleWebApp: {
     capable: true,
-    title: "BaFut",
+    title: SITE_NAME,
     statusBarStyle: "black-translucent",
   },
 };

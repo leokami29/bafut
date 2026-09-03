@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cancelMatchAction } from "@/app/actions";
+import { JsonLd, matchJsonLd } from "@/components/JsonLd";
 import { HostShareBanner, ShareWhatsApp } from "@/components/ShareWhatsApp";
 import { SlotList } from "@/components/SlotList";
 import { getHostMatchCount, getMatchByCode, getSessionUserId } from "@/lib/data";
@@ -9,6 +10,15 @@ import { openSlotCount, slotIsOpen } from "@/lib/types";
 import { formatMoney, formatWhen, openSlotsPhrase } from "@/lib/format";
 import { formatLabel, genderLabel, matchStatusLabel, positionLabel, sportLabel } from "@/lib/labels";
 import type { Position } from "@/lib/constants";
+import {
+  absoluteUrl,
+  defaultOg,
+  defaultTwitter,
+  fullTitle,
+  matchIsIndexable,
+  robotsIndex,
+  robotsNoIndex,
+} from "@/lib/seo";
 
 type Props = { params: Promise<{ code: string }> };
 
@@ -16,15 +26,25 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { code } = await params;
   const match = await getMatchByCode(code);
   if (!match) {
-    return { title: "Partido" };
+    return { title: "Partido", robots: robotsNoIndex };
   }
   const open = openSlotCount(match);
   const dominant =
     match.match_slots.find(slotIsOpen)?.position ?? match.match_slots[0]?.position ?? "any";
   const position = positionLabel[dominant as Position] ?? "Cualquiera";
+  const title = `${openSlotsPhrase(open, position)} en ${match.venues.name}`;
+  const sport = sportLabel[match.sport as keyof typeof sportLabel] ?? match.sport;
+  const description = `${formatWhen(match.starts_at, match.cities.timezone)} · ${match.venues.neighborhood ?? match.cities.name} · ${sport}`;
+  const url = absoluteUrl(`/p/${match.share_code}`);
+  const ogTitle = fullTitle(title);
+  const indexable = matchIsIndexable(match.status, match.starts_at);
   return {
-    title: `${openSlotsPhrase(open, position)} en ${match.venues.name}`,
-    description: `${formatWhen(match.starts_at, match.cities.timezone)} · ${match.venues.neighborhood ?? match.cities.name}`,
+    title,
+    description,
+    robots: indexable ? robotsIndex : robotsNoIndex,
+    alternates: { canonical: url },
+    openGraph: defaultOg({ title: ogTitle, description, url }),
+    twitter: defaultTwitter({ title: ogTitle, description }),
   };
 }
 
@@ -58,6 +78,7 @@ export default async function PartidoPage({ params }: Props) {
 
   return (
     <main className="page page-narrow" id="main">
+      <JsonLd data={matchJsonLd(match)} />
       <div className="match-status-row">
         <p className="eyebrow">{match.cities.name}</p>
         <span className={`status-chip ${cancelled ? "is-full" : open > 0 ? "is-open" : "is-full"}`}>

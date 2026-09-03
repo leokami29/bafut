@@ -1,9 +1,28 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import {
+  SUPPORT_DESCRIPTION,
+  SUPPORT_TITLE,
+  absoluteUrl,
+  defaultOg,
+  defaultTwitter,
+} from "@/lib/seo";
+
+const apoyarUrl = absoluteUrl("/apoyar");
 
 export const metadata: Metadata = {
-  title: "Apoyar",
-  description: "Invita un café para hosting, mapa y curar canchas en BaFut.",
+  title: { absolute: SUPPORT_TITLE },
+  description: SUPPORT_DESCRIPTION,
+  alternates: { canonical: apoyarUrl },
+  openGraph: defaultOg({
+    title: SUPPORT_TITLE,
+    description: SUPPORT_DESCRIPTION,
+    url: apoyarUrl,
+  }),
+  twitter: defaultTwitter({
+    title: SUPPORT_TITLE,
+    description: SUPPORT_DESCRIPTION,
+  }),
 };
 
 export default function ApoyarPage() {

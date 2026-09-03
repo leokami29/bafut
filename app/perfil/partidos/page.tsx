@@ -7,9 +7,11 @@ import { formatWhen, openSlotsPhrase } from "@/lib/format";
 import { formatLabel, matchStatusLabel, positionLabel, sportLabel } from "@/lib/labels";
 import type { Position } from "@/lib/constants";
 import { openSlotCount, pendingClaimCountForHost, slotIsOpen } from "@/lib/types";
+import { robotsNoIndex } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "Mis partidos",
+  robots: robotsNoIndex,
 };
 
 export default async function MisPartidosPage() {
