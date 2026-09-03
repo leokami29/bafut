@@ -29,7 +29,8 @@ export const metadata: Metadata = {
     default: "BaFut",
     template: "%s · BaFut",
   },
-  description: "Falta un jugador. Encuéntralo. Partidos abiertos en canchas, empezando por Barranquilla.",
+  description:
+    "Falta un jugador. Publicá el hueco o pedí el cupo. BaFut no reserva canchas: arma la pateada. Barranquilla primero.",
   applicationName: "BaFut",
   appleWebApp: {
     capable: true,

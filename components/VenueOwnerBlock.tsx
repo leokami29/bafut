@@ -42,8 +42,8 @@ export function VenueOwnerBlock({
       <h2 id="venue-owner-heading">¿Sos el dueño?</h2>
       <p>
         {hasActivity
-          ? "Acá se ven las pateadas que se arman en tu cancha. BaFut no cobra el alquiler ni reserva por vos: concentra la demanda."
-          : "Cuando publiquen huecos acá, aparecen aquí. Escribimos si querés destacar la ficha."}
+          ? "Acá se concentran las pateadas que se arman en tu cancha. BaFut no cobra el alquiler ni reserva por vos: muestra la demanda."
+          : "Cuando publiquen huecos acá, aparecen en esta ficha. Es demanda visible sin intermediario de alquiler."}
       </p>
       {wa || mail ? (
         <div className="venue-owner-actions">
@@ -60,8 +60,9 @@ export function VenueOwnerBlock({
         </div>
       ) : null}
       <p className="venue-section-meta" style={{ marginTop: "0.75rem" }}>
-        También podés{" "}
-        <Link href="/apoyar">apoyar BaFut</Link>
+        <Link href="/duenos">Más para dueños</Link>
+        {" · "}
+        <Link href="/apoyar">Apoyar BaFut</Link>
         {" · "}
         open source, sin paywall.
       </p>

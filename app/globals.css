@@ -578,6 +578,130 @@ textarea {
   color: var(--turf);
 }
 
+.home-diff {
+  padding: 2.25rem 1.25rem 2.5rem;
+  background:
+    linear-gradient(
+      165deg,
+      color-mix(in oklab, var(--turf-deep) 92%, #000) 0%,
+      var(--turf) 55%,
+      color-mix(in oklab, var(--turf) 80%, var(--chalk) 18%) 100%
+    );
+  color: var(--chalk);
+}
+
+.home-diff .eyebrow {
+  color: var(--flood);
+}
+
+.home-diff h2 {
+  margin: 0.35rem 0 0.75rem;
+  max-width: 16ch;
+  font-size: clamp(1.65rem, 5vw, 2.35rem);
+  line-height: 0.95;
+  color: #fff8e8;
+  animation: rise 0.75s ease both;
+}
+
+.home-diff-lede {
+  margin: 0 0 1.5rem;
+  max-width: 38ch;
+  line-height: 1.5;
+  color: color-mix(in oklab, var(--chalk) 88%, transparent);
+  animation: rise 0.75s ease 0.08s both;
+}
+
+.home-diff-lanes {
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0;
+  border-top: 1px solid color-mix(in oklab, var(--chalk) 28%, transparent);
+  animation: rise 0.75s ease 0.14s both;
+}
+
+.home-diff-lane {
+  margin: 0;
+  padding: 1rem 0;
+  border-bottom: 1px solid color-mix(in oklab, var(--chalk) 22%, transparent);
+}
+
+.home-diff-lane:last-child {
+  border-bottom: 0;
+}
+
+.home-diff-lane dt {
+  margin: 0 0 0.3rem;
+  font-family: var(--font-display), sans-serif;
+  font-size: 1rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--flood);
+}
+
+.home-diff-lane dd {
+  margin: 0;
+  max-width: 40ch;
+  line-height: 1.45;
+  color: color-mix(in oklab, var(--chalk) 90%, transparent);
+}
+
+.home-diff-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-top: 1.35rem;
+  animation: rise 0.75s ease 0.22s both;
+}
+
+.home-diff-actions .btn-flood,
+.home-diff-actions .btn-ghost {
+  width: 100%;
+}
+
+.home-diff-owner-link {
+  border-color: color-mix(in oklab, var(--chalk) 55%, transparent);
+}
+
+.page-duenos .lede {
+  max-width: 42ch;
+}
+
+.duenos-points {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.duenos-points li {
+  display: grid;
+  gap: 0.25rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid color-mix(in oklab, var(--ink) 12%, transparent);
+}
+
+.duenos-points li:last-child {
+  border-bottom: 0;
+}
+
+.duenos-points strong {
+  font-family: var(--font-display), sans-serif;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.duenos-points span {
+  line-height: 1.45;
+  color: color-mix(in oklab, var(--ink) 65%, transparent);
+}
+
+.duenos-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: 1rem;
+}
+
 h1,
 h2,
 .subhead {
@@ -2194,6 +2318,21 @@ details.venue-group[open] > summary.venue-group-title::before {
     padding-inline: 2.5rem;
   }
 
+  .home-diff {
+    padding-inline: 2.5rem;
+  }
+
+  .home-diff-actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .home-diff-actions .btn-flood,
+  .home-diff-actions .btn-ghost {
+    width: auto;
+    min-width: 11rem;
+  }
+
   .site-nav-signout {
     display: none;
   }
@@ -3054,6 +3193,10 @@ details.venue-group[open] > summary.venue-group-title::before {
   .hero h1,
   .hero-lede,
   .hero-ctas,
+  .home-diff h2,
+  .home-diff-lede,
+  .home-diff-lanes,
+  .home-diff-actions,
   .match-row,
   .sk,
   .venue-toolbar .filter-chips button,

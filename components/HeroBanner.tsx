@@ -101,7 +101,8 @@ export function HeroBanner({ cityName }: HeroBannerProps) {
         </p>
         <HeroHeadline headline={pitch.headline} />
         <p className="hero-lede">
-          Publica el hueco de tu cancha o pide el cupo. {cityName} primero.
+          Lista pública del hueco — no reserva de cancha. Pedí el cupo o publicá el que falta
+          en {cityName}.
         </p>
         <div className="hero-ctas">
           <Link
