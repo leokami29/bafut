@@ -12,6 +12,25 @@ type PitchFieldDynamicProps = {
   rotationKey?: number;
 };
 
+function usePitchAspectRatio() {
+  const [aspect, setAspect] = useState("xMidYMid slice");
+
+  useEffect(() => {
+    const narrow = window.matchMedia("(max-width: 719px)");
+
+    const update = () => {
+      // En portrait prioriza la mitad derecha (formación + hueco).
+      setAspect(narrow.matches ? "xMaxYMid slice" : "xMidYMid slice");
+    };
+
+    update();
+    narrow.addEventListener("change", update);
+    return () => narrow.removeEventListener("change", update);
+  }, []);
+
+  return aspect;
+}
+
 function CourtLines({ sport }: { sport: Sport }) {
   switch (sport) {
     case "futbol_sala":
@@ -34,12 +53,10 @@ function CourtLines({ sport }: { sport: Sport }) {
         <>
           <rect x="18" y="18" width="324" height="184" />
           <line x1="180" y1="18" x2="180" y2="202" />
-          {/* Left key */}
           <rect x="18" y="62" width="78" height="96" />
           <rect x="18" y="86" width="42" height="48" />
           <path d="M 96 62 A 58 58 0 0 1 96 158" />
           <circle cx="54" cy="110" r="2" fill="currentColor" stroke="none" />
-          {/* Right key */}
           <rect x="264" y="62" width="78" height="96" />
           <rect x="300" y="86" width="42" height="48" />
           <path d="M 264 62 A 58 58 0 0 0 264 158" />
@@ -134,6 +151,7 @@ export function PitchFieldDynamic({
   const label = setup?.label ?? "";
   const [swapping, setSwapping] = useState(false);
   const prevRotationKey = useRef(rotationKey);
+  const preserveAspectRatio = usePitchAspectRatio();
 
   useEffect(() => {
     if (rotationKey === 0 || rotationKey === prevRotationKey.current) return undefined;
@@ -151,7 +169,7 @@ export function PitchFieldDynamic({
       <svg
         className="pitch-field"
         viewBox="0 0 360 220"
-        preserveAspectRatio="xMidYMid slice"
+        preserveAspectRatio={preserveAspectRatio}
       >
         <defs>
           <linearGradient id={turfId} x1="0" y1="0" x2="1" y2="1">
@@ -159,7 +177,6 @@ export function PitchFieldDynamic({
             <stop offset="45%" stopColor="#0c6b4c" />
             <stop offset="100%" stopColor="#084a35" />
           </linearGradient>
-          {/* Oscurece solo el tercio inferior del SVG — sin overlay CSS sobre el texto */}
           <linearGradient id={shadeId} x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="#073828" stopOpacity="0" />
             <stop offset="48%" stopColor="#073828" stopOpacity="0" />
@@ -168,7 +185,7 @@ export function PitchFieldDynamic({
           </linearGradient>
         </defs>
         <rect width="360" height="220" fill={`url(#${turfId})`} />
-        <rect width="360" height="220" fill={`url(#${shadeId})`} pointerEvents="none" />
+        <rect className="pitch-shade" width="360" height="220" fill={`url(#${shadeId})`} pointerEvents="none" />
         <g
           key={`${sport}-${rotationKey}`}
           className="pitch-lines"

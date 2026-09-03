@@ -1,0 +1,2376 @@
+{
+  "meta": {
+    "generated_at": "2026-09-02",
+    "source_file": "2026-09-02-gmaps-multisport-partial.json",
+    "total_scraped_unique": 119,
+    "total_reviews_kept": 610,
+    "max_reviews_per_venue": 15,
+    "matched_existing": 69,
+    "public_candidates": 20,
+    "apify": null,
+    "notes": "Reviews from local gosom scraper (user_reviews). Extra-reviews crawl may expand later."
+  },
+  "venues": [
+    {
+      "name": "Cancha de Fútbol El Mundialito",
+      "slug": "mundialito",
+      "address": "Cra. 3 #Calle 45D, Ciudadela 20 de Julio, Barranquilla, Atlántico",
+      "neighborhood": "Ciudadela 20 de Julio",
+      "lat": 10.9356476,
+      "lng": -74.80072969999999,
+      "sports": [
+        "futbol"
+      ],
+      "venue_kind": "publica",
+      "surface": "sintetica",
+      "covered": null,
+      "phone": "",
+      "website": null,
+      "notes": {
+        "source": "google",
+        "place_id": "ChIJ6V2ENb7S9Y4R-i38hNnpA9U",
+        "category": "Soccer field",
+        "categories": [
+          "Soccer field"
+        ],
+        "status": "",
+        "description": "",
+        "rating": 4.5,
+        "review_count": 505,
+        "hours": null,
+        "images": [
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlcipDjm3qQ92XzUmZtwce6fWsKmgd5yFn_fsrcDwb7Be3HkiBXZdHJae2C2UyNTgQx5K91VerTS9V6f-7j8oWCRR2TI-xIiBxx8xHKKMt1Cyqx_kS33PJDTQatusavt30Nj2x3=w408-h242-k-no",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlcipDjm3qQ92XzUmZtwce6fWsKmgd5yFn_fsrcDwb7Be3HkiBXZdHJae2C2UyNTgQx5K91VerTS9V6f-7j8oWCRR2TI-xIiBxx8xHKKMt1Cyqx_kS33PJDTQatusavt30Nj2x3=w501-h298-k-no",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWnowCAFFaAfBfYWC2R-u_KgMgixK2QosTwp4CsKqdzKZv5peMNVa4BKJnLwbVtf1X9TvYWO08I0hBKL5pEuVDr233MfDZEdl47IyFotfpolFTSrQ5XEYnl0i0SrO3ADTSwOdekf=w224-h398-k-no",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkEBw9aIxtN8ICfnc9HSP9B17kv5kQM36QHB6s0BBMy1VuJ14eU1mJJzvoGpOFZcMPUthP52aPaDZPVGRMb5VJZDe4IBdguk11SLiFNNQtN8kmfi17LhIfztWUT9g6vgzEHzNRP=w224-h398-k-no",
+          "https://streetviewpixels-pa.googleapis.com/v1/thumbnail?panoid=G6O_lb9QW3SaZODJbSIFdg&cb_client=maps_sv.tactile.gps&w=224&h=298&yaw=207.75351&pitch=0&thumbfov=100"
+        ],
+        "thumbnail": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlcipDjm3qQ92XzUmZtwce6fWsKmgd5yFn_fsrcDwb7Be3HkiBXZdHJae2C2UyNTgQx5K91VerTS9V6f-7j8oWCRR2TI-xIiBxx8xHKKMt1Cyqx_kS33PJDTQatusavt30Nj2x3=w408-h242-k-no",
+        "maps_url": "https://www.google.com/maps/place/Cancha+de+F%C3%BAtbol+El+Mundialito/data=!4m7!3m6!1s0x8ef5d2be35845de9:0xd503e9d984fc2dfa!8m2!3d10.9356476!4d-74.8007297!16s%2Fg%2F1tdyxdz2!19sChIJ6V2ENb7S9Y4R-i38hNnpA9U?authuser=0&hl=en&g_ep=EgoyMDI2MDkwMS4wIJJjKgBIAVAD&rclk=1",
+        "reviews": [
+          {
+            "author": "Andres Javier Patino Viana",
+            "rating": 5,
+            "text": "Ok",
+            "date": "Edited 5 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Angelo Bustillo Molinares",
+            "rating": 5,
+            "text": "Bacano",
+            "date": "6 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Aris Sarmiento",
+            "rating": 4,
+            "text": "Ok",
+            "date": "5 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Lyda Beltran",
+            "rating": 5,
+            "text": "execelente",
+            "date": "Edited 4 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Stefynikol perez",
+            "rating": 5,
+            "text": "Un muy buen lugar, para salir a pasear, distraerse, llevar a los niños a recrearse, y pasar un rato muy agradable,",
+            "date": "4 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Miguel Angel Olivares Amaris",
+            "rating": 5,
+            "text": "Muy buena cancha de footboll",
+            "date": "2 months ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Laura Niño",
+            "rating": 5,
+            "text": "Muy bonito, agradable espacio",
+            "date": "5 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "digno contreras",
+            "rating": 5,
+            "text": "Esta muy buena la cancha todo esta buen",
+            "date": "5 years ago",
+            "ownerResponse": null
+          }
+        ],
+        "confidence": "low",
+        "public_guess": "dudosa"
+      },
+      "source": "google_maps_scraper",
+      "confidence": "low",
+      "matched_existing_slug": "mundialito",
+      "match_distance_m": 0,
+      "existing_venue_kind": "publica"
+    },
+    {
+      "name": "Cancha Sintética de Fútbol Parque Tivoly",
+      "slug": "cancha-sintetica-de-futbol-parque-tivoly",
+      "address": "Cra. 65 #94-57, Riomar, Barranquilla, Atlántico",
+      "neighborhood": "Villamar, Riomar",
+      "lat": 11.0194282,
+      "lng": -74.8198037,
+      "sports": [
+        "futbol"
+      ],
+      "venue_kind": "publica",
+      "surface": "sintetica",
+      "covered": null,
+      "phone": "",
+      "website": null,
+      "notes": {
+        "source": "google",
+        "place_id": "ChIJGYWh7bYt9I4RXk-gOYYVPZE",
+        "category": "Soccer field",
+        "categories": [
+          "Soccer field"
+        ],
+        "status": "",
+        "description": "",
+        "rating": 4.7,
+        "review_count": 473,
+        "hours": "Friday: 6 AM–10 PM; Monday: 6 AM–10 PM; Saturday: 6 AM–10 PM; Sunday: 6 AM–10 PM; Thursday: 6 AM–10 PM; Tuesday: 6 AM–10 PM; Wednesday: Open 24 hours",
+        "images": [
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkO83MVKGQyK713DnIBfg9XgzFXgf8NOE5AWy9Mwv2ZktsvsXkB-MVAzExBlwrNBVXRQ7jZ07quVjEVzfR2OvH9SJJvaD7giPPS3UDfo-yCN4b5aQO6FsJjK-7nlwB-SAmZOD7L=w408-h306-k-no",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkO83MVKGQyK713DnIBfg9XgzFXgf8NOE5AWy9Mwv2ZktsvsXkB-MVAzExBlwrNBVXRQ7jZ07quVjEVzfR2OvH9SJJvaD7giPPS3UDfo-yCN4b5aQO6FsJjK-7nlwB-SAmZOD7L=w397-h298-k-no",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlZyZpL930Hl5D4rZwdnz_inDSbn6L_k9QWQV2xnmnKlZwA4uuCZk-3yyvZTnKHkuYuP77ySpVtmajvPpDBD2TABgVVTMP2-gZR8R8m1hzgvf68tA4XpJ9r7R55r0ym7tNoA2NG=w529-h298-k-no",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWl3d8w2KYTPFHUOIjQBX-pC1tlwd7Q0BR3ukybi4h1hwrYode6oNZCLqF-_1exPIX1crDmefCpS4E4iNQ-ztfPCqYVQ3Iv1T4nHIdZO1-uyDEaI43nwWLmzmkLpuarX732h-SJX=w529-h298-k-no",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWnZi0L4dxA20Iga5db0xed8q9FbEpg-qPqkwyCX_Fhe6Io9WZqyxQet-NUYTyvPMPcptKmMwzL0l5lOZE6mgCXfQII_VIRN4XCTUYTsMI2yipTXDNhUyhX7C7MupMyx8UkQreI9=w397-h298-k-no",
+          "https://streetviewpixels-pa.googleapis.com/v1/thumbnail?panoid=-um_FnNJCoa4nSUy_d7rVg&cb_client=maps_sv.tactile.gps&w=224&h=298&yaw=195.90141&pitch=0&thumbfov=100"
+        ],
+        "thumbnail": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkO83MVKGQyK713DnIBfg9XgzFXgf8NOE5AWy9Mwv2ZktsvsXkB-MVAzExBlwrNBVXRQ7jZ07quVjEVzfR2OvH9SJJvaD7giPPS3UDfo-yCN4b5aQO6FsJjK-7nlwB-SAmZOD7L=w408-h306-k-no",
+        "maps_url": "https://www.google.com/maps/place/Cancha+Sint%C3%A9tica+de+F%C3%BAtbol+Parque+Tivoly/data=!4m7!3m6!1s0x8ef42db6eda18519:0x913d158639a04f5e!8m2!3d11.0194282!4d-74.8198037!16s%2Fg%2F11d_6hmtbb!19sChIJGYWh7bYt9I4RXk-gOYYVPZE?authuser=0&hl=en&g_ep=EgoyMDI2MDkwMS4wIJJjKgBIAVAD&rclk=1",
+        "reviews": [
+          {
+            "author": "Anaisabel Quintero",
+            "rating": 5,
+            "text": "Super",
+            "date": "4 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Kevin Esteban Bello Gomez",
+            "rating": 5,
+            "text": "Ok",
+            "date": "a month ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Zully Paola Bonett gamarra",
+            "rating": 5,
+            "text": "Me encanto esta cancha\nEsta super limpia y en buen estado\nEl parque está súper lindo muchas platas y animales",
+            "date": "5 months ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "First Need Fundation ONG",
+            "rating": 5,
+            "text": "El sitio más exclusivo de barranquilla\nEdificios con una vista espectacular de donde se divisa la desembocadura del río de la Magdalena en bocas de cenizas",
+            "date": "4 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Laura Robles Romero",
+            "rating": 5,
+            "text": "Excelente cancha! Sector tranquilo.",
+            "date": "2 months ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Efren Barrios",
+            "rating": 5,
+            "text": "Mi experiencia k hoy 22 de diciembre la categoría 2011 ringo amaya donde juega mi hijo Neymar Jr a quedado campeón uno logro más con mi hijo gracias Dios y mis padres por tsnts alegría",
+            "date": "4 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Bessy Rodriguez Navarro",
+            "rating": 5,
+            "text": "Muy bello y donde se puede disfrutar de un día de recreación e igual practicar deportes",
+            "date": "Edited 5 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Yessica Paola Paredes Arenas",
+            "rating": 5,
+            "text": "Espectácular, vamos todos los jueves a jugar voley con mis amigos, se los recomiendo!!",
+            "date": "a year ago",
+            "ownerResponse": null
+          }
+        ],
+        "confidence": "high",
+        "public_guess": "publica"
+      },
+      "source": "google_maps_scraper",
+      "confidence": "high",
+      "matched_existing_slug": null,
+      "match_distance_m": null,
+      "existing_venue_kind": null
+    },
+    {
+      "name": "Unidad Deportiva Pibe Valderrama",
+      "slug": "pibe-valderrama",
+      "address": "Cra. 1c 1 #01 # 46, Los Corales, Barranquilla, Atlántico",
+      "neighborhood": "Los Corales",
+      "lat": 10.9300546,
+      "lng": -74.801506,
+      "sports": [
+        "futbol"
+      ],
+      "venue_kind": "publica",
+      "surface": "sintetica",
+      "covered": null,
+      "phone": "315 6342122",
+      "website": null,
+      "notes": {
+        "source": "google",
+        "place_id": "ChIJEbtamZTS9Y4RkQbpxNUpwdI",
+        "category": "Athletic park",
+        "categories": [
+          "Athletic park",
+          "Soccer"
+        ],
+        "status": "",
+        "description": "",
+        "rating": 4.6,
+        "review_count": 553,
+        "hours": "Friday: 6 AM–9 PM; Monday: 6 AM–9 PM; Saturday: 6 AM–9 PM; Sunday: 6 AM–9 PM; Thursday: 6 AM–9 PM; Tuesday: 6 AM–9 PM; Wednesday: 6 AM–9 PM",
+        "images": [
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWnorWdAESw63vy6n3D4el0h7CF9gASrseMGfBKWKyEXxXXvQRlvWYl2cxkQWuOqXnSUjzS2IV6Bw5CATsg6t5jGOFFnDvnVXmAyiAPblQHFrLUI7d0-5sra2J6ZSLhuGHCf6zQ=w426-h240-k-no",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWnorWdAESw63vy6n3D4el0h7CF9gASrseMGfBKWKyEXxXXvQRlvWYl2cxkQWuOqXnSUjzS2IV6Bw5CATsg6t5jGOFFnDvnVXmAyiAPblQHFrLUI7d0-5sra2J6ZSLhuGHCf6zQ=w529-h298-k-no",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmSMkunikbn66hZA5J3LM4Nb83mO68r-rcn4IE-TT959Ye_CFCZQqXZSO7cgODWCwyUfzK4EM_LZjMUOp4tweh62zkK2BqqJxuUoH6NB9uwkjSXv6Ifq9Dth3VrStfzil3xkL8hLQ=w397-h298-k-no",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWnFTu029ALh2mitXXQxNO9jsuvo2QTcvxhVU2Mu5VCuADze58FkKAyp1YGd08RtCdbg-5R8XYWtkUPF_KG7mFL4MoaTzS82Bj3qsVgmBQKtBsgO2Pg_S9gK0OWS6nZEaMfNB9Zc=w529-h298-k-no",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlAFaGBapuUu5xIkEbUCfzBHQnP7IpoK_CGFBrbkCFwTdbG4H9jNkITUxLQF_RCUnTW4maP-3oZeS8GtxArdz7vB5PZZQno2PSfO5ibKwa7jUSKkcfdJtShqZwuRYD1C1CNZJJl=w224-h298-k-no-pi-0-ya294-ro0-fo100"
+        ],
+        "thumbnail": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWnorWdAESw63vy6n3D4el0h7CF9gASrseMGfBKWKyEXxXXvQRlvWYl2cxkQWuOqXnSUjzS2IV6Bw5CATsg6t5jGOFFnDvnVXmAyiAPblQHFrLUI7d0-5sra2J6ZSLhuGHCf6zQ=w426-h240-k-no",
+        "maps_url": "https://www.google.com/maps/place/Unidad+Deportiva+Pibe+Valderrama/data=!4m7!3m6!1s0x8ef5d294995abb11:0xd2c129d5c4e90691!8m2!3d10.9300546!4d-74.801506!16s%2Fg%2F1hc24fh3w!19sChIJEbtamZTS9Y4RkQbpxNUpwdI?authuser=0&hl=en&g_ep=EgoyMDI2MDkwMS4wIJJjKgBIAVAD&rclk=1",
+        "reviews": [
+          {
+            "author": "Kofi Hinds",
+            "rating": 5,
+            "text": "Lovely sports venue in Barranquilla.",
+            "date": "8 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Ignacio Guerrero",
+            "rating": 5,
+            "text": "Super...",
+            "date": "Edited 7 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Juank Ortega",
+            "rating": 5,
+            "text": "Ok",
+            "date": "3 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Jonathan R. ing. Industrial",
+            "rating": 5,
+            "text": "Tennis",
+            "date": "7 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "María Pérez Perez",
+            "rating": 5,
+            "text": "Super",
+            "date": "7 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Aris Sarmiento",
+            "rating": 4,
+            "text": "Ok",
+            "date": "7 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Nelson Manjarres",
+            "rating": 5,
+            "text": "Se disfruta mucho el deporte, practicando o admirando las competencias. Muchas zonas verdes para oxigenar nuestros pulmones y reposar a la sombra de los árboles.",
+            "date": "5 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Esthefany Cervantes Bueno",
+            "rating": 4,
+            "text": "Tiene buenos espacios para hacer deportes",
+            "date": "Edited 5 years ago",
+            "ownerResponse": null
+          }
+        ],
+        "confidence": "high",
+        "public_guess": "publica"
+      },
+      "source": "google_maps_scraper",
+      "confidence": "high",
+      "matched_existing_slug": "pibe-valderrama",
+      "match_distance_m": 0,
+      "existing_venue_kind": "publica"
+    },
+    {
+      "name": "Sports Complex \"El Pibe\" Valderrama",
+      "slug": "pibe-valderrama",
+      "address": "a 45e-193, Cra 1C #45e63, Barranquilla, Atlántico",
+      "neighborhood": "Los Corales",
+      "lat": 10.9292669,
+      "lng": -74.8019996,
+      "sports": [
+        "futbol"
+      ],
+      "venue_kind": "publica",
+      "surface": "sintetica",
+      "covered": null,
+      "phone": "53624546",
+      "website": null,
+      "notes": {
+        "source": "google",
+        "place_id": "ChIJl8PZkZTS9Y4R78WzPt_9qrc",
+        "category": "Sports complex",
+        "categories": [
+          "Sports complex"
+        ],
+        "status": "",
+        "description": "",
+        "rating": 4.6,
+        "review_count": 1025,
+        "hours": "Friday: 5 AM–11 PM; Monday: 5 AM–11 PM; Saturday: 5 AM–11 PM; Sunday: 5 AM–11 PM; Thursday: 5 AM–11 PM; Tuesday: 5 AM–11 PM; Wednesday: 5 AM–11 PM",
+        "images": [
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWnZcRwYpeoMUcmok_kfrBKD3fR-INUBwrjFn-1cSN-iG21OpgAZmwtJNzBsWZwLbjH7mMnA-kLG1anQkKyprHak-hfytAy4AtFc524V8nTMUdvA9mhEUxw8__lh0NMGbqpVr8t3=w408-h306-k-no",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWnZcRwYpeoMUcmok_kfrBKD3fR-INUBwrjFn-1cSN-iG21OpgAZmwtJNzBsWZwLbjH7mMnA-kLG1anQkKyprHak-hfytAy4AtFc524V8nTMUdvA9mhEUxw8__lh0NMGbqpVr8t3=w397-h298-k-no",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWn3PROCYne8sLc5b3NCa3QuI1Oz0_tEq0fsFChBDB6xZ6OfwFOEbhxY9YwwF2qweUkIIvjN8GOfYjgnzgdMWFkk0NjG_iclKRBYOnk5tWMWGLHeu0xf8tJgiBnVen1rRdN_A2_g4g=w529-h298-k-no",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWk-sPZD4JKayJwYyxXJF2jQTCBggJ0CD86VsevkOXhpsvtn1BH5HxbPdRc3zqRz-wzEkYh55IJl_fO7T7ST-TBOliv9ub_nUENcGPNxYNQ0d-Exh7hrUzNw5vQ0ft1EIZ-PrK_iLg=w529-h298-k-no",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkR7pFpEHAQvo92drfXShRyhY4Hr1HbLlEpD9aF7ZwyJ8SJ9unvW--1m9H09NIqFTNnOnFr3XQm6hHlTJgupUy6TKa8Tj4LJEUc1Cz9AqMO-GRIkuzWhiigG7kqv2T03BdO8uo=w397-h298-k-no",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkQ7DLQZ1wnqaGtS3kYHsa4_vYQh6G3QJM0moKkCf2-IQ3Q-WqSALTTUQRgLDDqjhmJ3qD-I-J4B4dWSj3aUCgR0WRCw51XkOHDQx0SyietHQXNxAkFxgjvSEAhRRNS5cZYNZT1=w224-h298-k-no-pi0-ya280-ro-0-fo100"
+        ],
+        "thumbnail": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWnZcRwYpeoMUcmok_kfrBKD3fR-INUBwrjFn-1cSN-iG21OpgAZmwtJNzBsWZwLbjH7mMnA-kLG1anQkKyprHak-hfytAy4AtFc524V8nTMUdvA9mhEUxw8__lh0NMGbqpVr8t3=w408-h306-k-no",
+        "maps_url": "https://www.google.com/maps/place/Sports+Complex+%22El+Pibe%22+Valderrama/data=!4m7!3m6!1s0x8ef5d29491d9c397:0xb7aafddf3eb3c5ef!8m2!3d10.9292669!4d-74.8019996!16s%2Fg%2F11c559dl1j!19sChIJl8PZkZTS9Y4R78WzPt_9qrc?authuser=0&hl=en&g_ep=EgoyMDI2MDkwMS4wIJJjKgBIAVAD&rclk=1",
+        "reviews": [
+          {
+            "author": "Lady Dee",
+            "rating": 5,
+            "text": "The seating was great. The food was also great.  And the stadium was spacious.",
+            "date": "7 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "J A",
+            "rating": 5,
+            "text": "Nice park to play soccer and train for olympic games it has a running track and alot of more thing to train.",
+            "date": "7 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Marco Rubio",
+            "rating": 5,
+            "text": "Ok",
+            "date": "2 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Yudis del Carmen Mejia Barros",
+            "rating": 5,
+            "text": "#rss",
+            "date": "Edited 5 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Luis Juvinao",
+            "rating": 4,
+            "text": "Bacano",
+            "date": "5 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Majestic99",
+            "rating": 3,
+            "text": "Nice",
+            "date": "8 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "esteban epalza ariza",
+            "rating": 5,
+            "text": "Super",
+            "date": "5 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "miller antonio manjarrez cardenas",
+            "rating": 5,
+            "text": "Ok",
+            "date": "Edited 3 years ago",
+            "ownerResponse": null
+          }
+        ],
+        "confidence": "low",
+        "public_guess": "dudosa"
+      },
+      "source": "google_maps_scraper",
+      "confidence": "low",
+      "matched_existing_slug": "pibe-valderrama",
+      "match_distance_m": 103,
+      "existing_venue_kind": "publica"
+    },
+    {
+      "name": "Cancha de Arena",
+      "slug": "cancha-de-arena",
+      "address": "Entre Carrera 10 y Carrera 12., Cl. 46, Metropolitana, Barranquilla, Atlántico",
+      "neighborhood": "Metropolitana",
+      "lat": 10.925397199999999,
+      "lng": -74.8012559,
+      "sports": [
+        "futbol"
+      ],
+      "venue_kind": "publica",
+      "surface": "sintetica",
+      "covered": null,
+      "phone": "",
+      "website": null,
+      "notes": {
+        "source": "google",
+        "place_id": "ChIJ73yh-ZLS9Y4RXMZNyZ5K6Go",
+        "category": "Park",
+        "categories": [
+          "Park"
+        ],
+        "status": "Dogs allowed",
+        "description": "",
+        "rating": 4.3,
+        "review_count": 8,
+        "hours": "Friday: Open 24 hours; Monday: Open 24 hours; Saturday: Open 24 hours; Sunday: Open 24 hours; Thursday: Open 24 hours; Tuesday: Open 24 hours; Wednesday: Open 24 hours",
+        "images": [
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWnS4iOtQ6BlZ9ysyMULlApuaRifD1wQiEoxvMZ2OQTtl0_ooK10aLTA4xJo5ONKuAlPXAgCSPolTw_uLylIcqzXyL2BAgdlAyKo6C1DXRniQdWw2pqEWubdnHzs06URvrYbIH9t=w408-h906-k-no",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWnS4iOtQ6BlZ9ysyMULlApuaRifD1wQiEoxvMZ2OQTtl0_ooK10aLTA4xJo5ONKuAlPXAgCSPolTw_uLylIcqzXyL2BAgdlAyKo6C1DXRniQdWw2pqEWubdnHzs06URvrYbIH9t=w224-h497-k-no",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlCXPjjd9ixpm4zVdjH6ti4eINGPHHGayP2xCtyQVXCBLx-ciyg1OC-6S0cwPPQEeVVRj_JNeJQPn1YFWwXQwuSuY-Jkl_jzAunx2yXJHXrj2VonWI9VM-ze9uFom88QrwQgmEfBw=w662-h298-k-no",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkL7fVzfuE0Pz9KC9KmbAZo04wzLM_K4KWve0mDw6hckgQpAprPynfqbNlsl4kD0G9g1g-YBW__Bkvj3nMX-6_gZ7lo2zZr30sBlG_w8eXPe2rem2ICLzcqCCN7G4PySYDnYXKifQ=w224-h398-k-no"
+        ],
+        "thumbnail": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWnS4iOtQ6BlZ9ysyMULlApuaRifD1wQiEoxvMZ2OQTtl0_ooK10aLTA4xJo5ONKuAlPXAgCSPolTw_uLylIcqzXyL2BAgdlAyKo6C1DXRniQdWw2pqEWubdnHzs06URvrYbIH9t=w408-h906-k-no",
+        "maps_url": "https://www.google.com/maps/place/Cancha+de+Arena/data=!4m7!3m6!1s0x8ef5d292f9a17cef:0x6ae84a9ec94dc65c!8m2!3d10.9253972!4d-74.8012559!16s%2Fg%2F1q5bqptp5!19sChIJ73yh-ZLS9Y4RXMZNyZ5K6Go?authuser=0&hl=en&g_ep=EgoyMDI2MDkwMS4wIJJjKgBIAVAD&rclk=1",
+        "reviews": [
+          {
+            "author": "Óscar Grizalez",
+            "rating": 5,
+            "text": "Excelente lugar para la familia y los niños.",
+            "date": "2 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Andersson Torres Orozco",
+            "rating": 4,
+            "text": "Excelente para jugar con tus amigos.",
+            "date": "8 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Jose Sarabia Sehuanes",
+            "rating": 4,
+            "text": "Buen lugar para recrearse",
+            "date": "9 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Jhonny Estrada",
+            "rating": 5,
+            "text": "Feli",
+            "date": "9 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "reynier ojeda",
+            "rating": 4,
+            "text": "👏🏻",
+            "date": "6 years ago",
+            "ownerResponse": null
+          }
+        ],
+        "confidence": "medium",
+        "public_guess": "publica"
+      },
+      "source": "google_maps_scraper",
+      "confidence": "medium",
+      "matched_existing_slug": null,
+      "match_distance_m": null,
+      "existing_venue_kind": null
+    },
+    {
+      "name": "Cancha Barranquilla",
+      "slug": "cancha-barranquilla",
+      "address": "Cl. 47a #3a Sur-2 a, Cra. 3a Sur #32, Barranquilla, Atlántico",
+      "neighborhood": "Ciudadela 20 de Julio",
+      "lat": 10.9287481,
+      "lng": -74.807264,
+      "sports": [
+        "futbol"
+      ],
+      "venue_kind": "publica",
+      "surface": "sintetica",
+      "covered": null,
+      "phone": "",
+      "website": null,
+      "notes": {
+        "source": "google",
+        "place_id": "ChIJI9UefOzS9Y4RZFHFuevdPBE",
+        "category": "Park",
+        "categories": [
+          "Park"
+        ],
+        "status": "Dogs allowed",
+        "description": "",
+        "rating": 4.3,
+        "review_count": 67,
+        "hours": "Friday: Open 24 hours; Monday: Open 24 hours; Saturday: Open 24 hours; Sunday: Open 24 hours; Thursday: Open 24 hours; Tuesday: Open 24 hours; Wednesday: Open 24 hours",
+        "images": [
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlcE_VZGG6Icl59stxegXYLve_YGJj-ImW_MeqF4zGN7NGLPl6oEbu-HZH22semY3-p9pRM9UbbBkKze0R-hPuWIgAVU-sEoHHdJ_LilUavSvh8lvs8a2_Vizedl1oNmOR6SM0Wmw=w426-h240-k-no",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlcE_VZGG6Icl59stxegXYLve_YGJj-ImW_MeqF4zGN7NGLPl6oEbu-HZH22semY3-p9pRM9UbbBkKze0R-hPuWIgAVU-sEoHHdJ_LilUavSvh8lvs8a2_Vizedl1oNmOR6SM0Wmw=w529-h298-k-no",
+          "https://streetviewpixels-pa.googleapis.com/v1/thumbnail?panoid=l5g1sFpgSsFaCDgRGd8Nmg&cb_client=maps_sv.tactile.gps&w=224&h=298&yaw=204.99895&pitch=0&thumbfov=100"
+        ],
+        "thumbnail": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlcE_VZGG6Icl59stxegXYLve_YGJj-ImW_MeqF4zGN7NGLPl6oEbu-HZH22semY3-p9pRM9UbbBkKze0R-hPuWIgAVU-sEoHHdJ_LilUavSvh8lvs8a2_Vizedl1oNmOR6SM0Wmw=w426-h240-k-no",
+        "maps_url": "https://www.google.com/maps/place/Cancha+Barranquilla/data=!4m7!3m6!1s0x8ef5d2ec7c1ed523:0x113cddebb9c55164!8m2!3d10.9287481!4d-74.807264!16s%2Fg%2F11cjhk5c6l!19sChIJI9UefOzS9Y4RZFHFuevdPBE?authuser=0&hl=en&g_ep=EgoyMDI2MDkwMS4wIJJjKgBIAVAD&rclk=1",
+        "reviews": [
+          {
+            "author": "Ginna Gamarra",
+            "rating": 5,
+            "text": "Super",
+            "date": "9 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Heivis (Princese Beau)",
+            "rating": 3,
+            "text": "Es un parque que es muy pequeño y para colmo son los más grandes quienes lo utilizan y no hay supervisión de los padres y de los guarda parques. No me gustó llevar a los niños ahí.",
+            "date": "3 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Gerard Genaro Beltrán Cogollo",
+            "rating": 2,
+            "text": "La están dejando deteriorar",
+            "date": "7 months ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Sheily Peralta Gil",
+            "rating": 5,
+            "text": "Ya no se encuentra la cancha es sí, pero si se encuentra lo que es cancha sintética juegos para niños y espacio para ejercicio.",
+            "date": "4 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Michael Ortíz",
+            "rating": 5,
+            "text": "Definitivamente el mejor cambio que le pudieron dar",
+            "date": "2 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Juan Camilo López",
+            "rating": 4,
+            "text": "Que te puedo contar un buen sitio para jugar si vives en los alrededores",
+            "date": "7 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Juandoto",
+            "rating": 5,
+            "text": "Perfecto para jugar con amigos/Familia",
+            "date": "4 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Hector Calderon",
+            "rating": 5,
+            "text": "Sano y muy recreativo pero está un poco descuido",
+            "date": "5 years ago",
+            "ownerResponse": null
+          }
+        ],
+        "confidence": "medium",
+        "public_guess": "publica"
+      },
+      "source": "google_maps_scraper",
+      "confidence": "medium",
+      "matched_existing_slug": null,
+      "match_distance_m": null,
+      "existing_venue_kind": null
+    },
+    {
+      "name": "Polideportivo Canchas el Pibe",
+      "slug": "pibe-valderrama",
+      "address": "Cl. 46 #1 Sur-1 a 1 Sur-39,, Barranquilla, Atlántico",
+      "neighborhood": "Ciudadela 20 de Julio",
+      "lat": 10.9304987,
+      "lng": -74.80225039999999,
+      "sports": [
+        "futbol"
+      ],
+      "venue_kind": "publica",
+      "surface": "sintetica",
+      "covered": null,
+      "phone": "",
+      "website": null,
+      "notes": {
+        "source": "google",
+        "place_id": "ChIJw1e06pTS9Y4RoT7ijTq_lIM",
+        "category": "Sports complex",
+        "categories": [
+          "Sports complex"
+        ],
+        "status": "",
+        "description": "",
+        "rating": 4.6,
+        "review_count": 117,
+        "hours": "Friday: 5 AM–12 PM; Monday: 5 AM–12 PM; Saturday: 5 AM–12 PM; Sunday: 5 AM–12 PM; Thursday: 5 AM–12 PM; Tuesday: 5 AM–12 PM; Wednesday: 5 AM–12 PM",
+        "images": [
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmrMob_WReX8oQLbgfU9Az1bR_97Ts3BKgdJJZNoVi6MSJSW5kfV-f1-9z422MEIb-tluOUv7m-4rY9LaIa-5pWpFIZTUtb63wsNgJR1Hwsr23Ie4AsoshR6c9kAyxwA9XqRnBY=w426-h240-k-no",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmrMob_WReX8oQLbgfU9Az1bR_97Ts3BKgdJJZNoVi6MSJSW5kfV-f1-9z422MEIb-tluOUv7m-4rY9LaIa-5pWpFIZTUtb63wsNgJR1Hwsr23Ie4AsoshR6c9kAyxwA9XqRnBY=w529-h298-k-no",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmT6v4kqLs5JSKeBwFWutnM0Jxzz9qLttiTGMhYfdPS4M-mDfrq4H0m6MNo6UoP0b7m2UXPM4ysZMaZ_RA3QrC29vXMkhYYm9N-5GXrtedwo-icunuWkltqmBdlkJFc9z9C6S0IIg=w529-h298-k-no",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWnQECs1ff_2Vvp9rvbMfb0n2F-S9-bRpSs5zhYzBGApfABRRsTriBcU3LC2uvvtSsu29e8u4D7dlU8inTWIh9RRZmP3lN2ifeAWlWfgAe3uigtFOOEBdrGgd8P0wRCs5RH0gnPv=w529-h298-k-no",
+          "https://streetviewpixels-pa.googleapis.com/v1/thumbnail?panoid=spMmERVKUaghZ0tiedBpaA&cb_client=maps_sv.tactile.gps&w=224&h=298&yaw=13.95759&pitch=0&thumbfov=100"
+        ],
+        "thumbnail": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmrMob_WReX8oQLbgfU9Az1bR_97Ts3BKgdJJZNoVi6MSJSW5kfV-f1-9z422MEIb-tluOUv7m-4rY9LaIa-5pWpFIZTUtb63wsNgJR1Hwsr23Ie4AsoshR6c9kAyxwA9XqRnBY=w426-h240-k-no",
+        "maps_url": "https://www.google.com/maps/place/Polideportivo+Canchas+el+Pibe/data=!4m7!3m6!1s0x8ef5d294eab457c3:0x8394bf3a8de23ea1!8m2!3d10.9304987!4d-74.8022504!16s%2Fg%2F11cjj0zmkb!19sChIJw1e06pTS9Y4RoT7ijTq_lIM?authuser=0&hl=en&g_ep=EgoyMDI2MDkwMS4wIJJjKgBIAVAD&rclk=1",
+        "reviews": [
+          {
+            "author": "luis alfredo sierra polo",
+            "rating": 5,
+            "text": "PBS FC",
+            "date": "2 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "NELSON cervantes",
+            "rating": 5,
+            "text": "Bacano",
+            "date": "2 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Jesu Davi",
+            "rating": 3,
+            "text": "Las canchas están en mal estado, la grande tiene parte de el área pequeña sin pasto. Y en las canchas pequeñas están llenas de piedras y sin nada de pasto, muy mal estado.",
+            "date": "3 months ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "JUAN CAMARGO",
+            "rating": 5,
+            "text": "Excelente sitio deportivo para niños adultos para formación deportiva",
+            "date": "10 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Antonio Marquez Ruidiaz",
+            "rating": 4,
+            "text": "Bueno se ve algo seguro gente caminando haciendo deporte en la mañana temprano pero las canchas le falta mantenimiento creo que el nombre le queda grande para lo que es realmente",
+            "date": "2 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Norman Bedoya",
+            "rating": 5,
+            "text": "un lugar ideal para la practica de djferentes deportes como el futbol,  patinaje y el atletismo el cual tiene un lugar privilegiado para practicarlo en todas sus modslidades.\npresta sus servicios desde tempranas horas,\nhasta las 10 de ls noche.",
+            "date": "Edited 7 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Luis Ospino",
+            "rating": 5,
+            "text": "Excelente lugar para el deporte en general, acceso gratis a todos las canchas que están siendo mantenidas por el distrito y los usuarios",
+            "date": "Edited 6 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Yadine Suarez",
+            "rating": 2,
+            "text": "No tiene baños al publico disponibles, es algo engorroso estar pidiendo que le permitan un baño, y tampoco para ampararse de un aguacero.",
+            "date": "3 years ago",
+            "ownerResponse": null
+          }
+        ],
+        "confidence": "high",
+        "public_guess": "publica"
+      },
+      "source": "google_maps_scraper",
+      "confidence": "high",
+      "matched_existing_slug": "pibe-valderrama",
+      "match_distance_m": 95,
+      "existing_venue_kind": "publica"
+    },
+    {
+      "name": "San Vicente Park",
+      "slug": "san-vicente-park",
+      "address": "Calle 53D con Carrera 16 #S/N, Cevillar, Barranquilla, Atlántico",
+      "neighborhood": "Cevillar",
+      "lat": 10.9619506,
+      "lng": -74.80314039999999,
+      "sports": [
+        "futbol"
+      ],
+      "venue_kind": "publica",
+      "surface": "sintetica",
+      "covered": null,
+      "phone": "",
+      "website": null,
+      "notes": {
+        "source": "google",
+        "place_id": "ChIJS_Hx90kt9I4RdCVmjxh-aKY",
+        "category": "Park",
+        "categories": [
+          "Park"
+        ],
+        "status": "Dogs allowed",
+        "description": "",
+        "rating": 4.4,
+        "review_count": 600,
+        "hours": "Friday: Open 24 hours; Monday: Open 24 hours; Saturday: Open 24 hours; Sunday: Open 24 hours; Thursday: Open 24 hours; Tuesday: Open 24 hours; Wednesday: Open 24 hours",
+        "images": [
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmDntRblQ5PYorSNniZmF1e6baDHgg0-wPCPLgqYrDcBXlxmrE0zwy3CZ2Fl8S2c2gqyPKVf37MH2h0NECgh3TCJifnbT8yjPAER_H4igpUbXAivnE6xxVg6HcqpvBs4OJmE00u=w408-h544-k-no",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmDntRblQ5PYorSNniZmF1e6baDHgg0-wPCPLgqYrDcBXlxmrE0zwy3CZ2Fl8S2c2gqyPKVf37MH2h0NECgh3TCJifnbT8yjPAER_H4igpUbXAivnE6xxVg6HcqpvBs4OJmE00u=w224-h298-k-no",
+          "https://streetviewpixels-pa.googleapis.com/v1/thumbnail?panoid=TIBAQms91gisELgbG-LOoQ&cb_client=maps_sv.tactile.gps&w=224&h=298&yaw=83.949326&pitch=0&thumbfov=100",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkUD5qYFFolT-UgOQPjthIkOgaWLTTtkV_Kw8rE1bj3CxHw_rmXMAxOK3ZeuojKQqU1nf6_gltG0VGM_EqWmBrxlsillvb0k7Zwd2pt8IedfvGf6-8Rg-lZycPVfVK7xMUdAwoWQg=w224-h398-k-no"
+        ],
+        "thumbnail": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmDntRblQ5PYorSNniZmF1e6baDHgg0-wPCPLgqYrDcBXlxmrE0zwy3CZ2Fl8S2c2gqyPKVf37MH2h0NECgh3TCJifnbT8yjPAER_H4igpUbXAivnE6xxVg6HcqpvBs4OJmE00u=w408-h544-k-no",
+        "maps_url": "https://www.google.com/maps/place/San+Vicente+Park/data=!4m7!3m6!1s0x8ef42d49f7f1f14b:0xa6687e188f662574!8m2!3d10.9619506!4d-74.8031404!16s%2Fg%2F1q5bw42c4!19sChIJS_Hx90kt9I4RdCVmjxh-aKY?authuser=0&hl=en&g_ep=EgoyMDI2MDkwMS4wIJJjKgBIAVAD&rclk=1",
+        "reviews": [
+          {
+            "author": "alexander Rodriguez",
+            "rating": 4,
+            "text": "Ok",
+            "date": "4 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Edwin enrique Herrera Ospino",
+            "rating": 5,
+            "text": "Bacano",
+            "date": "6 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Edgar Alayon",
+            "rating": 3,
+            "text": "Good",
+            "date": "8 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Jhon Duran muñoz",
+            "rating": 4,
+            "text": "Peaceful",
+            "date": "7 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Reinell David",
+            "rating": 5,
+            "text": "Super",
+            "date": "4 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Aris Sarmiento",
+            "rating": 4,
+            "text": "Ok",
+            "date": "7 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "ALEXCHATO25",
+            "rating": 3,
+            "text": "Good",
+            "date": "8 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "santiago varela",
+            "rating": 5,
+            "text": "Bacano",
+            "date": "9 years ago",
+            "ownerResponse": null
+          }
+        ],
+        "confidence": "medium",
+        "public_guess": "publica"
+      },
+      "source": "google_maps_scraper",
+      "confidence": "medium",
+      "matched_existing_slug": null,
+      "match_distance_m": null,
+      "existing_venue_kind": null
+    },
+    {
+      "name": "Polideportivo El Edén Park",
+      "slug": "cancha-multiple-del-eden",
+      "address": "Carrera 27 &, Cl. 86b, Suroccidente, Barranquilla, Atlántico",
+      "neighborhood": "Villas de Las Colinas, Suroccidente",
+      "lat": 10.9765049,
+      "lng": -74.8318974,
+      "sports": [
+        "futbol"
+      ],
+      "venue_kind": "alquiler",
+      "surface": "sintetica",
+      "covered": null,
+      "phone": "310 8300590",
+      "website": null,
+      "notes": {
+        "source": "google",
+        "place_id": "ChIJteK9C7It9I4RmahWuCMtFOI",
+        "category": "City park",
+        "categories": [
+          "City park"
+        ],
+        "status": "Dogs allowed",
+        "description": "",
+        "rating": 4.5,
+        "review_count": 254,
+        "hours": "Friday: Open 24 hours; Monday: Open 24 hours; Saturday: Open 24 hours; Sunday: Open 24 hours; Thursday: Open 24 hours; Tuesday: Open 24 hours; Wednesday: Open 24 hours",
+        "images": [
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWndubZ8QhjI3gozMGteokWryxAFXVNEGpRbDGJ4Pzs878Qmods0Bbn3TzPlAGKEGr0XGW5bGiBsMnhg6tvh1ASkexXgXlxlZcwc0Oli5bMA2SbPEpiRmDIQm-r0jZDC1rfMnWolNL19FO6a=w408-h306-k-no",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWndubZ8QhjI3gozMGteokWryxAFXVNEGpRbDGJ4Pzs878Qmods0Bbn3TzPlAGKEGr0XGW5bGiBsMnhg6tvh1ASkexXgXlxlZcwc0Oli5bMA2SbPEpiRmDIQm-r0jZDC1rfMnWolNL19FO6a=w397-h298-k-no",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmJFxx7e5BhdwyjJ0E-AoZ4WhBd9rpcbYwhCCgvju2Nx82pxDSE7gYNQRkJCHceuN72WgtWSSvmhg-DkZTfn27EDhzSWaIhTeEQf5OixGbUwL48FtTkVqjl6CjMtcZpiRkLhgS9JjyRBfLS=w397-h298-k-no",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmRc505_K4UCq0SMwDJAGGvRDNSmh0a6xaGMRiHVmd58DWGsU6pHToyxcAKevBGgAhCCOlSSJXTIpfpziumP3MGH8n5VoDuobWWP0MWJHanQt-NGS6io7xWEbPY7MZnv5ZxhyZfHH7lwtnC=w529-h298-k-no",
+          "https://streetviewpixels-pa.googleapis.com/v1/thumbnail?panoid=9xO3l5_Nkos5x_MS-sut7A&cb_client=maps_sv.tactile.gps&w=224&h=298&yaw=7.5505023&pitch=0&thumbfov=100"
+        ],
+        "thumbnail": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWndubZ8QhjI3gozMGteokWryxAFXVNEGpRbDGJ4Pzs878Qmods0Bbn3TzPlAGKEGr0XGW5bGiBsMnhg6tvh1ASkexXgXlxlZcwc0Oli5bMA2SbPEpiRmDIQm-r0jZDC1rfMnWolNL19FO6a=w408-h306-k-no",
+        "maps_url": "https://www.google.com/maps/place/Polideportivo+El+Ed%C3%A9n+Park/data=!4m7!3m6!1s0x8ef42db20bbde2b5:0xe2142d23b856a899!8m2!3d10.9765049!4d-74.8318974!16s%2Fg%2F11m_yxgwwm!19sChIJteK9C7It9I4RmahWuCMtFOI?authuser=0&hl=en&g_ep=EgoyMDI2MDkwMS4wIJJjKgBIAVAD&rclk=1",
+        "reviews": [
+          {
+            "author": "Aleyda Aponte",
+            "rating": 5,
+            "text": "Ok",
+            "date": "4 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Katerine Bonadiez",
+            "rating": 5,
+            "text": "Super",
+            "date": "4 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "alina santamaria",
+            "rating": 5,
+            "text": "Super",
+            "date": "Edited 4 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Jhon",
+            "rating": 5,
+            "text": "Es un sitio muy concurrido debido a que cuenta con buenos escenarios deportivos, como son las canchas de fútbol y cancha múltiple, además cuenta con área de juegos infantiles y gimnasio al aire libre gratuito, senderos para caminar y zonas verdes para el esparcimiento y pasear a las mascotas, lo recomiendo!",
+            "date": "Edited a year ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Juranis Paola Algarra Medina",
+            "rating": 5,
+            "text": "Espectacular para hacer ejercicios e integrar a la comunidad  además de la diversión de nuestros pequeños y mascotas",
+            "date": "Edited 4 months ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Noe evaristo Velandria contreras",
+            "rating": 5,
+            "text": "Bueno para caminar con tu mascota y para que los niños se distraigan y bueno para trotar y Acer ejercicio",
+            "date": "4 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Aramis Ibhrarguen",
+            "rating": 5,
+            "text": "Excelente cancha de fútbol y muy buen sector con zona de comidas",
+            "date": "3 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Cindy Martinez",
+            "rating": 5,
+            "text": "Es un lugar agradable para estar en familia",
+            "date": "Edited 4 years ago",
+            "ownerResponse": null
+          }
+        ],
+        "confidence": "high",
+        "public_guess": "publica"
+      },
+      "source": "google_maps_scraper",
+      "confidence": "high",
+      "matched_existing_slug": "cancha-multiple-del-eden",
+      "match_distance_m": 21,
+      "existing_venue_kind": "alquiler"
+    },
+    {
+      "name": "Polideportivo de Los Robles",
+      "slug": "polideportivo-de-los-robles",
+      "address": "Cl. 76 #23d-25, Soledad, Barranquilla, Atlántico",
+      "neighborhood": "Los Robles",
+      "lat": 10.921364299999999,
+      "lng": -74.8088923,
+      "sports": [
+        "futbol"
+      ],
+      "venue_kind": "publica",
+      "surface": "sintetica",
+      "covered": null,
+      "phone": "",
+      "website": null,
+      "notes": {
+        "source": "google",
+        "place_id": "ChIJSy9FldTT9Y4RBNDgb-Mh12A",
+        "category": "Park",
+        "categories": [
+          "Park"
+        ],
+        "status": "Dogs allowed",
+        "description": "",
+        "rating": 4.5,
+        "review_count": 1027,
+        "hours": "Friday: Open 24 hours; Monday: Open 24 hours; Saturday: Open 24 hours; Sunday: Open 24 hours; Thursday: Open 24 hours; Tuesday: Open 24 hours; Wednesday: Open 24 hours",
+        "images": [
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkL6iG9amtpw7TMWQk_OeFdxuQfO5y8HNX5BDohoLEb1aHZARQNaFBdRcq30ZJBAF_4xJKvJt68v3oFyWyaacAWlTBYRNiO3xpgn3vbsN0P6lWIViOq8bq6PAybkVmvw1DMn6-rZQ=w408-h306-k-no",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkL6iG9amtpw7TMWQk_OeFdxuQfO5y8HNX5BDohoLEb1aHZARQNaFBdRcq30ZJBAF_4xJKvJt68v3oFyWyaacAWlTBYRNiO3xpgn3vbsN0P6lWIViOq8bq6PAybkVmvw1DMn6-rZQ=w397-h298-k-no",
+          "https://streetviewpixels-pa.googleapis.com/v1/thumbnail?panoid=lX_sc2B1_o8sc52fZUJIMg&cb_client=maps_sv.tactile.gps&w=224&h=298&yaw=79.56134&pitch=0&thumbfov=100",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlUiV9eYLvCu5aI6V50wL7A4NZ8aXwv914vakzNmAYPdXDq7Uvh3O4bMC5Iz0B5NlgPPeGUjm5Mf4FAMvOIv2XFE6T20FnxHlmgKvSRQaMvVvh0D2E4lmSRma6DSR_MNzd1yBg2=w224-h398-k-no"
+        ],
+        "thumbnail": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkL6iG9amtpw7TMWQk_OeFdxuQfO5y8HNX5BDohoLEb1aHZARQNaFBdRcq30ZJBAF_4xJKvJt68v3oFyWyaacAWlTBYRNiO3xpgn3vbsN0P6lWIViOq8bq6PAybkVmvw1DMn6-rZQ=w408-h306-k-no",
+        "maps_url": "https://www.google.com/maps/place/Polideportivo+de+Los+Robles/data=!4m7!3m6!1s0x8ef5d3d495452f4b:0x60d721e36fe0d004!8m2!3d10.9213643!4d-74.8088923!16s%2Fg%2F11h3kxfb2z!19sChIJSy9FldTT9Y4RBNDgb-Mh12A?authuser=0&hl=en&g_ep=EgoyMDI2MDkwMS4wIJJjKgBIAVAD&rclk=1",
+        "reviews": [
+          {
+            "author": "Lucho M",
+            "rating": 5,
+            "text": "Bacano",
+            "date": "2 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Rudy Barranco",
+            "rating": 5,
+            "text": "Ok",
+            "date": "3 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Shirley paola Rangel Ballesteros",
+            "rating": 5,
+            "text": "Super",
+            "date": "2 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Frank Rojas Morales (Pelisflix.frm)",
+            "rating": 4,
+            "text": "Family Time",
+            "date": "3 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Fabian Perez",
+            "rating": 4,
+            "text": "Distractor",
+            "date": "6 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Victor Vizcaino",
+            "rating": 5,
+            "text": "Super",
+            "date": "6 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Osman Juseth Arias Martinez",
+            "rating": 5,
+            "text": "Ok",
+            "date": "7 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Reinaldo Escobar arrieta",
+            "rating": 5,
+            "text": "Super",
+            "date": "7 years ago",
+            "ownerResponse": null
+          }
+        ],
+        "confidence": "high",
+        "public_guess": "publica"
+      },
+      "source": "google_maps_scraper",
+      "confidence": "high",
+      "matched_existing_slug": null,
+      "match_distance_m": null,
+      "existing_venue_kind": null
+    },
+    {
+      "name": "Conjunto Residencial Los Robles Park",
+      "slug": "conjunto-residencial-los-robles-park",
+      "address": "Cra. 16a #25, Barranquilla, Soledad, Barranquilla, Atlántico",
+      "neighborhood": "Barranquilla, Soledad, Barranquilla",
+      "lat": 10.9141503,
+      "lng": -74.81164509999999,
+      "sports": [
+        "futbol"
+      ],
+      "venue_kind": "publica",
+      "surface": "sintetica",
+      "covered": null,
+      "phone": "",
+      "website": null,
+      "notes": {
+        "source": "google",
+        "place_id": "ChIJnRKX-SDT9Y4RqsULetnEZkI",
+        "category": "Park",
+        "categories": [
+          "Park"
+        ],
+        "status": "Dogs allowed",
+        "description": "",
+        "rating": 4.7,
+        "review_count": 10,
+        "hours": "Friday: Open 24 hours; Monday: Open 24 hours; Saturday: Open 24 hours; Sunday: Open 24 hours; Thursday: Open 24 hours; Tuesday: Open 24 hours; Wednesday: Open 24 hours",
+        "images": [
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmNxub7AAWfv8dSsTukNsbcQocuy1uur1Hqq79FBdHHeiyaJnbc_tx2ON3tPXCYQkActCVxrIlW-6n0aF57MqjGgdnhy1J3WB6REgVJTol_q_9tjScqkynPgfkRqIhWxaUDcu3-=w408-h544-k-no",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmNxub7AAWfv8dSsTukNsbcQocuy1uur1Hqq79FBdHHeiyaJnbc_tx2ON3tPXCYQkActCVxrIlW-6n0aF57MqjGgdnhy1J3WB6REgVJTol_q_9tjScqkynPgfkRqIhWxaUDcu3-=w224-h298-k-no",
+          "https://streetviewpixels-pa.googleapis.com/v1/thumbnail?panoid=n_r4SbqyxhozxL_yJEwd0g&cb_client=maps_sv.tactile.gps&w=224&h=298&yaw=207.86073&pitch=0&thumbfov=100",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlxiWc0lLNBMu3LQVTmVYNjxIZDs_NGCRHqY9MjX-LqPH1pGo-rtnILiJrSwJe1LBU35NacEmQc6pu3Ekpfl7lsVgv5nNppma7dc7nynttSleBsvPNU0oHrmR-9BS68JcswEC55=w224-h398-k-no"
+        ],
+        "thumbnail": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmNxub7AAWfv8dSsTukNsbcQocuy1uur1Hqq79FBdHHeiyaJnbc_tx2ON3tPXCYQkActCVxrIlW-6n0aF57MqjGgdnhy1J3WB6REgVJTol_q_9tjScqkynPgfkRqIhWxaUDcu3-=w408-h544-k-no",
+        "maps_url": "https://www.google.com/maps/place/Conjunto+Residencial+Los+Robles+Park/data=!4m7!3m6!1s0x8ef5d320f997129d:0x4266c4d97a0bc5aa!8m2!3d10.9141503!4d-74.8116451!16s%2Fg%2F11fphblhqc!19sChIJnRKX-SDT9Y4RqsULetnEZkI?authuser=0&hl=en&g_ep=EgoyMDI2MDkwMS4wIJJjKgBIAVAD&rclk=1",
+        "reviews": [
+          {
+            "author": "Aduis Arrieta",
+            "rating": 3,
+            "text": "Bueno pero muy inseguro..poca presencia de la policía",
+            "date": "4 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "C Y",
+            "rating": 5,
+            "text": "Excelente",
+            "date": "4 years ago",
+            "ownerResponse": null
+          }
+        ],
+        "confidence": "medium",
+        "public_guess": "publica"
+      },
+      "source": "google_maps_scraper",
+      "confidence": "medium",
+      "matched_existing_slug": null,
+      "match_distance_m": null,
+      "existing_venue_kind": null
+    },
+    {
+      "name": "Polideportivo La Magdalena",
+      "slug": "cancha-de-futbol-la-magdalena",
+      "address": "Cl. 38b #7-35, La Magdalena, Barranquilla, Atlántico",
+      "neighborhood": "La Magdalena",
+      "lat": 10.94266,
+      "lng": -74.79267,
+      "sports": [
+        "futbol"
+      ],
+      "venue_kind": "alquiler",
+      "surface": "sintetica",
+      "covered": null,
+      "phone": "",
+      "website": null,
+      "notes": {
+        "source": "google",
+        "place_id": "ChIJcw4fzrrS9Y4REZ4K-LmpKPM",
+        "category": "Soccer field",
+        "categories": [
+          "Soccer field"
+        ],
+        "status": "",
+        "description": "",
+        "rating": 4.1,
+        "review_count": 43,
+        "hours": "Friday: Open 24 hours; Monday: Open 24 hours; Saturday: Open 24 hours; Sunday: Open 24 hours; Thursday: Open 24 hours; Tuesday: Open 24 hours; Wednesday: Open 24 hours",
+        "images": [
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWn6i8duefoHOJN_mcl1nRaIK8a71KSQgTR9V90DjB7NnqhKgf0ij0Ybdp2N2H42tKi8xksLN6oPmxvMz8Smec3Luad0dbXHI1rBlF2zD7Ku0uMxsyVIF43OU-xy3irydv__Akjetg=w426-h240-k-no",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWn6i8duefoHOJN_mcl1nRaIK8a71KSQgTR9V90DjB7NnqhKgf0ij0Ybdp2N2H42tKi8xksLN6oPmxvMz8Smec3Luad0dbXHI1rBlF2zD7Ku0uMxsyVIF43OU-xy3irydv__Akjetg=w529-h298-k-no",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWl0CzvFgdPvMfEbZ2ailYrs-WC7VFvA_QBIByoaTYea4yS2ghrdSgDPlUBHxjSAAXXLyiswm19G_SMsy6h7Pzh9RDBdKeTLidDc8wpGuYNQ3NaXAHLzDjfEzgVPwJPu468dG5NBOw-Dual9=w529-h298-k-no",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkti-48XMMe55mOpmo3lWBNpYE8U20tQevNKaJ7pPgilkIy2Tb1i9w49zp5q4OHyKiuc4FNKI1X_zD1fol9RVbtmDaC_Ie8nKhHSYberbCwGccwyMLKihE7imLHyLSaYo7sN4IQdTEPVL6t=w224-h398-k-no",
+          "https://streetviewpixels-pa.googleapis.com/v1/thumbnail?panoid=zDHTvdIUFT24iVI5-IE0Dg&cb_client=maps_sv.tactile.gps&w=224&h=298&yaw=66.66747&pitch=0&thumbfov=100"
+        ],
+        "thumbnail": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWn6i8duefoHOJN_mcl1nRaIK8a71KSQgTR9V90DjB7NnqhKgf0ij0Ybdp2N2H42tKi8xksLN6oPmxvMz8Smec3Luad0dbXHI1rBlF2zD7Ku0uMxsyVIF43OU-xy3irydv__Akjetg=w426-h240-k-no",
+        "maps_url": "https://www.google.com/maps/place/Polideportivo+La+Magdalena/data=!4m7!3m6!1s0x8ef5d2bace1f0e73:0xf328a9b9f80a9e11!8m2!3d10.94266!4d-74.79267!16s%2Fg%2F11b7hpsc5l!19sChIJcw4fzrrS9Y4REZ4K-LmpKPM?authuser=0&hl=en&g_ep=EgoyMDI2MDkwMS4wIJJjKgBIAVAD&rclk=1",
+        "reviews": [
+          {
+            "author": "Laureano Gonzalez Yepes",
+            "rating": 5,
+            "text": "Ok",
+            "date": "3 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Moisés Durán",
+            "rating": 3,
+            "text": "La cancha principal de arena es para jugar 11 vs 11 tiene buen ambiente alrededor para  ver los partidos los domingos. Pero las condiciones de la cancha para ser la cancha de la magdelana una historica de barranquilla le falta iluminacion, arreglar las gradas, poner este lugar más bonito y con una buenas ambientación para los futuros deportistas.",
+            "date": "4 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "David Moreno",
+            "rating": 5,
+            "text": "Exelente sobre todo su pista de patinaje con medidas a nivel internacional",
+            "date": "10 months ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Academia artblack",
+            "rating": 5,
+            "text": "Aros oye ! Si yo mismo soy de allá",
+            "date": "8 months ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Daniel Olivera",
+            "rating": 5,
+            "text": "Es un buen lugar para ir a pasar el rato lo remodelaron esta bien lastima no hay mucha vigilancia pero está bien han cambiado muchas cosas pero para bien",
+            "date": "8 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Danniel Martinez",
+            "rating": 5,
+            "text": "Es un buen lugar con ambiente , para salir a tomar mientras ves los partidos de fútbol, hay música y es sano.",
+            "date": "7 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Luis fernando carrascal",
+            "rating": 5,
+            "text": "Es muy bonito pero hace falta que él gobierno le invierta ya que se encuentra muy descuidado",
+            "date": "7 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Elkin Sánchez Cuadro",
+            "rating": 3,
+            "text": "Un complejo deportivo amplio, pero abandonado. Espero que este comentario quede en el pasado con alguna reforma de este lugar.",
+            "date": "9 years ago",
+            "ownerResponse": null
+          }
+        ],
+        "confidence": "high",
+        "public_guess": "publica"
+      },
+      "source": "google_maps_scraper",
+      "confidence": "high",
+      "matched_existing_slug": "cancha-de-futbol-la-magdalena",
+      "match_distance_m": 96,
+      "existing_venue_kind": "alquiler"
+    },
+    {
+      "name": "CLUB COLORADOS SKATE",
+      "slug": "pibe-valderrama",
+      "address": "Cra. 1a, Metropolitana, Barranquilla, Atlántico",
+      "neighborhood": "Metropolitana",
+      "lat": 10.930218199999999,
+      "lng": -74.8013024,
+      "sports": [
+        "futbol"
+      ],
+      "venue_kind": "publica",
+      "surface": "sintetica",
+      "covered": null,
+      "phone": "300 2093390",
+      "website": null,
+      "notes": {
+        "source": "google",
+        "place_id": "ChIJv77bHLrT9Y4RiaULzfmK2Bg",
+        "category": "Sports club",
+        "categories": [
+          "Sports club"
+        ],
+        "status": "",
+        "description": "",
+        "rating": 5,
+        "review_count": 13,
+        "hours": "Friday: 7–9 AM, 4–6 PM; Monday: 7–9 AM, 4–6 PM; Saturday: 7–9 AM; Sunday: Closed; Thursday: 7–9 AM, 4–6 PM; Tuesday: 7–9 AM, 4–6 PM; Wednesday: 7–9 AM, 4–6 PM",
+        "images": [
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWk4KaA15RWB4CP3BYCHeWurb4SBZq3TGYIGY3XTEbdfNs_MRXvC3_wzoa_LpQOxch7nyUejHORtDPShfgMx9fu932dLrAjNyKupPuDAtwI5QMWjG9sIp96Q29dKJEHIruAJoDJR=w426-h240-k-no",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWk4KaA15RWB4CP3BYCHeWurb4SBZq3TGYIGY3XTEbdfNs_MRXvC3_wzoa_LpQOxch7nyUejHORtDPShfgMx9fu932dLrAjNyKupPuDAtwI5QMWjG9sIp96Q29dKJEHIruAJoDJR=w529-h298-k-no",
+          "https://streetviewpixels-pa.googleapis.com/v1/thumbnail?panoid=a4ahwN_YFL3TBkUSIqH1cw&cb_client=maps_sv.tactile.gps&w=224&h=298&yaw=277.12152&pitch=0&thumbfov=100",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWl7--c30gpEs6I57IChVVYR2CvIqU0QNIuLq1zmoOK--6jlZ5dYZX-PT7sk7vsgYqv590Z2PV34IBQAQubbujS9YMdES3ATN4r8DhbA33_tGEZi5der8Eiai6snRd_nHPKk_-y1=w529-h298-k-no"
+        ],
+        "thumbnail": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWk4KaA15RWB4CP3BYCHeWurb4SBZq3TGYIGY3XTEbdfNs_MRXvC3_wzoa_LpQOxch7nyUejHORtDPShfgMx9fu932dLrAjNyKupPuDAtwI5QMWjG9sIp96Q29dKJEHIruAJoDJR=w426-h240-k-no",
+        "maps_url": "https://www.google.com/maps/place/CLUB+COLORADOS+SKATE/data=!4m7!3m6!1s0x8ef5d3ba1cdbbebf:0x18d88af9cd0ba589!8m2!3d10.9302182!4d-74.8013024!16s%2Fg%2F11lsh22bvl!19sChIJv77bHLrT9Y4RiaULzfmK2Bg?authuser=0&hl=en&g_ep=EgoyMDI2MDkwMS4wIJJjKgBIAVAD&rclk=1",
+        "reviews": [
+          {
+            "author": "Onito Garzon",
+            "rating": 5,
+            "text": "Un excelente club, cuenta con profesores capacitados y muy buenos seres humanos...",
+            "date": "5 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Taylin Vega",
+            "rating": 5,
+            "text": "Los entrenadores son ecxelentes son honestos el trabajo que hacen con los deportistas es maravilloso",
+            "date": "3 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Jose Borja",
+            "rating": 5,
+            "text": "Uno de los clubes más nuevos, pero de los mejores de la ciudad, com personal capacitado en todas las categorías 100% recomendado",
+            "date": "5 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Marlene De La Hoz",
+            "rating": 5,
+            "text": "Excelente grupo, entrenadores idoneos.",
+            "date": "5 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Claudia Oquendo fajardo",
+            "rating": 5,
+            "text": "Exelente formadores\nCon gran calidad humana",
+            "date": "5 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Josimar Bornachera",
+            "rating": 5,
+            "text": "Excelente academia de patinaje y lo mejor con las Tres B.",
+            "date": "5 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "shirley cristina valdivieso",
+            "rating": 5,
+            "text": "exelente espero volver pronto",
+            "date": "5 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Maria Alejandra Gallardo Urrea",
+            "rating": 5,
+            "text": "Grandes profesionales al cuidado de tus hijos",
+            "date": "5 years ago",
+            "ownerResponse": null
+          }
+        ],
+        "confidence": "high",
+        "public_guess": "privada"
+      },
+      "source": "google_maps_scraper",
+      "confidence": "high",
+      "matched_existing_slug": "pibe-valderrama",
+      "match_distance_m": 29,
+      "existing_venue_kind": "publica"
+    },
+    {
+      "name": "Parque Distrital de Raquetas Maria Fernanda Herazo",
+      "slug": "parque-distrital-de-raquetas-maria-fernanda-herazo",
+      "address": "Parque de Raquetas, Cl. 100 #52c – 104, Riomar, Barranquilla, Atlántico",
+      "neighborhood": "Riomar",
+      "lat": 11.014470099999999,
+      "lng": -74.8300065,
+      "sports": [
+        "futbol"
+      ],
+      "venue_kind": "publica",
+      "surface": "sintetica",
+      "covered": null,
+      "phone": "",
+      "website": null,
+      "notes": {
+        "source": "google",
+        "place_id": "ChIJIwfrO_ot9I4RbHw11N8q5Ug",
+        "category": "Tennis court",
+        "categories": [
+          "Tennis court"
+        ],
+        "status": "",
+        "description": "",
+        "rating": 4.9,
+        "review_count": 70,
+        "hours": null,
+        "images": [
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkOoTjpFf00W13hpPzLA0X8DiacEWy2AZ0mnmp9OsXvTvHLDCTQoichsY7DIlSSkbuxWUjlE5PYlC6PbZR6prviQyzhM6k46kPN7ipeKw8xe6G4SG_v6WIvhE_AsrAxPZdEdPihNA=w408-h544-k-no",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkOoTjpFf00W13hpPzLA0X8DiacEWy2AZ0mnmp9OsXvTvHLDCTQoichsY7DIlSSkbuxWUjlE5PYlC6PbZR6prviQyzhM6k46kPN7ipeKw8xe6G4SG_v6WIvhE_AsrAxPZdEdPihNA=w224-h298-k-no",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkoFO2al2grq8dtKlYMcypKw47zI2l5XOT6eMKJyJ0CSS7mPlJmGSD_-Jkpg9oZeSzauKxVs9NYw823f1cfUD2U_D06YaVcGx5l-wCSA6hrioNbwSA3lcS99Mnqy6SGhQwdlzBbxA=w224-h398-k-no",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWnPbybli-keI6TIifDy51VwqYXbLMzOSRSJdJvJsK3Ta9p7CSyqCRvuuDZn_2LnxDfYwVtIg0AtWz-kR0kdBjVK35soQMr5CHHH6DpfXg_OTlOKiCwG9lw8K80tiEr0o-YqOp8q=w224-h398-k-no",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkB5RFcc5xeX6U1bWIG36Rg6oOeoGezD0fO1Htmgu2S2bYio9ud1lg2gglccvxvREkfh3s6bSTCA2M-Czird_GfB8eu95-DQJHwstcLRtkq6qzodegFNkUUgXnJFODf_r0XvqRHkA=w224-h398-k-no",
+          "https://streetviewpixels-pa.googleapis.com/v1/thumbnail?panoid=OfTtcaDMTBFNHffrihs_iw&cb_client=maps_sv.tactile.gps&w=224&h=298&yaw=20.033682&pitch=0&thumbfov=100"
+        ],
+        "thumbnail": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkOoTjpFf00W13hpPzLA0X8DiacEWy2AZ0mnmp9OsXvTvHLDCTQoichsY7DIlSSkbuxWUjlE5PYlC6PbZR6prviQyzhM6k46kPN7ipeKw8xe6G4SG_v6WIvhE_AsrAxPZdEdPihNA=w408-h544-k-no",
+        "maps_url": "https://www.google.com/maps/place/Parque+Distrital+de+Raquetas+Maria+Fernanda+Herazo/data=!4m7!3m6!1s0x8ef42dfa3beb0723:0x48e52adfd4357c6c!8m2!3d11.0144701!4d-74.8300065!16s%2Fg%2F11rsb1xtl_!19sChIJIwfrO_ot9I4RbHw11N8q5Ug?authuser=0&hl=en&g_ep=EgoyMDI2MDkwMS4wIJJjKgBIAVAD&rclk=1",
+        "reviews": [
+          {
+            "author": "Gael andres",
+            "rating": 5,
+            "text": "Super",
+            "date": "2 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Cuenta argentina Argentina",
+            "rating": 5,
+            "text": "Un sitio para jugar tenis realmente bonito y muy bien cuidado. La pintura está en excelente estado y todo el espacio transmite orden y dedicación. Venimos desde Argentina y mi hija se sintió muy a gusto desde el primer momento, disfrutando del ambiente y de las canchas. Además, fue muy especial conocer la historia de María Fernanda Herazo, la tenista colombiana con más títulos, cuya trayectoria es una verdadera inspiración para niños y jóvenes. Un lugar que combina deporte, historia y motivación. Totalmente recomendado.",
+            "date": "7 months ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "FABIÁN MÉNDEZ CERRA",
+            "rating": 5,
+            "text": "Excelente escenario deportivo para la práctica del tenis de campo, el cual cuenta con un estadio con graderías y 8 canchas auxiliares, todas con sus medidas reglamentarias 🎾",
+            "date": "3 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Laura Manchola",
+            "rating": 5,
+            "text": "Lindas canchas y qué orgullo que resalten con su nombre a una mujer: Mafe Herazo. Me gustó jugar acá y pasarla bien, la pintura es nueva",
+            "date": "7 months ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Jorge Luis Salas Márquez #realviviendo",
+            "rating": 5,
+            "text": "Un complejo deportivo muy complicado! Para las próximas estrellas deportivas de la ciudad!",
+            "date": "3 months ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "John Rojas",
+            "rating": 5,
+            "text": "Excelente escenario para la práctica deportiva del tenis, con todo para pasar un rato muy agradable",
+            "date": "3 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Diego Cárdenas",
+            "rating": 5,
+            "text": "Un sitio 1A para los amantes del tenis seguro y las instalaciones muy completas cerca de todo",
+            "date": "2 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Walter Alejandro Castañeda",
+            "rating": 5,
+            "text": "La mejor infraestructura para el deporte del Tenis en el país.",
+            "date": "2 years ago",
+            "ownerResponse": null
+          }
+        ],
+        "confidence": "high",
+        "public_guess": "publica"
+      },
+      "source": "google_maps_scraper",
+      "confidence": "high",
+      "matched_existing_slug": null,
+      "match_distance_m": null,
+      "existing_venue_kind": null
+    },
+    {
+      "name": "Parque Bosques del Norte",
+      "slug": "cancha-sintetica-de-futbol-bosques-del-norte",
+      "address": "Calle 94 #53, Cra. 56 #94-25, Barranquilla, Atlántico",
+      "neighborhood": "Altos de Riomar, Riomar",
+      "lat": 11.014225099999999,
+      "lng": -74.8224541,
+      "sports": [
+        "futbol"
+      ],
+      "venue_kind": "alquiler",
+      "surface": "sintetica",
+      "covered": null,
+      "phone": "53049253",
+      "website": null,
+      "notes": {
+        "source": "google",
+        "place_id": "ChIJnUeyJLIt9I4RIa-yZdolxCY",
+        "category": "Park",
+        "categories": [
+          "Park",
+          "Tourist attraction"
+        ],
+        "status": "Grassy park with a children's playground",
+        "description": "Recreational retreat featuring a kid's amusement area, food stands, picnic spots & a soccer field.",
+        "rating": 4.7,
+        "review_count": 3637,
+        "hours": "Friday: 8 AM–9 PM; Monday: 8 AM–9 PM; Saturday: 8 AM–9 PM; Sunday: 8 AM–8 PM; Thursday: 8 AM–9 PM; Tuesday: 8 AM–9 PM; Wednesday: 8 AM–9 PM",
+        "images": [
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlSyzo_34Q3ba3BSPKGlCZvG9PUES7mEVYJL441eWmArJqcMx8ljM26B_MnY9xl0b3QjBJw_EbfcNipPzD13EeFL1SSqC5sOr5vXV-Ee8UFZPJvgS1mDnQ3AAtqGaQBtJpSqlo=w408-h306-k-no",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlSyzo_34Q3ba3BSPKGlCZvG9PUES7mEVYJL441eWmArJqcMx8ljM26B_MnY9xl0b3QjBJw_EbfcNipPzD13EeFL1SSqC5sOr5vXV-Ee8UFZPJvgS1mDnQ3AAtqGaQBtJpSqlo=w397-h298-k-no",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmT-F-6Vk07ZZdcY7hHjU2fGWmBACr_sW5Q8yOoJR-5pgcXQTkyY0yj9CKv0ZNUohtkSBqivLmcbsPQeCliSlVDONJI1qBcZScroXbKBR4_wEsgYE8m20y85m920PnpRLYsRm0kZDz4Zt-S=w528-h298-k-no",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlono6FwmqN_AQVZXTWQopsvbmNJOP-UMw9w74d-Z0myHtiOp9mePmlHGsl08GDo54n0nQttwQpEbF8vtjS1S6_y9YfexSxg51tSbAzfwVRIQ0SOuzNwuo0i4ZiS_6I3VosCjX1SfyVpms=w529-h298-k-no",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkrFJqXksoEe2FhSuL8JL_KprbRCox70VPFwh-OaqXAddqsbFrAgn3WPdS-Kz2NOOJxWlw5uYun2SyDzOn2lidxgwu7zIBCSZ60FnYgqJUJ_4uKMT_Rz_2viiUVd9Wh1Iohf-Hs=w224-h298-k-no",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkpBDVCBJmfsMXzGfGIAavUI3h8FrqwtvGqUaKbuDNkY2QyEm4PlCx8gmLBcTpma6Zyn0wj2rn5yESq2LdWnVq-ZWmI9W5vVmEtKDHYBhmTg5ipiL0PBwt3pEMQo_sowLNAeBeK=w224-h298-k-no-pi-20-ya79-ro-0-fo100"
+        ],
+        "thumbnail": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWlSyzo_34Q3ba3BSPKGlCZvG9PUES7mEVYJL441eWmArJqcMx8ljM26B_MnY9xl0b3QjBJw_EbfcNipPzD13EeFL1SSqC5sOr5vXV-Ee8UFZPJvgS1mDnQ3AAtqGaQBtJpSqlo=w408-h306-k-no",
+        "maps_url": "https://www.google.com/maps/place/Parque+Bosques+del+Norte/data=!4m7!3m6!1s0x8ef42db224b2479d:0x26c425da65b2af21!8m2!3d11.0142251!4d-74.8224541!16s%2Fg%2F1pyqs83r8!19sChIJnUeyJLIt9I4RIa-yZdolxCY?authuser=0&hl=en&g_ep=EgoyMDI2MDkwMS4wIJJjKgBIAVAD&rclk=1",
+        "reviews": [
+          {
+            "author": "Freilander",
+            "rating": 5,
+            "text": "A nice place for enjoying its gardens , tennis court, soccer field, softball etc. close to most important malls in Barranquilla.",
+            "date": "6 months ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Laura Rugeles",
+            "rating": 5,
+            "text": "It is a nice park, it has some playgrounds, free tennis court but you have to ask for it to use to someone that is incharge in the park. They have skating rink and a roller hockey field.",
+            "date": "2 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Tita Barruhu",
+            "rating": 4,
+            "text": "Really green and family oriented park with fenced kids playground, they have a gym-like machine area for adults to workout, is a convenient location it even provides free WiFi; mosquitos might be available to take a bite to eat from you.",
+            "date": "6 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Jonás Porcar Ferrer",
+            "rating": 5,
+            "text": "Great park to practice sports, biking/skating on its track or just walking your dog. Apart from the competitions happening in its courts (soccer, tennis..) there's a company offering outdoor spinning classes in the early morning. Check out its street market as well.",
+            "date": "5 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Hacked Muslim",
+            "rating": 5,
+            "text": "Great place for your kids to learn how to skate, the whole block has different areas the whole family can enjoy.",
+            "date": "3 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Habid Raad",
+            "rating": 5,
+            "text": "A great place to take kids, good for family a little bit crowded but it's fine.",
+            "date": "4 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Mauricio Naranjo",
+            "rating": 5,
+            "text": "It's a great place for the kids to play and adults can relax also doing excercise.",
+            "date": "5 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Juan Pablo Rey Millán",
+            "rating": 5,
+            "text": "A nice place to do sports and hangout whit friends and family",
+            "date": "Edited 3 years ago",
+            "ownerResponse": null
+          }
+        ],
+        "confidence": "high",
+        "public_guess": "publica"
+      },
+      "source": "google_maps_scraper",
+      "confidence": "high",
+      "matched_existing_slug": "cancha-sintetica-de-futbol-bosques-del-norte",
+      "match_distance_m": 84,
+      "existing_venue_kind": "alquiler"
+    },
+    {
+      "name": "Simón Bolívar soccer field",
+      "slug": "simon-bolivar",
+      "address": "entre carrera 5 y carrera 4C, Cl. 23, Simón Bolívar, Barranquilla, Atlántico",
+      "neighborhood": "Simon Bolivar, Sur Orient",
+      "lat": 10.9427129,
+      "lng": -74.77830159999999,
+      "sports": [
+        "futbol"
+      ],
+      "venue_kind": "publica",
+      "surface": "sintetica",
+      "covered": null,
+      "phone": "300 8778588",
+      "website": null,
+      "notes": {
+        "source": "google",
+        "place_id": "ChIJB6_vOVjN9Y4RdSh9bw0rU3k",
+        "category": "Soccer field",
+        "categories": [
+          "Soccer field",
+          "Gym"
+        ],
+        "status": "",
+        "description": "",
+        "rating": 4.4,
+        "review_count": 387,
+        "hours": "Friday: Open 24 hours; Monday: Open 24 hours; Saturday: Open 24 hours; Sunday: Open 24 hours; Thursday: Open 24 hours; Tuesday: Open 24 hours; Wednesday: Open 24 hours",
+        "images": [
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmqrg5GG_secQzYSi5mnafGlkljGYe_JhP9EpbZQasCSegKofOfva3BmOnyUin353fEHcbmgTtHgY39ihzxuXH-1qAdoh4e1--q6WwcFSefTxlURLFZqY934ZuReDYR-MPh_r4o=w408-h306-k-no",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmqrg5GG_secQzYSi5mnafGlkljGYe_JhP9EpbZQasCSegKofOfva3BmOnyUin353fEHcbmgTtHgY39ihzxuXH-1qAdoh4e1--q6WwcFSefTxlURLFZqY934ZuReDYR-MPh_r4o=w397-h298-k-no",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWn_B85h5LQx2oYppu9JlxaAMkC2HKUJOfnF0Jf8YhhGp0PMBGaQ-yTtdmRgwAy-S0sA2Da14c8v-DKLptsNv7yUDbMEev0tsCc6864mYegsUmjkuSDwSFjM_mXhpmL3MNjkAv158Q=w529-h298-k-no",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmp8G8YgPbIsySCHGIx2Q-IRzrrojLJLNV4fGOzKkXQsHq51svUicV2xjZ4MG8PWpuJp_ppHj2Ss1R4nPmGATXudnbxiw8xPYz6Xy9ICRVrll6H-tuBPmVotf8Ij27AErk4GGMe=w529-h298-k-no",
+          "https://streetviewpixels-pa.googleapis.com/v1/thumbnail?panoid=quqNkclWaqSIvWHF1mwNGA&cb_client=maps_sv.tactile.gps&w=224&h=298&yaw=108.46771&pitch=0&thumbfov=100"
+        ],
+        "thumbnail": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmqrg5GG_secQzYSi5mnafGlkljGYe_JhP9EpbZQasCSegKofOfva3BmOnyUin353fEHcbmgTtHgY39ihzxuXH-1qAdoh4e1--q6WwcFSefTxlURLFZqY934ZuReDYR-MPh_r4o=w408-h306-k-no",
+        "maps_url": "https://www.google.com/maps/place/Sim%C3%B3n+Bol%C3%ADvar+soccer+field/data=!4m7!3m6!1s0x8ef5cd5839efaf07:0x79532b0d6f7d2875!8m2!3d10.9427129!4d-74.7783016!16s%2Fg%2F1tgcz37c!19sChIJB6_vOVjN9Y4RdSh9bw0rU3k?authuser=0&hl=en&g_ep=EgoyMDI2MDkwMS4wIJJjKgBIAVAD&rclk=1",
+        "reviews": [
+          {
+            "author": "Jhonny Llinas",
+            "rating": 5,
+            "text": "One of the best...",
+            "date": "3 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "caliche quevas",
+            "rating": 5,
+            "text": "Monocuco",
+            "date": "4 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Kedyn Rebolledo",
+            "rating": 3,
+            "text": "Ok",
+            "date": "6 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Danilo Morales Molina",
+            "rating": 5,
+            "text": "Super",
+            "date": "5 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Wendy Yudanis Echavarria Burgos",
+            "rating": 5,
+            "text": "Super",
+            "date": "7 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "MIGUEL ANGEL FONSECA MALDONADO",
+            "rating": 5,
+            "text": "La mejor cancha para que te deleites bien el buen fútbol",
+            "date": "4 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Victor Elias Villarreal torres",
+            "rating": 4,
+            "text": "La cancha es plana pero ay bajones que no dejan jugar bien",
+            "date": "5 months ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Angel Solis",
+            "rating": 5,
+            "text": "La cancha tiene buena iluminación y seguridad para ir con nuestros niños a incentivarlos a hacer deporte, limpia y un buen ambiente para ejercitarnos.",
+            "date": "7 years ago",
+            "ownerResponse": null
+          }
+        ],
+        "confidence": "low",
+        "public_guess": "dudosa"
+      },
+      "source": "google_maps_scraper",
+      "confidence": "low",
+      "matched_existing_slug": "simon-bolivar",
+      "match_distance_m": 0,
+      "existing_venue_kind": "publica"
+    },
+    {
+      "name": "Canchas Urbanización El Parque",
+      "slug": "cancha-de-baloncesto-el-divino-nino",
+      "address": "Cl. 43 #12, Cisneros, Soledad, Atlántico",
+      "neighborhood": "Urbanización El Parque, Cisneros",
+      "lat": 10.9325381,
+      "lng": -74.7851586,
+      "sports": [
+        "futbol"
+      ],
+      "venue_kind": "alquiler",
+      "surface": "sintetica",
+      "covered": null,
+      "phone": "",
+      "website": null,
+      "notes": {
+        "source": "google",
+        "place_id": "ChIJ-R0SQ5_S9Y4RD35nleyl3Sg",
+        "category": "Sports complex",
+        "categories": [
+          "Sports complex"
+        ],
+        "status": "",
+        "description": "",
+        "rating": 4.7,
+        "review_count": 70,
+        "hours": "Friday: Open 24 hours; Monday: Open 24 hours; Saturday: Open 24 hours; Sunday: Open 24 hours; Thursday: Open 24 hours; Tuesday: Open 24 hours; Wednesday: Open 24 hours",
+        "images": [
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmmcJUjmKKjkMFqxuTDyxUR-wVltMHNfKPWw9_JIRW7ITGPfzXIa2Dg3mJjjNSfHF_9BUvoNLOT1BefzhcNNW7ooEiPUZNxAfCoOrVHP9CMs0RHf-5qIZlhRBQwgipXXG4fodm7=w408-h306-k-no",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmiMnHLuzoQ0ttTOawKq61ybsWHIy4e8v9abzjng2jNX-3IbPVq8zPxRCbLAlLSEDxcmZV5Ta2vUEbvieyHPHHTaZnj403HiNQmqhWPEJL_ho_gZS6qXwXZUnqTbkrgizS0PgQM=w529-h298-k-no",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWl1CPKD17lNOQ1Geawdw9RP_uZ1R_OHae58mxQaEd8vla776fhxj2v3zG05eRJWv3BptaVBTACg51zu-qvOKxP-4LCL9-9eAzcjXSCenXvi57904Dcq5XC5gvUn3oMFytsyji3C=w397-h298-k-no",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWms8cRHNqDMs9HTKt_MBD-dvJ_6cWKcDCxmvAXGEq7zf0cJlJhAFr9Ummu-dJkWM9As46sboZSjIvOq8_YmVD6HIn7scAx-drrOfNlR-EV_c_cgVIDRZueBX0ztbho-fiiLjsNB=w224-h298-k-no",
+          "https://streetviewpixels-pa.googleapis.com/v1/thumbnail?panoid=oEdBPl8CTFC5dpo4lGpPHw&cb_client=maps_sv.tactile.gps&w=224&h=298&yaw=251.08142&pitch=0&thumbfov=100"
+        ],
+        "thumbnail": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmmcJUjmKKjkMFqxuTDyxUR-wVltMHNfKPWw9_JIRW7ITGPfzXIa2Dg3mJjjNSfHF_9BUvoNLOT1BefzhcNNW7ooEiPUZNxAfCoOrVHP9CMs0RHf-5qIZlhRBQwgipXXG4fodm7=w408-h306-k-no",
+        "maps_url": "https://www.google.com/maps/place/Canchas+Urbanizaci%C3%B3n+El+Parque/data=!4m7!3m6!1s0x8ef5d29f43121df9:0x28dda5ec95677e0f!8m2!3d10.9325381!4d-74.7851586!16s%2Fg%2F12hknbt0t!19sChIJ-R0SQ5_S9Y4RD35nleyl3Sg?authuser=0&hl=en&g_ep=EgoyMDI2MDkwMS4wIJJjKgBIAVAD&rclk=1",
+        "reviews": [
+          {
+            "author": "Martin Pianetta Montañez",
+            "rating": 5,
+            "text": "Es un lugar muy bueno hay cerca una iglesia catolica aun esta en reconstruccion pero siempre es un buen lugar para sacar a los hijos de paseo y jugar basketball antes ofrecian clases de karate y de futboll pero no se si las estaran dando aun a sido el parque de la.infancia de muchos",
+            "date": "Edited 8 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Servicio Digital",
+            "rating": 4,
+            "text": "En este momento las canchas no están disponibles debido a que se encuentran en remodelación, el proyecto ya está avanzando bastante, ya hay algunas gradas de grandes soportes, ya muy pronto estarán abiertas al público.",
+            "date": "7 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "SAMUEL ELIAS MARTINEZ BEJARANO",
+            "rating": 5,
+            "text": "Numero de contacto ?",
+            "date": "4 months ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Alfonso M Caceres C",
+            "rating": 5,
+            "text": "Excelente lugar para la diversión en la familia entera, hay canchas para jugar basquetball, una sintetica para futbol y una para jugar volleyball al igual que futbol.",
+            "date": "6 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Lorena Maury",
+            "rating": 5,
+            "text": "Es un lindo espacio de recreación, muy bien cuidado y atractivo a la vista",
+            "date": "5 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Daniel Felipe Torres Castro",
+            "rating": 5,
+            "text": "Muy buena ubicación y seguridad. Canchas bien cuidadas y con buena iluminación.",
+            "date": "4 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Arte a la escuela",
+            "rating": 4,
+            "text": "Excelente para el esparcimiento de los chicos.\n\nSe llena demasiado la canchas.",
+            "date": "3 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Andy Manga",
+            "rating": 5,
+            "text": "Muy buenas cancha para hacer variedad deporte fútbol 7, futsal, basque",
+            "date": "3 years ago",
+            "ownerResponse": null
+          }
+        ],
+        "confidence": "high",
+        "public_guess": "publica"
+      },
+      "source": "google_maps_scraper",
+      "confidence": "high",
+      "matched_existing_slug": "cancha-de-baloncesto-el-divino-nino",
+      "match_distance_m": 35,
+      "existing_venue_kind": "alquiler"
+    },
+    {
+      "name": "Cancha De Baloncesto Simón Bolívar",
+      "slug": "cancha-de-baloncesto-simon-bolivar",
+      "address": "a 7a-56, Cl. 19 #7a-2, Barranquilla, Atlántico",
+      "neighborhood": "a 7a-56",
+      "lat": 10.9475064,
+      "lng": -74.7754531,
+      "sports": [
+        "futbol"
+      ],
+      "venue_kind": "publica",
+      "surface": "sintetica",
+      "covered": null,
+      "phone": "",
+      "website": null,
+      "notes": {
+        "source": "google",
+        "place_id": "ChIJF1uSxVbN9Y4RbSJ7Ku2PH_o",
+        "category": "Sports school",
+        "categories": [
+          "Sports school"
+        ],
+        "status": "",
+        "description": "",
+        "rating": 5,
+        "review_count": 2,
+        "hours": null,
+        "images": [
+          "https://streetviewpixels-pa.googleapis.com/v1/thumbnail?panoid=yAAL_ElI9ttrsadH2qQHEQ&cb_client=search.gws-prod.gps&w=408&h=240&yaw=277.26028&pitch=0&thumbfov=100",
+          "https://streetviewpixels-pa.googleapis.com/v1/thumbnail?panoid=yAAL_ElI9ttrsadH2qQHEQ&cb_client=maps_sv.tactile.gps&w=224&h=298&yaw=277.26028&pitch=0&thumbfov=100",
+          "https://streetviewpixels-pa.googleapis.com/v1/thumbnail?panoid=yAAL_ElI9ttrsadH2qQHEQ&cb_client=maps_sv.tactile.gps&w=224&h=298&yaw=277.26028&pitch=0&thumbfov=100"
+        ],
+        "thumbnail": "https://streetviewpixels-pa.googleapis.com/v1/thumbnail?panoid=yAAL_ElI9ttrsadH2qQHEQ&cb_client=search.gws-prod.gps&w=408&h=240&yaw=277.26028&pitch=0&thumbfov=100",
+        "maps_url": "https://www.google.com/maps/place/Cancha+De+Baloncesto+Sim%C3%B3n+Bol%C3%ADvar/data=!4m7!3m6!1s0x8ef5cd56c5925b17:0xfa1f8fed2a7b226d!8m2!3d10.9475064!4d-74.7754531!16s%2Fg%2F11fxc7t86x!19sChIJF1uSxVbN9Y4RbSJ7Ku2PH_o?authuser=0&hl=en&g_ep=EgoyMDI2MDkwMS4wIJJjKgBIAVAD&rclk=1",
+        "reviews": [
+          {
+            "author": "Erick Santiago Cardozo Marfisu",
+            "rating": 5,
+            "text": "Es muy buena",
+            "date": "4 years ago",
+            "ownerResponse": null
+          }
+        ],
+        "confidence": "low",
+        "public_guess": "dudosa"
+      },
+      "source": "google_maps_scraper",
+      "confidence": "low",
+      "matched_existing_slug": "cancha-de-baloncesto-simon-bolivar",
+      "match_distance_m": 0,
+      "existing_venue_kind": "publica"
+    },
+    {
+      "name": "Polideportivo La Paz",
+      "slug": "polideportivo-la-paz",
+      "address": "Cra. 13 #1001, Suroccidente, Barranquilla, Atlántico",
+      "neighborhood": "La Paz, Suroccidente",
+      "lat": 10.9650463,
+      "lng": -74.83256469999999,
+      "sports": [
+        "futbol"
+      ],
+      "venue_kind": "publica",
+      "surface": "sintetica",
+      "covered": null,
+      "phone": "",
+      "website": null,
+      "notes": {
+        "source": "google",
+        "place_id": "ChIJg68Pz9Ys9I4R-yk1fIMdmFQ",
+        "category": "Recreation center",
+        "categories": [
+          "Recreation center"
+        ],
+        "status": "",
+        "description": "",
+        "rating": 4.2,
+        "review_count": 120,
+        "hours": "Friday: Open 24 hours; Monday: Open 24 hours; Saturday: Open 24 hours; Sunday: Open 24 hours; Thursday: Open 24 hours; Tuesday: Open 24 hours; Wednesday: Open 24 hours",
+        "images": [
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWl-a60eaVlar4B84ump6NPsb3Ar-zd9gMpNjJMfUXmgBjtyAz1bS5_8zTtIN21NjJdnTVwUyP1RsaBdPg_Tm_Eoc5p3H3aS2UrpOhMe3TMSOxgHAheab0pUrixKvyLiS5-GFNE=w408-h725-k-no",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWl-a60eaVlar4B84ump6NPsb3Ar-zd9gMpNjJMfUXmgBjtyAz1bS5_8zTtIN21NjJdnTVwUyP1RsaBdPg_Tm_Eoc5p3H3aS2UrpOhMe3TMSOxgHAheab0pUrixKvyLiS5-GFNE=w224-h398-k-no",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWnDkEjVALTNdkngNfG6sBYBHMDs9F7UvHKalWgZ9MyfGgS-LFteBiRGtvxlZaiOfbzw9TcXrTqRXV7lHEa_Y_3Sxu2fDqCxC4U__zE6J3y3Zjt8cJJRWPcmg81oiueNx8K_UYdOow=w397-h298-k-no",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWka57d5raTGKkUt5iPnwEtyF8ko6DQrwCFGbiYoUDX3WXg7I6aiVjSagcYwrZL_J4bUkUUtLF7nigh6sChBAcCj8hBFwOYObQ1zUMz1z8xhboRt943cJnI_FmF0v5XS7tQe9G0=w224-h398-k-no",
+          "https://streetviewpixels-pa.googleapis.com/v1/thumbnail?panoid=vnCBcsRCCvSNSKjSP1kFKg&cb_client=maps_sv.tactile.gps&w=224&h=298&yaw=86.83703&pitch=0&thumbfov=100"
+        ],
+        "thumbnail": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWl-a60eaVlar4B84ump6NPsb3Ar-zd9gMpNjJMfUXmgBjtyAz1bS5_8zTtIN21NjJdnTVwUyP1RsaBdPg_Tm_Eoc5p3H3aS2UrpOhMe3TMSOxgHAheab0pUrixKvyLiS5-GFNE=w408-h725-k-no",
+        "maps_url": "https://www.google.com/maps/place/Polideportivo+La+Paz/data=!4m7!3m6!1s0x8ef42cd6cf0faf83:0x54981d837c3529fb!8m2!3d10.9650463!4d-74.8325647!16s%2Fg%2F11c1n2xm__!19sChIJg68Pz9Ys9I4R-yk1fIMdmFQ?authuser=0&hl=en&g_ep=EgoyMDI2MDkwMS4wIJJjKgBIAVAD&rclk=1",
+        "reviews": [
+          {
+            "author": "Maria Fernanda Perez Tovar",
+            "rating": 3,
+            "text": "Un lugar agradable para la recreación de los chicos, sin emabrgo, sus unidades sanitarias no están bien cuidadas y no se mantienen en condiciones de saneamiento adecuado.",
+            "date": "10 months ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Jeiman Nuñez",
+            "rating": 5,
+            "text": "Me gusta porque es un lugar donde puede puedo realizar cualquier actividad física.\nY lo mejor de todo, es totalmente gratis.",
+            "date": "9 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Camila Andrea Parada Solano",
+            "rating": 4,
+            "text": "El polideportivo la paz es un lugar de recreación de la comunidad que se considera bastante amplio, es un lugar agradable, pero, la verdad, es que es concurrido sobre todo por academias de fútbol, baloncesto o baile, por lo que muchos grupos de niños que quieren visitar este lugar para hacer actividades como patinaje, fútbol, etc.  deben esperar pacientemente los días que esta se encuentre disponible -que son pocas veces- y a las horas que se encuentre vacía, así que muchos consideran que se debería crear un programa de administración del lugar mucho más eficaz que permita a todos tener un tiempo de calidad en el lugar de recreación y no solo enfocarlo en la realización de eventos.",
+            "date": "Edited 4 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Dioser Yisus",
+            "rating": 5,
+            "text": "Estos son los proyectos qua cuidad necesita, que promuevan la cultura y el deporte. He tenido la fortuna de estar ahí, y es realmente bello tener espacios sociables para la comunidad. Gran proyecto!",
+            "date": "7 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Samuel Sánchez",
+            "rating": 4,
+            "text": "Buena cancha, lo único que no me gustó fue su ubicación y que aveces hace demasiado viento, lo que impide hacer tiros precisos al aro",
+            "date": "2 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "francys j quero millan",
+            "rating": 5,
+            "text": "El lugar me pareció muy comercial, concurrido y tenía todo tipo de tienda almacenes, y centros comerciales.. me gustó mucho el.sitio .. los invito a visitar",
+            "date": "2 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Juliana Castillo",
+            "rating": 3,
+            "text": "Tiene cancha múltiple cubierta y acceso a baños",
+            "date": "8 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Javier Corpas",
+            "rating": 5,
+            "text": "Exelente, contribuye con la recreación e integración juvenil.",
+            "date": "a year ago",
+            "ownerResponse": null
+          }
+        ],
+        "confidence": "high",
+        "public_guess": "publica"
+      },
+      "source": "google_maps_scraper",
+      "confidence": "high",
+      "matched_existing_slug": null,
+      "match_distance_m": null,
+      "existing_venue_kind": null
+    },
+    {
+      "name": "Parque La Virgen Del Carmen",
+      "slug": "parque-la-virgen-del-carmen",
+      "address": "Cl. 47, Ciudadela 20 de Julio, Barranquilla, Atlántico",
+      "neighborhood": "Ciudadela 20 de Julio",
+      "lat": 10.929763399999999,
+      "lng": -74.8066948,
+      "sports": [
+        "futbol"
+      ],
+      "venue_kind": "publica",
+      "surface": "sintetica",
+      "covered": null,
+      "phone": "",
+      "website": null,
+      "notes": {
+        "source": "google",
+        "place_id": "ChIJX1iHduvS9Y4RgQWHmcssWSw",
+        "category": "Park",
+        "categories": [
+          "Park"
+        ],
+        "status": "Dogs allowed",
+        "description": "",
+        "rating": 4.4,
+        "review_count": 566,
+        "hours": "Friday: Open 24 hours; Monday: Open 24 hours; Saturday: Open 24 hours; Sunday: Open 24 hours; Thursday: Open 24 hours; Tuesday: Open 24 hours; Wednesday: Open 24 hours",
+        "images": [
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkpIAyQpXVDBsimCktxL1i88bROoq4aux7YlxE6vbkEkYbmGXDL3S8Mv35sy82QDe6e-vIifynRwl2eJadrNjhqEjDNxXszb49HNNGgOW4y86raGMMSPo_Vfos4rHTjdS0B_D8=w408-h243-k-no",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkpIAyQpXVDBsimCktxL1i88bROoq4aux7YlxE6vbkEkYbmGXDL3S8Mv35sy82QDe6e-vIifynRwl2eJadrNjhqEjDNxXszb49HNNGgOW4y86raGMMSPo_Vfos4rHTjdS0B_D8=w499-h298-k-no",
+          "https://streetviewpixels-pa.googleapis.com/v1/thumbnail?panoid=iqLtX21It3zTGIHFtkAVhg&cb_client=maps_sv.tactile.gps&w=224&h=298&yaw=329.54535&pitch=0&thumbfov=100",
+          "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWn1-BnsWpERUV7WyBVnEVOCZ62HSLt1lISR2lPQKBIMSmqIQn2Qof08ZCr0dSQz4A3PpyAHFL4SCiMoVYotLdQktDynMgJbPrq63wVsvMhWPziDoFj05X2wsqMVrtDAbQxh2il0=w224-h398-k-no"
+        ],
+        "thumbnail": "https://lh3.googleusercontent.com/gps-cs-s/AHRPTWkpIAyQpXVDBsimCktxL1i88bROoq4aux7YlxE6vbkEkYbmGXDL3S8Mv35sy82QDe6e-vIifynRwl2eJadrNjhqEjDNxXszb49HNNGgOW4y86raGMMSPo_Vfos4rHTjdS0B_D8=w408-h243-k-no",
+        "maps_url": "https://www.google.com/maps/place/Parque+La+Virgen+Del+Carmen/data=!4m7!3m6!1s0x8ef5d2eb7687585f:0x2c592ccb99870581!8m2!3d10.9297634!4d-74.8066948!16s%2Fg%2F11cn8sby2r!19sChIJX1iHduvS9Y4RgQWHmcssWSw?authuser=0&hl=en&g_ep=EgoyMDI2MDkwMS4wIJJjKgBIAVAD&rclk=1",
+        "reviews": [
+          {
+            "author": "asdrubalt torres",
+            "rating": 5,
+            "text": "Very good experience",
+            "date": "8 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Luis Eduardo Villalba Contreras",
+            "rating": 5,
+            "text": "Bn",
+            "date": "2 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "jorge rincon vilardy",
+            "rating": 5,
+            "text": "Bacano",
+            "date": "8 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Rafael CV",
+            "rating": 5,
+            "text": "Good",
+            "date": "9 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "D Jose Olmos Ariza",
+            "rating": 4,
+            "text": "Good",
+            "date": "8 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Vega",
+            "rating": 2,
+            "text": "La verdad al principio está súper pero al pasar del tiempo se a ido deteriorando y eso lo hace sumamente peligroso para niños ya que las rejas ya no sirven están total mente desechas los lugares de hacer ejercicios están vueltos nada sin parte y oxidados lo que puede ser un peligro para la gente de edad que va a hacer ejercicios en la mañana y para niños o cualquier persona, pero la parte de la sona verde está muy bien cuidada y la cancha todavía cumple su función con plenitud",
+            "date": "2 months ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Leonardo Robinson",
+            "rating": 4,
+            "text": "Muy bueno el parque. Es bastante amplio. Puedes venir acá y pasar un buen rato en la tarde o de noche. Tiene su cancha de fútbol y zona de juegos para niños.",
+            "date": "4 years ago",
+            "ownerResponse": null
+          },
+          {
+            "author": "Juan Manuel Mendivil Silva",
+            "rating": 5,
+            "text": "Muy bueno para bicicletas, puedes recorrer sus caminos o pasear a sus alrededores. Algunos hacen acrobacias en sus desniveles, Cualquier edad es admitida!",
+            "date": "Edited 8 years ago",
+            "ownerResponse": null
+          }
+        ],
+        "confidence": "high",
+        "public_guess": "publica"
+      },
+      "source": "google_maps_scraper",
+      "confidence": "high",
+      "matched_existing_slug": null,
+      "match_distance_m": null,
+      "existing_venue_kind": null
+    }
+  ],
+  "duplicates": [
+    {
+      "scraped": "Cancha Sintética Brasileirao",
+      "existing_slug": "cancha-sintetica-brasileirao",
+      "existing_name": "Cancha Sintética Brasileirao",
+      "distance_m": 0
+    },
+    {
+      "scraped": "Cancha de Fútbol El Mundialito",
+      "existing_slug": "mundialito",
+      "existing_name": "Cancha Mundialito",
+      "distance_m": 0
+    },
+    {
+      "scraped": "La patiada",
+      "existing_slug": "cancha-sintetica-la-patiada",
+      "existing_name": "Cancha Sintética La Patiada",
+      "distance_m": 0
+    },
+    {
+      "scraped": "La 21 Fútbol Club",
+      "existing_slug": "la-21-futbol-club",
+      "existing_name": "La 21 Fútbol Club",
+      "distance_m": 0
+    },
+    {
+      "scraped": "Canchas sinteticas la 27",
+      "existing_slug": "canchas-sinteticas-la-27",
+      "existing_name": "Canchas sinteticas la 27",
+      "distance_m": 0
+    },
+    {
+      "scraped": "Soccer field",
+      "existing_slug": "cancha-de-futbol-los-mosquitos",
+      "existing_name": "Cancha de Fútbol Los Mosquitos",
+      "distance_m": 0
+    },
+    {
+      "scraped": "8 FC Sintética court.",
+      "existing_slug": "la-8-fc-cancha-sintetica",
+      "existing_name": "La 8 FC Cancha Sintética",
+      "distance_m": 0
+    },
+    {
+      "scraped": "Cancha Sintética Rojiblanca",
+      "existing_slug": "cancha-sintetica-rojiblanca",
+      "existing_name": "Cancha Sintética Rojiblanca",
+      "distance_m": 0
+    },
+    {
+      "scraped": "Cancha Sintética Zoccer Plaza",
+      "existing_slug": "zoccer-plaza",
+      "existing_name": "Zoccer Plaza",
+      "distance_m": 0
+    },
+    {
+      "scraped": "Canchas El Tiburón",
+      "existing_slug": "canchas-el-tiburon",
+      "existing_name": "Canchas El Tiburón",
+      "distance_m": 0
+    },
+    {
+      "scraped": "CANCHA DE FÚTBOL BARRANQUILLA",
+      "existing_slug": "cancha-de-futbol-barranquilla-cra-22",
+      "existing_name": "Cancha De Fútbol Barranquilla",
+      "distance_m": 0
+    },
+    {
+      "scraped": "Cancha de fútbol sintética del bosque",
+      "existing_slug": "cancha-de-futbol-sintetica-del-bosque",
+      "existing_name": "Cancha de fútbol sintética del bosque",
+      "distance_m": 0
+    },
+    {
+      "scraped": "Cancha de Microfútbol — Los Andes",
+      "existing_slug": "cancha-de-microfutbol-los-andes",
+      "existing_name": "Cancha de Microfútbol — Los Andes",
+      "distance_m": 0
+    },
+    {
+      "scraped": "Cancha La Tiburona SAS",
+      "existing_slug": "cancha-la-tiburona-sas",
+      "existing_name": "Cancha La Tiburona SAS",
+      "distance_m": 0
+    },
+    {
+      "scraped": "Club de voleibol Ballbreakers",
+      "existing_slug": "club-de-voleibol-ballbreakers",
+      "existing_name": "Club de voleibol Ballbreakers",
+      "distance_m": 0
+    },
+    {
+      "scraped": "Unidad Deportiva Pibe Valderrama",
+      "existing_slug": "pibe-valderrama",
+      "existing_name": "Unidad Deportiva Pibe Valderrama",
+      "distance_m": 0
+    },
+    {
+      "scraped": "Sports Complex \"El Pibe\" Valderrama",
+      "existing_slug": "pibe-valderrama",
+      "existing_name": "Unidad Deportiva Pibe Valderrama",
+      "distance_m": 103
+    },
+    {
+      "scraped": "Polideportivo Canchas el Pibe",
+      "existing_slug": "pibe-valderrama",
+      "existing_name": "Unidad Deportiva Pibe Valderrama",
+      "distance_m": 95
+    },
+    {
+      "scraped": "Elements Voley Club",
+      "existing_slug": "elements-voley-club",
+      "existing_name": "Elements Voley Club",
+      "distance_m": 0
+    },
+    {
+      "scraped": "Polideportivo El Edén Park",
+      "existing_slug": "cancha-multiple-del-eden",
+      "existing_name": "Cancha múltiple del Edén",
+      "distance_m": 21
+    },
+    {
+      "scraped": "Canchas CC Metropolitano",
+      "existing_slug": "canchas-cc-metropolitano",
+      "existing_name": "Canchas CC Metropolitano",
+      "distance_m": 0
+    },
+    {
+      "scraped": "Campo De Voleibol Playa",
+      "existing_slug": "campo-de-voleibol-playa",
+      "existing_name": "Campo De Voleibol Playa",
+      "distance_m": 0
+    },
+    {
+      "scraped": "Club de Baloncesto Cocodrilos de Barranquilla",
+      "existing_slug": "club-de-baloncesto-cocodrilos-de-barranquilla",
+      "existing_name": "Club de Baloncesto Cocodrilos de Barranquilla",
+      "distance_m": 0
+    },
+    {
+      "scraped": "Voleibol Club Aston Quilla voley",
+      "existing_slug": "voleibol-club-aston-quilla-voley",
+      "existing_name": "Voleibol Club Aston Quilla voley",
+      "distance_m": 0
+    },
+    {
+      "scraped": "Cancha multiple del Edén",
+      "existing_slug": "cancha-multiple-del-eden",
+      "existing_name": "Cancha múltiple del Edén",
+      "distance_m": 0
+    },
+    {
+      "scraped": "Cancha De Voleibol Villa Santos",
+      "existing_slug": "cancha-de-voleibol-villa-santos",
+      "existing_name": "Cancha De Voleibol Villa Santos",
+      "distance_m": 0
+    },
+    {
+      "scraped": "Padel Zenter Del RIO",
+      "existing_slug": "padel-zenter-del-rio",
+      "existing_name": "Padel Zenter Del Río",
+      "distance_m": 0
+    },
+    {
+      "scraped": "Padel Park",
+      "existing_slug": "padel-park",
+      "existing_name": "Padel Park",
+      "distance_m": 0
+    },
+    {
+      "scraped": "Cancha de Fútbol El Pana",
+      "existing_slug": "cancha-de-futbol-el-pana",
+      "existing_name": "Cancha de Fútbol El Pana",
+      "distance_m": 0
+    },
+    {
+      "scraped": "CASA PADEL COLOMBIA ROOFTOP",
+      "existing_slug": "casa-padel-colombia-rooftop",
+      "existing_name": "Casa Padel Colombia Rooftop",
+      "distance_m": 0
+    },
+    {
+      "scraped": "CASA PADEL PATIO",
+      "existing_slug": "casa-padel-patio",
+      "existing_name": "Casa Padel Patio",
+      "distance_m": 0
+    },
+    {
+      "scraped": "Padel Zenter La Arenosa",
+      "existing_slug": "padel-zenter-la-arenosa",
+      "existing_name": "Padel Zenter La Arenosa",
+      "distance_m": 0
+    },
+    {
+      "scraped": "Rooftop Padel Club",
+      "existing_slug": "rooftop-padel-club",
+      "existing_name": "Rooftop Padel Club",
+      "distance_m": 0
+    },
+    {
+      "scraped": "X3 Padel Club",
+      "existing_slug": "x3-padel-club",
+      "existing_name": "X3 Padel Club",
+      "distance_m": 0
+    },
+    {
+      "scraped": "Cancha de Fútbol Barrio La Sierra",
+      "existing_slug": "cancha-de-futbol-barrio-la-sierra",
+      "existing_name": "Cancha de Fútbol Barrio La Sierra",
+      "distance_m": 0
+    },
+    {
+      "scraped": "Polideportivo La Magdalena",
+      "existing_slug": "cancha-de-futbol-la-magdalena",
+      "existing_name": "Cancha de Fútbol La Magdalena",
+      "distance_m": 96
+    },
+    {
+      "scraped": "Club deportivo barcelona barranquilla",
+      "existing_slug": "cancha-de-futbol-la-magdalena",
+      "existing_name": "Cancha de Fútbol La Magdalena",
+      "distance_m": 66
+    },
+    {
+      "scraped": "PadelYa",
+      "existing_slug": "padelya",
+      "existing_name": "PadelYa",
+      "distance_m": 0
+    },
+    {
+      "scraped": "One Padel Academy Barranquilla",
+      "existing_slug": "one-padel-academy-barranquilla",
+      "existing_name": "One Padel Academy Barranquilla",
+      "distance_m": 0
+    },
+    {
+      "scraped": "CLUB COLORADOS SKATE",
+      "existing_slug": "pibe-valderrama",
+      "existing_name": "Unidad Deportiva Pibe Valderrama",
+      "distance_m": 29
+    },
+    {
+      "scraped": "Quilla Tenis Club",
+      "existing_slug": "cancha-sintetica-de-futbol-bosques-del-norte",
+      "existing_name": "Cancha Sintetica de Futbol - Bosques del Norte",
+      "distance_m": 79
+    },
+    {
+      "scraped": "Canchas de Tenis (P. Bosques del Norte",
+      "existing_slug": "cancha-sintetica-de-futbol-bosques-del-norte",
+      "existing_name": "Cancha Sintetica de Futbol - Bosques del Norte",
+      "distance_m": 40
+    },
+    {
+      "scraped": "Cancha De La Magdalena",
+      "existing_slug": "cancha-de-futbol-la-magdalena",
+      "existing_name": "Cancha de Fútbol La Magdalena",
+      "distance_m": 0
+    },
+    {
+      "scraped": "CANCHA 7 BOCAS",
+      "existing_slug": "cancha-7-bocas",
+      "existing_name": "Cancha 7 Bocas",
+      "distance_m": 0
+    },
+    {
+      "scraped": "Cancha de Baloncesto Las Palmas",
+      "existing_slug": "cancha-de-baloncesto-las-palmas",
+      "existing_name": "Cancha de Baloncesto Las Palmas",
+      "distance_m": 0
+    },
+    {
+      "scraped": "Cancha Basquetbol",
+      "existing_slug": "cancha-basquetbol",
+      "existing_name": "Cancha de básquet Las Flores",
+      "distance_m": 0
+    },
+    {
+      "scraped": "Cancha Villa Santos",
+      "existing_slug": "cancha-villa-santos",
+      "existing_name": "Cancha Villa Santos",
+      "distance_m": 0
+    },
+    {
+      "scraped": "Parque Bosques del Norte",
+      "existing_slug": "cancha-sintetica-de-futbol-bosques-del-norte",
+      "existing_name": "Cancha Sintetica de Futbol - Bosques del Norte",
+      "distance_m": 84
+    },
+    {
+      "scraped": "Club de baloncesto Águilas Azules",
+      "existing_slug": "club-de-baloncesto-aguilas-azules",
+      "existing_name": "Club de baloncesto Águilas Azules",
+      "distance_m": 0
+    },
+    {
+      "scraped": "Cancha Sintetica de Futbol - Bosques del Norte",
+      "existing_slug": "cancha-sintetica-de-futbol-bosques-del-norte",
+      "existing_name": "Cancha Sintetica de Futbol - Bosques del Norte",
+      "distance_m": 0
+    },
+    {
+      "scraped": "Cancha de Baloncesto Los Cachorros",
+      "existing_slug": "cancha-de-baloncesto-los-cachorros",
+      "existing_name": "Cancha de Baloncesto Los Cachorros",
+      "distance_m": 0
+    },
+    {
+      "scraped": "Club deportivo Snow Volley Barranquilla",
+      "existing_slug": "club-deportivo-snow-volley-barranquilla",
+      "existing_name": "Club deportivo Snow Volley Barranquilla",
+      "distance_m": 0
+    },
+    {
+      "scraped": "Simón Bolívar soccer field",
+      "existing_slug": "simon-bolivar",
+      "existing_name": "Cancha Simón Bolívar",
+      "distance_m": 0
+    },
+    {
+      "scraped": "Canchas De Piso Los Manantiales",
+      "existing_slug": "canchas-de-piso-los-manantiales",
+      "existing_name": "Canchas De Piso Los Manantiales",
+      "distance_m": 0
+    },
+    {
+      "scraped": "Canchas de Fútbol Napoleón Salcedo Cotes",
+      "existing_slug": "canchas-de-futbol-napoleon-salcedo-cotes",
+      "existing_name": "Canchas de Fútbol Napoleón Salcedo Cotes",
+      "distance_m": 0
+    },
+    {
+      "scraped": "CANCHA CLUB DE LEONES",
+      "existing_slug": "club-de-leones",
+      "existing_name": "Cancha Club de Leones",
+      "distance_m": 0
+    },
+    {
+      "scraped": "Cancha de Cemento",
+      "existing_slug": "cancha-de-cemento-la-sierra",
+      "existing_name": "Cancha de Cemento La Sierra",
+      "distance_m": 0
+    },
+    {
+      "scraped": "Cancha de fútbol sala caribe campestre",
+      "existing_slug": "cancha-de-futbol-sala-caribe-campestre",
+      "existing_name": "Cancha de fútbol sala caribe campestre",
+      "distance_m": 0
+    },
+    {
+      "scraped": "Cancha de Fútbol Las Flores",
+      "existing_slug": "cancha-de-futbol-las-flores",
+      "existing_name": "Cancha de Fútbol Las Flores",
+      "distance_m": 0
+    },
+    {
+      "scraped": "Cancha La 19",
+      "existing_slug": "cancha-la-19",
+      "existing_name": "Cancha La 19",
+      "distance_m": 0
+    },
+    {
+      "scraped": "Cancha el Moderno",
+      "existing_slug": "cancha-el-moderno",
+      "existing_name": "Cancha el Moderno",
+      "distance_m": 0
+    },
+    {
+      "scraped": "Canchas Urbanización El Parque",
+      "existing_slug": "cancha-de-baloncesto-el-divino-nino",
+      "existing_name": "Cancha de Baloncesto El Divino Niño",
+      "distance_m": 35
+    },
+    {
+      "scraped": "Cancha De Baloncesto Simón Bolívar",
+      "existing_slug": "cancha-de-baloncesto-simon-bolivar",
+      "existing_name": "Cancha De Baloncesto Simón Bolívar",
+      "distance_m": 0
+    },
+    {
+      "scraped": "Park Renowitzky 2",
+      "existing_slug": "park-renowitzky-2",
+      "existing_name": "Parque Renowitzky 2",
+      "distance_m": 0
+    },
+    {
+      "scraped": "Cancha de Baloncesto El Divino Niño",
+      "existing_slug": "cancha-de-baloncesto-el-divino-nino",
+      "existing_name": "Cancha de Baloncesto El Divino Niño",
+      "distance_m": 0
+    },
+    {
+      "scraped": "Cancha de Baloncesto Titanes",
+      "existing_slug": "cancha-de-baloncesto-los-cachorros",
+      "existing_name": "Cancha de Baloncesto Los Cachorros",
+      "distance_m": 0
+    },
+    {
+      "scraped": "Del Carmen soccer field",
+      "existing_slug": "cancha-de-futbol-del-carmen",
+      "existing_name": "Cancha De Fútbol Del Carmen",
+      "distance_m": 0
+    },
+    {
+      "scraped": "Cancha Múltiple Nuestra Señora De Guadalupe",
+      "existing_slug": "cancha-multiple-nuestra-senora-de-guadalupe",
+      "existing_name": "Cancha Múltiple Nuestra Señora De Guadalupe",
+      "distance_m": 0
+    },
+    {
+      "scraped": "Cancha de Baloncesto Designado",
+      "existing_slug": "cancha-de-baloncesto-designado",
+      "existing_name": "Cancha de Baloncesto Designado",
+      "distance_m": 0
+    }
+  ]
+}

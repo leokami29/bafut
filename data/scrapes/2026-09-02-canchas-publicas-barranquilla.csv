@@ -1,0 +1,21 @@
+name,slug,neighborhood,address,lat,lng,venue_kind,phone,website,rating,review_count,reviews_kept,confidence,public_guess,matched_existing_slug
+Cancha de Fútbol El Mundialito,mundialito,Ciudadela 20 de Julio,"Cra. 3 #Calle 45D, Ciudadela 20 de Julio, Barranquilla, Atlántico",10.9356476,-74.80072969999999,publica,,,4.5,505,8,low,dudosa,mundialito
+Cancha Sintética de Fútbol Parque Tivoly,cancha-sintetica-de-futbol-parque-tivoly,"Villamar, Riomar","Cra. 65 #94-57, Riomar, Barranquilla, Atlántico",11.0194282,-74.8198037,publica,,,4.7,473,8,high,publica,
+Unidad Deportiva Pibe Valderrama,pibe-valderrama,Los Corales,"Cra. 1c 1 #01 # 46, Los Corales, Barranquilla, Atlántico",10.9300546,-74.801506,publica,315 6342122,,4.6,553,8,high,publica,pibe-valderrama
+"Sports Complex ""El Pibe"" Valderrama",pibe-valderrama,Los Corales,"a 45e-193, Cra 1C #45e63, Barranquilla, Atlántico",10.9292669,-74.8019996,publica,53624546,,4.6,1025,8,low,dudosa,pibe-valderrama
+Cancha de Arena,cancha-de-arena,Metropolitana,"Entre Carrera 10 y Carrera 12., Cl. 46, Metropolitana, Barranquilla, Atlántico",10.925397199999999,-74.8012559,publica,,,4.3,8,5,medium,publica,
+Cancha Barranquilla,cancha-barranquilla,Ciudadela 20 de Julio,"Cl. 47a #3a Sur-2 a, Cra. 3a Sur #32, Barranquilla, Atlántico",10.9287481,-74.807264,publica,,,4.3,67,8,medium,publica,
+Polideportivo Canchas el Pibe,pibe-valderrama,Ciudadela 20 de Julio,"Cl. 46 #1 Sur-1 a 1 Sur-39,, Barranquilla, Atlántico",10.9304987,-74.80225039999999,publica,,,4.6,117,8,high,publica,pibe-valderrama
+San Vicente Park,san-vicente-park,Cevillar,"Calle 53D con Carrera 16 #S/N, Cevillar, Barranquilla, Atlántico",10.9619506,-74.80314039999999,publica,,,4.4,600,8,medium,publica,
+Polideportivo El Edén Park,cancha-multiple-del-eden,"Villas de Las Colinas, Suroccidente","Carrera 27 &, Cl. 86b, Suroccidente, Barranquilla, Atlántico",10.9765049,-74.8318974,alquiler,310 8300590,,4.5,254,8,high,publica,cancha-multiple-del-eden
+Polideportivo de Los Robles,polideportivo-de-los-robles,Los Robles,"Cl. 76 #23d-25, Soledad, Barranquilla, Atlántico",10.921364299999999,-74.8088923,publica,,,4.5,1027,8,high,publica,
+Conjunto Residencial Los Robles Park,conjunto-residencial-los-robles-park,"Barranquilla, Soledad, Barranquilla","Cra. 16a #25, Barranquilla, Soledad, Barranquilla, Atlántico",10.9141503,-74.81164509999999,publica,,,4.7,10,2,medium,publica,
+Polideportivo La Magdalena,cancha-de-futbol-la-magdalena,La Magdalena,"Cl. 38b #7-35, La Magdalena, Barranquilla, Atlántico",10.94266,-74.79267,alquiler,,,4.1,43,8,high,publica,cancha-de-futbol-la-magdalena
+CLUB COLORADOS SKATE,pibe-valderrama,Metropolitana,"Cra. 1a, Metropolitana, Barranquilla, Atlántico",10.930218199999999,-74.8013024,publica,300 2093390,,5,13,8,high,privada,pibe-valderrama
+Parque Distrital de Raquetas Maria Fernanda Herazo,parque-distrital-de-raquetas-maria-fernanda-herazo,Riomar,"Parque de Raquetas, Cl. 100 #52c – 104, Riomar, Barranquilla, Atlántico",11.014470099999999,-74.8300065,publica,,,4.9,70,8,high,publica,
+Parque Bosques del Norte,cancha-sintetica-de-futbol-bosques-del-norte,"Altos de Riomar, Riomar","Calle 94 #53, Cra. 56 #94-25, Barranquilla, Atlántico",11.014225099999999,-74.8224541,alquiler,53049253,,4.7,3637,8,high,publica,cancha-sintetica-de-futbol-bosques-del-norte
+Simón Bolívar soccer field,simon-bolivar,"Simon Bolivar, Sur Orient","entre carrera 5 y carrera 4C, Cl. 23, Simón Bolívar, Barranquilla, Atlántico",10.9427129,-74.77830159999999,publica,300 8778588,,4.4,387,8,low,dudosa,simon-bolivar
+Canchas Urbanización El Parque,cancha-de-baloncesto-el-divino-nino,"Urbanización El Parque, Cisneros","Cl. 43 #12, Cisneros, Soledad, Atlántico",10.9325381,-74.7851586,alquiler,,,4.7,70,8,high,publica,cancha-de-baloncesto-el-divino-nino
+Cancha De Baloncesto Simón Bolívar,cancha-de-baloncesto-simon-bolivar,a 7a-56,"a 7a-56, Cl. 19 #7a-2, Barranquilla, Atlántico",10.9475064,-74.7754531,publica,,,5,2,1,low,dudosa,cancha-de-baloncesto-simon-bolivar
+Polideportivo La Paz,polideportivo-la-paz,"La Paz, Suroccidente","Cra. 13 #1001, Suroccidente, Barranquilla, Atlántico",10.9650463,-74.83256469999999,publica,,,4.2,120,8,high,publica,
+Parque La Virgen Del Carmen,parque-la-virgen-del-carmen,Ciudadela 20 de Julio,"Cl. 47, Ciudadela 20 de Julio, Barranquilla, Atlántico",10.929763399999999,-74.8066948,publica,,,4.4,566,8,high,publica,

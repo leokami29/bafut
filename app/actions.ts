@@ -95,10 +95,18 @@ export async function createMatchAction(formData: FormData) {
     return { error: "Esa posición no aplica para el deporte." };
   }
 
-  const openCount = Math.min(12, Math.max(1, Number(formData.get("open_count") ?? 1)));
+  const openCountRaw = Number(formData.get("open_count") ?? "");
+  if (!Number.isInteger(openCountRaw) || openCountRaw < 1 || openCountRaw > 12) {
+    return { error: "Los cupos deben ser un número entero entre 1 y 12." };
+  }
+  const openCount = openCountRaw;
   const needKeeper = formData.get("need_keeper") === "on" && SPORT_RULES[sport].hasKeeper;
   const level = asOne(formData.get("level"), LEVELS, "any");
   const costRaw = String(formData.get("cost_per_person") ?? "").replace(/\D/g, "");
+  const notes = String(formData.get("notes") ?? "").trim();
+  if (notes.length > 500) {
+    return { error: "La nota es demasiado larga (máx. 500 caracteres)." };
+  }
 
   const { data: match, error } = await supabase
     .from("matches")
@@ -112,14 +120,19 @@ export async function createMatchAction(formData: FormData) {
       format,
       cost_per_person: costRaw ? Number(costRaw) : null,
       gender_policy: asOne(formData.get("gender_policy"), GENDERS, "mixed"),
-      notes: String(formData.get("notes") ?? "").trim() || null,
+      notes: notes || null,
       status: "open",
     })
     .select("id, share_code")
     .single();
 
   if (error || !match) {
-    return { error: "No se pudo publicar el partido. Revisa los datos." };
+    const rateLimited = /demasiados partidos/i.test(error?.message ?? "");
+    return {
+      error: rateLimited
+        ? "Publicaste demasiados partidos en poco tiempo. Espera un rato."
+        : "No se pudo publicar el partido. Revisa los datos.",
+    };
   }
 
   const slots = Array.from({ length: openCount }, (_, index) => ({
@@ -179,25 +192,18 @@ export async function respondClaimAction(formData: FormData) {
   const claimId = String(formData.get("claim_id") ?? "");
   const shareCode = String(formData.get("share_code") ?? "");
   const status = String(formData.get("status") ?? "");
-  const { supabase, userId } = await requireUserId(shareCode ? `/p/${shareCode}` : "/partidos");
+  const { supabase } = await requireUserId(shareCode ? `/p/${shareCode}` : "/partidos");
 
   if (status !== "accepted" && status !== "rejected") {
     return { error: "Acción no válida." };
   }
 
-  const { data: claim } = await supabase
-    .from("slot_claims")
-    .select("id, match_id, matches!inner(host_id)")
-    .eq("id", claimId)
-    .maybeSingle();
-
-  if (!claim || (claim.matches as { host_id: string }).host_id !== userId) {
-    return { error: "Solo quien armó el partido puede confirmar." };
-  }
-
-  const { error } = await supabase.from("slot_claims").update({ status }).eq("id", claimId);
+  const { error } = await supabase.rpc("respond_claim", {
+    p_claim_id: claimId,
+    p_status: status,
+  });
   if (error) {
-    return { error: "No se pudo actualizar el cupo." };
+    return { error: error.message || "No se pudo actualizar el cupo." };
   }
 
   revalidatePath(`/p/${shareCode}`);
@@ -269,8 +275,8 @@ export async function updateProfileAction(formData: FormData) {
   const nextPath = safeNextPath(nextRaw, "/perfil");
   const { supabase, userId } = await requireUserId("/perfil");
   const displayName = String(formData.get("display_name") ?? "").trim();
-  if (displayName.length < 2) {
-    return { error: "Pon un nombre para que te reconozcan en la cancha." };
+  if (displayName.length < 2 || displayName.length > 40) {
+    return { error: "El nombre debe tener entre 2 y 40 caracteres." };
   }
 
   const whatsapp = normalizeWhatsapp(String(formData.get("whatsapp") ?? ""));

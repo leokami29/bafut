@@ -4,9 +4,21 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const items = [
-  { href: "/partidos", label: "Hoy", match: (p: string) => p === "/partidos" || p.startsWith("/p/") },
-  { href: "/canchas", label: "Canchas", match: (p: string) => p.startsWith("/canchas") },
-  { href: "/partidos/nuevo", label: "Publicar", match: (p: string) => p === "/partidos/nuevo" },
+  {
+    href: "/partidos",
+    label: "Hoy",
+    match: (p: string) => p === "/partidos" || p.startsWith("/p/"),
+  },
+  {
+    href: "/canchas",
+    label: "Canchas",
+    match: (p: string) => p.startsWith("/canchas"),
+  },
+  {
+    href: "/partidos/nuevo",
+    label: "Publicar",
+    match: (p: string) => p === "/partidos/nuevo",
+  },
 ] as const;
 
 export function MobileNav({
@@ -18,7 +30,7 @@ export function MobileNav({
 }) {
   const pathname = usePathname();
   const profileHref = userId ? "/perfil/partidos" : "/entrar";
-  const profileLabel = userId ? "Partidos" : "Entrar";
+  const profileLabel = userId ? "Yo" : "Entrar";
   const profileMatch = userId
     ? (p: string) => p.startsWith("/perfil")
     : (p: string) => p === "/entrar";
@@ -29,12 +41,13 @@ export function MobileNav({
     <nav className="mobile-nav" aria-label="Navegación móvil">
       {all.map(({ href, label, match }) => {
         const showBadge = href.startsWith("/perfil") && pendingCount > 0;
+        const active = match(pathname);
         return (
           <Link
             key={href}
             href={href}
-            aria-current={match(pathname) ? "page" : undefined}
-            className={match(pathname) ? "is-active" : undefined}
+            aria-current={active ? "page" : undefined}
+            className={active ? "is-active" : undefined}
           >
             <span className="nav-label-wrap">
               {label}

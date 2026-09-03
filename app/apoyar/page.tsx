@@ -22,7 +22,7 @@ export default function ApoyarPage() {
         <p className="eyebrow">BaFut</p>
         <h1>Invita un café</h1>
         <p>
-          BaFut no cobra el partido. Si te sirve armar el piquete, puedes aportar al hosting de Supabase, el dominio
+          BaFut no cobra el partido. Si te sirve armar la pateada, puedes aportar al hosting de Supabase, el dominio
           y el tiempo de curar canchas.
         </p>
       </header>

@@ -354,6 +354,7 @@ export type Database = {
         Args: { p_city_id: string; p_limit?: number };
         Returns: string[];
       };
+      respond_claim: { Args: { p_claim_id: string; p_status: string }; Returns: undefined };
       withdraw_claim: { Args: { p_claim_id: string }; Returns: undefined };
     };
     Enums: {

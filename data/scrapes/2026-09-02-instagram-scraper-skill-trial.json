@@ -1,0 +1,109 @@
+{
+  "meta": {
+    "generated_at": "2026-09-03T03:52:30.000Z",
+    "city": "Barranquilla",
+    "skill": "instagram-scraper",
+    "skill_path": "C:\\EstudioALL\\2026\\BaFut\\.agents\\skills\\instagram-scraper\\SKILL.md",
+    "actor": "apify/instagram-scraper",
+    "auth_mode": "AUTH_OK cli: npx --yes apify-cli@latest",
+    "apify_account": "pliable_springfrog",
+    "scrape_status": "succeeded",
+    "resultsType": "details",
+    "resultsLimit": 1,
+    "addProfileStatistics": true,
+    "results_count": 3,
+    "raw_dataset": "data/scrapes/_ig-output-trial.json",
+    "cost_note": "2 sync runs × 3 profile details ≈ 6 Apify results (~$0.01). Free-tier monthly credits apply.",
+    "new_phones_found": [
+      {
+        "username": "cd.elitesoccer",
+        "phone": "322 5530602",
+        "e164": "+573225530602",
+        "source": "http://wa.me/573225530602"
+      }
+    ],
+    "hours_found": []
+  },
+  "results": [
+    {
+      "username": "snow_volley",
+      "fullName": "ᴄʟᴜʙ ᴅᴇᴘᴏʀᴛɪᴠᴏ ꜱɴᴏᴡ ᴠᴏʟʟᴇʏ",
+      "biography": "¡Entrena fuerte y sin límites! 💪🏼\nCoaches especializados en la disciplina\n📍Baq/Col\n🧠🏐🏆🔥\n#voleibol",
+      "externalUrl": null,
+      "externalUrls": [],
+      "followersCount": 14068,
+      "isBusinessAccount": false,
+      "businessCategoryName": "Sports Club",
+      "private": false,
+      "category": "Sports Club",
+      "account_type": 3,
+      "cityName": null,
+      "addressStreet": null,
+      "publicEmail": null,
+      "phones_fields": [],
+      "whatsapp_url": null,
+      "phone_from_whatsapp": null,
+      "phone_e164": null,
+      "hours": null,
+      "inputUrl": "https://www.instagram.com/snow_volley/"
+    },
+    {
+      "username": "1padelbaq",
+      "fullName": "One Padel Academy | Barranquilla",
+      "biography": "🎾 La academia donde tu juego evoluciona\n👥 Grupos de entrenamiento\n🧸 Baby Padel | grupos juveniles\n⚡ Clases personalizadas\n👇 Agenda tu clase aquí:",
+      "externalUrl": "http://one-padel-app.vercel.app",
+      "externalUrls": [
+        {
+          "title": "Reservas",
+          "url": "http://one-padel-app.vercel.app"
+        }
+      ],
+      "followersCount": 371,
+      "isBusinessAccount": true,
+      "businessCategoryName": "Sports & recreation",
+      "private": false,
+      "category": "Sports & recreation",
+      "account_type": 2,
+      "cityName": null,
+      "addressStreet": null,
+      "publicEmail": null,
+      "phones_fields": [],
+      "whatsapp_url": null,
+      "phone_from_whatsapp": null,
+      "phone_e164": null,
+      "hours": null,
+      "inputUrl": "https://www.instagram.com/1padelbaq/"
+    },
+    {
+      "username": "cd.elitesoccer",
+      "fullName": "Elite Soccer | Escuela Deportiva",
+      "biography": "⚽️Formación integral en fútbol infantil \n🔥Disciplina | Valores | Equipo\n📍Barranquilla | Soledad \nInscripciones abiertas \n📲 Más inf. ⤵️",
+      "externalUrl": "http://wa.me/573225530602",
+      "externalUrls": [
+        {
+          "title": "WhatsApp",
+          "url": "http://wa.me/573225530602"
+        },
+        {
+          "title": "Facebook",
+          "url": "https://www.facebook.com/share/15qwghLACz/?mibextid=wwXIfr"
+        }
+      ],
+      "followersCount": 413,
+      "isBusinessAccount": true,
+      "businessCategoryName": "Athlete",
+      "private": false,
+      "category": "Athlete",
+      "account_type": 2,
+      "cityName": null,
+      "addressStreet": null,
+      "publicEmail": null,
+      "phones_fields": [],
+      "whatsapp_url": "http://wa.me/573225530602",
+      "phone_from_whatsapp": "322 5530602",
+      "phone_e164": "+573225530602",
+      "hours": null,
+      "inputUrl": "https://www.instagram.com/cd.elitesoccer/"
+    }
+  ]
+}

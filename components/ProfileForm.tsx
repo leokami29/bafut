@@ -49,7 +49,13 @@ export function ProfileForm({
       ) : null}
       <label>
         Cómo te dicen
-        <input name="display_name" required minLength={2} defaultValue={profile.display_name} />
+        <input
+          name="display_name"
+          required
+          minLength={2}
+          maxLength={40}
+          defaultValue={profile.display_name}
+        />
       </label>
       <label>
         WhatsApp

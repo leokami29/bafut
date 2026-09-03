@@ -1962,6 +1962,9 @@
       "covered": null,
       "phone": "304 5280739",
       "website": "https://www.instagram.com/ballbreakersclub/",
+      "whatsapp": "https://wa.me/573004954242",
+      "whatsapp_phone": "300 4954242",
+      "whatsapp_source": "instagram_wa_link_apify_batch",
       "notes": {
         "source": "google",
         "place_id": "ChIJPw9Vbj8t9I4Re0Zzy7IwPLo",
@@ -2008,6 +2011,9 @@
       "covered": null,
       "phone": "304 5280739",
       "website": "https://www.instagram.com/ballbreakersclub/",
+      "whatsapp": "https://wa.me/573004954242",
+      "whatsapp_phone": "300 4954242",
+      "whatsapp_source": "instagram_wa_link_apify_batch",
       "notes": {
         "source": "google",
         "place_id": "ChIJTQVRldvT9Y4R9Ohum9kwxCg",
@@ -7427,7 +7433,7 @@
       "venue_kind": "publica",
       "surface": "sintetica",
       "covered": null,
-      "phone": "",
+      "phone": "322 5530602",
       "website": "https://www.instagram.com/cd.elitesoccer?igsh=eWhpbzh4N2ZnbGRl",
       "notes": {
         "source": "google",
@@ -7457,7 +7463,9 @@
       "confidence": "low",
       "matched_existing_slug": null,
       "match_distance_m": null,
-      "existing_venue_kind": null
+      "existing_venue_kind": null,
+      "whatsapp": "http://wa.me/573225530602",
+      "phone_source": "instagram_wa_link_apify_trial"
     },
     {
       "name": "Canchas De Piso Los Manantiales",

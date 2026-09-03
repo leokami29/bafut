@@ -1,17 +1,26 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useId, useMemo, useState } from "react";
 import type { Venue } from "@/lib/types";
 
 export function VenuePicker({
   venues,
   defaultVenueId,
   emptyHint = "Ninguna cancha coincide. Borra la búsqueda.",
+  invalid = false,
+  onVenueChange,
 }: {
   venues: Venue[];
   defaultVenueId?: string;
   emptyHint?: string;
+  invalid?: boolean;
+  onVenueChange?: (venueId: string) => void;
 }) {
+  const searchId = useId();
+  const listId = useId();
+  const helpId = useId();
+  const errorId = useId();
+
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState(() =>
     defaultVenueId && venues.some((v) => v.id === defaultVenueId) ? defaultVenueId : "",
@@ -44,44 +53,112 @@ export function VenuePicker({
     return [...map.entries()].sort(([a], [b]) => a.localeCompare(b, "es"));
   }, [filtered]);
 
+  const selectedVenue = venues.find((v) => v.id === effectiveSelected);
+  const showEmpty = venues.length === 0 || filtered.length === 0;
+  const emptyMessage = venues.length === 0 ? emptyHint : "Ninguna cancha coincide. Borra la búsqueda.";
+
+  function selectVenue(id: string) {
+    setSelected(id);
+    onVenueChange?.(id);
+  }
+
   return (
-    <div className="venue-picker">
-      <label>
-        Cancha
+    <div className={`venue-picker${invalid ? " is-invalid" : ""}`}>
+      <div className="venue-picker-head">
+        <label htmlFor={searchId}>
+          Cancha <span className="req-mark" aria-hidden="true">
+            *
+          </span>
+        </label>
+        <p className="field-help" id={helpId}>
+          Busca por nombre o barrio y elige dónde se juega.
+        </p>
         <input
+          id={searchId}
           type="search"
           placeholder={venues.length ? `Buscar entre ${venues.length} canchas…` : "Sin canchas para este deporte"}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          aria-controls="venue-picker-select"
+          aria-controls={listId}
+          aria-describedby={`${helpId}${showEmpty || invalid ? ` ${errorId}` : ""}`}
           disabled={venues.length === 0}
+          autoComplete="off"
         />
-      </label>
-      <select
-        id="venue-picker-select"
-        name="venue_id"
-        required
-        value={effectiveSelected}
-        onChange={(e) => setSelected(e.target.value)}
-        size={Math.min(8, Math.max(4, grouped.reduce((n, [, list]) => n + list.length, 0) || 4))}
-        disabled={venues.length === 0}
+      </div>
+
+      {selectedVenue ? (
+        <p className="venue-picker-chosen" aria-live="polite">
+          Seleccionada: <strong>{selectedVenue.name}</strong>
+          {selectedVenue.neighborhood ? (
+            <span className="venue-picker-chosen-meta"> · {selectedVenue.neighborhood}</span>
+          ) : null}
+        </p>
+      ) : null}
+
+      <div
+        id={listId}
+        className="venue-picker-list"
+        role="radiogroup"
+        aria-label="Canchas disponibles"
+        aria-required="true"
+        aria-invalid={invalid || undefined}
       >
-        <option value="" disabled>
-          Elige dónde van a jugar
-        </option>
         {grouped.map(([barrio, list]) => (
-          <optgroup key={barrio} label={barrio}>
-            {list.map((venue) => (
-              <option key={venue.id} value={venue.id}>
-                {venue.name}
-              </option>
-            ))}
-          </optgroup>
+          <div key={barrio} className="venue-picker-group">
+            <p className="venue-picker-group-label">{barrio}</p>
+            <ul className="venue-picker-options">
+              {list.map((venue) => {
+                const isOn = venue.id === effectiveSelected;
+                const optionId = `${listId}-${venue.id}`;
+                return (
+                  <li key={venue.id}>
+                    <label
+                      htmlFor={optionId}
+                      className={isOn ? "venue-picker-option is-on" : "venue-picker-option"}
+                    >
+                      <input
+                        id={optionId}
+                        type="radio"
+                        name="venue_id"
+                        value={venue.id}
+                        checked={isOn}
+                        required={!effectiveSelected}
+                        disabled={venues.length === 0}
+                        onChange={() => selectVenue(venue.id)}
+                      />
+                      <span className="venue-picker-option-text">
+                        <span className="venue-picker-option-name">{venue.name}</span>
+                        {venue.neighborhood ? (
+                          <span className="venue-picker-option-meta">{venue.neighborhood}</span>
+                        ) : null}
+                      </span>
+                    </label>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
         ))}
-      </select>
-      {venues.length === 0 || filtered.length === 0 ? (
-        <p className="form-error" role="status">
-          {venues.length === 0 ? emptyHint : "Ninguna cancha coincide. Borra la búsqueda."}
+      </div>
+
+      {/* Keep venue_id when the selected cancha is filtered out of the list */}
+      {effectiveSelected && !filtered.some((v) => v.id === effectiveSelected) ? (
+        <input
+          className="venue-picker-native"
+          type="radio"
+          name="venue_id"
+          value={effectiveSelected}
+          checked
+          readOnly
+          required
+          tabIndex={-1}
+          aria-hidden="true"
+        />
+      ) : null}
+
+      {showEmpty || invalid ? (
+        <p className="form-error" role="status" id={errorId}>
+          {showEmpty ? emptyMessage : "Elige una cancha para continuar."}
         </p>
       ) : null}
     </div>

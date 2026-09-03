@@ -51,6 +51,12 @@ export function AuthForm({ nextPath }: { nextPath: string }) {
       return;
     }
 
+    if (password.length < 8) {
+      setError("La clave debe tener al menos 8 caracteres.");
+      setPending(false);
+      return;
+    }
+
     const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
     if (!signInError) {
       router.push(nextPath);
@@ -64,7 +70,11 @@ export function AuthForm({ nextPath }: { nextPath: string }) {
       options: { emailRedirectTo: redirectTo },
     });
     if (signUpError) {
-      setError("Correo o clave no válidos.");
+      setError(
+        /password|weak|characters|leaked/i.test(signUpError.message)
+          ? "La clave es débil o demasiado corta. Usa al menos 8 caracteres."
+          : "Correo o clave no válidos.",
+      );
       setPending(false);
       return;
     }
@@ -123,7 +133,7 @@ export function AuthForm({ nextPath }: { nextPath: string }) {
             <input
               type="password"
               autoComplete="current-password"
-              minLength={6}
+              minLength={8}
               required
               value={password}
               onChange={(event) => setPassword(event.target.value)}

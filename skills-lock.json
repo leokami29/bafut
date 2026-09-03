@@ -12,6 +12,12 @@
       "sourceType": "github",
       "skillPath": "skills/google-maps-scraper/SKILL.md",
       "computedHash": "e3f899c723f6796e9bcb8abfaa28cb98cf9712d1afe2bfbc60a03616710c9682"
+    },
+    "instagram-scraper": {
+      "source": "skillify-sh/skills",
+      "sourceType": "github",
+      "skillPath": "skills/instagram-scraper/SKILL.md",
+      "computedHash": "35d9655be01a8c99bd39c6e5e5d20b9a1b3a9a2ecdd1d12a9183e13412172803"
     }
   }
 }

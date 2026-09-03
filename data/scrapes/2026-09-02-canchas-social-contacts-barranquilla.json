@@ -6,19 +6,12 @@
     "enrichment_source": "2026-09-02-canchas-enrichment-barranquilla.json",
     "goal": "phones_and_hours_from_instagram_facebook_bios",
     "apify": {
-      "status": "blocked",
-      "cli": "npx apify-cli 1.10.0 available",
-      "auth": "missing_APIFY_TOKEN_and_no_~/.apify_session",
-      "login_attempt": "not_viable_non_interactive",
-      "actors_planned": [
-        "apify/instagram-search-scraper",
-        "apify/instagram-profile-scraper",
-        "apify/facebook-search-scraper",
-        "apify/facebook-page-contact-information"
-      ],
-      "dataset_urls": [],
-      "run_urls": [],
-      "unblock": "Set APIFY_TOKEN in env/.env.local or run `npx apify-cli login`, then re-run IG/FB actors on this sample."
+      "status": "ok_all_known_ig_handles_scraped",
+      "cli": "npx apify-cli available",
+      "auth": "cli_keyring",
+      "last_actor": "apify/instagram-scraper",
+      "trial_file": "2026-09-02-instagram-scraper-skill-trial.json",
+      "batch_file": "2026-09-02-instagram-scraper-batch.json"
     },
     "fallbacks_used": [
       "maps_website_social_links_in_enrichment",
@@ -30,7 +23,7 @@
     "stats": {
       "venues_attempted": 20,
       "social_profile_linked": 6,
-      "new_phone_found": 2,
+      "new_phone_found": 3,
       "new_hours_found": 0,
       "phone_confirmed_existing": 4,
       "no_public_contact": 12,
@@ -41,7 +34,38 @@
       "Most neighborhood alquiler/public parks lack commercial IG/FB presence.",
       "IG bios require Apify (or authenticated session); raw HTTP hits login wall.",
       "Partial results preserved for resume after Apify auth."
-    ]
+    ],
+    "instagram_apify_trial": {
+      "at": "2026-09-03T03:50:47.221Z",
+      "auth_mode": "AUTH_OK cli: npx --yes apify-cli@latest",
+      "handles": [
+        "1padelbaq",
+        "snow_volley",
+        "cd.elitesoccer"
+      ],
+      "new_phones": [
+        {
+          "username": "cd.elitesoccer",
+          "phone": "322 5530602",
+          "e164": "+573225530602"
+        }
+      ]
+    },
+    "instagram_apify_batch": {
+      "at": "2026-09-03T03:55:00.000Z",
+      "auth_mode": "AUTH_OK cli: npx --yes apify-cli@latest",
+      "file": "2026-09-02-instagram-scraper-batch.json",
+      "handles": [
+        "ballbreakersclub"
+      ],
+      "new_whatsapp": [
+        {
+          "username": "ballbreakersclub",
+          "phone": "300 4954242",
+          "e164": "+573004954242"
+        }
+      ]
+    }
   },
   "venues": [
     {
@@ -67,9 +91,14 @@
           "type": "maps_website",
           "url": "https://instagram.com/snow_volley?igshid=YmMyMTA2M2Y=",
           "extracted": "instagram_handle"
+        },
+        {
+          "type": "instagram_apify_details",
+          "url": "https://www.instagram.com/snow_volley/",
+          "extracted": "bio/external only; no phone in profile fields"
         }
       ],
-      "status": "profile_found_contact_pending_apify",
+      "status": "instagram_scraped_no_public_phone",
       "notes": "Handle from Maps website. Public IG page requires login; no phone in secondary web search."
     },
     {
@@ -235,7 +264,7 @@
       "phone": "301 6575440",
       "whatsapp": null,
       "hours": null,
-      "booking_url": null,
+      "booking_url": "http://one-padel-app.vercel.app",
       "match_confidence": "high",
       "phone_is_new": false,
       "hours_is_new": false,
@@ -244,6 +273,11 @@
           "type": "maps_website",
           "url": "https://www.instagram.com/1padelbaq/?next=/",
           "extracted": "instagram_handle"
+        },
+        {
+          "type": "instagram_apify_details",
+          "url": "https://www.instagram.com/1padelbaq/",
+          "extracted": "bio/external only; no phone in profile fields"
         }
       ],
       "status": "social_linked_phone_already_in_maps",
@@ -261,21 +295,28 @@
       "instagram": "ballbreakersclub",
       "facebook_page_url": null,
       "phone": "304 5280739",
-      "whatsapp": null,
+      "whatsapp": "https://wa.me/573004954242",
       "hours": null,
       "booking_url": null,
       "match_confidence": "high",
       "phone_is_new": false,
       "hours_is_new": false,
+      "whatsapp_is_new": true,
+      "whatsapp_phone": "300 4954242",
       "sources": [
         {
           "type": "maps_website",
           "url": "https://www.instagram.com/ballbreakersclub/",
           "extracted": "instagram_handle"
+        },
+        {
+          "type": "instagram_apify_details",
+          "url": "https://www.instagram.com/ballbreakersclub/",
+          "extracted": "whatsapp +573004954242 from IG bio link (distinct from Maps phone 304 5280739); sedes in bio"
         }
       ],
-      "status": "social_linked_phone_already_in_maps",
-      "notes": "IG handle from Maps; contact already known."
+      "status": "whatsapp_from_instagram_maps_phone_kept",
+      "notes": "IG scrape batch: WA 300 4954242 on profile. Kept Maps phone 304 5280739. Bio lists 3 sedes (Sagrado Corazón, Domingo Savio, Universal II)."
     },
     {
       "name": "Quilla Tenis Club",
@@ -317,22 +358,27 @@
       "website_current": "https://www.instagram.com/cd.elitesoccer?igsh=eWhpbzh4N2ZnbGRl",
       "instagram": "cd.elitesoccer",
       "facebook_page_url": null,
-      "phone": null,
-      "whatsapp": null,
+      "phone": "322 5530602",
+      "whatsapp": "http://wa.me/573225530602",
       "hours": null,
       "booking_url": null,
       "match_confidence": "medium",
-      "phone_is_new": false,
+      "phone_is_new": true,
       "hours_is_new": false,
       "sources": [
         {
           "type": "maps_website",
           "url": "https://www.instagram.com/cd.elitesoccer?igsh=eWhpbzh4N2ZnbGRl",
           "extracted": "instagram_handle"
+        },
+        {
+          "type": "instagram_apify_details",
+          "url": "https://www.instagram.com/cd.elitesoccer/",
+          "extracted": "whatsapp +573225530602 from IG bio link"
         }
       ],
-      "status": "profile_found_contact_pending_apify",
-      "notes": "Not matched_existing in enrichment (low). Do not use elitedelfutbol.com 3137217108 — different brand/city signal."
+      "status": "phone_from_instagram_whatsapp_link",
+      "notes": "Not matched_existing in enrichment (low). Do not use elitedelfutbol.com 3137217108 — different brand/city signal. IG scrape 2026-09-02: WA link on profile."
     },
     {
       "name": "Canchas de Tenis (P. Bosques del Norte",

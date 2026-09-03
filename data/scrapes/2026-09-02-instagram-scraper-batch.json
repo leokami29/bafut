@@ -1,0 +1,171 @@
+{
+  "meta": {
+    "generated_at": "2026-09-03T03:55:00.000Z",
+    "city": "Barranquilla",
+    "skill": "instagram-scraper",
+    "skill_path": "C:\\EstudioALL\\2026\\BaFut\\.agents\\skills\\instagram-scraper\\SKILL.md",
+    "actor": "apify/instagram-scraper",
+    "auth_mode": "AUTH_OK cli: npx --yes apify-cli@latest",
+    "apify_account": "pliable_springfrog",
+    "batch": "remaining_handles_after_trial",
+    "excluded_already_scraped": [
+      "snow_volley",
+      "1padelbaq",
+      "cd.elitesoccer"
+    ],
+    "handles_known_in_sources": 4,
+    "handles_attempted_this_batch": 1,
+    "handles_ok": 1,
+    "handles_failed": 0,
+    "resultsType": "details",
+    "resultsLimit": 1,
+    "addProfileStatistics": true,
+    "cost_note": "1 Apify details result ≈ $0.002–0.003; free-tier credits apply",
+    "raw_dataset": "data/scrapes/_ig-output-batch.json",
+    "new_phones_or_whatsapp": [
+      {
+        "username": "ballbreakersclub",
+        "whatsapp_phone": "300 4954242",
+        "e164": "+573004954242",
+        "source": "https://wa.me/+573004954242",
+        "note": "Different from Maps phone 304 5280739; kept Maps phone, added WA from IG",
+        "confidence": "high"
+      }
+    ],
+    "hours_from_ig": [],
+    "contacts_without_ig_handle_count": 16
+  },
+  "inventory_all_known_handles": [
+    {
+      "username": "snow_volley",
+      "status": "scraped_in_trial",
+      "phone_new": null,
+      "hours": null,
+      "booking_or_external": null
+    },
+    {
+      "username": "1padelbaq",
+      "status": "scraped_in_trial",
+      "phone_new": null,
+      "hours": null,
+      "booking_or_external": "http://one-padel-app.vercel.app"
+    },
+    {
+      "username": "cd.elitesoccer",
+      "status": "scraped_in_trial",
+      "phone_new": "322 5530602",
+      "hours": null,
+      "booking_or_external": "http://wa.me/573225530602"
+    },
+    {
+      "username": "ballbreakersclub",
+      "status": "scraped_this_batch",
+      "phone_new": null,
+      "whatsapp_new": "300 4954242",
+      "hours": null,
+      "booking_or_external": "https://wa.me/+573004954242"
+    }
+  ],
+  "results": [
+    {
+      "username": "ballbreakersclub",
+      "fullName": "Ball Breakers",
+      "biography": "• Escuela de voleibol\nBarranquilla-Atl.\n📍Sede norte: Parque Sagrado Corazon\n📍Sede Centro: Parque Domingo Savio\n📍Sede Sur: Parque universal II etapa",
+      "externalUrl": "https://wa.me/+573004954242",
+      "externalUrls": [
+        {
+          "title": "Chatea con nosotros!",
+          "url": "https://wa.me/+573004954242"
+        }
+      ],
+      "followersCount": 3035,
+      "isBusinessAccount": true,
+      "businessCategoryName": "Entrepreneur",
+      "private": false,
+      "category": "Entrepreneur",
+      "account_type": 2,
+      "cityName": null,
+      "addressStreet": null,
+      "publicEmail": null,
+      "phones_fields": [],
+      "whatsapp_url": "https://wa.me/+573004954242",
+      "phone_from_whatsapp": "300 4954242",
+      "phone_e164": "+573004954242",
+      "hours": null,
+      "sedes_in_bio": [
+        "Parque Sagrado Corazon (norte)",
+        "Parque Domingo Savio (centro)",
+        "Parque universal II etapa (sur)"
+      ],
+      "match_confidence": "high",
+      "inputUrl": "https://www.instagram.com/ballbreakersclub/",
+      "venue_slug": "club-de-voleibol-ballbreakers"
+    }
+  ],
+  "venues_without_ig_handle": [
+    {
+      "slug": "rooftop-padel-club",
+      "name": "Rooftop Padel Club"
+    },
+    {
+      "slug": "casa-padel-colombia-rooftop",
+      "name": "CASA PADEL COLOMBIA ROOFTOP"
+    },
+    {
+      "slug": "padel-park",
+      "name": "Padel Park"
+    },
+    {
+      "slug": "voleibol-club-aston-quilla-voley",
+      "name": "Voleibol Club Aston Quilla voley"
+    },
+    {
+      "slug": "zoccer-plaza",
+      "name": "Cancha Sintética Zoccer Plaza"
+    },
+    {
+      "slug": "quilla-tenis-club",
+      "name": "Quilla Tenis Club"
+    },
+    {
+      "slug": "cancha-sintetica-de-futbol-bosques-del-norte",
+      "name": "Canchas de Tenis (P. Bosques del Norte"
+    },
+    {
+      "slug": "cancha-de-futbol-sintetica-del-bosque",
+      "name": "Cancha de fútbol sintética del bosque"
+    },
+    {
+      "slug": "cancha-de-microfutbol-los-andes",
+      "name": "Cancha de Microfútbol — Los Andes"
+    },
+    {
+      "slug": "canchas-cc-metropolitano",
+      "name": "Canchas CC Metropolitano"
+    },
+    {
+      "slug": "cancha-de-futbol-el-pana",
+      "name": "Cancha de Fútbol El Pana"
+    },
+    {
+      "slug": "cancha-villa-santos",
+      "name": "Cancha Villa Santos"
+    },
+    {
+      "slug": "cancha-sintetica-de-futbol-bosques-del-norte",
+      "name": "Cancha Sintetica de Futbol - Bosques del Norte"
+    },
+    {
+      "slug": "canchas-de-piso-los-manantiales",
+      "name": "Canchas De Piso Los Manantiales"
+    },
+    {
+      "slug": "cancha-de-futbol-las-flores",
+      "name": "Cancha de Fútbol Las Flores"
+    },
+    {
+      "slug": "cancha-de-futbol-sala-caribe-campestre",
+      "name": "Cancha de fútbol sala caribe campestre"
+    }
+  ]
+}
