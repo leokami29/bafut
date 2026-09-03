@@ -11,23 +11,23 @@ export const metadata: Metadata = {
 export default async function EntrarPage({
   searchParams,
 }: {
-  searchParams: Promise<{ next?: string; callbackUrl?: string }>;
+  searchParams: Promise<{ next?: string; callbackUrl?: string; auth_error?: string }>;
 }) {
-  const { next, callbackUrl } = await searchParams;
+  const { next, callbackUrl, auth_error } = await searchParams;
   const nextPath = safeNextPath(next ?? callbackUrl, "/");
   const claiming = nextPath.startsWith("/p/");
 
   return (
     <main className="page page-narrow" id="main">
       <header className="page-head">
-        <h1>{claiming ? "Entra para pedir el cupo" : "Entra a BaFut"}</h1>
+        <h1>{claiming ? "Entrá para pedir el cupo" : "Entrá a BaFut"}</h1>
         <p>
           {claiming
-            ? "Un correo basta. Completa tu nombre y WhatsApp para que el host sepa quién llega."
-            : "Correo y listo. Tu nombre y WhatsApp son lo que ve el host cuando confirma el cupo."}
+            ? "Correo y clave. Después completá nombre y WhatsApp para que el host sepa quién llega."
+            : "Entrá o creá cuenta con correo y clave. El correo solo se usa si olvidás la clave."}
         </p>
       </header>
-      <AuthForm nextPath={nextPath} />
+      <AuthForm nextPath={nextPath} initialAuthError={auth_error} />
     </main>
   );
 }

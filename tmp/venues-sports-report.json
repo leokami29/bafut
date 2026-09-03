@@ -1,0 +1,345 @@
+{
+  "scraped_rows": 119,
+  "unique_place_ids": 119,
+  "new_venues": 38,
+  "enriched_venues": 6,
+  "sport_hits_raw": {
+    "futbol": 18,
+    "futbol_sala": 18,
+    "voleibol": 12,
+    "basquet": 14,
+    "padel": 10
+  },
+  "new_by_sport": {
+    "futbol": 7,
+    "futbol_sala": 7,
+    "voleibol": 10,
+    "basquet": 12,
+    "padel": 9
+  },
+  "enrich_add_by_sport": {
+    "basquet": 2,
+    "futbol_sala": 2,
+    "voleibol": 1,
+    "padel": 1
+  },
+  "new_names": [
+    {
+      "name": "Cancha Sintética Brasileirao",
+      "sports": [
+        "futbol",
+        "futbol_sala"
+      ],
+      "neighborhood": "Norte Centro Historico"
+    },
+    {
+      "name": "Canchas sinteticas la 27",
+      "sports": [
+        "futbol",
+        "futbol_sala"
+      ],
+      "neighborhood": "Por Fin"
+    },
+    {
+      "name": "Club de voleibol Ballbreakers",
+      "sports": [
+        "voleibol"
+      ],
+      "neighborhood": "Ciudad Jardín"
+    },
+    {
+      "name": "Liga De Voleibol Del Atlántico",
+      "sports": [
+        "voleibol"
+      ],
+      "neighborhood": "Montecristo"
+    },
+    {
+      "name": "Cancha de Voleibol",
+      "sports": [
+        "voleibol"
+      ],
+      "neighborhood": "Norte Centro Historico"
+    },
+    {
+      "name": "Elements Voley Club",
+      "sports": [
+        "voleibol"
+      ],
+      "neighborhood": "La Campiña"
+    },
+    {
+      "name": "Canchas CC Metropolitano",
+      "sports": [
+        "voleibol"
+      ],
+      "neighborhood": "Soledad"
+    },
+    {
+      "name": "Campo De Voleibol Playa",
+      "sports": [
+        "voleibol"
+      ],
+      "neighborhood": "Norte Centro Historico"
+    },
+    {
+      "name": "Club de Baloncesto Cocodrilos de Barranquilla",
+      "sports": [
+        "basquet"
+      ],
+      "neighborhood": "Betania"
+    },
+    {
+      "name": "Voleibol Club Aston Quilla voley",
+      "sports": [
+        "voleibol"
+      ],
+      "neighborhood": "Santa Ana"
+    },
+    {
+      "name": "Cancha multiple del Edén",
+      "sports": [
+        "voleibol"
+      ],
+      "neighborhood": "Villas de Las Colinas"
+    },
+    {
+      "name": "Cancha De Voleibol Villa Santos",
+      "sports": [
+        "voleibol"
+      ],
+      "neighborhood": "Villa Santos"
+    },
+    {
+      "name": "Padel Zenter Del RIO",
+      "sports": [
+        "padel"
+      ],
+      "neighborhood": "Riomar"
+    },
+    {
+      "name": "Padel Park",
+      "sports": [
+        "padel"
+      ],
+      "neighborhood": "Alto Prado"
+    },
+    {
+      "name": "Casa Padel Patio",
+      "sports": [
+        "padel"
+      ],
+      "neighborhood": "Villa Campestre"
+    },
+    {
+      "name": "La Jaula Padel",
+      "sports": [
+        "padel"
+      ],
+      "neighborhood": "San Vicente"
+    },
+    {
+      "name": "Padel Zenter La Arenosa",
+      "sports": [
+        "padel"
+      ],
+      "neighborhood": "El Castillo I"
+    },
+    {
+      "name": "Rooftop Padel Club",
+      "sports": [
+        "padel"
+      ],
+      "neighborhood": "Barranquilla"
+    },
+    {
+      "name": "X3 Padel Club",
+      "sports": [
+        "padel"
+      ],
+      "neighborhood": "Villa Country"
+    },
+    {
+      "name": "PadelYa",
+      "sports": [
+        "padel"
+      ],
+      "neighborhood": "Aremay"
+    },
+    {
+      "name": "One Padel Academy Barranquilla",
+      "sports": [
+        "padel"
+      ],
+      "neighborhood": "Villa Campestre"
+    },
+    {
+      "name": "Cancha de Baloncesto Las Palmas",
+      "sports": [
+        "basquet"
+      ],
+      "neighborhood": "Las Palmas"
+    },
+    {
+      "name": "Cancha Basquetbol",
+      "sports": [
+        "basquet"
+      ],
+      "neighborhood": "Las Flores"
+    },
+    {
+      "name": "Cancha Villa Santos",
+      "sports": [
+        "basquet"
+      ],
+      "neighborhood": "Villa Santos"
+    },
+    {
+      "name": "Club de baloncesto Águilas Azules",
+      "sports": [
+        "basquet"
+      ],
+      "neighborhood": "Campo Alegre"
+    },
+    {
+      "name": "Cancha Múltiple",
+      "sports": [
+        "futbol",
+        "futbol_sala"
+      ],
+      "neighborhood": "Sabanilla Montecarmelo"
+    },
+    {
+      "name": "Cancha de Baloncesto Los Cachorros",
+      "sports": [
+        "basquet"
+      ],
+      "neighborhood": "Villa Country"
+    },
+    {
+      "name": "Club deportivo Snow Volley Barranquilla",
+      "sports": [
+        "voleibol"
+      ],
+      "neighborhood": "Los Trupillos"
+    },
+    {
+      "name": "Canchas De Piso Los Manantiales",
+      "sports": [
+        "futbol",
+        "futbol_sala"
+      ],
+      "neighborhood": "Soledad, Barranquilla"
+    },
+    {
+      "name": "Cancha de fútbol sala caribe campestre",
+      "sports": [
+        "futbol",
+        "futbol_sala"
+      ],
+      "neighborhood": "Suroccidente"
+    },
+    {
+      "name": "Cancha de Fútbol Las Flores",
+      "sports": [
+        "futbol",
+        "futbol_sala"
+      ],
+      "neighborhood": "Las Flores"
+    },
+    {
+      "name": "Cancha La 19",
+      "sports": [
+        "futbol",
+        "futbol_sala"
+      ],
+      "neighborhood": "El Carmen"
+    },
+    {
+      "name": "Park Renowitzky 2",
+      "sports": [
+        "basquet"
+      ],
+      "neighborhood": "Ciudadela 20 de Julio"
+    },
+    {
+      "name": "Cancha de Baloncesto El Divino Niño",
+      "sports": [
+        "basquet"
+      ],
+      "neighborhood": "Urbanización El Parque"
+    },
+    {
+      "name": "Cancha de Baloncesto Titanes",
+      "sports": [
+        "basquet"
+      ],
+      "neighborhood": "Barranquilla"
+    },
+    {
+      "name": "Cancha Múltiple Nuestra Señora De Guadalupe",
+      "sports": [
+        "basquet"
+      ],
+      "neighborhood": "Los Corales"
+    },
+    {
+      "name": "Cancha De Baloncesto",
+      "sports": [
+        "basquet"
+      ],
+      "neighborhood": "Sur Orient"
+    },
+    {
+      "name": "Cancha de Baloncesto Designado",
+      "sports": [
+        "basquet"
+      ],
+      "neighborhood": "Hipodromo"
+    }
+  ],
+  "enrich_names": [
+    {
+      "slug": "canchas-el-tiburon",
+      "add_sports": [
+        "basquet"
+      ],
+      "scraped": "Canchas El Tiburón"
+    },
+    {
+      "slug": "la-21-futbol-club",
+      "add_sports": [
+        "futbol_sala"
+      ],
+      "scraped": "Cancha De Fútbol Barranquilla"
+    },
+    {
+      "slug": "complejo-tivoli",
+      "add_sports": [
+        "voleibol"
+      ],
+      "scraped": "Cancha de Voleyball tivoli"
+    },
+    {
+      "slug": "soccer-house",
+      "add_sports": [
+        "padel"
+      ],
+      "scraped": "Casa Padel Colombia Rooftop"
+    },
+    {
+      "slug": "cancha-de-futbol-barrio-la-sierra",
+      "add_sports": [
+        "futbol_sala"
+      ],
+      "scraped": "Cancha de Cemento"
+    },
+    {
+      "slug": "simon-bolivar",
+      "add_sports": [
+        "basquet"
+      ],
+      "scraped": "Cancha De Baloncesto Simón Bolívar"
+    }
+  ]
+}

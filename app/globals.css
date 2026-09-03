@@ -865,6 +865,10 @@ h2,
   border-bottom: 1px solid var(--ink);
 }
 
+.mode-toggle-3 {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
 .mode-toggle button {
   background: none;
   border: 0;
@@ -876,6 +880,41 @@ h2,
 .mode-toggle .is-on {
   color: var(--ink);
   box-shadow: inset 0 -2px 0 var(--bib);
+}
+
+.password-meter {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.password-meter-track {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 0.28rem;
+}
+
+.password-meter-track span {
+  height: 0.35rem;
+  background: color-mix(in oklab, var(--ink) 14%, transparent);
+}
+
+.password-meter-track span.is-on.is-s1,
+.password-meter-track span.is-on.is-s2 {
+  background: var(--bib);
+}
+
+.password-meter-track span.is-on.is-s3 {
+  background: var(--flood);
+}
+
+.password-meter-track span.is-on.is-s4 {
+  background: var(--turf);
+}
+
+.password-meter-label {
+  margin: 0;
+  font-size: 0.82rem;
+  color: color-mix(in oklab, var(--ink) 65%, transparent);
 }
 
 .slot-row {

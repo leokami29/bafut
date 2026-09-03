@@ -1,4 +1,6 @@
 export const CITY_COOKIE = "bafut_city";
+/** Destino post-callback de Auth (confirmación / recuperación); evita ?next= en emailRedirectTo. */
+export const AUTH_NEXT_COOKIE = "bafut_auth_next";
 export const DEFAULT_CITY_SLUG = "barranquilla";
 
 export {

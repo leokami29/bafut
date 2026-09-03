@@ -16,7 +16,7 @@ Partidos abiertos y “falta un jugador” en Barranquilla. El organizador publi
 - Directorio de canchas (`/canchas`) con detalle y mapa
 - Multideporte: fútbol, fútbol sala, básquet, voleibol y pádel
 - Selector de ciudad (cookie `bafut_city`; Barranquilla es la primera)
-- Auth por magic link (Supabase) y perfil básico
+- Auth por correo + clave (Supabase); email solo para recuperar clave / confirmar cuenta
 - Página de apoyo / donaciones opcionales (`/apoyar`)
 
 **Fuera de alcance (por ahora):** pagos, chat in-app, reserva real con la cancha, app nativa.
@@ -74,16 +74,32 @@ Requisitos: Node.js 20+ y un proyecto Supabase.
 
 ### Auth en producción
 
-Los correos de magic link los arma Supabase con el **Site URL** del dashboard. El cliente también envía `emailRedirectTo` vía `NEXT_PUBLIC_SITE_URL`.
+BaFut entra con **correo + clave** (sin magic link y sin confirmar el mail). El correo de Supabase se reserva para **recuperar clave**.
+
+En **Authentication → Providers → Email**:
+- Confirm email: **OFF**
+- Magic link: **OFF** (si aparece)
+
+Los links de recuperación usan el **Site URL** del dashboard. El cliente manda `emailRedirectTo` a `/auth/callback` (el destino va en cookie, p. ej. `/entrar/clave`).
 
 En **Authentication → URL configuration**:
 
-1. **Site URL** = `https://bafut.macuttech.com`
+1. **Site URL** = `https://bafut.macuttech.com` (no dejes el default `http://localhost:3000`)
 2. **Redirect URLs**, al menos:
    - `https://bafut.macuttech.com/auth/callback`
    - En local: `http://localhost:3005/auth/callback`
 
+En Auth, desactivá **Magic link** y **Confirm email**.
+
 En el hosting (p. ej. Railway): `NEXT_PUBLIC_SITE_URL=https://bafut.macuttech.com` en build-time.
+
+#### Si falla un correo de recuperación / confirmación
+
+Abrí el link **una sola vez** en el mismo navegador. BaFut local es puerto **3005**.
+
+1. Site URL = producción.
+2. Allowlist exacta a `/auth/callback`.
+3. Pedí un correo nuevo; un solo clic.
 
 ## Scripts
 

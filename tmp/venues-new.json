@@ -1,0 +1,474 @@
+[
+  {
+    "slug": "cancha-sintetica-la-patiada",
+    "name": "Cancha Sintética La Patiada",
+    "neighborhood": "Boyacá",
+    "address": "Cra. 20 #30-123, Sur Orient, Barranquilla, Atlántico",
+    "lat": 10.957095299999999,
+    "lng": -74.78698059999999,
+    "sports": [
+      "futbol",
+      "futbol_sala"
+    ],
+    "surface": "sintetica",
+    "covered": null,
+    "venue_kind": "alquiler",
+    "notes": "Cancha de fútbol sala. ★ 4.3 (627 reseñas). Tel: 301 4258786",
+    "place_id": "ChIJ_fAuZ1Mt9I4RmcT_u3kzd68"
+  },
+  {
+    "slug": "cancha-el-moderno",
+    "name": "Cancha el Moderno",
+    "neighborhood": "Villa Blanca",
+    "address": "Cisneros, Barranquilla, Atlántico",
+    "lat": 10.934203799999999,
+    "lng": -74.7958499,
+    "sports": [
+      "futbol"
+    ],
+    "surface": "sintetica",
+    "covered": null,
+    "venue_kind": "alquiler",
+    "notes": "Campo de fútbol. ★ 4.5 (217 reseñas)",
+    "place_id": "ChIJaW8Ehr3S9Y4RkeGbiyYYF0E"
+  },
+  {
+    "slug": "la-8-fc-cancha-sintetica",
+    "name": "La 8 FC Cancha Sintética.",
+    "neighborhood": "La Magdalena",
+    "address": "Cra. 8 #38b-51, La Magdalena, Barranquilla, Atlántico",
+    "lat": 10.9456989,
+    "lng": -74.7947626,
+    "sports": [
+      "futbol"
+    ],
+    "surface": "sintetica",
+    "covered": null,
+    "venue_kind": "alquiler",
+    "notes": "Campo de fútbol. ★ 4.5 (975 reseñas). Tel: 300 2292969",
+    "place_id": "ChIJuRAWabDS9Y4R2s_7ocNMeg4"
+  },
+  {
+    "slug": "cancha-san-martin-7-de-abril",
+    "name": "Cancha San Martin 7 De Abril",
+    "neighborhood": "Siete De Abril",
+    "address": "Metropolitana, Barranquilla, Atlántico",
+    "lat": 10.930296799999999,
+    "lng": -74.813447,
+    "sports": [
+      "futbol"
+    ],
+    "surface": "sintetica",
+    "covered": null,
+    "venue_kind": "alquiler",
+    "notes": "Campo de fútbol. ★ 4.2 (54 reseñas)",
+    "place_id": "ChIJ-ZutoLXT9Y4RePylj5LSUa0"
+  },
+  {
+    "slug": "la-21-futbol-club",
+    "name": "La 21 Fútbol Club",
+    "neighborhood": "Suroccidente",
+    "address": "Cra 21B #58-71, Suroccidente, Barranquilla, Atlántico",
+    "lat": 10.9683139,
+    "lng": -74.8028465,
+    "sports": [
+      "futbol"
+    ],
+    "surface": "sintetica",
+    "covered": null,
+    "venue_kind": "club",
+    "notes": "Campo de fútbol. ★ 4.6 (462 reseñas). Tel: 316 4726166",
+    "place_id": "ChIJAzpq7Uct9I4RtWyp93Tys9c"
+  },
+  {
+    "slug": "cancha-de-futbol-barrio-la-sierra",
+    "name": "Cancha de Fútbol Barrio La Sierra",
+    "neighborhood": "Cevillar",
+    "address": "Cl. 46 #14-4, Cevillar, Barranquilla, Atlántico",
+    "lat": 10.9567525,
+    "lng": -74.80217689999999,
+    "sports": [
+      "futbol"
+    ],
+    "surface": "sintetica",
+    "covered": null,
+    "venue_kind": "alquiler",
+    "notes": "Campo de fútbol. ★ 4.1 (1165 reseñas). Tel: 320 5693841",
+    "place_id": "ChIJN37WyEot9I4Rro5WKIb4gYY"
+  },
+  {
+    "slug": "cancha-de-futbol-la-victoria",
+    "name": "Cancha de Fútbol La Victoria",
+    "neighborhood": "Metropolitana",
+    "address": "a 45b 3-56,, Cra. 10 #45b 3-2, Barranquilla, Atlántico",
+    "lat": 10.9527409,
+    "lng": -74.7996194,
+    "sports": [
+      "futbol"
+    ],
+    "surface": "sintetica",
+    "covered": null,
+    "venue_kind": "alquiler",
+    "notes": "Campo de fútbol. ★ 4.5 (656 reseñas)",
+    "place_id": "ChIJFd5PWbTS9Y4Rh2SwDL9jx6Q"
+  },
+  {
+    "slug": "cancha-de-futbol-sintetica-del-bosque",
+    "name": "Cancha de fútbol sintética del bosque",
+    "neighborhood": "El Bosque",
+    "address": "El Bosque, Barranquilla, Atlántico",
+    "lat": 10.9524972,
+    "lng": -74.8189816,
+    "sports": [
+      "futbol"
+    ],
+    "surface": "sintetica",
+    "covered": null,
+    "venue_kind": "alquiler",
+    "notes": "Campo de fútbol. ★ 3.7 (3 reseñas)",
+    "place_id": "ChIJ9-l_DVTT9Y4RGDAmcrjNY1E"
+  },
+  {
+    "slug": "polideportivo-canchas-el-pibe",
+    "name": "Polideportivo Canchas El Pibe",
+    "neighborhood": "Ciudadela 20 de Julio",
+    "address": "Cl. 46 #1 Sur-1 a 1 Sur-39,, Barranquilla, Atlántico",
+    "lat": 10.9304987,
+    "lng": -74.80225039999999,
+    "sports": [
+      "futbol"
+    ],
+    "surface": "sintetica",
+    "covered": null,
+    "venue_kind": "alquiler",
+    "notes": "Polideportivo. ★ 4.6 (117 reseñas)",
+    "place_id": "ChIJw1e06pTS9Y4RoT7ijTq_lIM"
+  },
+  {
+    "slug": "cancha-de-futbol-5-hermanos-almendros",
+    "name": "Cancha de Fútbol 5 Hermanos Almendros",
+    "neighborhood": "Los Almendros",
+    "address": "Cra. 18d #80-3, Soledad, Barranquilla, Atlántico",
+    "lat": 10.9179851,
+    "lng": -74.8162699,
+    "sports": [
+      "futbol",
+      "futbol_sala"
+    ],
+    "surface": "sintetica",
+    "covered": null,
+    "venue_kind": "alquiler",
+    "notes": "Cancha de fútbol sala",
+    "place_id": "ChIJ7-jjdQDT9Y4Rbtg_pL3CHZA"
+  },
+  {
+    "slug": "cancha-de-futbol-nueva-granada",
+    "name": "Cancha de Fútbol Nueva Granada",
+    "neighborhood": "Nueva Granada",
+    "address": "Esquina, Cra. 29 #Calle 65, El Recreo, Barranquilla",
+    "lat": 10.9785203,
+    "lng": -74.80454399999999,
+    "sports": [
+      "futbol"
+    ],
+    "surface": "sintetica",
+    "covered": null,
+    "venue_kind": "alquiler",
+    "notes": "Campo de fútbol. ★ 4.3 (723 reseñas)",
+    "place_id": "ChIJw5CRVxUt9I4RISztyE6vRQE"
+  },
+  {
+    "slug": "cancha-sintetica-rojiblanca",
+    "name": "Cancha Sintética Rojiblanca",
+    "neighborhood": "Villas Del Recreo",
+    "address": "Cl. 56 #41a112 #41a- a, Nte. Centro Historico, Barranquilla, Atlántico",
+    "lat": 10.9838908,
+    "lng": -74.7941152,
+    "sports": [
+      "futbol",
+      "futbol_sala"
+    ],
+    "surface": "sintetica",
+    "covered": null,
+    "venue_kind": "alquiler",
+    "notes": "Cancha de fútbol sala. ★ 4.5 (275 reseñas). Tel: (605) 3781958",
+    "place_id": "ChIJI1anMG8t9I4ROERJHiz7YSw"
+  },
+  {
+    "slug": "cancha-de-futbol-los-mosquitos",
+    "name": "Cancha de Fútbol Los Mosquitos",
+    "neighborhood": "La Sierra",
+    "address": "Calle 40 entre carrera 13c y 9c #sn, La Sierra, Barranquilla, Atlántico",
+    "lat": 10.951699399999999,
+    "lng": -74.7955508,
+    "sports": [
+      "futbol"
+    ],
+    "surface": "sintetica",
+    "covered": null,
+    "venue_kind": "alquiler",
+    "notes": "Campo de fútbol. ★ 4.3 (173 reseñas)",
+    "place_id": "ChIJQ-f8ybPS9Y4RFzSs8Rv6x-c"
+  },
+  {
+    "slug": "cancha-de-futbol-la-magdalena",
+    "name": "Cancha de Fútbol La Magdalena",
+    "neighborhood": "La Magdalena",
+    "address": "a 37c-127,, Cra. 7c #37c1, Barranquilla, Atlántico",
+    "lat": 10.943237,
+    "lng": -74.7933193,
+    "sports": [
+      "futbol"
+    ],
+    "surface": "sintetica",
+    "covered": null,
+    "venue_kind": "alquiler",
+    "notes": "Campo de fútbol. ★ 4.3 (1483 reseñas). Tel: 304 3704222. Web: https://moovitapp.com/index/es-419/transporte_p%C3%BAblico-Canchas_De_La_Magdalena-Barranquilla-site_8968368-2883",
+    "place_id": "ChIJh5IwwbrS9Y4RUR3ZPR2Fn7E"
+  },
+  {
+    "slug": "canchas-el-tiburon",
+    "name": "Canchas El Tiburón",
+    "neighborhood": "Chiquinquirá",
+    "address": "Murillo Toro #36-36, Sur Orient, Barranquilla, Atlántico",
+    "lat": 10.978493199999999,
+    "lng": -74.7872513,
+    "sports": [
+      "futbol",
+      "futbol_sala"
+    ],
+    "surface": "sintetica",
+    "covered": null,
+    "venue_kind": "alquiler",
+    "notes": "Cancha de fútbol sala. ★ 4.4 (519 reseñas). Tel: 53793131",
+    "place_id": "ChIJLzObRmct9I4RCfC_se7Pd2E"
+  },
+  {
+    "slug": "cancha-de-microfutbol-los-andes",
+    "name": "Cancha de Microfútbol — Los Andes",
+    "neighborhood": "Villa Carmen",
+    "address": "Con Calle 64 y Carrera 25, Cl. 63c #S/N, Los Andes, Barranquilla, Atlántico",
+    "lat": 10.9721862,
+    "lng": -74.8054746,
+    "sports": [
+      "futbol",
+      "futbol_sala"
+    ],
+    "surface": "sintetica",
+    "covered": null,
+    "venue_kind": "alquiler",
+    "notes": "Cancha de fútbol sala. ★ 3.8 (9 reseñas)",
+    "place_id": "ChIJ2TJryDgt9I4RnBZycKXpITc"
+  },
+  {
+    "slug": "cancha-la-tiburona-sas",
+    "name": "Cancha La Tiburona SAS",
+    "neighborhood": "El Rosario",
+    "address": "Av. Murillo #43-120, Suroccidente, Barranquilla, Atlántico",
+    "lat": 10.9867641,
+    "lng": -74.7834608,
+    "sports": [
+      "futbol",
+      "futbol_sala"
+    ],
+    "surface": "sintetica",
+    "covered": null,
+    "venue_kind": "alquiler",
+    "notes": "Cancha de fútbol sala. ★ 4.3 (374 reseñas). Tel: 300 3483985",
+    "place_id": "ChIJ78rMll0t9I4RlJ2NnjkD3oI"
+  },
+  {
+    "slug": "cancha-sintetica-de-futbol-bosques-del-norte",
+    "name": "Cancha Sintetica de Futbol - Bosques del Norte",
+    "neighborhood": "Altos de Riomar",
+    "address": "Riomar, Barranquilla, Atlántico",
+    "lat": 11.0136898,
+    "lng": -74.8229925,
+    "sports": [
+      "futbol"
+    ],
+    "surface": "sintetica",
+    "covered": null,
+    "venue_kind": "alquiler",
+    "notes": "Campo de fútbol. ★ 4.8 (6 reseñas)",
+    "place_id": "ChIJoySovOkt9I4RBSiT8O5xmQs"
+  },
+  {
+    "slug": "cancha-ringo-makro-club-deportivo",
+    "name": "Cancha Ringo Makro Club Deportivo",
+    "neighborhood": "Riomar",
+    "address": "Cra. 52 #106 200, Riomar, Barranquilla, Atlántico",
+    "lat": 11.0166114,
+    "lng": -74.8361298,
+    "sports": [
+      "futbol"
+    ],
+    "surface": "sintetica",
+    "covered": null,
+    "venue_kind": "club",
+    "notes": "Campo de fútbol. ★ 4.8 (9 reseñas). Tel: 304 4366666",
+    "place_id": "ChIJuWNo128t9I4RMxr_-zW74F4"
+  },
+  {
+    "slug": "fsb-la-cancha",
+    "name": "FSB La Cancha",
+    "neighborhood": "Belo Horizonte",
+    "address": "080003, Barranquilla, Atlántico",
+    "lat": 11.0138195,
+    "lng": -74.79698719999999,
+    "sports": [
+      "futbol"
+    ],
+    "surface": "sintetica",
+    "covered": null,
+    "venue_kind": "alquiler",
+    "notes": "Campo de fútbol. ★ 4.6 (667 reseñas). Tel: 300 8438975",
+    "place_id": "ChIJaxU1IZEt9I4RByA-rC4AMic"
+  },
+  {
+    "slug": "cancha-multiple",
+    "name": "Cancha Múltiple",
+    "neighborhood": "Sabanilla Montecarmelo",
+    "address": "Universidad del Norte, Universidad del Norte, Puerto Colombia Atlántico, Santa Isabel, Puerto Colombia, Atlántico",
+    "lat": 11.0194809,
+    "lng": -74.84730979999999,
+    "sports": [
+      "futbol",
+      "futbol_sala"
+    ],
+    "surface": "sintetica",
+    "covered": null,
+    "venue_kind": "alquiler",
+    "notes": "Cancha de fútbol sala. ★ 4.7 (134 reseñas)",
+    "place_id": "ChIJ2-JrekEs9I4Rh04knfDZ238"
+  },
+  {
+    "slug": "cancha-7-bocas",
+    "name": "Cancha 7 Bocas",
+    "neighborhood": "Metropolitana",
+    "address": "PUNTO FRIO, PUNTO FRIO 7 BOCAS, TIENDA, Cl. 53a #2-2, Metropolitana, Barranquilla, Atlántico",
+    "lat": 10.9366845,
+    "lng": -74.815754,
+    "sports": [
+      "futbol"
+    ],
+    "surface": "sintetica",
+    "covered": null,
+    "venue_kind": "alquiler",
+    "notes": "Campo de fútbol. ★ 3.9 (9 reseñas). Web: http://www.sede.uno/",
+    "place_id": "ChIJrUX9CT7T9Y4REzDy4dQ38X4"
+  },
+  {
+    "slug": "soccer-house",
+    "name": "Soccer House",
+    "neighborhood": "Villa Campestre",
+    "address": "Carrera 25 &, Cl. 3, Sabanilla Montecarmelo, Barranquilla, Atlántico",
+    "lat": 11.023818,
+    "lng": -74.8612076,
+    "sports": [
+      "futbol"
+    ],
+    "surface": "sintetica",
+    "covered": null,
+    "venue_kind": "alquiler",
+    "notes": "Campo de fútbol. ★ 4.5 (8 reseñas). Tel: 310 7660001. Web: https://www.instagram.com/soccerhousebq",
+    "place_id": "ChIJKyUUXgIt9I4RiWSucqxmkds"
+  },
+  {
+    "slug": "cancha-de-futbol-del-carmen",
+    "name": "Cancha De Fútbol Del Carmen",
+    "neighborhood": "El Carmen",
+    "address": "Carrera 21, Esquina 53B #S/N, El Carmen, Barranquilla, Atlántico",
+    "lat": 10.9657325,
+    "lng": -74.7990506,
+    "sports": [
+      "futbol"
+    ],
+    "surface": "sintetica",
+    "covered": null,
+    "venue_kind": "alquiler",
+    "notes": "Campo de fútbol. ★ 4.5 (549 reseñas)",
+    "place_id": "ChIJFdOggkgt9I4RTWYbDgEEh_o"
+  },
+  {
+    "slug": "cancha-de-futbol-el-pana",
+    "name": "Cancha de Fútbol El Pana",
+    "neighborhood": "Las Americas",
+    "address": "Las Americas, Barranquilla, Atlántico",
+    "lat": 10.939478399999999,
+    "lng": -74.8143766,
+    "sports": [
+      "futbol"
+    ],
+    "surface": "sintetica",
+    "covered": null,
+    "venue_kind": "alquiler",
+    "notes": "Campo de fútbol. ★ 4 (2 reseñas)",
+    "place_id": "ChIJszOl1svT9Y4R8C1KIPqxdQk"
+  },
+  {
+    "slug": "cancha-del-brasil",
+    "name": "Cancha del brasil",
+    "neighborhood": "Metropolitana",
+    "address": "Cr. De La Cordialidad #5c28, Barranquilla, Atlántico",
+    "lat": 10.9484155,
+    "lng": -74.8126381,
+    "sports": [
+      "futbol"
+    ],
+    "surface": "sintetica",
+    "covered": null,
+    "venue_kind": "alquiler",
+    "notes": "Campo de fútbol. ★ 4.5 (12 reseñas)",
+    "place_id": "ChIJe7C3jsLT9Y4R2Q9biebwTjI"
+  },
+  {
+    "slug": "cancha-de-futbol-profesional-universidad-reformada",
+    "name": "Cancha De Futbol Profesional Universidad Reformada",
+    "neighborhood": "Suroccidente",
+    "address": "a 74-473, Cra. 38 #74-297, Barranquilla, Atlántico",
+    "lat": 10.9856996,
+    "lng": -74.8157587,
+    "sports": [
+      "futbol"
+    ],
+    "surface": "sintetica",
+    "covered": null,
+    "venue_kind": "alquiler",
+    "notes": "Campo de fútbol. ★ 4.5 (56 reseñas). Web: http://www.unireformada.edu.co/",
+    "place_id": "ChIJowYudRot9I4R66EyLCDzx50"
+  },
+  {
+    "slug": "canchas-de-futbol-napoleon-salcedo-cotes",
+    "name": "Canchas de Fútbol Napoleón Salcedo Cotes",
+    "neighborhood": "Olaya",
+    "address": "Con Carrera 30, Cl. 70b #S/N, El Recreo, Barranquilla, Atlántico",
+    "lat": 10.979739,
+    "lng": -74.8095871,
+    "sports": [
+      "futbol",
+      "futbol_sala"
+    ],
+    "surface": "sintetica",
+    "covered": null,
+    "venue_kind": "alquiler",
+    "notes": "Cancha de fútbol sala. ★ 4.5 (2 reseñas)",
+    "place_id": "ChIJ7Qr44BUt9I4RunSc0sLfq-o"
+  },
+  {
+    "slug": "parque-y-cancha-las-mercedes",
+    "name": "Parque y Cancha Las Mercedes",
+    "neighborhood": "Las Colinas",
+    "address": "Calle 79 a entre cra 35 y cra 35c, Barranquilla, Atlántico",
+    "lat": 10.984676799999999,
+    "lng": -74.81830029999999,
+    "sports": [
+      "futbol"
+    ],
+    "surface": "sintetica",
+    "covered": null,
+    "venue_kind": "publica",
+    "notes": "Parque. ★ 4.5 (1382 reseñas). Tel: 300 7282862",
+    "place_id": "ChIJUU_lKRot9I4RUE2SjKwiZr4"
+  }
+]

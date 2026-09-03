@@ -9,12 +9,62 @@ export function defaultStartsAtLocal(): string {
 
 export type MatchTimePeriod = "manana" | "tarde" | "noche";
 
+/** Locale de producto (copy). Los campos de calendario se extraen con en-US + timeZone. */
+export const APP_LOCALE = "es-CO";
+
+const WEEKDAY_INDEX: Record<string, number> = {
+  Sun: 0,
+  Mon: 1,
+  Tue: 2,
+  Wed: 3,
+  Thu: 4,
+  Fri: 5,
+  Sat: 6,
+};
+
+export type ZonedDateParts = {
+  year: number;
+  month: number;
+  day: number;
+  hour: number;
+  minute: number;
+  weekday: number;
+};
+
+/**
+ * Campos civiles en un IANA timeZone. Usa locale fijo `en-US` + `hourCycle: h23`
+ * para que Node (SSR) y el navegador den los mismos números, no el mismo `format()`.
+ */
+export function zonedDateParts(date: Date, timeZone: string): ZonedDateParts {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone,
+    weekday: "short",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(date);
+
+  const get = (type: Intl.DateTimeFormatPartTypes) =>
+    parts.find((part) => part.type === type)?.value ?? "";
+
+  let hour = Number(get("hour"));
+  if (hour === 24) hour = 0;
+
+  return {
+    year: Number(get("year")),
+    month: Number(get("month")),
+    day: Number(get("day")),
+    hour,
+    minute: Number(get("minute")),
+    weekday: WEEKDAY_INDEX[get("weekday")] ?? 0,
+  };
+}
+
 function matchHour(iso: string, timezone: string): number {
-  return Number(
-    new Intl.DateTimeFormat("es-CO", { hour: "numeric", hour12: false, timeZone: timezone }).format(
-      new Date(iso),
-    ),
-  );
+  return zonedDateParts(new Date(iso), timezone).hour;
 }
 
 /** Partido empieza esta noche (18:00–05:59). */
@@ -32,12 +82,9 @@ export function getMatchTimePeriod(iso: string, timezone: string): MatchTimePeri
 }
 
 function cityCalendarDayKey(date: Date, timezone: string): string {
-  return new Intl.DateTimeFormat("en-CA", {
-    timeZone: timezone,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(date);
+  const { year, month, day } = zonedDateParts(date, timezone);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${year}-${pad(month)}-${pad(day)}`;
 }
 
 /** Mismo día civil en el timezone de la ciudad. */

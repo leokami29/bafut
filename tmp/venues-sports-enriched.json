@@ -1,0 +1,111 @@
+[
+  {
+    "existing_slug": "canchas-el-tiburon",
+    "existing_name": "Canchas El Tiburón",
+    "match_score": 1.0,
+    "distance_m": 0.0,
+    "scraped_name": "Canchas El Tiburón",
+    "add_sports": [
+      "basquet"
+    ],
+    "merged_sports": [
+      "futbol",
+      "futbol_sala",
+      "basquet"
+    ],
+    "new_address": "Murillo Toro #36-36, Sur Orient, Barranquilla, Atlántico",
+    "new_lat": 10.978493199999999,
+    "new_lng": -74.7872513,
+    "new_notes": "Basketball club. ★ 5 (9 reseñas). Tel: 305 4118044"
+  },
+  {
+    "existing_slug": "la-21-futbol-club",
+    "existing_name": "La 21 Fútbol Club",
+    "match_score": 1.0,
+    "distance_m": 3462.8,
+    "scraped_name": "Cancha De Fútbol Barranquilla",
+    "add_sports": [
+      "futbol_sala"
+    ],
+    "merged_sports": [
+      "futbol",
+      "futbol_sala"
+    ],
+    "new_address": "12- a 12, Cra. 22 #112c66, Barranquilla, Atlántico",
+    "new_lat": 10.9602936,
+    "new_lng": -74.7721962,
+    "new_notes": "Futsal court. ★ 4.1 (52 reseñas)"
+  },
+  {
+    "existing_slug": "complejo-tivoli",
+    "existing_name": "Complejo Tívoli",
+    "match_score": 0.8,
+    "distance_m": 5218.0,
+    "scraped_name": "Cancha de Voleyball tivoli",
+    "add_sports": [
+      "voleibol"
+    ],
+    "merged_sports": [
+      "futbol",
+      "voleibol"
+    ],
+    "new_address": "Cra. 64c #94-57, Riomar, Barranquilla, Atlántico",
+    "new_lat": 11.0189836,
+    "new_lng": -74.8187483,
+    "new_notes": "Playground. ★ 3.3 (4 reseñas)"
+  },
+  {
+    "existing_slug": "soccer-house",
+    "existing_name": "Soccer House",
+    "match_score": 0.75,
+    "distance_m": 64.0,
+    "scraped_name": "Casa Padel Colombia Rooftop",
+    "add_sports": [
+      "padel"
+    ],
+    "merged_sports": [
+      "futbol",
+      "padel"
+    ],
+    "new_address": "Cl. 135 #53, Sabanilla Montecarmelo, Barranquilla, Puerto Colombia, Atlántico",
+    "new_lat": 11.023781999999999,
+    "new_lng": -74.8617924,
+    "new_notes": "Sports club. ★ 5 (19 reseñas). Web: https://reservadeportes.com/Casapadel.html?domain=CO"
+  },
+  {
+    "existing_slug": "cancha-de-futbol-barrio-la-sierra",
+    "existing_name": "Cancha de Fútbol Barrio La Sierra",
+    "match_score": 0.7,
+    "distance_m": 102.2,
+    "scraped_name": "Cancha de Cemento",
+    "add_sports": [
+      "futbol_sala"
+    ],
+    "merged_sports": [
+      "futbol",
+      "futbol_sala"
+    ],
+    "new_address": "La Sierra, Barranquilla, Atlántico",
+    "new_lat": 10.9562946,
+    "new_lng": -74.80136519999999,
+    "new_notes": "Futsal court. ★ 5 (2 reseñas)"
+  },
+  {
+    "existing_slug": "simon-bolivar",
+    "existing_name": "Cancha Simón Bolívar",
+    "match_score": 0.67,
+    "distance_m": 617.1,
+    "scraped_name": "Cancha De Baloncesto Simón Bolívar",
+    "add_sports": [
+      "basquet"
+    ],
+    "merged_sports": [
+      "futbol",
+      "basquet"
+    ],
+    "new_address": "a 7a-56, Cl. 19 #7a-2, Barranquilla, Atlántico",
+    "new_lat": 10.9475064,
+    "new_lng": -74.7754531,
+    "new_notes": "Sports school. ★ 5 (2 reseñas)"
+  }
+]
