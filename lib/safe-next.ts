@@ -1,5 +1,5 @@
 const ALLOWED =
-  /^\/(p\/[a-z0-9-]+|partidos(?:\/nuevo)?|canchas(?:\/[a-z0-9-]+)?|perfil(?:\/partidos)?)(?:\?[^#]*)?$/i;
+  /^\/(entrar\/clave|p\/[a-z0-9-]+|partidos(?:\/nuevo)?|canchas(?:\/[a-z0-9-]+)?|perfil(?:\/partidos)?)(?:\?[^#]*)?$/i;
 
 export function safeNextPath(raw: string | null | undefined, fallback = "/"): string {
   if (!raw) return fallback;

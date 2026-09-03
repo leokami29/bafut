@@ -27,6 +27,7 @@ function setAuthNextCookie(path: string) {
   document.cookie = `${AUTH_NEXT_COOKIE}=${encodeURIComponent(path)}; Path=/; Max-Age=3600; SameSite=Lax${secure}`;
 }
 
+/** Exact match con Redirect URLs del dashboard (sin ?next=). */
 function callbackUrl() {
   return `${siteUrl().replace(/\/$/, "")}/auth/callback`;
 }

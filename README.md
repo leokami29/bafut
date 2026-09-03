@@ -76,30 +76,47 @@ Requisitos: Node.js 20+ y un proyecto Supabase.
 
 BaFut entra con **correo + clave** (sin magic link y sin confirmar el mail). El correo de Supabase se reserva para **recuperar clave**.
 
-En **Authentication → Providers → Email**:
+El cliente manda `redirectTo` = `{NEXT_PUBLIC_SITE_URL}/auth/callback` (prioridad sobre Site URL si está en la allowlist). El destino post-login (`/entrar/clave`) va en cookie, **no** en `?next=` del mail (para no romper el match exacto de la allowlist).
+
+#### Checklist Supabase Dashboard
+
+**Authentication → Providers → Email**
 - Confirm email: **OFF**
-- Magic link: **OFF** (si aparece)
+- Magic link: **OFF**
 
-Los links de recuperación usan el **Site URL** del dashboard. El cliente manda `emailRedirectTo` a `/auth/callback` (el destino va en cookie, p. ej. `/entrar/clave`).
-
-En **Authentication → URL configuration**:
-
-1. **Site URL** = `https://bafut.macuttech.com` (no dejes el default `http://localhost:3000`)
-2. **Redirect URLs**, al menos:
+**Authentication → URL configuration**
+1. **Site URL** = `https://bafut.macuttech.com`  
+   (nunca `localhost:3000` ni `localhost:8080`; el “Port 8080” de Railway es solo el puerto **interno** del contenedor)
+2. **Redirect URLs** (agregá todas):
    - `https://bafut.macuttech.com/auth/callback`
-   - En local: `http://localhost:3005/auth/callback`
+   - `https://bafut.macuttech.com/**` (comodín recomendado)
+   - `http://localhost:3005/auth/callback`
+   - `http://localhost:3005/**`
+3. Sacá de la lista cualquier `localhost:8080` / `localhost:3000` viejo.
 
-En Auth, desactivá **Magic link** y **Confirm email**.
+**Authentication → Email Templates → Reset password**
+- El botón debe usar `{{ .ConfirmationURL }}` (no hardcodear localhost).
+- Si personalizaste el template con `{{ .SiteURL }}` + path inventado, preferí `{{ .ConfirmationURL }}` o `{{ .RedirectTo }}` según [docs](https://supabase.com/docs/guides/auth/auth-email-templates).
 
-En el hosting (p. ej. Railway): `NEXT_PUBLIC_SITE_URL=https://bafut.macuttech.com` en build-time.
+#### Checklist Railway
 
-#### Si falla un correo de recuperación / confirmación
+- Variable **`NEXT_PUBLIC_SITE_URL=https://bafut.macuttech.com`** (ya en el servicio `bafut-web`).
+- Tras cambiarla: **Redeploy** (se inyecta en build; sin redeploy el JS del browser sigue con el valor viejo).
+- Custom domain `bafut.macuttech.com` → Port 8080 es normal (interno). La URL pública es `https://…`, sin `:8080`.
 
-Abrí el link **una sola vez** en el mismo navegador. BaFut local es puerto **3005**.
+#### Prod vs local (recuperar clave)
 
-1. Site URL = producción.
-2. Allowlist exacta a `/auth/callback`.
-3. Pedí un correo nuevo; un solo clic.
+| Dónde pedís el correo | `redirectTo` en el mail | Qué esperar |
+| --- | --- | --- |
+| `https://bafut.macuttech.com/entrar` | `https://bafut.macuttech.com/auth/callback` | Abrí **una vez** → `/entrar/clave` |
+| `http://localhost:3005/entrar` | `http://localhost:3005/auth/callback` | Solo funciona en esa máquina/puerto; hace falta allowlist local |
+| Nunca | `…localhost:8080…` | Config vieja / otra app — BaFut no usa 8080 |
+
+#### Si falla el correo
+
+1. Pedí un correo **nuevo** desde producción (no reuses un mail viejo).
+2. Abrí el link **una sola vez** en el mismo navegador (prefetch / doble clic → `otp_expired`).
+3. En el mail, inspeccioná el link: debe tener `redirect_to=https%3A%2F%2Fbafut.macuttech.com%2Fauth%2Fcallback`.
 
 ## Scripts
 
