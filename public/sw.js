@@ -1,9 +1,15 @@
-const STATIC_CACHE = "bafut-static-v1";
+const STATIC_CACHE = "bafut-static-v2";
 const STATIC_ASSETS = ["/icon-192.png", "/icon-512.png", "/manifest.webmanifest"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(STATIC_CACHE).then((cache) => cache.addAll(STATIC_ASSETS)).then(() => self.skipWaiting()),
+    caches
+      .open(STATIC_CACHE)
+      .then((cache) =>
+        // No tumbar el SW si un asset falla: sin SW activo Chrome no ofrece "Instalar".
+        Promise.allSettled(STATIC_ASSETS.map((url) => cache.add(url))),
+      )
+      .then(() => self.skipWaiting()),
   );
 });
 

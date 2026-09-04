@@ -45,7 +45,12 @@ export const metadata: Metadata = {
   applicationName: SITE_NAME,
   robots: { index: true, follow: true },
   icons: {
-    icon: "/icon.svg",
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [{ url: "/icon-192.png", sizes: "192x192", type: "image/png" }],
   },
   openGraph: defaultOg(),
   twitter: defaultTwitter(),
@@ -53,6 +58,9 @@ export const metadata: Metadata = {
     capable: true,
     title: SITE_NAME,
     statusBarStyle: "black-translucent",
+  },
+  other: {
+    "mobile-web-app-capable": "yes",
   },
 };
 

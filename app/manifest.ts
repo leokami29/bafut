@@ -6,6 +6,7 @@ export default function manifest(): MetadataRoute.Manifest {
     short_name: "BaFut",
     description: "Falta un jugador. Encuéntralo.",
     start_url: "/",
+    scope: "/",
     display: "standalone",
     background_color: "#0C6B4C",
     theme_color: "#0C6B4C",
@@ -22,6 +23,12 @@ export default function manifest(): MetadataRoute.Manifest {
         sizes: "512x512",
         type: "image/png",
         purpose: "any",
+      },
+      {
+        src: "/icon-512.png",
+        sizes: "512x512",
+        type: "image/png",
+        purpose: "maskable",
       },
       {
         src: "/icon.svg",
