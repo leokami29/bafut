@@ -1,0 +1,416 @@
+/* —— Mis partidos (perfil): bitácora por deporte —— */
+.page-my-matches {
+  width: 100%;
+  max-width: 72rem;
+  margin-inline: auto;
+}
+
+.my-matches-page {
+  padding-bottom: 2.5rem;
+}
+
+.my-matches-head {
+  max-width: 40rem;
+}
+
+.my-matches-kicker {
+  margin: 0 0 0.35rem;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--turf);
+}
+
+.my-matches-quick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-top: 1rem;
+}
+
+.my-matches-quick .btn-flood,
+.my-matches-quick .btn-ghost {
+  min-height: 2.5rem;
+}
+
+.my-matches-empty {
+  margin-top: 1.5rem;
+}
+
+.my-matches-section {
+  margin-top: 1.5rem;
+}
+
+.my-matches-section-action {
+  padding: 1rem 1rem 1.1rem;
+  margin-inline: -0.25rem;
+  background:
+    linear-gradient(180deg, color-mix(in oklab, var(--flood) 16%, transparent), transparent 88%),
+    color-mix(in oklab, var(--paper) 92%, white);
+  border: 1px solid color-mix(in oklab, var(--flood) 28%, transparent);
+}
+
+.my-matches-section-head .subhead {
+  margin-top: 0;
+  margin-bottom: 0.25rem;
+}
+
+.my-matches-section-copy {
+  margin: 0 0 0.85rem;
+  font-size: 0.9rem;
+  color: color-mix(in oklab, var(--ink) 62%, transparent);
+}
+
+.my-matches-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.7rem;
+}
+
+.my-matches-list-action {
+  grid-template-columns: 1fr;
+  gap: 0.65rem;
+}
+
+.my-matches-grid {
+  grid-template-columns: 1fr;
+}
+
+.my-matches-more {
+  margin-top: 0.85rem;
+}
+
+.my-matches-more-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 2.4rem;
+  padding: 0.35rem 0.85rem;
+  cursor: pointer;
+  list-style: none;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--turf-deep);
+  background: color-mix(in oklab, var(--chalk) 40%, white);
+  border: 1px solid color-mix(in oklab, var(--turf) 32%, transparent);
+}
+
+.my-matches-more-toggle::-webkit-details-marker {
+  display: none;
+}
+
+.my-matches-more-toggle::after {
+  content: "↓";
+  font-size: 0.85em;
+  opacity: 0.7;
+}
+
+.my-matches-more[open] > .my-matches-more-toggle {
+  margin-bottom: 0.75rem;
+}
+
+.my-matches-more[open] > .my-matches-more-toggle::after {
+  content: "↑";
+}
+
+.my-match {
+  --sport-accent: var(--turf);
+  --sport-soft: color-mix(in oklab, var(--turf) 10%, var(--paper));
+  --sport-ink: var(--turf-deep);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.55rem;
+  height: 100%;
+  padding: 0.65rem 0.7rem 0.7rem;
+  background:
+    linear-gradient(135deg, var(--sport-soft), transparent 42%),
+    color-mix(in oklab, var(--paper) 88%, white);
+  border: 1px solid color-mix(in oklab, var(--sport-accent) 28%, transparent);
+  border-left: 3px solid var(--sport-accent);
+  animation: rise 0.55s ease both;
+}
+
+.my-matches-list > li:nth-child(2) .my-match {
+  animation-delay: 0.05s;
+}
+.my-matches-list > li:nth-child(3) .my-match {
+  animation-delay: 0.1s;
+}
+.my-matches-list > li:nth-child(4) .my-match {
+  animation-delay: 0.15s;
+}
+
+.my-match[data-sport="futbol"] {
+  --sport-accent: var(--turf);
+  --sport-soft: color-mix(in oklab, var(--turf) 12%, var(--paper));
+  --sport-ink: var(--turf-deep);
+}
+
+.my-match[data-sport="futbol_sala"] {
+  --sport-accent: #3f7a1f;
+  --sport-soft: color-mix(in oklab, var(--chalk) 55%, var(--paper));
+  --sport-ink: #244812;
+}
+
+.my-match[data-sport="basquet"] {
+  --sport-accent: #c45a12;
+  --sport-soft: color-mix(in oklab, #c45a12 12%, var(--paper));
+  --sport-ink: #6b2f08;
+}
+
+.my-match[data-sport="voleibol"] {
+  --sport-accent: #0e7a8a;
+  --sport-soft: color-mix(in oklab, #0e7a8a 12%, var(--paper));
+  --sport-ink: #064852;
+}
+
+.my-match[data-sport="padel"] {
+  --sport-accent: #1e4d6b;
+  --sport-soft: color-mix(in oklab, #1e4d6b 12%, var(--paper));
+  --sport-ink: #0f2c3d;
+}
+
+.my-match[data-tone="bad"] {
+  opacity: 0.88;
+  border-color: color-mix(in oklab, var(--bib) 28%, transparent);
+}
+
+.my-match-rail {
+  display: flex;
+  align-items: flex-start;
+  padding-top: 0.1rem;
+}
+
+.sport-mark {
+  display: grid;
+  justify-items: center;
+  gap: 0.28rem;
+  min-width: 3.1rem;
+  color: var(--sport-accent);
+}
+
+.sport-mark.is-compact {
+  gap: 0.12rem;
+  min-width: 2.35rem;
+}
+
+.sport-mark.is-compact .sport-mark-code {
+  font-size: 0.55rem;
+  letter-spacing: 0.08em;
+}
+
+.sport-mark.is-compact .sport-mark-glyph {
+  width: 1.9rem;
+  height: 1.3rem;
+}
+
+.sport-mark-code {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.62rem;
+  font-weight: 650;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--sport-ink);
+}
+
+.sport-mark-glyph {
+  width: 2.55rem;
+  height: 1.75rem;
+  display: block;
+}
+
+.my-match-body {
+  min-width: 0;
+  display: grid;
+  gap: 0.22rem;
+  align-content: start;
+}
+
+.my-match-topline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem 0.45rem;
+}
+
+.my-match-role {
+  font-family: var(--font-display), sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--sport-ink);
+}
+
+.my-match-status {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.64rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.12rem 0.32rem;
+  border: 1px solid color-mix(in oklab, var(--ink) 18%, transparent);
+  background: color-mix(in oklab, var(--paper) 70%, white);
+}
+
+.my-match-status.is-warn {
+  background: color-mix(in oklab, var(--flood) 34%, white);
+  border-color: color-mix(in oklab, var(--flood) 55%, #000);
+  color: var(--turf-deep);
+}
+
+.my-match-status.is-ok {
+  background: color-mix(in oklab, var(--turf) 16%, white);
+  border-color: color-mix(in oklab, var(--turf) 40%, transparent);
+  color: var(--turf-deep);
+}
+
+.my-match-status.is-open {
+  background: color-mix(in oklab, var(--chalk) 45%, white);
+  border-color: color-mix(in oklab, var(--turf) 30%, transparent);
+  color: var(--turf-deep);
+}
+
+.my-match-status.is-bad {
+  background: color-mix(in oklab, var(--bib) 12%, white);
+  border-color: color-mix(in oklab, var(--bib) 35%, transparent);
+  color: color-mix(in oklab, var(--bib) 70%, var(--ink));
+}
+
+.my-match-status.is-muted {
+  color: color-mix(in oklab, var(--ink) 58%, transparent);
+}
+
+.my-match-sport-pill {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--sport-accent);
+  margin-left: auto;
+}
+
+.my-match-title {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--font-sans), "Segoe UI", sans-serif;
+  font-size: 0.98rem;
+  font-weight: 650;
+  line-height: 1.2;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.my-match-title a {
+  text-decoration: none;
+}
+
+.my-match-title a:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.my-match-meta {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.35;
+  color: color-mix(in oklab, var(--ink) 72%, transparent);
+}
+
+.my-match-meta time {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.my-match-meta strong {
+  font-weight: 650;
+  color: var(--ink);
+}
+
+.my-match-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: center;
+  margin-top: 0.3rem;
+}
+
+.my-match-actions .btn-flood,
+.my-match-actions .btn-ghost {
+  min-height: 2.25rem;
+  padding-inline: 0.75rem;
+  font-size: 0.88rem;
+}
+
+.my-match-actions form {
+  margin: 0;
+}
+
+.my-match-cancel {
+  color: color-mix(in oklab, var(--bib) 75%, var(--ink));
+}
+
+.my-match .level-feedback {
+  margin-top: 0.25rem;
+  padding: 0.45rem 0.55rem;
+  background: color-mix(in oklab, var(--flood) 18%, transparent);
+  border: 1px solid color-mix(in oklab, var(--flood) 42%, transparent);
+}
+
+@media (min-width: 640px) {
+  .my-matches-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .my-matches-list-action {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .my-matches-list-action:has(> li:only-child) {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 1100px) {
+  .my-matches-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .my-matches-list-action {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .my-match {
+    gap: 0.45rem;
+    padding: 0.6rem 0.55rem 0.65rem;
+  }
+
+  .my-matches-section-action {
+    margin-inline: 0;
+    padding: 0.85rem 0.7rem;
+  }
+
+  .my-match-sport-pill {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .my-match-actions .btn-flood {
+    flex: 1 1 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .my-match {
+    animation: none;
+  }
+}

@@ -1,0 +1,343 @@
+/* —— Publicar partido / hueco (page-scoped) —— */
+.page-nuevo-partido,
+.page-editar-partido {
+  width: 100%;
+  max-width: 72rem;
+  margin-inline: auto;
+  padding-bottom: calc(5.5rem + env(safe-area-inset-bottom));
+}
+
+.page-nuevo-partido .page-head,
+.page-editar-partido .page-head {
+  max-width: none;
+}
+
+.match-compose-head .lede {
+  margin: 0.35rem 0 0.75rem;
+  color: color-mix(in oklab, var(--ink) 78%, transparent);
+}
+
+.match-compose-preselect {
+  display: grid;
+  gap: 0.15rem;
+  margin: 1rem 0 0;
+  padding: 0.7rem 0.85rem;
+  background: color-mix(in oklab, var(--turf) 8%, var(--paper));
+  border-left: 3px solid var(--turf);
+}
+
+.match-compose-preselect-label {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--turf);
+}
+
+.match-compose-preselect-name {
+  font-weight: 650;
+}
+
+.match-compose {
+  gap: 1.25rem;
+}
+
+.match-compose-layout {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.match-compose-primary {
+  min-width: 0;
+  display: grid;
+  gap: 1rem;
+}
+
+.match-compose-primary .create-step.is-active {
+  display: grid;
+  gap: 1rem;
+}
+
+.match-compose-aside {
+  display: grid;
+  gap: 0.85rem;
+  align-content: start;
+}
+
+.match-compose-stats {
+  margin: 0;
+}
+
+.match-compose-venue .subhead {
+  margin-top: 0;
+}
+
+.match-compose-aside-empty {
+  padding: 1rem 1.05rem;
+  background: color-mix(in oklab, var(--turf) 5%, var(--paper));
+  border-left: 3px solid var(--turf);
+}
+
+.match-compose-aside-empty p {
+  margin: 0;
+  line-height: 1.45;
+}
+
+.match-compose-aside-kicker {
+  margin: 0 0 0.35rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--turf);
+}
+
+.match-compose-chips {
+  margin: 0;
+}
+
+.match-compose-chips button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.match-compose-field-label {
+  margin: 0 0 0.35rem;
+  font-size: 0.92rem;
+}
+
+.match-compose-progress {
+  display: grid;
+  gap: 0.55rem;
+  margin-bottom: 0.25rem;
+}
+
+.match-compose-progress-track {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.35rem;
+  height: 3px;
+}
+
+.match-compose-progress-track span {
+  background: color-mix(in oklab, var(--ink) 12%, transparent);
+  transition: background 0.2s ease;
+}
+
+.match-compose-progress-track span.is-on {
+  background: var(--turf);
+}
+
+.match-compose .create-steps {
+  margin-bottom: 0;
+}
+
+.match-compose .create-steps button {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+  text-align: left;
+  font-size: 0.92rem;
+  padding: 0.65rem 0.75rem;
+}
+
+.match-compose-step-num {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  color: color-mix(in oklab, var(--ink) 55%, transparent);
+}
+
+.match-compose .create-steps button.is-on .match-compose-step-num {
+  color: var(--turf);
+}
+
+.match-compose-group {
+  margin: 0;
+  padding: 1rem;
+  border: 0;
+  border-left: 3px solid var(--turf);
+  background: color-mix(in oklab, var(--turf) 5%, var(--paper));
+  display: grid;
+  gap: 0.85rem;
+}
+
+.match-compose-legend {
+  padding: 0;
+  margin: 0 0 0.15rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--turf);
+}
+
+.match-compose .field-help {
+  margin: -0.15rem 0 0;
+}
+
+.match-compose .req-mark {
+  color: var(--bib);
+  font-weight: 700;
+}
+
+.match-compose .field-optional {
+  font-weight: 400;
+  font-size: 0.85em;
+  color: color-mix(in oklab, var(--ink) 55%, transparent);
+  text-transform: none;
+  letter-spacing: 0;
+  font-family: var(--font-sans), sans-serif;
+}
+
+.match-compose-banner-error {
+  padding: 0.75rem 0.85rem;
+  background: color-mix(in oklab, var(--bib) 10%, var(--paper));
+  border-left: 3px solid var(--bib);
+  animation: rise 0.25s ease both;
+}
+
+.match-compose-banner-error .form-error {
+  margin: 0;
+}
+
+.match-compose-banner-warn {
+  padding: 0.75rem 0.85rem;
+  background: color-mix(in oklab, var(--flood) 16%, var(--paper));
+  border-left: 3px solid var(--flood);
+}
+
+.match-compose-banner-warn p {
+  margin: 0;
+}
+
+.match-compose-banner-warn.is-strong {
+  background: color-mix(in oklab, var(--flood) 28%, var(--paper));
+}
+
+.occupancy-banner {
+  padding: 0.85rem 0.9rem;
+  background: color-mix(in oklab, var(--flood) 14%, var(--paper));
+  border-left: 3px solid var(--flood);
+  display: grid;
+  gap: 0.75rem;
+}
+
+.occupancy-banner p {
+  margin: 0;
+}
+
+.occupancy-banner-kicker {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--ink) 62%, transparent);
+}
+
+.occupancy-banner-title {
+  font-family: var(--font-display), "Barlow Condensed", sans-serif;
+  font-size: clamp(1.45rem, 4vw, 1.85rem);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1.1;
+}
+
+.occupancy-banner-copy {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.occupancy-banner-actions,
+.occupancy-banner-own {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin: 0;
+}
+
+.occupancy-banner-rival {
+  display: grid;
+  gap: 0.5rem;
+  padding-top: 0.55rem;
+  border-top: 1px dashed color-mix(in oklab, var(--ink) 22%, transparent);
+}
+
+.occupancy-choice-grid,
+.match-choice-grid {
+  display: grid;
+  gap: 0.55rem;
+}
+
+@media (min-width: 560px) {
+  .occupancy-choice-grid,
+  .match-choice-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.occupancy-choice {
+  display: grid;
+  gap: 0.2rem;
+  text-align: left;
+  padding: 0.85rem 0.9rem;
+  border: 2px solid color-mix(in oklab, var(--ink) 18%, transparent);
+  background: var(--paper);
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  font: inherit;
+  min-height: 5.5rem;
+  transition:
+    border-color 0.18s ease,
+    background 0.18s ease,
+    transform 0.18s ease;
+}
+
+.occupancy-choice:hover,
+.occupancy-choice:focus-visible {
+  border-color: var(--turf-deep);
+  transform: translateY(-1px);
+}
+
+.occupancy-choice.is-on {
+  border-color: var(--turf-deep);
+  background: color-mix(in oklab, var(--turf) 10%, var(--paper));
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--turf) 35%, transparent);
+}
+
+.occupancy-choice.is-join.is-on,
+.occupancy-choice.is-join:hover {
+  border-color: var(--bib);
+  background: color-mix(in oklab, var(--bib) 8%, var(--paper));
+}
+
+.occupancy-choice.is-rival.is-on,
+.occupancy-choice.is-rival:hover {
+  border-color: var(--turf);
+  background: color-mix(in oklab, var(--turf) 12%, var(--paper));
+}
+
+.occupancy-choice-kicker {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--ink) 58%, transparent);
+}
+
+.occupancy-choice strong {
+  font-family: var(--font-display), "Barlow Condensed", sans-serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1.1;
+}
+
+.occupancy-choice-result {
+  font-size: 0.92rem;
+  color: color-mix(in oklab, var(--ink) 72%, transparent);
+  line-height: 1.35;
+}

@@ -1,0 +1,25 @@
+:root {
+  --turf: #0c6b4c;
+  --turf-deep: #073828;
+  --chalk: #d9f2a5;
+  --flood: #ffd25a;
+  --bib: #ff3b1f;
+  --ink: #10231c;
+  --mist: #c8e6d4;
+  --paper: #dff3e6;
+  --line: rgba(217, 242, 165, 0.7);
+}
+
+@theme inline {
+  --color-turf: var(--turf);
+  --color-turf-deep: var(--turf-deep);
+  --color-chalk: var(--chalk);
+  --color-flood: var(--flood);
+  --color-bib: var(--bib);
+  --color-ink: var(--ink);
+  --color-mist: var(--mist);
+  --color-paper: var(--paper);
+  --font-display: var(--font-display);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+}

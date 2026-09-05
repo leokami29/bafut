@@ -50,6 +50,20 @@ import { normalizeWhatsapp } from "@/lib/whatsapp-contact";
 export type OccupancyActionState = { error?: string; occupancy?: OccupancyConflict };
 export type VenueDayOccupancyState = { items?: VenueDayOccupancy[]; error?: string };
 
+/** Estado estándar de una action de mutación: error legible o éxito. */
+export type MutationActionState = { ok?: true; error?: string };
+
+/** Compose (crear/editar partido): además puede devolver el conflicto de ocupación. */
+export type MatchComposeActionState = MutationActionState & { occupancy?: OccupancyConflict };
+
+/** Resultado de getMatchContactAction. */
+export type MatchContactState = {
+  ok?: true;
+  displayName?: string;
+  whatsapp?: string;
+  error?: string;
+};
+
 type ServerClient = Awaited<ReturnType<typeof createClient>>;
 
 function mapOccupancyHit(row: {
@@ -120,7 +134,7 @@ function asOne<T extends readonly string[]>(value: FormDataEntryValue | null, al
   return value as T[number];
 }
 
-export async function setCityAction(formData: FormData) {
+export async function setCityAction(formData: FormData): Promise<void> {
   const slug = String(formData.get("slug") ?? DEFAULT_CITY_SLUG);
   const city = await getCityBySlug(slug);
   const jar = await cookies();
@@ -131,7 +145,7 @@ export async function setCityAction(formData: FormData) {
   revalidatePath("/");
 }
 
-export async function createMatchAction(formData: FormData) {
+export async function createMatchAction(formData: FormData): Promise<MatchComposeActionState> {
   const { supabase, userId } = await requireUserId("/partidos/nuevo");
 
   const city = await getCityBySlug(String(formData.get("city_slug") ?? DEFAULT_CITY_SLUG));
@@ -361,7 +375,9 @@ export async function listVenueDayOccupancyAction(input: {
   return { items };
 }
 
-export async function openMatchSideBAction(formData: FormData): Promise<OccupancyActionState> {
+export async function openMatchSideBAction(
+  formData: FormData,
+): Promise<OccupancyActionState> {
   const matchId = String(formData.get("match_id") ?? "").trim();
   const shareCode = String(formData.get("share_code") ?? "").trim();
   const nextPath = shareCode && isShareCode(shareCode) ? `/p/${shareCode}` : "/partidos";
@@ -399,7 +415,7 @@ export async function openMatchSideBAction(formData: FormData): Promise<Occupanc
   return { error: humanizeSideBError("No se pudo abrir el otro lado.") };
 }
 
-export async function updateMatchAction(formData: FormData) {
+export async function updateMatchAction(formData: FormData): Promise<MatchComposeActionState> {
   const matchId = String(formData.get("match_id") ?? "").trim();
   const shareCode = String(formData.get("share_code") ?? "").trim();
   if (!isUuidParam(matchId) || !isShareCode(shareCode)) {
@@ -516,11 +532,9 @@ export async function updateMatchAction(formData: FormData) {
     }
     const rateLimited = /espera un momento|demasiados/i.test(error.message ?? "");
     return {
-      error: error.message
-        ? error.message
-        : rateLimited
-          ? "Espera un momento y volvé a guardar."
-          : "No se pudo guardar el partido. Revisa los datos.",
+      error: rateLimited
+        ? "Espera un momento y volvé a guardar."
+        : error.message || "No se pudo guardar el partido. Revisa los datos.",
     };
   }
 
@@ -539,7 +553,7 @@ function isShareCode(value: string) {
   return /^[a-f0-9]{8}$/.test(value);
 }
 
-export async function claimSlotAction(formData: FormData) {
+export async function claimSlotAction(formData: FormData): Promise<MutationActionState> {
   const slotId = String(formData.get("slot_id") ?? "");
   const shareCode = String(formData.get("share_code") ?? "");
   const declaredRaw = String(formData.get("declared_level") ?? "");
@@ -587,7 +601,7 @@ export async function claimSlotAction(formData: FormData) {
   return { ok: true };
 }
 
-export async function submitLevelFeedbackAction(formData: FormData) {
+export async function submitLevelFeedbackAction(formData: FormData): Promise<MutationActionState> {
   const claimId = String(formData.get("claim_id") ?? "");
   const levelOkRaw = String(formData.get("level_ok") ?? "");
   const levelOk = levelOkRaw === "true" || levelOkRaw === "1";
@@ -608,7 +622,7 @@ export async function submitLevelFeedbackAction(formData: FormData) {
   return { ok: true };
 }
 
-export async function respondClaimAction(formData: FormData) {
+export async function respondClaimAction(formData: FormData): Promise<MutationActionState> {
   const claimId = String(formData.get("claim_id") ?? "");
   const shareCode = String(formData.get("share_code") ?? "");
   const status = String(formData.get("status") ?? "");
@@ -632,7 +646,7 @@ export async function respondClaimAction(formData: FormData) {
   return { ok: true };
 }
 
-export async function withdrawClaimAction(formData: FormData) {
+export async function withdrawClaimAction(formData: FormData): Promise<MutationActionState> {
   const claimId = String(formData.get("claim_id") ?? "");
   const shareCode = String(formData.get("share_code") ?? "");
   const { supabase } = await requireUserId(shareCode ? `/p/${shareCode}` : "/perfil/partidos");
@@ -673,7 +687,7 @@ export async function cancelMatchAction(formData: FormData): Promise<void> {
   revalidatePath("/perfil/partidos");
 }
 
-export async function getMatchContactAction(claimId: string) {
+export async function getMatchContactAction(claimId: string): Promise<MatchContactState> {
   const { supabase } = await requireUserId();
   const { data, error } = await supabase.rpc("get_match_contact", { p_claim_id: claimId });
   if (error) {
@@ -690,7 +704,7 @@ export async function getMatchContactAction(claimId: string) {
   };
 }
 
-export async function updateProfileAction(formData: FormData) {
+export async function updateProfileAction(formData: FormData): Promise<MutationActionState> {
   const nextRaw = String(formData.get("next") ?? "");
   const nextPath = safeNextPath(nextRaw, "/perfil");
   const { supabase, userId } = await requireUserId("/perfil");
@@ -752,7 +766,7 @@ export async function updateProfileAction(formData: FormData) {
   return { ok: true };
 }
 
-export async function signOutAction() {
+export async function signOutAction(): Promise<void> {
   const { supabase } = await requireUserId();
   await supabase.auth.signOut();
   revalidatePath("/");

@@ -1,0 +1,242 @@
+.lede,
+.notes,
+.empty,
+.match-facts {
+  max-width: 40rem;
+  line-height: 1.45;
+}
+
+.empty {
+  padding: 1rem 0 2rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.empty-home {
+  padding: 1.35rem 1.1rem;
+  background: color-mix(in oklab, var(--turf) 5%, var(--paper));
+  border-left: 3px solid var(--turf);
+}
+
+.empty-title {
+  margin: 0;
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.15rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.empty-home-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.empty-home-actions .btn-flood,
+.empty-home-actions .btn-ghost {
+  min-height: 2.75rem;
+  min-width: 11rem;
+  text-decoration: none;
+}
+
+.empty-home-ghost {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.home-sport-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0 0 1rem;
+  padding: 0;
+}
+
+.home-sport-strip li {
+  display: flex;
+}
+
+.home-roster > .home-roster-item {
+  list-style: none;
+}
+
+.home-roster .match-row {
+  animation: rise 0.55s ease both;
+  animation-delay: calc(var(--home-stagger, 0) * 45ms);
+}
+
+.home-feed-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-top: 1.15rem;
+}
+
+.home-feed-actions .text-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  margin-top: 0;
+  padding: 0.35rem 0;
+}
+
+@media (min-width: 480px) {
+  .home-feed-actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.roster,
+.venue-list,
+.slot-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--ink);
+}
+
+.roster > li {
+  list-style: none;
+}
+
+.match-row,
+.venue-list a,
+.slot-row {
+  display: grid;
+  gap: 0.35rem 1rem;
+  padding: 1rem 0.1rem;
+  border-bottom: 1px solid color-mix(in oklab, var(--ink) 18%, transparent);
+  text-decoration: none;
+}
+
+.match-row {
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    "when when"
+    "place hole"
+    "meta meta";
+  align-items: baseline;
+  animation: rise 0.6s ease both;
+}
+
+.match-row-when {
+  grid-area: when;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.match-row-place {
+  grid-area: place;
+}
+
+.match-row-hole {
+  grid-area: hole;
+  justify-self: end;
+  text-align: right;
+}
+
+.match-row-meta {
+  grid-area: meta;
+}
+
+.match-row-sport {
+  flex-shrink: 0;
+  padding: 0.15rem 0.45rem;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--turf);
+  border: 1px solid color-mix(in oklab, var(--turf) 35%, transparent);
+}
+
+.match-row:nth-child(2) {
+  animation-delay: 0.06s;
+}
+.match-row:nth-child(3) {
+  animation-delay: 0.12s;
+}
+.match-row:nth-child(4) {
+  animation-delay: 0.18s;
+}
+
+.match-row time,
+.match-row-meta,
+.slot-index {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.82rem;
+}
+
+.match-row time {
+  font-variant-numeric: tabular-nums;
+}
+
+.match-row-place {
+  display: flex;
+  flex-direction: column;
+}
+
+.match-row-hole {
+  color: var(--bib);
+  font-weight: 650;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.slot-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  min-height: 1.5rem;
+  padding: 0 0.35rem;
+  border-radius: 999px;
+  background: var(--bib);
+  color: #fff8f5;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.map-pin {
+  position: relative;
+  display: block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--chalk);
+  border-radius: 50%;
+  background: var(--bib);
+  box-shadow: 0 0 0 6px color-mix(in oklab, var(--bib) 25%, transparent);
+}
+
+.map-pin::before {
+  content: "";
+  position: absolute;
+  inset: -15px;
+}
+
+.map-pin.is-focus {
+  background: var(--flood);
+}
+
+.venue-map {
+  width: 100%;
+  min-height: 240px;
+  height: 40vh;
+  border: 1px solid color-mix(in oklab, var(--turf) 35%, transparent);
+  background: color-mix(in oklab, var(--turf) 4%, var(--paper));
+}
+
+.venue-map-loading {
+  display: grid;
+  place-items: center;
+  color: color-mix(in oklab, var(--ink) 55%, transparent);
+  font-size: 0.92rem;
+}

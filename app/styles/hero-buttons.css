@@ -1,0 +1,254 @@
+.hero {
+  position: relative;
+  min-height: 100svh;
+  min-height: 100dvh;
+  margin-top: -4.2rem;
+  padding: 4.2rem 1.25rem 2.5rem;
+  overflow: hidden;
+  color: var(--chalk);
+}
+
+.hero-pitch,
+.pitch-field-wrap.hero-pitch {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.pitch-field-wrap {
+  position: relative;
+  opacity: 0.92;
+  transition: opacity 0.42s ease;
+}
+
+.pitch-field {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.pitch-field-wrap.is-ready {
+  opacity: 1;
+}
+
+.pitch-field-wrap.is-swapping {
+  opacity: 0.68;
+}
+
+.pitch-formation-label {
+  position: absolute;
+  right: 1rem;
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  z-index: 0;
+  max-width: min(42vw, 12rem);
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: clamp(0.58rem, 2.2vw, 0.72rem);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(217, 242, 165, 0.55);
+  pointer-events: none;
+  text-align: right;
+  line-height: 1.25;
+  animation: rise 0.7s ease 0.55s both;
+}
+
+.hero-copy {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  min-height: calc(100svh - 4.2rem);
+  min-height: calc(100dvh - 4.2rem);
+  max-width: min(42rem, 100%);
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 0.35rem;
+  padding: 1.25rem 1rem max(1.5rem, env(safe-area-inset-bottom));
+  margin-right: auto;
+  margin-top: auto;
+  margin-bottom: clamp(3.5rem, 10vh, 6rem);
+}
+
+.hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+  margin-bottom: 0.2rem;
+  animation: rise 0.75s ease both;
+}
+
+.hero-city-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2rem;
+  margin: 0;
+  padding: 0.28rem 0.65rem;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--chalk);
+  background: color-mix(in oklab, var(--flood) 16%, transparent);
+  border: 1px solid color-mix(in oklab, var(--flood) 42%, transparent);
+}
+
+.hero-sport-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2rem;
+  margin: 0;
+  padding: 0.2rem 0.55rem;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--chalk) 88%, transparent);
+  border: 1px solid color-mix(in oklab, var(--chalk) 35%, transparent);
+  transition:
+    opacity 0.28s ease,
+    transform 0.28s ease;
+}
+
+.hero-sport-chip.is-fading {
+  opacity: 0;
+  transform: translateY(0.25rem);
+}
+
+.hero-sport-chip.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.brand-hero {
+  margin: 0;
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(3.4rem, 14vw, 11rem);
+  font-weight: 800;
+  line-height: 0.8;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--flood);
+  animation: rise 0.9s ease both;
+}
+
+.hero h1 {
+  margin: 0.35rem 0 0.55rem;
+  max-width: 18ch;
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(1.65rem, 4.2vw, 2.75rem);
+  font-weight: 700;
+  line-height: 0.95;
+  text-transform: uppercase;
+  text-wrap: balance;
+  animation: rise 0.85s ease 0.1s both;
+}
+
+.hero h1.hero-headline {
+  transition:
+    opacity 0.28s ease,
+    transform 0.28s ease;
+}
+
+.hero h1.hero-headline.is-fading {
+  opacity: 0;
+  transform: translateY(0.35rem);
+}
+
+.hero h1.hero-headline.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.hero-lede {
+  margin: 0 0 1.25rem;
+  max-width: 36ch;
+  font-size: 1.05rem;
+  line-height: 1.5;
+  color: color-mix(in oklab, var(--chalk) 92%, transparent);
+  animation: rise 0.85s ease 0.18s both;
+}
+
+.hero-ctas,
+.share-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  animation: rise 0.85s ease 0.26s both;
+}
+
+.hero-ctas .btn-flood,
+.hero-ctas .btn-ghost {
+  width: 100%;
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.hero-ctas .btn-flood:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px color-mix(in oklab, var(--flood) 35%, transparent);
+}
+
+.hero-ctas .btn-flood:hover:focus-visible,
+.hero-ctas .btn-ghost:hover:focus-visible {
+  box-shadow:
+    0 0 0 4px var(--turf-deep),
+    0 6px 18px color-mix(in oklab, var(--flood) 35%, transparent);
+}
+
+.hero-ctas .btn-flood:active {
+  transform: translateY(0);
+}
+
+.hero-ctas .btn-ghost:hover {
+  background: color-mix(in oklab, var(--chalk) 12%, transparent);
+}
+
+.hero-ctas .btn-primary {
+  min-height: 3rem;
+  font-weight: 600;
+}
+
+.hero-ctas .btn-secondary {
+  min-height: 2.75rem;
+}
+
+.btn-flood,
+.btn-bib,
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.8rem;
+  padding: 0.55rem 1.1rem;
+  border: 1px solid transparent;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.btn-flood {
+  background: var(--flood);
+  color: var(--ink);
+}
+
+.btn-bib {
+  background: var(--bib);
+  color: #fff8f5;
+}
+
+.btn-ghost {
+  background: transparent;
+  border-color: var(--chalk);
+  color: var(--chalk);
+}
+
+.page .btn-ghost {
+  border-color: var(--ink);
+  color: var(--ink);
+}

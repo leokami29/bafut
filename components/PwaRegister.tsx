@@ -36,8 +36,8 @@ export function PwaRegister() {
 
     const dismissedKey = "bafut-pwa-install-dismissed";
     if (sessionStorage.getItem(dismissedKey) === "1" || isStandaloneDisplay()) {
-      setDismissed(true);
-      return;
+      const dismissTimer = window.setTimeout(() => setDismissed(true), 0);
+      return () => window.clearTimeout(dismissTimer);
     }
 
     if ("serviceWorker" in navigator) {

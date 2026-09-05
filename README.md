@@ -126,6 +126,20 @@ El cliente manda `redirectTo` = `{NEXT_PUBLIC_SITE_URL}/auth/callback` (priorida
 | `npm run build` | Build de producción |
 | `npm start` | Sirve el build (`next start`) |
 | `npm run lint` | ESLint |
+| `npm test` | Vitest (unitarios de `lib/`) |
+| `npm run test:watch` | Vitest en modo watch |
+
+## Regenerar tipos de Supabase
+
+`lib/database.types.ts` se genera desde el proyecto Supabase (no editar a mano). Tras cambiar migraciones:
+
+```bash
+npx supabase login                      # o export SUPABASE_ACCESS_TOKEN=...
+npx supabase link --project-ref <ref>   # una vez por proyecto
+npx supabase gen types typescript --linked > lib/database.types.ts
+```
+
+Sin credenciales de CLI, los tipos se pueden validar contra las migraciones con `npm test`.
 
 ## Estructura
 
@@ -134,10 +148,20 @@ app/           # Rutas App Router (/, /canchas, /partidos, /p/[code], auth…)
 components/    # UI (feed, mapa, nav, forms…)
 lib/           # Datos, reglas de deporte, Supabase, SEO
 hooks/         # Hooks de cliente
+scripts/       # Scripts one-off (scrape de canchas, generación de SQL)
 supabase/      # Migraciones SQL y seed
 public/        # Estáticos y service worker
 types/         # Tipos compartidos
 ```
+
+### `proxy.ts` (middleware)
+
+En Next.js 16 el middleware se llama `proxy.ts` (antes `middleware.ts`). El suyo hace dos cosas:
+
+1. Redirige `/login` → `/entrar` (compat con links viejos, mapea `?callbackUrl=` a `?next=`).
+2. `updateSession()` refresca la sesión de Supabase en cada request (ver `lib/supabase/session.ts`).
+
+El matcher excluye assets estáticos (`_next/*`, imágenes, `sw.js`).
 
 ## Añadir otra ciudad
 

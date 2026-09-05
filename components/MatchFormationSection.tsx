@@ -29,9 +29,9 @@ export function MatchFormationSection({
 
   useEffect(() => {
     if (!canOpenRival) return;
-    if (window.location.hash === "#armar-rival") {
-      setShowRival(true);
-    }
+    if (window.location.hash !== "#armar-rival") return;
+    const timer = window.setTimeout(() => setShowRival(true), 0);
+    return () => window.clearTimeout(timer);
   }, [canOpenRival]);
 
   const openForm = () => {

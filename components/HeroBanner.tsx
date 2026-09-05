@@ -21,9 +21,11 @@ function HeroSportChip({ sport }: { sport: Sport | null }) {
     if (sport === displayed) return undefined;
 
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setDisplayed(sport);
-      setVisible(true);
-      return undefined;
+      const instantTimer = window.setTimeout(() => {
+        setDisplayed(sport);
+        setVisible(true);
+      }, 0);
+      return () => window.clearTimeout(instantTimer);
     }
 
     let swapTimer: number | undefined;

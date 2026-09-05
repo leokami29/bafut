@@ -1,0 +1,291 @@
+.inbox-section {
+  margin-top: 1.75rem;
+}
+
+.inbox-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.85rem;
+}
+
+.inbox-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid color-mix(in oklab, var(--turf) 18%, transparent);
+}
+
+.inbox-title {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0;
+  font-weight: 650;
+}
+
+.inbox-meta {
+  margin: 0.25rem 0 0;
+  font-size: 0.9rem;
+  color: color-mix(in oklab, var(--ink) 68%, transparent);
+}
+
+.donate-list {
+  list-style: none;
+  padding: 0;
+  margin: 1.5rem 0;
+  display: grid;
+  gap: 1.25rem;
+}
+
+.donate-blurb {
+  margin: 0.45rem 0 0;
+  font-size: 0.9rem;
+  color: color-mix(in oklab, var(--ink) 68%, transparent);
+}
+
+.slot-edit-list {
+  list-style: none;
+  margin: 0 0 0.75rem;
+  padding: 0;
+  display: grid;
+  gap: 0.85rem;
+}
+
+.slot-edit-row {
+  display: grid;
+  gap: 0.55rem;
+  padding: 0.7rem 0.75rem;
+  background: color-mix(in oklab, var(--chalk) 50%, var(--paper));
+  border-left: 3px solid var(--turf);
+}
+
+.slot-edit-label {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 650;
+}
+
+.slot-edit-tag {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.15rem 0.4rem;
+  background: color-mix(in oklab, var(--turf) 18%, transparent);
+}
+
+.slot-edit-tag.is-pending {
+  background: color-mix(in oklab, var(--flood) 22%, transparent);
+}
+
+.slot-edit-remove {
+  min-height: 2.75rem;
+  justify-self: start;
+}
+
+.match-host-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  align-items: center;
+  margin: 0.75rem 0 1rem;
+}
+
+.match-host-actions .cancel-match-form {
+  margin: 0;
+}
+
+.cancel-match-form {
+  margin: 0.75rem 0 1rem;
+}
+
+.match-host-actions .btn-flood,
+.match-host-actions .btn-ghost {
+  min-height: 2.75rem;
+}
+
+.inbox-item-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  align-items: center;
+}
+
+.inbox-item-actions .btn-ghost {
+  min-height: 2.75rem;
+}
+
+.city-toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(4.5rem + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  z-index: 60;
+  margin: 0;
+  padding: 0.65rem 1rem;
+  border-radius: 999px;
+  background: var(--turf);
+  color: var(--chalk);
+  font-size: 0.9rem;
+  box-shadow: 0 8px 24px color-mix(in oklab, var(--ink) 25%, transparent);
+}
+
+.pwa-install-banner {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.25rem;
+  background: color-mix(in oklab, var(--turf) 92%, black);
+  color: var(--chalk);
+}
+
+.pwa-install-banner p {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.pwa-install-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.venue-filters-drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  background: color-mix(in oklab, var(--ink) 45%, transparent);
+  display: flex;
+  align-items: flex-end;
+}
+
+.venue-filters-sheet {
+  width: 100%;
+  max-height: 85vh;
+  overflow: auto;
+  overscroll-behavior: contain;
+  background: var(--paper);
+  padding: 1rem 1.25rem calc(1.5rem + env(safe-area-inset-bottom));
+  border-radius: 1rem 1rem 0 0;
+  display: grid;
+  gap: 1rem;
+}
+
+.venue-filters-sheet .venue-toolbar-filters {
+  gap: 1rem;
+}
+
+.venue-filters-sheet-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.venue-filters-sheet-head h2 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.venue-filters-trigger {
+  white-space: nowrap;
+  min-height: 2.75rem;
+}
+
+@media (max-width: 899px) {
+  .site-footer {
+    padding-bottom: calc(5.75rem + env(safe-area-inset-bottom));
+  }
+
+  body:has(.venue-sticky-cta) .site-footer {
+    padding-bottom: calc(9.25rem + env(safe-area-inset-bottom));
+  }
+
+  .city-toast {
+    bottom: calc(5.25rem + env(safe-area-inset-bottom));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pitch-lines,
+  .pitch-spots .spot,
+  .pitch-spots .hole,
+  .pitch-spots .spot-question,
+  .pitch-formation-label,
+  .pitch-field-wrap,
+  .hero-meta,
+  .hero-city-badge,
+  .hero-sport-chip,
+  .brand-hero,
+  .hero h1,
+  .hero-lede,
+  .hero-ctas,
+  .how-step,
+  .match-row,
+  .home-roster .match-row,
+  .sk,
+  .venue-toolbar .filter-chips button,
+  .venue-filters-sheet .filter-chips button,
+  .venue-search input,
+  .venue-filter-select select,
+  .match-compose-banner-error,
+  .match-compose .create-steps button,
+  .match-compose-progress-track span,
+  .venue-picker-option,
+  .site-footer a {
+    animation: none;
+    transition: none;
+  }
+
+  .hero-ctas .btn-flood:hover,
+  .hero-ctas .btn-flood:active {
+    transform: none;
+    box-shadow: none;
+  }
+
+  .hero-sport-chip {
+    opacity: 1;
+    transform: none;
+  }
+
+  .venue-toolbar .filter-chips button:active:not(.is-on),
+  .venue-filters-sheet .filter-chips button:active:not(.is-on) {
+    transform: none;
+  }
+
+  .pitch-lines {
+    stroke-dashoffset: 0;
+  }
+
+  .pitch-spots .spot,
+  .pitch-spots .hole {
+    opacity: 1;
+    scale: 1;
+    transform: none;
+  }
+
+  .pitch-field-wrap {
+    opacity: 1;
+  }
+}
+
+/* Slot reassurance helper text */
+.slot-reassurance {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-align: center;
+}

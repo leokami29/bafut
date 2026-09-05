@@ -1,0 +1,440 @@
+@media (min-width: 480px) {
+  .hero-ctas {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .hero-ctas .btn-flood,
+  .hero-ctas .btn-ghost {
+    width: auto;
+  }
+}
+
+@media (min-width: 600px) {
+  .how-steps {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+  }
+
+  .how-step {
+    padding: 1.15rem 1rem 1.15rem 0;
+    border-bottom: 0;
+    border-right: 1px solid color-mix(in oklab, var(--ink) 10%, transparent);
+  }
+
+  .how-step:last-child {
+    border-right: 0;
+    padding-right: 0;
+  }
+}
+
+@media (min-width: 720px) {
+  .match-row {
+    grid-template-columns: 9rem 1fr auto auto;
+    grid-template-areas: "when place hole meta";
+    align-items: baseline;
+  }
+
+  .match-row-when {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+  }
+
+  .match-row-hole {
+    justify-self: auto;
+    text-align: left;
+  }
+
+  .page-head-row {
+    align-items: center;
+  }
+
+  .partidos-toolbar-filters {
+    grid-template-columns: auto 1fr;
+    align-items: start;
+  }
+
+  .venue-toolbar {
+    gap: 0.9rem;
+    padding: 1.05rem 1.15rem 1.1rem;
+  }
+
+  .venue-filter-row {
+    grid-template-columns: 4.5rem minmax(0, 1fr);
+    align-items: center;
+    gap: 0.65rem 0.85rem;
+  }
+
+  .venue-filter-row-select {
+    align-items: center;
+  }
+
+  .venue-search {
+    grid-template-columns: 4.5rem minmax(0, 1fr);
+    align-items: center;
+    gap: 0.65rem 0.85rem;
+  }
+
+  .venue-search .venue-filter-label,
+  .venue-filter-row .venue-filter-label {
+    padding-top: 0;
+  }
+
+  .venue-toolbar-meta {
+    justify-content: space-between;
+  }
+
+  .venue-filter-select {
+    max-width: 18rem;
+  }
+
+  .form-split {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .venue-detail-layout {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    align-items: start;
+    gap: 1.75rem 2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .venue-detail-primary .venue-detail-actions {
+    margin-bottom: 1.25rem;
+  }
+
+  .venue-info-grid {
+    grid-template-columns: 1fr 1fr;
+    column-gap: 1.25rem;
+    row-gap: 0.85rem;
+  }
+
+  .venue-info-row:first-child {
+    grid-column: 1 / -1;
+  }
+
+  .venue-map-section {
+    position: sticky;
+    top: 5.5rem;
+  }
+
+  .venue-map-wrap.venue-map-detail .venue-map {
+    height: min(52vh, 420px);
+    min-height: 300px;
+  }
+
+  .site-header,
+  .hero,
+  .sheet,
+  .page {
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+  }
+
+  .pitch-formation-label {
+    left: auto;
+    right: 2.5rem;
+    bottom: 1.4rem;
+    max-width: none;
+    text-align: right;
+  }
+
+  .hero-copy {
+    max-width: 36rem;
+    padding: 1.5rem 1.25rem;
+    margin-bottom: 10vh;
+  }
+
+  .how-it-works {
+    padding-inline: 2.5rem;
+  }
+
+  .site-nav-signout {
+    display: none;
+  }
+}
+
+@media (min-width: 900px) {
+  .venue-layout.has-both {
+    grid-template-columns: minmax(0, 0.44fr) minmax(0, 0.56fr);
+    align-items: start;
+    gap: 1.25rem;
+  }
+
+  .venue-layout.has-both .venue-panel-map {
+    order: 0;
+  }
+
+  .venue-panel-map {
+    position: sticky;
+    top: 1rem;
+  }
+
+  .venue-map {
+    height: calc(100vh - 9rem);
+    min-height: 480px;
+    max-height: none;
+  }
+
+  .venue-panel-list {
+    max-height: calc(100vh - 7rem);
+    overflow-y: auto;
+    padding-right: 0.35rem;
+    scrollbar-gutter: stable;
+  }
+}
+
+@media (max-width: 899px) {
+  .hero {
+    padding-bottom: calc(2.5rem + 3.25rem + env(safe-area-inset-bottom));
+  }
+
+  .hero-copy {
+    min-height: calc(100svh - 4.2rem - 3.25rem);
+    min-height: calc(100dvh - 4.2rem - 3.25rem);
+    margin-bottom: clamp(1.25rem, 4vh, 2.5rem);
+    padding-bottom: 1rem;
+  }
+
+  .hero-pitch .pitch-field {
+    transform-origin: 100% 45%;
+  }
+
+  .hero-pitch .pitch-lines {
+    stroke-width: 2.2;
+  }
+
+  .hero-pitch .pitch-lines > * {
+    vector-effect: non-scaling-stroke;
+  }
+
+  .hero-pitch .pitch-spots .hole {
+    stroke-width: 2.8;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .hero-pitch .pitch-spots .spot-question {
+    font-size: 12px;
+  }
+
+  .pitch-formation-label {
+    top: max(4.75rem, calc(env(safe-area-inset-top) + 3.6rem));
+    right: 0.85rem;
+    bottom: auto;
+    max-width: 46vw;
+  }
+
+  .site-nav-links {
+    display: none;
+  }
+
+  .site-header-donate {
+    display: inline-flex;
+  }
+
+  .mobile-nav {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 28;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0;
+    padding-bottom: env(safe-area-inset-bottom);
+    background: var(--turf-deep);
+    border-top: 1px solid color-mix(in oklab, var(--chalk) 25%, transparent);
+  }
+
+  .mobile-nav a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 3.25rem;
+    padding: 0.35rem 0.35rem;
+    color: var(--chalk);
+    font-size: clamp(0.72rem, 2.8vw, 0.8rem);
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .mobile-nav a.is-active {
+    color: var(--flood);
+    box-shadow: inset 0 -2px 0 var(--flood);
+  }
+
+  .sheet,
+  .page {
+    padding-bottom: calc(5.5rem + env(safe-area-inset-bottom));
+  }
+
+  .share-sticky {
+    display: block;
+    bottom: calc(3.25rem + env(safe-area-inset-bottom));
+  }
+
+  .venue-sticky-cta {
+    display: block;
+    bottom: calc(3.25rem + env(safe-area-inset-bottom));
+  }
+
+  .page-venue-detail {
+    padding-bottom: calc(7.5rem + env(safe-area-inset-bottom));
+  }
+
+  .page-head-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .page-head-cta {
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+
+  .partidos-toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    margin-inline: -1.25rem;
+    padding-inline: 1.25rem;
+    border-left: 0;
+    border-block: 1px solid color-mix(in oklab, var(--turf) 25%, transparent);
+    box-shadow: 0 4px 12px color-mix(in oklab, var(--ink) 8%, transparent);
+  }
+
+  .venue-toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    margin-inline: -1.25rem;
+    padding-inline: 1.25rem;
+    border-left: 0;
+    border-block: 1px solid color-mix(in oklab, var(--turf) 25%, transparent);
+    box-shadow: 0 4px 12px color-mix(in oklab, var(--ink) 8%, transparent);
+  }
+}
+
+@media (min-width: 900px) {
+  .site-header {
+    padding: 0.85rem 1.5rem;
+    padding-top: max(0.85rem, env(safe-area-inset-top));
+  }
+
+  .site-nav-links {
+    display: flex;
+  }
+
+  .site-nav {
+    gap: 0.55rem 0.85rem;
+    font-size: 0.88rem;
+  }
+
+  .site-nav-links {
+    gap: 0.55rem 0.85rem;
+  }
+
+  .nav-label-long {
+    display: none;
+  }
+
+  .nav-label-short {
+    display: inline;
+  }
+
+  .city-switch select {
+    max-width: 11rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 719px) {
+  .hero-pitch .pitch-field {
+    width: 128%;
+    max-width: none;
+    height: 108%;
+    margin-left: auto;
+    margin-right: -8%;
+    transform: translateX(2%) scale(1.04);
+    transform-origin: 100% 42%;
+  }
+
+  .brand-hero {
+    font-size: clamp(3rem, 16vw, 5.5rem);
+  }
+
+  .hero h1 {
+    font-size: clamp(1.65rem, 7.2vw, 2.35rem);
+    max-width: 14ch;
+  }
+
+  .hero-lede {
+    max-width: 30ch;
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-height: 700px) and (orientation: landscape) {
+  .hero {
+    min-height: 100svh;
+    min-height: 100dvh;
+  }
+
+  .hero-copy {
+    min-height: auto;
+    justify-content: center;
+    margin-bottom: 1rem;
+    padding-top: 3.5rem;
+    gap: 0.25rem;
+  }
+
+  .brand-hero {
+    font-size: clamp(2.4rem, 10vw, 4rem);
+  }
+
+  .hero h1 {
+    font-size: clamp(1.35rem, 4vw, 2rem);
+    margin-top: 0.25rem;
+  }
+
+  .hero-lede {
+    margin-bottom: 0.75rem;
+  }
+
+  .pitch-formation-label {
+    top: 4.2rem;
+  }
+}
+
+@media (min-width: 1100px) {
+  .site-nav {
+    gap: 0.75rem 1.05rem;
+    font-size: 0.92rem;
+  }
+
+  .site-nav-links {
+    gap: 0.75rem 1.05rem;
+  }
+
+  .nav-label-long {
+    display: inline;
+  }
+
+  .nav-label-short {
+    display: none;
+  }
+
+  .site-nav-signout {
+    display: block;
+  }
+
+  .city-switch select {
+    max-width: none;
+  }
+
+  .hero-pitch .pitch-field {
+    transform: none;
+  }
+}

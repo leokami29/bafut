@@ -1,0 +1,346 @@
+.page-venue-detail {
+  width: 100%;
+  max-width: 72rem;
+  margin-inline: auto;
+}
+
+.venue-detail-layout {
+  display: grid;
+  gap: 1.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.venue-detail-primary {
+  display: grid;
+  gap: 0;
+  align-content: start;
+}
+
+.venue-back {
+  margin: 0 0 1rem;
+  font-size: 0.92rem;
+}
+
+.venue-back a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  text-decoration: none;
+  color: var(--turf);
+  border-bottom: 1px solid color-mix(in oklab, var(--turf) 35%, transparent);
+}
+
+.venue-back a:hover {
+  color: var(--turf-deep);
+  border-bottom-color: var(--turf-deep);
+}
+
+.venue-hero {
+  margin-bottom: 1.25rem;
+}
+
+.venue-hero-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.venue-hero h1 {
+  margin: 0.35rem 0 0.65rem;
+  line-height: 1.08;
+}
+
+.venue-rating {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.25rem;
+  padding: 0.25rem 0.6rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--turf-deep);
+  background: color-mix(in oklab, var(--flood) 35%, var(--paper));
+  border: 1px solid color-mix(in oklab, var(--flood) 55%, transparent);
+}
+
+.venue-rating-count {
+  font-weight: 500;
+  color: color-mix(in oklab, var(--ink) 55%, transparent);
+}
+
+.venue-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.venue-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.85rem;
+  padding: 0.15rem 0.6rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border: 1px solid color-mix(in oklab, var(--ink) 22%, transparent);
+  color: color-mix(in oklab, var(--ink) 75%, transparent);
+}
+
+.venue-badge.is-neighborhood {
+  background: var(--turf);
+  border-color: var(--turf);
+  color: var(--chalk);
+}
+
+.venue-badge.is-sport {
+  background: color-mix(in oklab, var(--turf) 10%, var(--paper));
+  border-color: color-mix(in oklab, var(--turf) 35%, transparent);
+  color: var(--turf-deep);
+}
+
+.venue-detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin: 0 0 1.25rem;
+}
+
+.venue-detail-actions-primary .btn-flood,
+.venue-detail-actions-primary .btn-ghost,
+.venue-detail-actions-primary .venue-copy-btn {
+  flex: 1 1 auto;
+  min-width: min(100%, 9rem);
+}
+
+.venue-copy-btn {
+  font-size: 0.92rem;
+}
+
+.venue-info {
+  margin-bottom: 0;
+  padding: 1rem;
+  background: color-mix(in oklab, var(--turf) 5%, var(--paper));
+  border-left: 3px solid var(--turf);
+}
+
+.venue-info .subhead {
+  margin-top: 0;
+}
+
+.venue-info-grid {
+  margin: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.venue-info-row {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.venue-info-row dt {
+  margin: 0;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--ink) 50%, transparent);
+}
+
+.venue-info-row dd {
+  margin: 0;
+  line-height: 1.45;
+}
+
+.venue-info-row a {
+  color: var(--turf-deep);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.venue-info-empty {
+  color: color-mix(in oklab, var(--ink) 45%, transparent);
+  font-style: italic;
+}
+
+.venue-map-section {
+  margin-bottom: 0;
+}
+
+.venue-map-section .subhead {
+  margin-top: 0;
+}
+
+.venue-map-wrap.venue-map-detail .venue-map {
+  height: min(42vh, 280px);
+  min-height: 220px;
+}
+
+.venue-map-foot {
+  margin: 0.5rem 0 0;
+  font-size: 0.92rem;
+}
+
+.venue-map-foot a {
+  color: var(--turf);
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in oklab, var(--turf) 35%, transparent);
+  min-height: 2.75rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+.venue-notes-section {
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.venue-notes {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.venue-notes summary {
+  cursor: pointer;
+  list-style: none;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.venue-notes summary::-webkit-details-marker {
+  display: none;
+}
+
+.venue-notes-preview {
+  color: color-mix(in oklab, var(--ink) 80%, transparent);
+}
+
+.venue-notes-toggle {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--turf);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.venue-notes[open] summary {
+  display: none;
+}
+
+.venue-notes p {
+  margin: 0;
+}
+
+.venue-matches {
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.venue-section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.venue-section-meta {
+  margin: 0;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.78rem;
+  color: color-mix(in oklab, var(--ink) 55%, transparent);
+}
+
+.venue-empty-matches {
+  display: grid;
+  gap: 0.85rem;
+  justify-items: start;
+}
+
+.venue-sticky-cta {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 25;
+  display: none;
+  padding: 0.65rem 1rem calc(0.65rem + env(safe-area-inset-bottom));
+  background: color-mix(in oklab, var(--paper) 94%, transparent);
+  border-top: 1px solid color-mix(in oklab, var(--ink) 15%, transparent);
+  backdrop-filter: blur(8px);
+}
+
+.venue-sticky-cta .btn-flood {
+  width: 100%;
+  font-weight: 650;
+}
+
+.profile-hint {
+  margin: 0;
+  padding: 0.75rem 0.85rem;
+  background: color-mix(in oklab, var(--flood) 20%, var(--paper));
+  border-left: 3px solid var(--flood);
+  line-height: 1.45;
+}
+
+.roster-skeleton {
+  border-top: 1px solid var(--ink);
+}
+
+.match-row-skeleton {
+  display: grid;
+  gap: 0.5rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid color-mix(in oklab, var(--ink) 18%, transparent);
+}
+
+.match-row-skeleton-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.sk-sport {
+  width: 3.5rem;
+  height: 1.25rem;
+}
+
+.sk {
+  display: block;
+  height: 0.85rem;
+  background: linear-gradient(
+    90deg,
+    color-mix(in oklab, var(--ink) 8%, transparent) 0%,
+    color-mix(in oklab, var(--ink) 14%, transparent) 50%,
+    color-mix(in oklab, var(--ink) 8%, transparent) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.2s ease infinite;
+}
+
+.sk-time {
+  width: 5.5rem;
+}
+
+.sk-place {
+  width: min(18rem, 80%);
+}
+
+.sk-hole {
+  width: 8rem;
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}

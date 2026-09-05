@@ -1,0 +1,236 @@
+.stack-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.stack-form label,
+.check-line {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.92rem;
+}
+
+.stack-form input,
+.stack-form select,
+.stack-form textarea {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.65rem 0.7rem;
+  border: 0;
+  border-bottom: 1px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
+  border-radius: 0;
+}
+
+.venue-picker select[multiple],
+.venue-picker select[size] {
+  min-height: 8rem;
+}
+
+.venue-picker-native {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.venue-picker {
+  position: relative;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.form-split {
+  display: grid;
+  gap: 1rem;
+}
+
+.check-line {
+  grid-template-columns: auto 1fr;
+  align-items: center;
+}
+
+.form-error {
+  color: var(--bib);
+}
+
+.form-ok {
+  color: var(--turf);
+}
+
+.mode-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border-bottom: 1px solid var(--ink);
+}
+
+.mode-toggle-3 {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.mode-toggle button {
+  background: none;
+  border: 0;
+  padding: 0.6rem;
+  cursor: pointer;
+  color: color-mix(in oklab, var(--ink) 55%, transparent);
+}
+
+.mode-toggle .is-on {
+  color: var(--ink);
+  box-shadow: inset 0 -2px 0 var(--bib);
+}
+
+.password-meter {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.password-meter-track {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 0.28rem;
+}
+
+.password-meter-track span {
+  height: 0.35rem;
+  background: color-mix(in oklab, var(--ink) 14%, transparent);
+}
+
+.password-meter-track span.is-on.is-s1,
+.password-meter-track span.is-on.is-s2 {
+  background: var(--bib);
+}
+
+.password-meter-track span.is-on.is-s3 {
+  background: var(--flood);
+}
+
+.password-meter-track span.is-on.is-s4 {
+  background: var(--turf);
+}
+
+.password-meter-label {
+  margin: 0;
+  font-size: 0.82rem;
+  color: color-mix(in oklab, var(--ink) 65%, transparent);
+}
+
+.slot-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: start;
+}
+
+.slot-row.is-open .slot-need {
+  color: var(--bib);
+}
+
+.claim-inbox {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: min(20rem, 100%);
+}
+
+.claim-inbox-wrap {
+  width: min(20rem, 100%);
+}
+
+.claim-inbox-label {
+  margin: 0 0 0.35rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--turf);
+}
+
+.claim-inbox li {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 0.55rem;
+  padding-top: 0.55rem;
+  border-top: 1px solid color-mix(in oklab, var(--ink) 15%, transparent);
+}
+
+.claim-name {
+  font-weight: 650;
+}
+
+.claim-level-meta {
+  margin: 0.15rem 0 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.claim-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.claim-form {
+  display: grid;
+  gap: 0.45rem;
+  justify-items: stretch;
+  width: min(12rem, 100%);
+}
+
+.claim-level-field {
+  display: grid;
+  gap: 0.2rem;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.claim-level-field select {
+  width: 100%;
+}
+
+.claim-ack {
+  display: flex;
+  gap: 0.4rem;
+  align-items: flex-start;
+  font-size: 0.78rem;
+  line-height: 1.35;
+  color: var(--ink);
+}
+
+.claim-ack input {
+  margin-top: 0.15rem;
+}
+
+.level-feedback {
+  margin-top: 0.55rem;
+}
+
+.level-feedback-prompt {
+  margin: 0 0 0.35rem;
+  font-size: 0.9rem;
+}
+
+.level-feedback-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.claim-actions form {
+  display: contents;
+}
+
+.claim-actions .btn-bib,
+.claim-actions .btn-ghost {
+  min-height: 2.75rem;
+  padding: 0.45rem 0.85rem;
+  font-size: 0.88rem;
+}

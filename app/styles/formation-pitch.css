@@ -1,0 +1,403 @@
+.match-formation-section {
+  display: grid;
+  gap: 0.65rem;
+  margin-bottom: 1.25rem;
+}
+
+.match-formation-lead {
+  margin: -0.25rem 0 0.15rem;
+  color: color-mix(in oklab, var(--ink) 72%, transparent);
+}
+
+.open-side-b-form,
+.open-side-b-block {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.open-side-b-question {
+  margin: 0;
+  font-family: var(--font-display), "Barlow Condensed", sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.open-side-b-copy,
+.open-side-b-lead {
+  margin: 0;
+  color: color-mix(in oklab, var(--ink) 72%, transparent);
+}
+
+.open-side-b-fields {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.open-side-b-count {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  display: grid;
+  gap: 0.45rem;
+}
+
+@media (min-width: 480px) {
+  .open-side-b-count {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.open-side-b-count-option {
+  display: flex;
+  gap: 0.55rem;
+  align-items: flex-start;
+  padding: 0.7rem 0.75rem;
+  border: 1.5px solid color-mix(in oklab, var(--ink) 18%, transparent);
+  background: var(--paper);
+  cursor: pointer;
+}
+
+.open-side-b-count-option:has(input:checked) {
+  border-color: var(--turf);
+  background: color-mix(in oklab, var(--turf) 10%, var(--paper));
+}
+
+.open-side-b-count-option input {
+  margin-top: 0.2rem;
+}
+
+.open-side-b-count-option span {
+  display: grid;
+  gap: 0.1rem;
+}
+
+.open-side-b-count-option strong {
+  font-family: var(--font-display), "Barlow Condensed", sans-serif;
+  font-size: 1.15rem;
+}
+
+.open-side-b-count-option em {
+  font-style: normal;
+  font-size: 0.88rem;
+  color: color-mix(in oklab, var(--ink) 68%, transparent);
+}
+
+.open-side-b-position,
+.open-side-b-level {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.slot-side-heading {
+  margin: 1rem 0 0.2rem;
+  font-family: var(--font-display), "Barlow Condensed", sans-serif;
+  font-size: 1.05rem;
+  letter-spacing: 0.02em;
+  text-transform: none;
+}
+
+.slot-side-hint {
+  margin: 0 0 0.45rem;
+  font-size: 0.88rem;
+  color: color-mix(in oklab, var(--ink) 68%, transparent);
+}
+
+.slot-sides {
+  display: grid;
+  gap: 1rem;
+}
+
+.slot-sides .slot-list {
+  border-top: 1px solid var(--ink);
+}
+
+.slot-side-block.is-away {
+  padding: 0.65rem 0.7rem;
+  background: color-mix(in oklab, var(--turf) 8%, var(--paper));
+  border-left: 3px solid var(--turf);
+}
+
+.match-pitch-board {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0 0 1rem;
+}
+
+.match-pitch-board.is-compact {
+  margin-bottom: 0.15rem;
+}
+
+.match-pitch-labels {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.match-pitch-side-label {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--ink) 64%, transparent);
+}
+
+.match-pitch-side-label.is-active {
+  color: var(--turf-deep);
+  font-weight: 700;
+}
+
+.match-pitch-svg-wrap {
+  position: relative;
+  border: 1px solid color-mix(in oklab, var(--turf-deep) 45%, transparent);
+  overflow: hidden;
+  background: var(--turf-deep);
+}
+
+.match-pitch-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 360 / 220;
+}
+
+.match-pitch-hits {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.match-pitch-hit {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0.55rem;
+  border: 0;
+  background: transparent;
+  color: #f4ffe8;
+  text-decoration: none;
+  cursor: pointer;
+  font: inherit;
+  min-height: 44px;
+  transition: background 0.18s ease;
+}
+
+.match-pitch-hit.is-home {
+  background: linear-gradient(90deg, color-mix(in oklab, #000 28%, transparent), transparent 70%);
+}
+
+.match-pitch-hit.is-away {
+  background: linear-gradient(270deg, color-mix(in oklab, #000 28%, transparent), transparent 70%);
+}
+
+.match-pitch-hit:hover:not(.is-disabled),
+.match-pitch-hit:focus-visible:not(.is-disabled),
+.match-pitch-hit.is-active:not(.is-disabled) {
+  background: color-mix(in oklab, var(--flood) 28%, transparent);
+}
+
+.match-pitch-hit.is-disabled {
+  cursor: default;
+  opacity: 0.72;
+}
+
+.match-pitch-hit-label {
+  padding: 0.28rem 0.5rem;
+  background: color-mix(in oklab, var(--turf-deep) 78%, black);
+  border: 1px solid color-mix(in oklab, var(--chalk) 35%, transparent);
+  font-family: var(--font-display), "Barlow Condensed", sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+
+.match-pitch-board.is-interactive .match-pitch-invite-chip {
+  pointer-events: none;
+}
+
+.match-pitch-spot {
+  fill: color-mix(in oklab, var(--chalk) 78%, white);
+  stroke: color-mix(in oklab, var(--turf-deep) 55%, black);
+  stroke-width: 1.2;
+  opacity: 0;
+  animation: match-pitch-pop 0.45s ease forwards;
+}
+
+.match-pitch-spot.is-filled {
+  fill: var(--flood);
+}
+
+.match-pitch-spot.is-open {
+  fill: var(--bib);
+  stroke: #fff6;
+}
+
+.match-pitch-spot.is-invite {
+  fill: transparent;
+  stroke: var(--flood);
+  stroke-width: 2;
+  stroke-dasharray: 3 2;
+}
+
+.match-pitch-spot.is-ghost {
+  fill: transparent;
+  stroke: color-mix(in oklab, var(--chalk) 45%, transparent);
+  stroke-dasharray: 2 2;
+  opacity: 0.55;
+  animation: none;
+}
+
+.match-pitch-spot-mark {
+  fill: var(--paper);
+  font-size: 9px;
+  font-weight: 700;
+  pointer-events: none;
+}
+
+.match-pitch-invite-chip {
+  position: absolute;
+  right: 0.55rem;
+  bottom: 0.55rem;
+  z-index: 1;
+  margin: 0;
+  padding: 0.28rem 0.5rem;
+  background: color-mix(in oklab, var(--flood) 92%, white);
+  color: var(--ink);
+  font-family: var(--font-display), "Barlow Condensed", sans-serif;
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.match-pitch-caption {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.75rem;
+  align-items: baseline;
+  font-size: 0.9rem;
+}
+
+.match-pitch-formation {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.match-pitch-summary {
+  color: color-mix(in oklab, var(--ink) 72%, transparent);
+}
+
+.match-pitch-summary-sep {
+  margin: 0 0.2rem;
+}
+
+@keyframes match-pitch-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .occupancy-choice,
+  .match-pitch-hit,
+  .match-pitch-spot {
+    transition: none;
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.venue-day-block {
+  margin-top: 0.85rem;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.venue-day-timeline {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.venue-day-timeline-empty {
+  margin: 0;
+  font-size: 0.9rem;
+  color: color-mix(in oklab, var(--ink) 66%, transparent);
+}
+
+.venue-day-timeline-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.venue-day-chip {
+  display: grid;
+  gap: 0.1rem;
+  min-width: 7.5rem;
+  padding: 0.45rem 0.55rem;
+  text-decoration: none;
+  background: color-mix(in oklab, var(--turf) 10%, var(--paper));
+  border: 1px solid color-mix(in oklab, var(--turf-deep) 28%, transparent);
+  color: inherit;
+}
+
+.venue-day-chip:hover {
+  background: color-mix(in oklab, var(--flood) 28%, var(--paper));
+}
+
+.venue-day-chip.is-overlap {
+  border-color: var(--bib);
+  box-shadow: inset 3px 0 0 var(--bib);
+}
+
+.venue-day-chip-time {
+  font-family: var(--font-display), "Barlow Condensed", sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.venue-day-chip-meta,
+.venue-day-chip-slots {
+  font-size: 0.78rem;
+  color: color-mix(in oklab, var(--ink) 68%, transparent);
+}
+
+.venue-occupancy-section {
+  margin: 1.5rem 0 1rem;
+  display: grid;
+  gap: 0.55rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .match-pitch-spot {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+.match-compose-actions {
+  margin-top: 0.35rem;
+}
+
+.match-compose-actions-inline .btn-flood,
+.match-compose-actions-inline .create-step-next {
+  min-height: 2.85rem;
+}
+
+.match-compose-actions-inline .btn-ghost {
+  min-height: 2.85rem;
+  min-width: 5.5rem;
+}

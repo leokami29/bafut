@@ -1,0 +1,197 @@
+.match-compose-sticky {
+  display: none;
+}
+
+.venue-picker.is-invalid .venue-picker-list {
+  outline: 2px solid var(--bib);
+  outline-offset: 2px;
+}
+
+.venue-picker-head {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.venue-picker-chosen {
+  margin: 0;
+  padding: 0.55rem 0.65rem;
+  font-size: 0.92rem;
+  background: color-mix(in oklab, var(--chalk) 55%, var(--paper));
+  border-left: 3px solid var(--turf);
+}
+
+.venue-picker-chosen-meta {
+  font-weight: 400;
+  color: color-mix(in oklab, var(--ink) 65%, transparent);
+}
+
+.venue-picker-list {
+  max-height: min(18rem, 48vh);
+  overflow: auto;
+  overscroll-behavior: contain;
+  border: 1px solid color-mix(in oklab, var(--ink) 18%, transparent);
+  background: color-mix(in oklab, var(--paper) 70%, white);
+  -webkit-overflow-scrolling: touch;
+}
+
+.venue-picker-group {
+  border-bottom: 1px solid color-mix(in oklab, var(--ink) 10%, transparent);
+}
+
+.venue-picker-group:last-child {
+  border-bottom: 0;
+}
+
+.venue-picker-group-label {
+  margin: 0;
+  padding: 0.45rem 0.7rem 0.25rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--ink) 55%, transparent);
+  position: sticky;
+  top: 0;
+  background: color-mix(in oklab, var(--paper) 92%, white);
+  z-index: 1;
+}
+
+.venue-picker-options {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.venue-picker-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.65rem 0.75rem;
+  border: 0;
+  border-bottom: 1px solid color-mix(in oklab, var(--ink) 8%, transparent);
+  background: transparent;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  transition: background 0.15s ease;
+}
+
+.venue-picker-option input[type="radio"] {
+  flex-shrink: 0;
+  width: 1.15rem;
+  height: 1.15rem;
+  min-height: 0;
+  margin: 0.2rem 0 0;
+  padding: 0;
+  accent-color: var(--turf);
+  border: 0;
+  border-bottom: 0;
+}
+
+.venue-picker-option-text {
+  display: grid;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.venue-picker-options li:last-child .venue-picker-option {
+  border-bottom: 0;
+}
+
+.venue-picker-option:hover,
+.venue-picker-option:focus-within {
+  background: color-mix(in oklab, var(--turf) 8%, transparent);
+}
+
+.venue-picker-option.is-on {
+  background: color-mix(in oklab, var(--turf) 14%, transparent);
+  box-shadow: inset 3px 0 0 var(--turf);
+}
+
+.venue-picker-option-name {
+  font-weight: 600;
+}
+
+.venue-picker-option-meta {
+  font-size: 0.82rem;
+  color: color-mix(in oklab, var(--ink) 58%, transparent);
+}
+
+@media (min-width: 720px) {
+  .match-compose .form-split {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .match-compose-layout {
+    grid-template-columns: minmax(0, 1.15fr) minmax(18rem, 0.9fr);
+    align-items: start;
+    gap: 1.75rem 2.25rem;
+  }
+
+  .match-compose-aside {
+    position: sticky;
+    top: 5.5rem;
+  }
+
+  .match-compose-stats {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .match-compose-venue .venue-map {
+    height: min(42vh, 340px);
+    min-height: 240px;
+  }
+
+  .venue-picker-list {
+    max-height: 20rem;
+  }
+}
+
+@media (max-width: 899px) {
+  .page-nuevo-partido,
+  .page-editar-partido {
+    padding-bottom: calc(9.5rem + env(safe-area-inset-bottom));
+  }
+
+  .match-compose-actions-inline {
+    display: none;
+  }
+
+  .match-compose-sticky {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: calc(3.25rem + env(safe-area-inset-bottom));
+    z-index: 24;
+    display: block;
+    padding: 0.65rem 1rem;
+    background: color-mix(in oklab, var(--paper) 94%, transparent);
+    border-top: 1px solid color-mix(in oklab, var(--ink) 15%, transparent);
+    backdrop-filter: blur(8px);
+  }
+
+  .match-compose-sticky .btn-flood {
+    width: 100%;
+    min-height: 2.85rem;
+    font-weight: 650;
+  }
+
+  .match-compose-sticky-row {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.65rem;
+    align-items: center;
+  }
+
+  .match-compose-sticky-row .btn-ghost {
+    min-height: 2.85rem;
+    min-width: 4.75rem;
+  }
+
+  .match-compose-sticky-row .btn-flood {
+    width: 100%;
+  }
+}

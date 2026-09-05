@@ -1,0 +1,209 @@
+.home-inner {
+  width: 100%;
+  max-width: 42rem;
+  margin-inline: auto;
+}
+
+.home-inner-wide {
+  max-width: 72rem;
+}
+
+.sheet,
+.page {
+  padding: 2.5rem 1.25rem calc(4rem + env(safe-area-inset-bottom));
+}
+
+.home-sheet {
+  padding-top: 2.25rem;
+  scroll-margin-top: 5rem;
+}
+
+.sheet-head,
+.page-head {
+  margin-bottom: 1.5rem;
+  max-width: 36rem;
+}
+
+.sheet-head-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  max-width: none;
+}
+
+.sheet-head-row h2 {
+  margin-top: 0;
+}
+
+.sheet-lede {
+  margin: 0.35rem 0 0;
+  max-width: 32ch;
+  line-height: 1.45;
+  color: color-mix(in oklab, var(--ink) 65%, transparent);
+}
+
+.sheet-head-link {
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+  padding: 0.35rem 0;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--turf);
+  border-bottom: 1px solid color-mix(in oklab, var(--turf) 45%, transparent);
+  min-height: 2.75rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+.sheet-head-link:hover {
+  color: var(--turf-deep);
+  border-bottom-color: var(--turf-deep);
+}
+
+.text-link-muted {
+  color: color-mix(in oklab, var(--ink) 72%, transparent);
+  font-size: 0.92rem;
+}
+
+.how-it-works {
+  padding: 2rem 1.25rem 2.25rem;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--turf) 7%, var(--paper)) 0%,
+      color-mix(in oklab, var(--turf) 3%, var(--paper)) 100%
+    );
+  border-block: 1px solid color-mix(in oklab, var(--ink) 12%, transparent);
+}
+
+.how-it-works .home-inner {
+  max-width: 72rem;
+}
+
+.how-head {
+  margin-bottom: 1.25rem;
+  max-width: 40rem;
+}
+
+.how-head h2 {
+  margin: 0;
+  font-size: clamp(1.35rem, 3.2vw, 1.75rem);
+}
+
+.how-lede {
+  margin: 0.45rem 0 0;
+  max-width: 42ch;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: color-mix(in oklab, var(--ink) 68%, transparent);
+}
+
+.how-seo-links {
+  margin: 1.35rem 0 0;
+  max-width: 48ch;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: color-mix(in oklab, var(--ink) 62%, transparent);
+}
+
+.how-seo-links a {
+  color: var(--turf);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.how-seo-links a:hover {
+  color: var(--turf-deep);
+}
+
+.how-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0;
+}
+
+.how-step {
+  display: grid;
+  gap: 0.25rem;
+  padding: 1.1rem 0;
+  border-bottom: 1px solid color-mix(in oklab, var(--ink) 10%, transparent);
+  line-height: 1.4;
+  animation: rise 0.7s ease both;
+}
+
+.how-step:nth-child(1) {
+  animation-delay: 0.04s;
+}
+
+.how-step:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.how-step:nth-child(3) {
+  animation-delay: 0.16s;
+}
+
+.how-step:last-child {
+  border-bottom: 0;
+}
+
+.how-step strong {
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.05rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.how-step span:not(.how-step-num) {
+  font-size: 0.95rem;
+  color: color-mix(in oklab, var(--ink) 70%, transparent);
+}
+
+.how-step-num {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--turf);
+}
+
+h1,
+h2,
+.subhead {
+  font-family: var(--font-display), sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+h1 {
+  margin: 0 0 0.4rem;
+  font-size: clamp(2.1rem, 6vw, 3.4rem);
+  line-height: 0.92;
+  text-wrap: balance;
+}
+
+h2,
+.subhead {
+  margin: 2rem 0 0.8rem;
+  font-size: 1.4rem;
+}
+
+.page-narrow {
+  max-width: 36rem;
+  margin-inline: auto;
+}
+
+.eyebrow {
+  margin: 0 0 0.35rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--turf);
+}
