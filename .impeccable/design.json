@@ -1,0 +1,288 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-05T17:20:00.000Z",
+  "title": "Design System: BaFut",
+  "extensions": {
+    "colorMeta": {
+      "turf": {
+        "role": "primary",
+        "displayName": "Turf Pitch",
+        "canonical": "#0c6b4c",
+        "tonalRamp": ["#073828", "#0a4f38", "#0c6b4c", "#1a8a63", "#3aa87e", "#6ec49e", "#a8decc", "#dff3e6"]
+      },
+      "turf-deep": {
+        "role": "primary",
+        "displayName": "Turf Deep",
+        "canonical": "#073828",
+        "tonalRamp": ["#031910", "#052820", "#073828", "#0c6b4c", "#2a8f6a", "#5eb090", "#9ad4b8", "#dff3e6"]
+      },
+      "flood": {
+        "role": "secondary",
+        "displayName": "Flood Reflector",
+        "canonical": "#ffd25a",
+        "tonalRamp": ["#5c4a12", "#8a6e1a", "#c49a2e", "#e6b83d", "#ffd25a", "#ffe089", "#ffedb8", "#fff8e0"]
+      },
+      "bib": {
+        "role": "tertiary",
+        "displayName": "Bib Urgency",
+        "canonical": "#ff3b1f",
+        "tonalRamp": ["#5c1208", "#8a1c0e", "#c42a16", "#ff3b1f", "#ff6a52", "#ff9786", "#ffc4ba", "#fff0ed"]
+      },
+      "chalk": {
+        "role": "neutral",
+        "displayName": "Chalk Dust",
+        "canonical": "#d9f2a5",
+        "tonalRamp": ["#3a4a1c", "#5c7330", "#8aa84a", "#b5d46e", "#d9f2a5", "#e6f7c2", "#f0fbd9", "#f8fef0"]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink Lineup",
+        "canonical": "#10231c",
+        "tonalRamp": ["#06120e", "#0a1a14", "#10231c", "#243f34", "#4a6b5c", "#7a9a8a", "#b3c9be", "#e8f0ec"]
+      },
+      "mist": {
+        "role": "neutral",
+        "displayName": "Mist Sideline",
+        "canonical": "#c8e6d4",
+        "tonalRamp": ["#1a4030", "#2d664c", "#4a9070", "#7ab89a", "#c8e6d4", "#d9f0e3", "#eaf7f0", "#f5fbf8"]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Pitch Paper",
+        "canonical": "#dff3e6",
+        "tonalRamp": ["#1a4030", "#2d664c", "#4a9070", "#7ab89a", "#a8d4c0", "#c8e6d4", "#dff3e6", "#f2faf5"]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Line Marker",
+        "canonical": "rgba(217, 242, 165, 0.7)",
+        "tonalRamp": ["#3a4a1c", "#5c7330", "#8aa84a", "#b5d46e", "#d9f2a5", "#e6f7c2", "#f0fbd9", "#f8fef0"]
+      },
+      "bib-ink": {
+        "role": "neutral",
+        "displayName": "Bib Ink",
+        "canonical": "#fff8f5",
+        "tonalRamp": ["#4a2018", "#7a3830", "#a85848", "#d08070", "#e8b0a4", "#f5d4cc", "#fff0ed", "#fff8f5"]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display / H1",
+        "purpose": "Títulos de página en Barlow Condensed uppercase."
+      },
+      "display-hero": {
+        "displayName": "Brand Hero",
+        "purpose": "Solo .brand-hero — nombre BaFut a escala hero en flood."
+      },
+      "headline": {
+        "displayName": "Hero Headline",
+        "purpose": "Titular bajo la marca en el hero full-bleed."
+      },
+      "title": {
+        "displayName": "Section Title",
+        "purpose": "H2 / .subhead de secciones operate."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Ledes, formularios y copy operativo en Outfit."
+      },
+      "label": {
+        "displayName": "Mono Label",
+        "purpose": "Eyebrows, chips, horas, filtros — planilla del partido."
+      }
+    },
+    "shadows": [
+      {
+        "name": "focus-ring",
+        "value": "outline: 2px solid #ffd25a; outline-offset: 2px; box-shadow: 0 0 0 4px #073828",
+        "purpose": "Focus visible global en a/button/input."
+      },
+      {
+        "name": "cta-lift",
+        "value": "0 6px 18px color-mix(in oklab, #ffd25a 35%, transparent)",
+        "purpose": "Hover de btn-flood en hero."
+      },
+      {
+        "name": "sticky-skim",
+        "value": "0 4px 12px color-mix(in oklab, #10231c 8%, transparent)",
+        "purpose": "Toolbars sticky en móvil (partidos/canchas)."
+      },
+      {
+        "name": "toast-float",
+        "value": "0 8px 24px color-mix(in oklab, #10231c 25%, transparent)",
+        "purpose": "City toast flotante."
+      }
+    ],
+    "motion": [
+      {
+        "name": "rise",
+        "value": "0.55s–0.9s ease; from opacity 0 + translateY(12px)",
+        "purpose": "Entrada de hero copy, match-rows, how-steps."
+      },
+      {
+        "name": "draw-line",
+        "value": "1.35s ease forwards stroke-dashoffset",
+        "purpose": "Dibujo de líneas de cancha en el pitch SVG."
+      },
+      {
+        "name": "pulse-hole",
+        "value": "1.6s ease-in-out infinite scale 1→1.28",
+        "purpose": "Huecos abiertos en el pitch del hero."
+      },
+      {
+        "name": "ease-state",
+        "value": "0.15s–0.2s ease",
+        "purpose": "Hover/focus de chips, botones y pickers."
+      }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "480px" },
+      { "name": "how", "value": "600px" },
+      { "name": "md", "value": "720px" },
+      { "name": "lg", "value": "900px" },
+      { "name": "xl", "value": "1100px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Flood Button",
+      "kind": "button",
+      "refersTo": "button-flood",
+      "description": "CTA primaria — reflector flood sobre ink.",
+      "html": "<button class=\"ds-btn-flood\">Publicar hueco</button>",
+      "css": ".ds-btn-flood { display: inline-flex; align-items: center; justify-content: center; min-height: 2.8rem; padding: 0.55rem 1.1rem; border: 1px solid transparent; background: var(--flood, #ffd25a); color: var(--ink, #10231c); font-family: var(--font-sans), Outfit, sans-serif; font-weight: 650; text-decoration: none; cursor: pointer; border-radius: 0; transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease; } .ds-btn-flood:hover { transform: translateY(-1px); box-shadow: 0 6px 18px color-mix(in oklab, #ffd25a 35%, transparent); } .ds-btn-flood:focus-visible { outline: 2px solid var(--flood, #ffd25a); outline-offset: 2px; box-shadow: 0 0 0 4px var(--turf-deep, #073828); } .ds-btn-flood:active { transform: translateY(0); }"
+    },
+    {
+      "name": "Bib Button",
+      "kind": "button",
+      "refersTo": "button-bib",
+      "description": "Acción de urgencia / claim — bib rojo.",
+      "html": "<button class=\"ds-btn-bib\">Pedir cupo</button>",
+      "css": ".ds-btn-bib { display: inline-flex; align-items: center; justify-content: center; min-height: 2.8rem; padding: 0.55rem 1.1rem; border: 1px solid transparent; background: var(--bib, #ff3b1f); color: #fff8f5; font-family: var(--font-sans), Outfit, sans-serif; cursor: pointer; border-radius: 0; transition: background 0.2s ease; } .ds-btn-bib:hover { background: color-mix(in oklab, #ff3b1f 88%, black); } .ds-btn-bib:focus-visible { outline: 2px solid var(--flood, #ffd25a); outline-offset: 2px; box-shadow: 0 0 0 4px var(--turf-deep, #073828); }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Secundaria sobre paper — stroke ink.",
+      "html": "<button class=\"ds-btn-ghost\">Ver canchas</button>",
+      "css": ".ds-btn-ghost { display: inline-flex; align-items: center; justify-content: center; min-height: 2.8rem; padding: 0.55rem 1.1rem; background: transparent; border: 1px solid var(--ink, #10231c); color: var(--ink, #10231c); font-family: var(--font-sans), Outfit, sans-serif; cursor: pointer; border-radius: 0; transition: background 0.2s ease, border-color 0.2s ease; } .ds-btn-ghost:hover { background: color-mix(in oklab, #10231c 6%, transparent); } .ds-btn-ghost:focus-visible { outline: 2px solid var(--flood, #ffd25a); outline-offset: 2px; box-shadow: 0 0 0 4px var(--turf-deep, #073828); }"
+    },
+    {
+      "name": "Underline Input",
+      "kind": "input",
+      "refersTo": "input-underline",
+      "description": "Campo de form stack — solo línea inferior.",
+      "html": "<label class=\"ds-field\">Hora<input class=\"ds-input\" type=\"text\" placeholder=\"18:30\" /></label>",
+      "css": ".ds-field { display: grid; gap: 0.35rem; font-size: 0.92rem; color: var(--ink, #10231c); font-family: var(--font-sans), Outfit, sans-serif; } .ds-input { width: 100%; min-height: 2.75rem; padding: 0.65rem 0.7rem; border: 0; border-bottom: 1px solid var(--ink, #10231c); background: transparent; color: var(--ink, #10231c); border-radius: 0; font: inherit; } .ds-input:focus-visible { outline: 2px solid var(--flood, #ffd25a); outline-offset: 2px; box-shadow: 0 0 0 4px var(--turf-deep, #073828); }"
+    },
+    {
+      "name": "Filter Chip",
+      "kind": "chip",
+      "refersTo": "chip-filter-on",
+      "description": "Chip de filtro mono — off stroke / on turf.",
+      "html": "<div class=\"ds-chips\"><button class=\"ds-chip\">Hoy</button><button class=\"ds-chip is-on\">Fútbol</button></div>",
+      "css": ".ds-chips { display: flex; flex-wrap: wrap; gap: 0.45rem; } .ds-chip { min-height: 2.75rem; padding: 0.45rem 0.85rem; border: 1px solid color-mix(in oklab, #10231c 25%, transparent); background: transparent; color: var(--ink, #10231c); font-family: var(--font-mono), 'IBM Plex Mono', monospace; font-size: 0.78rem; letter-spacing: 0.04em; text-transform: uppercase; cursor: pointer; border-radius: 0; transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease; } .ds-chip:hover { border-color: color-mix(in oklab, #0c6b4c 45%, transparent); background: color-mix(in oklab, #0c6b4c 8%, transparent); } .ds-chip.is-on { background: var(--turf, #0c6b4c); border-color: var(--turf, #0c6b4c); color: var(--chalk, #d9f2a5); } .ds-chip:focus-visible { outline: 2px solid var(--flood, #ffd25a); outline-offset: 2px; box-shadow: 0 0 0 4px var(--turf-deep, #073828); }"
+    },
+    {
+      "name": "Site Header",
+      "kind": "nav",
+      "refersTo": "nav-header",
+      "description": "Chrome sticky turf-deep con marca Condensed.",
+      "html": "<header class=\"ds-header\"><a class=\"ds-brand\" href=\"/\">BaFut</a><nav class=\"ds-nav\"><a href=\"/partidos\">Partidos</a><a class=\"is-active\" href=\"/canchas\">Canchas</a></nav></header>",
+      "css": ".ds-header { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem 1rem; padding: 0.7rem 1rem; background: var(--turf-deep, #073828); color: var(--chalk, #d9f2a5); } .ds-brand { font-family: var(--font-display), 'Barlow Condensed', sans-serif; font-size: 1.25rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none; color: inherit; } .ds-nav { display: flex; gap: 0.7rem; font-size: 0.9rem; } .ds-nav a { color: inherit; text-decoration: none; min-height: 2.5rem; display: inline-flex; align-items: center; } .ds-nav a:hover, .ds-nav a.is-active { color: var(--flood, #ffd25a); } .ds-nav a.is-active { box-shadow: inset 0 -2px 0 var(--flood, #ffd25a); }"
+    },
+    {
+      "name": "Match Row",
+      "kind": "custom",
+      "refersTo": "match-row",
+      "description": "Fila signature del feed — planilla, no card.",
+      "html": "<a class=\"ds-match-row\" href=\"/p/demo\"><div class=\"ds-match-when\"><time>Hoy · 18:30</time><span class=\"ds-sport\">Fútbol</span></div><div class=\"ds-match-place\">Cancha El Country</div><div class=\"ds-match-hole\">Falta 1 <span class=\"ds-slot\">1</span></div><div class=\"ds-match-meta\">5v5 · Barranquilla</div></a>",
+      "css": ".ds-match-row { display: grid; grid-template-columns: 1fr auto; gap: 0.35rem 1rem; padding: 1rem 0.1rem; border-bottom: 1px solid color-mix(in oklab, #10231c 18%, transparent); text-decoration: none; color: var(--ink, #10231c); font-family: var(--font-sans), Outfit, sans-serif; } .ds-match-when { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; grid-column: 1 / -1; } .ds-match-when time, .ds-match-meta { font-family: var(--font-mono), 'IBM Plex Mono', monospace; font-size: 0.82rem; } .ds-sport { padding: 0.15rem 0.45rem; font-family: var(--font-mono), monospace; font-size: 0.68rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--turf, #0c6b4c); border: 1px solid color-mix(in oklab, #0c6b4c 35%, transparent); } .ds-match-place { font-weight: 600; } .ds-match-hole { color: var(--bib, #ff3b1f); font-weight: 650; display: inline-flex; align-items: center; gap: 0.45rem; justify-self: end; } .ds-slot { display: inline-flex; align-items: center; justify-content: center; min-width: 1.5rem; min-height: 1.5rem; padding: 0 0.35rem; border-radius: 999px; background: var(--bib, #ff3b1f); color: #fff8f5; font-family: var(--font-mono), monospace; font-size: 0.72rem; font-weight: 600; } .ds-match-meta { grid-column: 1 / -1; color: color-mix(in oklab, #10231c 65%, transparent); } .ds-match-row:hover .ds-match-place { text-decoration: underline; text-underline-offset: 0.15em; }"
+    },
+    {
+      "name": "Turf Callout",
+      "kind": "card",
+      "refersTo": "callout-turf",
+      "description": "Bloque énfasis con sideline 3px — empty/toolbar/info.",
+      "html": "<aside class=\"ds-callout\"><p class=\"ds-callout-kicker\">Sin partidos</p><p>Publicá un hueco o mirá canchas cerca.</p></aside>",
+      "css": ".ds-callout { padding: 1.15rem 1.1rem; background: color-mix(in oklab, #0c6b4c 5%, #dff3e6); border-left: 3px solid var(--turf, #0c6b4c); color: var(--ink, #10231c); font-family: var(--font-sans), Outfit, sans-serif; line-height: 1.45; } .ds-callout-kicker { margin: 0 0 0.35rem; font-family: var(--font-display), 'Barlow Condensed', sans-serif; font-size: 1.15rem; letter-spacing: 0.03em; text-transform: uppercase; } .ds-callout p { margin: 0; }"
+    },
+    {
+      "name": "Brand Hero Mark",
+      "kind": "custom",
+      "refersTo": "display-hero",
+      "description": "Marca BaFut flood a escala hero.",
+      "html": "<div class=\"ds-hero-sample\"><p class=\"ds-brand-hero\">BaFut</p><h1 class=\"ds-hero-h1\">Hoy hay hueco</h1><p class=\"ds-hero-lede\">Entrá a una pateada abierta cerca.</p></div>",
+      "css": ".ds-hero-sample { padding: 2rem 1.25rem; background: var(--turf-deep, #073828); color: var(--chalk, #d9f2a5); } .ds-brand-hero { margin: 0; font-family: var(--font-display), 'Barlow Condensed', sans-serif; font-size: clamp(3rem, 12vw, 5.5rem); font-weight: 800; line-height: 0.8; letter-spacing: 0.04em; text-transform: uppercase; color: var(--flood, #ffd25a); } .ds-hero-h1 { margin: 0.35rem 0 0.55rem; max-width: 14ch; font-family: var(--font-display), 'Barlow Condensed', sans-serif; font-size: clamp(1.65rem, 4vw, 2.35rem); font-weight: 700; line-height: 0.95; text-transform: uppercase; } .ds-hero-lede { margin: 0; max-width: 30ch; font-family: var(--font-sans), Outfit, sans-serif; font-size: 1.05rem; line-height: 1.5; color: color-mix(in oklab, #d9f2a5 92%, transparent); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "El Reflector en la Cancha",
+    "overview": "BaFut se ve y se siente como llegar a una cancha sintética de noche: césped oscuro (turf / turf-deep), líneas de tiza (chalk / line), papel de cancha claro (paper) para operar, y un reflector amarillo (flood) que marca la marca y la acción. No es un dashboard SaaS ni un feed genérico: es un radar móvil de huecos, pensado para pulgar y WhatsApp.\n\nLa densidad es operativa y escaneable: tipografía condensada en mayúsculas para jerarquía, mono para metadatos de partido (hora, deporte, chips), sans limpia para cuerpo. Las superficies son planas; la profundidad viene de capas tonales y de la “línea de sideline” (borde izquierdo de 3px en callouts), no de cards con sombra.\n\nAnti-referencias confirmadas: purple SaaS, cream + terracotta genérico AI-default, cards redondeadas con multi-shadow, pills decorativas en el hero.",
+    "keyCharacteristics": [
+      "Paleta cancha: turf / flood / paper + chalk, bib, ink, mist",
+      "Display Barlow Condensed en mayúsculas; Outfit cuerpo; IBM Plex Mono labels",
+      "Radio casi cero; pill solo en badges numéricos y toasts",
+      "Hero full-bleed con cancha SVG; marca flood hero-level",
+      "Listas con reglas horizontales (match-row), no cards",
+      "Focus visible: anillo flood + sombra turf-deep"
+    ],
+    "rules": [
+      {
+        "name": "The Flood Budget Rule",
+        "body": "Flood es el reflector: CTAs primarias, marca BaFut y acentos puntuales. No pintar pantallas enteras de flood.",
+        "section": "colors"
+      },
+      {
+        "name": "The Bib Is Urgency Rule",
+        "body": "Bib solo comunica hueco / alerta / error. Si no hay urgencia, no uses bib.",
+        "section": "colors"
+      },
+      {
+        "name": "The Paper Field Rule",
+        "body": "El operate UI vive en paper + ink. Turf-deep es chrome (header/footer/nav), no fondo de formularios.",
+        "section": "colors"
+      },
+      {
+        "name": "The Jersey Type Rule",
+        "body": "Display Condensed en mayúsculas para marca y headings. Nunca Outfit en display hero.",
+        "section": "typography"
+      },
+      {
+        "name": "The Mono Meta Rule",
+        "body": "Hora, deporte, filtros y metadatos van en IBM Plex Mono — es la “planilla del partido”.",
+        "section": "typography"
+      },
+      {
+        "name": "The One Job Section Rule",
+        "body": "Cada bloque: un propósito, un heading, un lede corto. El hero no mezcla stats ni listados.",
+        "section": "layout"
+      },
+      {
+        "name": "The Flat-By-Default Rule",
+        "body": "Sin cards elevadas. Si hace falta énfasis, usa sideline o tinte tonal — no box-shadow de tarjeta.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Square Kit Rule",
+        "body": "Radio 0 es la firma. Pill solo para conteos/toasts, nunca para CTAs principales.",
+        "section": "shapes"
+      }
+    ],
+    "dos": [
+      "Do usar tokens :root (--turf, --flood, --paper, etc.) vía Tailwind theme o var(...).",
+      "Do poner BaFut en Condensed flood a escala hero en superficies de marca.",
+      "Do escoger flood para la acción primaria y bib solo para urgencia de cupo.",
+      "Do construir feeds como listas con reglas + MatchRow, no grids de cards.",
+      "Do mantener targets ≥2.75rem y el anillo de focus flood + turf-deep."
+    ],
+    "donts": [
+      "Don't introducir purple SaaS, cream+terracotta AI-default, ni Inter/Roboto como display.",
+      "Don't envolver el hero o el feed en cards redondeadas con sombra.",
+      "Don't saturar flood o bib como fondos de sección enteros.",
+      "Don't reemplazar Barlow Condensed / Outfit / IBM Plex Mono sin actualizar este sistema.",
+      "Don't meter stats, agendas o promos en el primer viewport del hero."
+    ]
+  }
+}
