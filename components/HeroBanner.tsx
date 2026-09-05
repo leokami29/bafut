@@ -75,9 +75,10 @@ export function HeroBanner({ cityName }: HeroBannerProps) {
         <p className="brand-hero" aria-hidden="true">
           BaFut
         </p>
-        <h1>El radar de huecos en {cityName}</h1>
+        <h1>El radar de pateadas en {cityName}</h1>
         <p className="hero-lede">
-          Entrá a una pateada abierta o publicá el cupo que te falta. Hoy, cerca, sin grupo eterno de WhatsApp.
+          Partidos de fútbol 5 y 7, huecos en cancha sintética. Entrá a una pateada abierta o publicá el
+          cupo que te falta — hoy, cerca, sin grupo eterno de WhatsApp.
         </p>
         <div className="hero-ctas">
           <Link

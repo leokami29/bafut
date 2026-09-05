@@ -3,11 +3,32 @@ import { getActiveCity, getUpcomingMatches, getVenuesByCity } from "@/lib/data";
 import { absoluteUrl } from "@/lib/seo";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const now = new Date();
   const entries: MetadataRoute.Sitemap = [
-    { url: absoluteUrl("/"), priority: 1 },
-    { url: absoluteUrl("/partidos"), priority: 0.9 },
-    { url: absoluteUrl("/canchas"), priority: 0.9 },
-    { url: absoluteUrl("/apoyar") },
+    {
+      url: absoluteUrl("/"),
+      lastModified: now,
+      changeFrequency: "daily",
+      priority: 1,
+    },
+    {
+      url: absoluteUrl("/partidos"),
+      lastModified: now,
+      changeFrequency: "hourly",
+      priority: 0.95,
+    },
+    {
+      url: absoluteUrl("/canchas"),
+      lastModified: now,
+      changeFrequency: "daily",
+      priority: 0.95,
+    },
+    {
+      url: absoluteUrl("/apoyar"),
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.3,
+    },
   ];
 
   const city = await getActiveCity();
@@ -23,16 +44,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   for (const venue of venues) {
     entries.push({
       url: absoluteUrl(`/canchas/${venue.slug}`),
-      lastModified: venue.created_at,
-      priority: 0.7,
+      lastModified: venue.created_at ? new Date(venue.created_at) : now,
+      changeFrequency: "weekly",
+      priority: 0.75,
     });
   }
 
   for (const match of matches) {
     entries.push({
       url: absoluteUrl(`/p/${match.share_code}`),
-      lastModified: match.starts_at ?? match.created_at,
-      priority: 0.5,
+      lastModified: match.starts_at
+        ? new Date(match.starts_at)
+        : match.created_at
+          ? new Date(match.created_at)
+          : now,
+      changeFrequency: "hourly",
+      priority: 0.55,
     });
   }
 

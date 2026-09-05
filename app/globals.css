@@ -610,6 +610,24 @@ textarea {
   color: color-mix(in oklab, var(--ink) 68%, transparent);
 }
 
+.how-seo-links {
+  margin: 1.35rem 0 0;
+  max-width: 48ch;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: color-mix(in oklab, var(--ink) 62%, transparent);
+}
+
+.how-seo-links a {
+  color: var(--turf);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.how-seo-links a:hover {
+  color: var(--turf-deep);
+}
+
 .how-steps {
   list-style: none;
   margin: 0;
@@ -1669,6 +1687,12 @@ h2,
 
 .page-canchas .lede {
   max-width: 44rem;
+}
+
+.venue-hero-lede {
+  margin: 0.45rem 0 0.85rem;
+  max-width: 42ch;
+  font-size: 1rem;
 }
 
 .page-canchas .venue-directory {

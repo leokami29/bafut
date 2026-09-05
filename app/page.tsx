@@ -28,12 +28,12 @@ export default async function HomePage() {
 
   return (
     <main id="main">
-      <JsonLd data={homeJsonLd()} />
+      <JsonLd data={homeJsonLd(cityName)} />
       <section className="hero" aria-label="Presentación de BaFut">
         <HeroBanner cityName={cityName} />
       </section>
 
-      <HomeHowItWorks />
+      <HomeHowItWorks cityName={cityName} />
 
       <Suspense fallback={<HomeFeedSkeleton cityName={cityName} />}>
         <HomeFeed />

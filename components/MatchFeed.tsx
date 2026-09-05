@@ -237,8 +237,8 @@ export function MatchFeed({
             </Link>
             <Link className="text-link" href="/canchas">
               {canchasConHuecos > 0
-                ? `${canchasConHuecos} canchas con huecos`
-                : `Ver canchas de ${cityName}`}
+                ? `${canchasConHuecos} canchas sintéticas con huecos`
+                : `Canchas sintéticas en ${cityName}`}
             </Link>
           </div>
         </div>

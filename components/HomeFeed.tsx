@@ -48,12 +48,12 @@ export async function HomeFeed() {
             <h2 id="hoy-title">Próximas pateadas</h2>
             <p className="sheet-lede">
               {hasToday
-                ? `${todayCount === 1 ? "1 hueco hoy" : `${todayCount} huecos hoy`} · lo más cerca en el tiempo.`
-                : `Las más cercanas en ${cityName}. Entrá o publicá la tuya.`}
+                ? `${todayCount === 1 ? "1 hueco hoy" : `${todayCount} huecos hoy`} en ${cityName} · lo más cerca en el tiempo.`
+                : `Las más cercanas en ${cityName}. Entrá a un partido o publicá tu pateada.`}
             </p>
           </div>
           <Link className="sheet-head-link" href="/partidos">
-            Ver todas
+            Ver partidos
           </Link>
         </header>
 
@@ -82,12 +82,12 @@ export async function HomeFeed() {
             </ul>
             <div className="home-feed-actions">
               <Link className="text-link" href="/partidos">
-                Ver todos los huecos
+                Ver todos los partidos y huecos
               </Link>
               <Link className="text-link text-link-muted" href="/canchas">
                 {canchasConHuecos > 0
-                  ? `${canchasConHuecos} canchas con huecos`
-                  : `Ver canchas de ${cityName}`}
+                  ? `${canchasConHuecos} canchas sintéticas con huecos`
+                  : `Canchas sintéticas en ${cityName}`}
               </Link>
             </div>
           </>
@@ -103,7 +103,7 @@ export async function HomeFeed() {
                 Publicar hueco
               </Link>
               <Link className="btn-ghost empty-home-ghost" href="/canchas">
-                Explorar canchas
+                Explorar canchas sintéticas
               </Link>
             </div>
           </div>

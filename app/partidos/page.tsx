@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
+import { JsonLd, matchRadarJsonLd } from "@/components/JsonLd";
 import { MatchFeed } from "@/components/MatchFeed";
 import { RosterSkeleton } from "@/components/RosterSkeleton";
 import { getActiveCity, getUpcomingMatches } from "@/lib/data";
@@ -44,12 +45,17 @@ export default async function PartidosPage() {
 
   return (
     <main className="page page-partidos" id="main">
+      <JsonLd data={matchRadarJsonLd(matches, city.name)} />
       <header className="page-head page-head-row">
         <div>
           <p className="eyebrow">Radar · {city.name}</p>
-          <h1>Huecos abiertos</h1>
+          <h1>Partidos y huecos abiertos</h1>
           <p className="lede">
-            Entrá a una pateada de hoy o publicá tu hueco. Compartí el link en tu grupo de WhatsApp.
+            Pateadas de fútbol 5 y 7 con cupos en canchas sintéticas de {city.name}. Entrá a una de
+            hoy o{" "}
+            <Link href="/partidos/nuevo">publicá tu hueco</Link>
+            {" · "}
+            <Link href="/canchas">ver canchas</Link>.
           </p>
         </div>
         <Link className="btn-flood page-head-cta" href="/partidos/nuevo">

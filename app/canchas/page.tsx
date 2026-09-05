@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { JsonLd, venueDirectoryJsonLd } from "@/components/JsonLd";
 import { VenueDirectory } from "@/components/VenueDirectory";
 import { getActiveCity, getUpcomingMatches, getVenuesByCity } from "@/lib/data";
 import {
@@ -46,13 +48,15 @@ export default async function CanchasPage() {
 
   return (
     <main className="page page-canchas" id="main">
+      <JsonLd data={venueDirectoryJsonLd(venues, city.name)} />
       <header className="page-head page-head-compact">
-        <p className="eyebrow">Dónde se está armando</p>
-        <h1>Canchas</h1>
+        <p className="eyebrow">Dónde se está armando · {city.name}</p>
+        <h1>Canchas sintéticas en {city.name}</h1>
         <p className="lede">
           {withDemand > 0
-            ? `${venues.length} canchas en ${city.name} · ${withDemand} con huecos abiertos en la lista.`
-            : `${venues.length} canchas en ${city.name}. BaFut no reserva: marcas el punto y armas la pateada.`}
+            ? `${venues.length} canchas en ${city.name} · ${withDemand} con huecos abiertos para partidos de fútbol 5/7. `
+            : `${venues.length} canchas en ${city.name} para armar pateadas de fútbol. BaFut no reserva: marcas el punto y armas el partido. `}
+          <Link href="/partidos">Ver partidos y huecos abiertos</Link>.
         </p>
       </header>
       <VenueDirectory

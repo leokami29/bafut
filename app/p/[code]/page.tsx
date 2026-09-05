@@ -22,6 +22,7 @@ import {
   defaultTwitter,
   fullTitle,
   matchIsIndexable,
+  matchPageDescription,
   robotsIndex,
   robotsNoIndex,
 } from "@/lib/seo";
@@ -37,7 +38,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const hole = openSlotsPhrase(openSlotPositions(match));
   const title = `${hole} en ${match.venues.name}`;
   const sport = sportLabel[match.sport as keyof typeof sportLabel] ?? match.sport;
-  const description = `${formatWhen(match.starts_at, match.cities.timezone)} · ${match.venues.neighborhood ?? match.cities.name} · ${sport}`;
+  const place = match.venues.neighborhood ?? match.cities.name;
+  const when = formatWhen(match.starts_at, match.cities.timezone);
+  const description = matchPageDescription({
+    when,
+    venueName: match.venues.name,
+    place,
+    sport,
+    hole,
+  });
   const url = absoluteUrl(`/p/${match.share_code}`);
   const ogTitle = fullTitle(title);
   const indexable = matchIsIndexable(match.status, match.starts_at);
@@ -254,9 +263,13 @@ export default async function PartidoPage({ params }: Props) {
       ) : null}
 
       <p className="foot-link">
-        <Link href="/partidos?filtro=hoy">Radar de hoy</Link>
+        <Link href="/partidos?filtro=hoy">Radar de partidos hoy en {match.cities.name}</Link>
         {" · "}
-        <Link href="/canchas">Canchas</Link>
+        <Link href={`/canchas/${match.venues.slug}`}>
+          Cancha {match.venues.name}
+        </Link>
+        {" · "}
+        <Link href="/canchas">Canchas sintéticas</Link>
       </p>
     </main>
   );

@@ -1,4 +1,10 @@
-export function HomeHowItWorks() {
+import Link from "next/link";
+
+type HomeHowItWorksProps = {
+  cityName?: string;
+};
+
+export function HomeHowItWorks({ cityName = "Barranquilla" }: HomeHowItWorksProps) {
   return (
     <section className="how-it-works" aria-labelledby="how-title">
       <div className="home-inner">
@@ -6,7 +12,8 @@ export function HomeHowItWorks() {
           <p className="eyebrow">Cómo funciona</p>
           <h2 id="how-title">Tres toques y estás dentro</h2>
           <p className="how-lede">
-            BaFut es el radar de pateadas en la ciudad: ves quién necesita gente y armás el equipo sin enredo.
+            BaFut es el radar de pateadas en {cityName}: ves quién necesita gente en canchas sintéticas y
+            armás el partido de fútbol sin enredo.
           </p>
         </header>
         <ol className="how-steps">
@@ -32,6 +39,12 @@ export function HomeHowItWorks() {
             <span>Aceptás al que encaja y mandás el link por WhatsApp.</span>
           </li>
         </ol>
+        <p className="how-seo-links">
+          Explorá el{" "}
+          <Link href="/partidos">radar de partidos y huecos abiertos</Link>
+          {" · "}
+          <Link href="/canchas">canchas sintéticas en {cityName}</Link>
+        </p>
       </div>
     </section>
   );

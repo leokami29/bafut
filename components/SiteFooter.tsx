@@ -26,6 +26,10 @@ export function SiteFooter() {
         </p>
 
         <nav className="site-footer-links" aria-label="Pie de página">
+          <Link href="/partidos">Partidos y huecos</Link>
+          <span className="site-footer-sep" aria-hidden="true" />
+          <Link href="/canchas">Canchas sintéticas</Link>
+          <span className="site-footer-sep" aria-hidden="true" />
           <Link href="/apoyar">Apoyar BaFut</Link>
           <span className="site-footer-sep" aria-hidden="true" />
           <a

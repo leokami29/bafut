@@ -18,6 +18,7 @@ import {
   defaultOg,
   defaultTwitter,
   fullTitle,
+  venuePageDescription,
   venuePageTitle,
 } from "@/lib/seo";
 import { openSlotCount, pendingClaimCountForHost } from "@/lib/types";
@@ -48,10 +49,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   );
   const cityName = city?.name ?? "Barranquilla";
   const title = venuePageTitle(venue.name, venue.neighborhood);
-  const place = venue.neighborhood ? `${venue.neighborhood}, ${cityName}` : cityName;
-  const description =
-    meta.description?.trim() ||
-    `Cancha en ${place}. Huecos abiertos aquí: publicá y concentrá la demanda en BaFut.`;
+  const description = venuePageDescription({
+    name: venue.name,
+    neighborhood: venue.neighborhood,
+    cityName,
+    surface: venue.surface,
+    description: meta.description,
+  });
   const url = absoluteUrl(`/canchas/${venue.slug}`);
   const photo = meta.images[0];
   const ogTitle = fullTitle(title);
@@ -178,6 +182,11 @@ export default async function CanchaPage({ params }: Props) {
           ) : null}
         </div>
         <h1>{venue.name}</h1>
+        <p className="lede venue-hero-lede">
+          {surface === "Sintética" ? "Cancha sintética" : surface} en{" "}
+          {venue.neighborhood ? `${venue.neighborhood}, ${city.name}` : city.name}. Publicá un hueco
+          o sumate a un partido de fútbol aquí.
+        </p>
         <div className="venue-badges" aria-label="Características de la cancha">
           {venue.neighborhood ? <span className="venue-badge is-neighborhood">{venue.neighborhood}</span> : null}
           <span className="venue-badge">{kind}</span>
@@ -410,9 +419,9 @@ export default async function CanchaPage({ params }: Props) {
       <VenueOwnerBlock venueName={venue.name} venueSlug={venue.slug} hasActivity={here.length > 0} matchCount={here.length} openSlots={openSlotsHere} />
 
       <p className="foot-link">
-        <Link href="/canchas">Ver todas las canchas</Link>
+        <Link href="/canchas">Todas las canchas sintéticas</Link>
         {" · "}
-        <Link href="/partidos?filtro=hoy">Radar de hoy</Link>
+        <Link href="/partidos?filtro=hoy">Partidos y huecos de hoy</Link>
       </p>
 
       <VenueStickyCta href={publishHref} label="Publicar hueco aquí" />
