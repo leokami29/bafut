@@ -443,7 +443,7 @@ def main():
 
     lines = [
         "-- Barranquilla multi-sport venue enrichment (Google Maps scrape 2026-09-02)",
-        "-- Queries: tmp/gmaps-bafut-sports-queries.txt",
+        "-- Queries: scripts/scrape/gmaps-bafut-sports-queries.txt",
         "-- Sports: basquet, voleibol, padel, futbol_sala (+ enrich existing futbol venues)",
         "",
     ]

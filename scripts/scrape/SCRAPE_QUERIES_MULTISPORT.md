@@ -1,9 +1,9 @@
 # Queries used — Barranquilla multi-sport Google Maps scrape (2026-09-02)
 
 Source: `gosom/google-maps-scraper` via `.agents/skills/google-maps-scraper`
-Output: `/tmp/gmaps-bafut-sports-output/results.json` (119 places)
-Repo copy: `tmp/gmaps-sports-results.json`
-Queries file: `tmp/gmaps-bafut-sports-queries.txt`
+Output: `/scripts/scrape/gmaps-bafut-sports-output/results.json` (119 places)
+Repo copy: `scripts/scrape/gmaps-sports-results.json`
+Queries file: `scripts/scrape/gmaps-bafut-sports-queries.txt`
 
 ## Search queries
 
@@ -38,6 +38,6 @@ canchas de padel Barranquilla
 
 ## Processing
 
-- `tmp/process-sports.py` — filter, infer sports, dedupe by name/slug/lat-lng
-- `tmp/generate-sports-sql.py` — curated inserts + sports array enrichments
+- `scripts/scrape/process-sports.py` — filter, infer sports, dedupe by name/slug/lat-lng
+- `scripts/scrape/generate-sports-sql.py` — curated inserts + sports array enrichments
 - Migration: `supabase/migrations/20260902210000_barranquilla_multisport_venues.sql`
