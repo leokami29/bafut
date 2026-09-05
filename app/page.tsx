@@ -5,7 +5,7 @@ import { HomeFeed } from "@/components/HomeFeed";
 import { HomeFeedSkeleton } from "@/components/HomeFeedSkeleton";
 import { HomeHowItWorks } from "@/components/HomeHowItWorks";
 import { JsonLd, homeJsonLd } from "@/components/JsonLd";
-import { getActiveCity } from "@/lib/data";
+import { getActiveCity, getUpcomingMatches } from "@/lib/data";
 import {
   DEFAULT_DESCRIPTION,
   DEFAULT_TITLE,
@@ -25,19 +25,21 @@ export const metadata: Metadata = {
 export default async function HomePage() {
   const city = await getActiveCity();
   const cityName = city?.name ?? "Barranquilla";
+  const matches = city ? await getUpcomingMatches(city.id) : [];
+  const hasUpcoming = matches.length > 0;
 
   return (
     <main id="main">
       <JsonLd data={homeJsonLd(cityName)} />
       <section className="hero" aria-label="Presentación de BaFut">
-        <HeroBanner cityName={cityName} />
+        <HeroBanner cityName={cityName} hasUpcoming={hasUpcoming} />
       </section>
-
-      <HomeHowItWorks cityName={cityName} />
 
       <Suspense fallback={<HomeFeedSkeleton cityName={cityName} />}>
         <HomeFeed />
       </Suspense>
+
+      <HomeHowItWorks cityName={cityName} />
     </main>
   );
 }

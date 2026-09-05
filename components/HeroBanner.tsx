@@ -9,9 +9,23 @@ import type { Sport } from "@/lib/constants";
 
 type HeroBannerProps = {
   cityName: string;
+  /** Si hay próximas pateadas, flood prioriza seeker; si no, host. */
+  hasUpcoming?: boolean;
 };
 
 const HEADLINE_FADE_MS = 280;
+
+const SEEKER_CTA = {
+  href: "#proximas",
+  label: "Ver huecos",
+  ariaLabel: "Ver huecos cercanos",
+} as const;
+
+const HOST_CTA = {
+  href: "/partidos/nuevo",
+  label: "Publicar hueco",
+  ariaLabel: "Publicar un hueco en cancha",
+} as const;
 
 function HeroSportChip({ sport }: { sport: Sport | null }) {
   const [displayed, setDisplayed] = useState<Sport | null>(sport);
@@ -56,9 +70,11 @@ function HeroSportChip({ sport }: { sport: Sport | null }) {
   );
 }
 
-export function HeroBanner({ cityName }: HeroBannerProps) {
+export function HeroBanner({ cityName, hasUpcoming = false }: HeroBannerProps) {
   const pitch = usePitchSetup({ rotate: true });
   const sport = pitch.setup?.sport ?? null;
+  const primary = hasUpcoming ? SEEKER_CTA : HOST_CTA;
+  const secondary = hasUpcoming ? HOST_CTA : SEEKER_CTA;
 
   return (
     <>
@@ -79,23 +95,23 @@ export function HeroBanner({ cityName }: HeroBannerProps) {
         </p>
         <h1>El radar de pateadas en {cityName}</h1>
         <p className="hero-lede">
-          Partidos de fútbol 5 y 7, huecos en cancha sintética. Entrá a una pateada abierta o publicá el
-          cupo que te falta — hoy, cerca, sin grupo eterno de WhatsApp.
+          Huecos en cancha sintética — fútbol 5 y 7, sala, básquet y más. Entrá a una pateada abierta o
+          publicá el cupo que te falta: hoy, cerca, sin grupo eterno de WhatsApp.
         </p>
         <div className="hero-ctas">
           <Link
             className="btn-flood btn-primary"
-            href="/partidos/nuevo"
-            aria-label="Publicar un hueco en cancha"
+            href={primary.href}
+            aria-label={primary.ariaLabel}
           >
-            Publicar hueco
+            {primary.label}
           </Link>
           <Link
             className="btn-ghost btn-secondary"
-            href="#proximas"
-            aria-label="Ver huecos cercanos"
+            href={secondary.href}
+            aria-label={secondary.ariaLabel}
           >
-            Ver huecos
+            {secondary.label}
           </Link>
         </div>
       </div>

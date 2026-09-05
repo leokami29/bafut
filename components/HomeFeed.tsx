@@ -42,23 +42,18 @@ export async function HomeFeed() {
   return (
     <section className="sheet home-sheet" id="proximas" aria-labelledby="hoy-title">
       <div className="home-inner home-inner-wide">
-        <header className="sheet-head sheet-head-row">
-          <div>
-            <p className="eyebrow">Radar</p>
-            <h2 id="hoy-title">Próximas pateadas</h2>
-            <p className="sheet-lede">
-              {hasToday
-                ? `${todayCount === 1 ? "1 hueco hoy" : `${todayCount} huecos hoy`} en ${cityName} · lo más cerca en el tiempo.`
-                : `Las más cercanas en ${cityName}. Entrá a un partido o publicá tu pateada.`}
-            </p>
-          </div>
-          <Link className="sheet-head-link" href="/partidos">
-            Ver partidos
-          </Link>
+        <header className="sheet-head">
+          <p className="eyebrow">Radar</p>
+          <h2 id="hoy-title">Próximas pateadas</h2>
+          <p className="sheet-lede">
+            {hasToday
+              ? `${todayCount === 1 ? "1 hueco hoy" : `${todayCount} huecos hoy`} en ${cityName} · lo más cerca en el tiempo.`
+              : `Las más cercanas en ${cityName}. Entrá a un partido o publicá tu pateada.`}
+          </p>
         </header>
 
         {sports.length > 1 ? (
-          <ul className="home-sport-strip" aria-label="Deportes en la lista">
+          <ul className="home-sport-strip" aria-hidden="true">
             {sports.map((sport) => (
               <li key={sport}>
                 <SportMark sport={sport} compact />

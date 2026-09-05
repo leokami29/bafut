@@ -51,10 +51,17 @@
   list-style: none;
   margin: 0 0 1rem;
   padding: 0;
+  pointer-events: none;
+  cursor: default;
+  user-select: none;
 }
 
 .home-sport-strip li {
   display: flex;
+}
+
+.home-sport-strip .sport-mark {
+  opacity: 0.85;
 }
 
 .home-roster > .home-roster-item {
