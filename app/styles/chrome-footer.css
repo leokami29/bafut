@@ -32,6 +32,8 @@
     );
   color: color-mix(in oklab, var(--chalk) 78%, transparent);
   border-top: 1px solid color-mix(in oklab, var(--chalk) 18%, transparent);
+  /* Reserva layout estable del chrome inferior */
+  contain: layout style;
 }
 
 /* Sideline accent — misma “línea de cancha” que el resto de BaFut */

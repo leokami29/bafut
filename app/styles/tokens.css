@@ -3,7 +3,9 @@
   --turf-deep: #073828;
   --chalk: #d9f2a5;
   --flood: #ffd25a;
-  --bib: #ff3b1f;
+  /* #c42a16 ≈5.4:1 vs bib-ink / ≈4.9:1 vs paper (WCAG AA texto) */
+  --bib: #c42a16;
+  --bib-ink: #fff8f5;
   --ink: #10231c;
   --mist: #c8e6d4;
   --paper: #dff3e6;
@@ -16,6 +18,7 @@
   --color-chalk: var(--chalk);
   --color-flood: var(--flood);
   --color-bib: var(--bib);
+  --color-bib-ink: var(--bib-ink);
   --color-ink: var(--ink);
   --color-mist: var(--mist);
   --color-paper: var(--paper);

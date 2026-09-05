@@ -162,7 +162,7 @@
 }
 
 .venue-info-empty {
-  color: color-mix(in oklab, var(--ink) 45%, transparent);
+  color: color-mix(in oklab, var(--ink) 72%, transparent);
   font-style: italic;
 }
 

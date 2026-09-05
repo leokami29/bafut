@@ -23,8 +23,8 @@ export default async function EntrarPage({
         <h1>{claiming ? "Entrá para pedir el cupo" : "Entrá a BaFut"}</h1>
         <p>
           {claiming
-            ? "Correo y clave. Después completá nombre y WhatsApp para que el host sepa quién llega."
-            : "Entrá o creá cuenta con correo y clave. El correo solo se usa si olvidás la clave."}
+            ? "Entrá con Google o con correo y clave. Después completá tu nombre para que el host sepa quién llega."
+            : "Entrá con Google o creá cuenta con correo y clave. El correo solo se usa si olvidás la clave."}
         </p>
       </header>
       <AuthForm nextPath={nextPath} initialAuthError={auth_error} />

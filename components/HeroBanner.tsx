@@ -18,13 +18,11 @@ const HEADLINE_FADE_MS = 280;
 const SEEKER_CTA = {
   href: "#proximas",
   label: "Ver huecos",
-  ariaLabel: "Ver huecos cercanos",
 } as const;
 
 const HOST_CTA = {
   href: "/partidos/nuevo",
   label: "Publicar hueco",
-  ariaLabel: "Publicar un hueco en cancha",
 } as const;
 
 function HeroSportChip({ sport }: { sport: Sport | null }) {
@@ -99,18 +97,10 @@ export function HeroBanner({ cityName, hasUpcoming = false }: HeroBannerProps) {
           publicá el cupo que te falta: hoy, cerca, sin grupo eterno de WhatsApp.
         </p>
         <div className="hero-ctas">
-          <Link
-            className="btn-flood btn-primary"
-            href={primary.href}
-            aria-label={primary.ariaLabel}
-          >
+          <Link className="btn-flood btn-primary" href={primary.href}>
             {primary.label}
           </Link>
-          <Link
-            className="btn-ghost btn-secondary"
-            href={secondary.href}
-            aria-label={secondary.ariaLabel}
-          >
+          <Link className="btn-ghost btn-secondary" href={secondary.href}>
             {secondary.label}
           </Link>
         </div>

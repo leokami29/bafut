@@ -6,7 +6,7 @@ colors:
   turf-deep: "#073828"
   chalk: "#d9f2a5"
   flood: "#ffd25a"
-  bib: "#ff3b1f"
+  bib: "#c42a16"
   ink: "#10231c"
   mist: "#c8e6d4"
   paper: "#dff3e6"
@@ -150,7 +150,7 @@ Paleta de cancha nocturna: verdes de césped, tiza, reflector flood y bib de urg
 - **Flood Reflector** (`#ffd25a`): CTA primaria (`btn-flood`), marca hero (`.brand-hero`), hover de nav, donate chip, acentos de sideline.
 
 ### Tertiary
-- **Bib Urgency** (`#ff3b1f`): huecos abiertos, cupos, `btn-bib`, errores de form, spots abiertos en el pitch. Reserva para “falta gente / alerta”, no decoración.
+- **Bib Urgency** (`#c42a16`): huecos abiertos, cupos, `btn-bib`, errores de form, spots abiertos en el pitch. Reserva para “falta gente / alerta”, no decoración. Oscurecido desde el rojo neón para contraste AA (≥4.5:1) con bib-ink y paper.
 
 ### Neutral
 - **Pitch Paper** (`#dff3e6`): fondo de body y superficies de operate.

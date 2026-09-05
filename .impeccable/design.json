@@ -25,8 +25,8 @@
       "bib": {
         "role": "tertiary",
         "displayName": "Bib Urgency",
-        "canonical": "#ff3b1f",
-        "tonalRamp": ["#5c1208", "#8a1c0e", "#c42a16", "#ff3b1f", "#ff6a52", "#ff9786", "#ffc4ba", "#fff0ed"]
+        "canonical": "#c42a16",
+        "tonalRamp": ["#5c1208", "#8a1c0e", "#c42a16", "#e0351a", "#ff3b1f", "#ff6a52", "#ff9786", "#ffc4ba"]
       },
       "chalk": {
         "role": "neutral",
@@ -158,7 +158,7 @@
       "refersTo": "button-bib",
       "description": "Acción de urgencia / claim — bib rojo.",
       "html": "<button class=\"ds-btn-bib\">Pedir cupo</button>",
-      "css": ".ds-btn-bib { display: inline-flex; align-items: center; justify-content: center; min-height: 2.8rem; padding: 0.55rem 1.1rem; border: 1px solid transparent; background: var(--bib, #ff3b1f); color: #fff8f5; font-family: var(--font-sans), Outfit, sans-serif; cursor: pointer; border-radius: 0; transition: background 0.2s ease; } .ds-btn-bib:hover { background: color-mix(in oklab, #ff3b1f 88%, black); } .ds-btn-bib:focus-visible { outline: 2px solid var(--flood, #ffd25a); outline-offset: 2px; box-shadow: 0 0 0 4px var(--turf-deep, #073828); }"
+      "css": ".ds-btn-bib { display: inline-flex; align-items: center; justify-content: center; min-height: 2.8rem; padding: 0.55rem 1.1rem; border: 1px solid transparent; background: var(--bib, #c42a16); color: var(--bib-ink, #fff8f5); font-family: var(--font-sans), Outfit, sans-serif; cursor: pointer; border-radius: 0; transition: background 0.2s ease; } .ds-btn-bib:hover { background: color-mix(in oklab, var(--bib, #c42a16) 88%, black); } .ds-btn-bib:focus-visible { outline: 2px solid var(--flood, #ffd25a); outline-offset: 2px; box-shadow: 0 0 0 4px var(--turf-deep, #073828); }"
     },
     {
       "name": "Ghost Button",
@@ -198,7 +198,7 @@
       "refersTo": "match-row",
       "description": "Fila signature del feed — planilla, no card.",
       "html": "<a class=\"ds-match-row\" href=\"/p/demo\"><div class=\"ds-match-when\"><time>Hoy · 18:30</time><span class=\"ds-sport\">Fútbol</span></div><div class=\"ds-match-place\">Cancha El Country</div><div class=\"ds-match-hole\">Falta 1 <span class=\"ds-slot\">1</span></div><div class=\"ds-match-meta\">5v5 · Barranquilla</div></a>",
-      "css": ".ds-match-row { display: grid; grid-template-columns: 1fr auto; gap: 0.35rem 1rem; padding: 1rem 0.1rem; border-bottom: 1px solid color-mix(in oklab, #10231c 18%, transparent); text-decoration: none; color: var(--ink, #10231c); font-family: var(--font-sans), Outfit, sans-serif; } .ds-match-when { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; grid-column: 1 / -1; } .ds-match-when time, .ds-match-meta { font-family: var(--font-mono), 'IBM Plex Mono', monospace; font-size: 0.82rem; } .ds-sport { padding: 0.15rem 0.45rem; font-family: var(--font-mono), monospace; font-size: 0.68rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--turf, #0c6b4c); border: 1px solid color-mix(in oklab, #0c6b4c 35%, transparent); } .ds-match-place { font-weight: 600; } .ds-match-hole { color: var(--bib, #ff3b1f); font-weight: 650; display: inline-flex; align-items: center; gap: 0.45rem; justify-self: end; } .ds-slot { display: inline-flex; align-items: center; justify-content: center; min-width: 1.5rem; min-height: 1.5rem; padding: 0 0.35rem; border-radius: 999px; background: var(--bib, #ff3b1f); color: #fff8f5; font-family: var(--font-mono), monospace; font-size: 0.72rem; font-weight: 600; } .ds-match-meta { grid-column: 1 / -1; color: color-mix(in oklab, #10231c 65%, transparent); } .ds-match-row:hover .ds-match-place { text-decoration: underline; text-underline-offset: 0.15em; }"
+      "css": ".ds-match-row { display: grid; grid-template-columns: 1fr auto; gap: 0.35rem 1rem; padding: 1rem 0.1rem; border-bottom: 1px solid color-mix(in oklab, #10231c 18%, transparent); text-decoration: none; color: var(--ink, #10231c); font-family: var(--font-sans), Outfit, sans-serif; } .ds-match-when { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; grid-column: 1 / -1; } .ds-match-when time, .ds-match-meta { font-family: var(--font-mono), 'IBM Plex Mono', monospace; font-size: 0.82rem; } .ds-sport { padding: 0.15rem 0.45rem; font-family: var(--font-mono), monospace; font-size: 0.68rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--turf, #0c6b4c); border: 1px solid color-mix(in oklab, #0c6b4c 35%, transparent); } .ds-match-place { font-weight: 600; } .ds-match-hole { color: var(--bib, #c42a16); font-weight: 650; display: inline-flex; align-items: center; gap: 0.45rem; justify-self: end; } .ds-slot { display: inline-flex; align-items: center; justify-content: center; min-width: 1.5rem; min-height: 1.5rem; padding: 0 0.35rem; border-radius: 999px; background: var(--bib, #ff3b1f); color: #fff8f5; font-family: var(--font-mono), monospace; font-size: 0.72rem; font-weight: 600; } .ds-match-meta { grid-column: 1 / -1; color: color-mix(in oklab, #10231c 65%, transparent); } .ds-match-row:hover .ds-match-place { text-decoration: underline; text-underline-offset: 0.15em; }"
     },
     {
       "name": "Turf Callout",

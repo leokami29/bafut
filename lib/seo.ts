@@ -49,8 +49,10 @@ export function defaultOg(overrides?: {
       overrides?.images ??
       ([
         {
-          url: absoluteUrl("/icon.svg"),
-          alt: SITE_NAME,
+          url: absoluteUrl("/opengraph-image"),
+          width: 1200,
+          height: 630,
+          alt: `${SITE_NAME} · pateadas y huecos en Barranquilla`,
         },
       ] satisfies NonNullable<Metadata["openGraph"]>["images"]),
   };
@@ -59,11 +61,22 @@ export function defaultOg(overrides?: {
 export function defaultTwitter(overrides?: {
   title?: string;
   description?: string;
+  images?: NonNullable<Metadata["twitter"]>["images"];
 }): NonNullable<Metadata["twitter"]> {
   return {
     card: "summary_large_image",
     title: overrides?.title ?? DEFAULT_TITLE,
     description: overrides?.description ?? DEFAULT_DESCRIPTION,
+    images:
+      overrides?.images ??
+      [
+        {
+          url: absoluteUrl("/opengraph-image"),
+          width: 1200,
+          height: 630,
+          alt: `${SITE_NAME} · pateadas y huecos en Barranquilla`,
+        },
+      ],
   };
 }
 
@@ -95,9 +108,6 @@ export function venuePageDescription(input: {
   surface?: string | null;
   description?: string | null;
 }) {
-  const custom = input.description?.trim();
-  if (custom) return custom.slice(0, 160);
-
   const place = input.neighborhood?.trim()
     ? `${input.neighborhood.trim()}, ${input.cityName}`
     : input.cityName;
@@ -108,7 +118,19 @@ export function venuePageDescription(input: {
         ? "cancha de grama"
         : "cancha";
 
-  return `${input.name}: ${surface} en ${place}. Huecos y partidos de fútbol 5/7 abiertos aquí — publicá o sumate en BaFut.`;
+  const fallback = `${input.name}: ${surface} en ${place}. Huecos y partidos de fútbol 5/7 abiertos aquí — publicá o sumate en BaFut.`;
+  const custom = input.description?.trim();
+
+  // Meta descriptions cortas (<~120) pierden snippet; no devolver crudo corto.
+  if (custom && custom.length >= 120) {
+    return custom.slice(0, 160);
+  }
+  if (custom) {
+    const merged = `${custom.replace(/\s+/g, " ")} ${fallback}`.trim();
+    return merged.slice(0, 160);
+  }
+
+  return fallback;
 }
 
 export function matchPageDescription(input: {

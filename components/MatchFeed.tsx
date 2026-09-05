@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { MatchRow } from "@/components/MatchRow";
 import { SPORTS, type Sport } from "@/lib/constants";
@@ -12,6 +12,7 @@ import {
   isWithinNextHours,
   type MatchTimePeriod,
 } from "@/lib/datetime";
+import { formatDistance, haversineDistance } from "@/lib/geo";
 import { sportLabel, timePeriodLabel } from "@/lib/labels";
 import { openSlotCount, type MatchDetail } from "@/lib/types";
 import { aggregateVenueDemand, venuesWithDemandCount } from "@/lib/venue-demand";
@@ -96,6 +97,38 @@ export function MatchFeed({
   const params = useSearchParams();
   const timeFilter = parseTimeFilter(params.get("filtro"));
   const [sportFilter, setSportFilter] = useState<Sport | "all">("all");
+  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [geoError, setGeoError] = useState<string | null>(null);
+  const [geoLoading, setGeoLoading] = useState(false);
+
+  const requestLocation = useCallback(() => {
+    if (!navigator.geolocation) {
+      setGeoError("Tu navegador no soporta geolocalización.");
+      return;
+    }
+    setGeoLoading(true);
+    setGeoError(null);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setUserLocation({ lat: position.coords.latitude, lng: position.coords.longitude });
+        setGeoLoading(false);
+      },
+      (error) => {
+        setGeoError(
+          error.code === error.PERMISSION_DENIED
+            ? "No pudimos acceder a tu ubicación. Revisá los permisos."
+            : "No se pudo obtener tu ubicación.",
+        );
+        setGeoLoading(false);
+      },
+      { timeout: 10000, enableHighAccuracy: false },
+    );
+  }, []);
+
+  const clearLocation = useCallback(() => {
+    setUserLocation(null);
+    setGeoError(null);
+  }, []);
 
   const open = useMemo(() => matches.filter(hasOpenSlot), [matches]);
   const canchasConHuecos = useMemo(
@@ -122,9 +155,14 @@ export function MatchFeed({
   }, [timeFiltered]);
 
   const shown = useMemo(() => {
-    if (sportFilter === "all") return timeFiltered;
-    return timeFiltered.filter((match) => match.sport === sportFilter);
-  }, [timeFiltered, sportFilter]);
+    const filtered = sportFilter === "all" ? timeFiltered : timeFiltered.filter((match) => match.sport === sportFilter);
+    if (!userLocation) return filtered;
+    return [...filtered].sort((a, b) => {
+      const distA = haversineDistance(userLocation.lat, userLocation.lng, a.venues.lat, a.venues.lng);
+      const distB = haversineDistance(userLocation.lat, userLocation.lng, b.venues.lat, b.venues.lng);
+      return distA - distB;
+    });
+  }, [timeFiltered, sportFilter, userLocation]);
 
   const upcomingFallback = useMemo(() => {
     if (shown.length > 0 || (timeFilter !== "hoy" && timeFilter !== "3h")) return [];
@@ -201,10 +239,50 @@ export function MatchFeed({
               ))}
             </div>
           ) : null}
+
+          <div className="filter-chips filter-chips-location">
+            {userLocation ? (
+              <button
+                type="button"
+                className="is-on"
+                aria-pressed={true}
+                onClick={clearLocation}
+                title="Desactivar cercanía"
+              >
+                Cerca de ti ✕
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={requestLocation}
+                disabled={geoLoading}
+                title="Ordenar por distancia"
+              >
+                {geoLoading ? "Buscando…" : "Cerca de mí"}
+              </button>
+            )}
+          </div>
         </div>
+
+        {geoError ? (
+          <p className="partidos-geo-error">{geoError}</p>
+        ) : null}
 
         <p className="partidos-count" aria-live="polite">
           {countLabel}
+          {userLocation && shown.length > 0 ? (
+            <span className="partidos-count-distance">
+              {" · "}
+              Más cercano: {formatDistance(
+                haversineDistance(
+                  userLocation.lat,
+                  userLocation.lng,
+                  shown[0].venues.lat,
+                  shown[0].venues.lng,
+                ),
+              )}
+            </span>
+          ) : null}
         </p>
       </div>
 

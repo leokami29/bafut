@@ -13,10 +13,8 @@ export function MatchRow({ match }: { match: MatchDetail }) {
   const price = formatMoney(match.cost_per_person, match.currency);
   const hostName = match.profiles?.display_name?.trim() || "Host";
 
-  const ariaLabel = `${when}. ${match.venues.name}, ${match.venues.neighborhood}. ${phrase}. ${sport}, ${format}, ${price}. Organiza ${hostName}.`;
-
   return (
-    <Link href={`/p/${match.share_code}`} className="match-row" aria-label={ariaLabel}>
+    <Link href={`/p/${match.share_code}`} className="match-row">
       <span className="match-row-when">
         <time dateTime={match.starts_at}>{when}</time>
         <span className="match-row-sport">{sport}</span>

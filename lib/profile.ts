@@ -1,15 +1,12 @@
 import type { Profile } from "@/lib/types";
 
-/** Perfil listo para pedir cupo: nombre real + WhatsApp. */
+/** Perfil listo para pedir cupo: solo nombre real. WhatsApp opcional. */
 export function isProfileComplete(
   profile: Pick<Profile, "display_name"> & { whatsapp?: string | null },
   email?: string | null,
 ): boolean {
   const name = profile.display_name.trim();
   if (name.length < 2) {
-    return false;
-  }
-  if (!profile.whatsapp?.trim()) {
     return false;
   }
   if (!email) {
@@ -25,9 +22,6 @@ export function profileCompletenessHint(
 ): string | null {
   if (isProfileComplete(profile, email)) {
     return null;
-  }
-  if (!profile.whatsapp?.trim()) {
-    return "Agrega tu WhatsApp para que el host te escriba si te confirma el cupo.";
   }
   return "Pon tu nombre de cancha para que el host sepa quién pide el cupo.";
 }

@@ -169,6 +169,8 @@ export function PitchFieldDynamic({
       <svg
         className="pitch-field"
         viewBox="0 0 360 220"
+        width={360}
+        height={220}
         preserveAspectRatio={preserveAspectRatio}
       >
         <defs>

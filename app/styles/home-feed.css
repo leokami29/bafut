@@ -206,7 +206,7 @@
   padding: 0 0.35rem;
   border-radius: 999px;
   background: var(--bib);
-  color: #fff8f5;
+  color: var(--bib-ink);
   font-family: var(--font-mono), monospace;
   font-size: 0.72rem;
   font-weight: 600;

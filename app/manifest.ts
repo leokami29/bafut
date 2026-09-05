@@ -1,10 +1,11 @@
 import type { MetadataRoute } from "next";
+import { DEFAULT_DESCRIPTION } from "@/lib/seo";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "BaFut",
     short_name: "BaFut",
-    description: "Falta un jugador. Encuéntralo.",
+    description: DEFAULT_DESCRIPTION,
     start_url: "/",
     scope: "/",
     display: "standalone",

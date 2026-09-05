@@ -247,6 +247,11 @@
     border-top: 1px solid color-mix(in oklab, var(--chalk) 25%, transparent);
   }
 
+  .site-footer {
+    /* Espacio fijo bajo footer = altura mobile-nav (evita CLS al pintar la barra) */
+    padding-bottom: calc(1.5rem + 3.25rem + env(safe-area-inset-bottom));
+  }
+
   .mobile-nav a {
     display: flex;
     align-items: center;

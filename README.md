@@ -84,6 +84,11 @@ El cliente manda `redirectTo` = `{NEXT_PUBLIC_SITE_URL}/auth/callback` (priorida
 - Confirm email: **OFF**
 - Magic link: **OFF**
 
+**Authentication → Providers → Google**
+- Enable: **ON**
+- Client ID y Client Secret: obtenerlos de [Google Cloud Console](https://console.cloud.google.com/apis/credentials)
+- Authorized redirect URIs: agregar `https://bafut.macuttech.com/auth/v1/callback` (y `http://localhost:3005/auth/v1/callback` para dev)
+
 **Authentication → URL configuration**
 1. **Site URL** = `https://bafut.macuttech.com`  
    (nunca `localhost:3000` ni `localhost:8080`; el “Port 8080” de Railway es solo el puerto **interno** del contenedor)

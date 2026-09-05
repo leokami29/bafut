@@ -231,7 +231,7 @@
   margin: 0;
   font-family: var(--font-mono), monospace;
   font-size: 0.78rem;
-  color: color-mix(in oklab, var(--ink) 55%, transparent);
+  color: color-mix(in oklab, var(--ink) 72%, transparent);
 }
 
 .partidos-toolbar-skeleton {
@@ -323,4 +323,28 @@
   letter-spacing: 0.06em;
   color: var(--turf);
   border: 1px solid color-mix(in oklab, var(--turf) 45%, transparent);
+}
+
+.filter-chips-location {
+  margin-top: 0.35rem;
+}
+
+.filter-chips-location button {
+  font-size: 0.78rem;
+}
+
+.filter-chips-location button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.partidos-geo-error {
+  margin: 0.35rem 0 0;
+  font-size: 0.82rem;
+  color: var(--bib);
+}
+
+.partidos-count-distance {
+  color: var(--turf);
+  font-weight: 500;
 }

@@ -39,7 +39,7 @@
   font-size: 0.68rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: color-mix(in oklab, var(--ink) 48%, transparent);
+  color: color-mix(in oklab, var(--ink) 72%, transparent);
 }
 
 .match-stat-strip dd {
@@ -208,7 +208,7 @@
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: color-mix(in oklab, var(--ink) 58%, transparent);
+  color: color-mix(in oklab, var(--ink) 72%, transparent);
 }
 
 .venue-toolbar-meta {

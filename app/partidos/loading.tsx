@@ -5,8 +5,11 @@ export default function PartidosLoading() {
     <main className="page page-partidos" id="main" aria-busy="true">
       <header className="page-head page-head-row">
         <div>
-          <p className="eyebrow">Partidos</p>
-          <h1>Partidos con cupos abiertos</h1>
+          <p className="eyebrow">Radar</p>
+          {/* Sin h1: el título real vive en page.tsx (evita doble H1 al swap loading→page) */}
+          <p className="page-title-placeholder" aria-hidden="true">
+            Partidos y huecos abiertos
+          </p>
           <p className="lede">Entrá a un partido de hoy o publicá tu hueco.</p>
         </div>
       </header>

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
@@ -317,14 +318,17 @@ export default async function CanchaPage({ params }: Props) {
           <ul className="venue-photo-grid">
             {photos.map((src, index) => (
               <li key={src}>
-                {/* Google Maps CDN; plain img avoids next/image remote config */}
-                <img
+                <Image
                   src={src}
                   alt={index === 0 ? photoAlt : ""}
-                  loading="lazy"
+                  width={408}
+                  height={306}
+                  sizes="(max-width: 719px) 50vw, 280px"
+                  className="venue-photo"
+                  loading={index === 0 ? "eager" : "lazy"}
+                  fetchPriority={index === 0 ? "high" : "auto"}
                   decoding="async"
                   referrerPolicy="no-referrer"
-                  className="venue-photo"
                 />
               </li>
             ))}
