@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SportChalkLines } from "@/components/SportChalkLines";
 
 type HomeVenueOwnerProps = {
   cityName: string;
@@ -28,19 +29,14 @@ export function HomeVenueOwner({ cityName }: HomeVenueOwnerProps) {
             </Link>
           </div>
         </div>
-        <svg
-          className="home-venue-owner-lines"
-          viewBox="0 0 120 76"
-          preserveAspectRatio="xMidYMid meet"
-          aria-hidden="true"
-        >
-          <rect x="3" y="3" width="114" height="70" fill="none" stroke="currentColor" strokeWidth="1.6" />
-          <line x1="60" y1="3" x2="60" y2="73" stroke="currentColor" strokeWidth="1.6" />
-          <circle cx="60" cy="38" r="11" fill="none" stroke="currentColor" strokeWidth="1.6" />
-          <circle cx="60" cy="38" r="1.6" fill="currentColor" />
-          <rect x="3" y="22" width="15" height="32" fill="none" stroke="currentColor" strokeWidth="1.6" />
-          <rect x="102" y="22" width="15" height="32" fill="none" stroke="currentColor" strokeWidth="1.6" />
-        </svg>
+        <div className="home-venue-owner-pitch">
+          <SportChalkLines
+            className="home-venue-owner-lines"
+            showLabel={false}
+            intervalMs={5200}
+            fit="meet"
+          />
+        </div>
       </div>
     </section>
   );

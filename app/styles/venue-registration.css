@@ -26,7 +26,43 @@
   padding-block: clamp(4.5rem, 12vh, 7rem) clamp(3rem, 8vh, 4.5rem);
 }
 
-/* ——— Líneas de cancha multideporte ——— */
+/* ——— Líneas de cancha multideporte (geometría compartida) ——— */
+.sport-chalk svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.sport-chalk .vr-d {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: vr-draw 1.15s ease-out forwards;
+}
+
+/* Redes de vóley/pádel: trazo más grueso */
+.sport-chalk .vr-net {
+  stroke-width: 4;
+}
+
+.sport-chalk .vr-f {
+  fill: currentColor;
+  opacity: 0;
+  animation: vr-fade 0.5s ease-out forwards;
+}
+
+.sport-chalk .vr-hatch {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-dasharray: 7 9;
+  opacity: 0;
+  animation: vr-fade 0.8s ease-out forwards;
+}
+
+/* Contexto: hero de registro (decoración absoluta) */
 .vr-sport-lines {
   position: absolute;
   inset: 0;
@@ -38,36 +74,10 @@
 .vr-sport-lines svg {
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
   opacity: 0.15;
 }
 
-.vr-sport-lines .vr-d {
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2;
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-  animation: vr-draw 1.15s ease-out forwards;
-}
-
-.vr-sport-lines .vr-f {
-  fill: currentColor;
-  opacity: 0;
-  animation: vr-fade 0.5s ease-out forwards;
-}
-
-.vr-sport-lines .vr-hatch {
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.5;
-  stroke-dasharray: 7 9;
-  opacity: 0;
-  animation: vr-fade 0.8s ease-out forwards;
-}
-
-.vr-lines-label {
+.sport-chalk-label {
   position: absolute;
   right: clamp(1.25rem, 4vw, 2.5rem);
   bottom: 1.1rem;
@@ -457,19 +467,19 @@
 
 /* ——— Motion reducido ——— */
 @media (prefers-reduced-motion: reduce) {
-  .vr-sport-lines .vr-d {
+  .sport-chalk .vr-d {
     animation: none;
     stroke-dasharray: none;
     stroke-dashoffset: 0;
   }
 
-  .vr-sport-lines .vr-f,
-  .vr-sport-lines .vr-hatch {
+  .sport-chalk .vr-f,
+  .sport-chalk .vr-hatch {
     animation: none;
     opacity: 1;
   }
 
-  .vr-lines-label {
+  .sport-chalk-label {
     animation: none;
   }
 }

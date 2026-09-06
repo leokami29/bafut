@@ -254,7 +254,6 @@
 }
 
 .home-venue-owner-inner {
-  position: relative;
   display: grid;
   gap: 0.75rem;
   padding: 1.4rem 1.5rem;
@@ -310,21 +309,60 @@
   margin-top: 0;
 }
 
+/* Columna derecha: cancha de tiza girando, nunca debajo del texto */
+.home-venue-owner-pitch {
+  position: relative;
+  width: min(100%, 13.5rem);
+  aspect-ratio: 1200 / 620;
+  margin-top: 1rem;
+}
+
+/* Clave: la raíz del componente llena el contenedor con dimensión propia,
+   como en el hero de registro. Si no, el svg height:100% colapsa. */
 .home-venue-owner-lines {
   position: absolute;
-  top: 50%;
-  right: 1.5rem;
-  transform: translateY(-50%);
-  width: clamp(9rem, 16vw, 13rem);
-  height: auto;
+  inset: 0;
+  overflow: hidden;
   color: var(--turf-deep);
-  opacity: 0.14;
   pointer-events: none;
 }
 
-@media (max-width: 639px) {
-  .home-venue-owner-lines {
-    display: none;
+.home-venue-owner-lines svg {
+  position: absolute;
+  inset: 0;
+  opacity: 0.45;
+}
+
+/* A este tamaño el viewBox 1200 se reduce: subir trazos para que se lean */
+.home-venue-owner-lines .vr-d {
+  stroke-width: 14;
+}
+
+.home-venue-owner-lines .vr-net {
+  stroke-width: 24;
+}
+
+.home-venue-owner-lines .vr-hatch {
+  stroke-width: 12;
+}
+
+.home-venue-owner-lines .vr-f {
+  /* rellenos (mancha central, postes): agrandar para escala chica */
+  transform: scale(1.6);
+  transform-origin: center;
+  transform-box: fill-box;
+}
+
+@media (min-width: 640px) {
+  .home-venue-owner-inner {
+    grid-template-columns: minmax(0, 1fr) 13.5rem;
+    align-items: center;
+    gap: 2rem 2.25rem;
+  }
+
+  .home-venue-owner-pitch {
+    width: 100%;
+    margin-top: 0;
   }
 }
 

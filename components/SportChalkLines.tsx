@@ -5,7 +5,6 @@ import { sportLabel } from "@/lib/labels";
 import type { Sport } from "@/lib/sport-rules";
 
 const ROTATION: Sport[] = ["futbol", "basquet", "voleibol", "padel", "futbol_sala"];
-const ROTATE_MS = 4200;
 
 function draw(delay: number): CSSProperties {
   return { animationDelay: `${delay}ms` };
@@ -59,7 +58,7 @@ function VoleibolLines() {
     <g>
       <rect x="100" y="60" width="1000" height="500" fill="none" className="vr-hatch" style={draw(0)} />
       <rect x="250" y="150" width="700" height="320" fill="none" pathLength={1} className="vr-d" style={draw(160)} />
-      <line x1="600" y1="150" x2="600" y2="470" strokeWidth="4" pathLength={1} className="vr-d" style={draw(320)} />
+      <line x1="600" y1="150" x2="600" y2="470" pathLength={1} className="vr-d vr-net" style={draw(320)} />
       <line x1="406" y1="150" x2="406" y2="470" pathLength={1} className="vr-d" style={draw(430)} />
       <line x1="794" y1="150" x2="794" y2="470" pathLength={1} className="vr-d" style={draw(470)} />
       <circle cx="600" cy="150" r="6" className="vr-f" style={draw(560)} />
@@ -71,9 +70,9 @@ function VoleibolLines() {
 function PadelLines() {
   return (
     <g>
-      <rect x="142" y="72" width="916" height="476" fill="none" strokeWidth="1.5" pathLength={1} className="vr-d" style={draw(0)} />
+      <rect x="142" y="72" width="916" height="476" fill="none" pathLength={1} className="vr-d" style={draw(0)} />
       <rect x="150" y="80" width="900" height="460" fill="none" pathLength={1} className="vr-d" style={draw(120)} />
-      <line x1="600" y1="80" x2="600" y2="540" strokeWidth="4" pathLength={1} className="vr-d" style={draw(280)} />
+      <line x1="600" y1="80" x2="600" y2="540" pathLength={1} className="vr-d vr-net" style={draw(280)} />
       <line x1="330" y1="80" x2="330" y2="540" pathLength={1} className="vr-d" style={draw(380)} />
       <line x1="870" y1="80" x2="870" y2="540" pathLength={1} className="vr-d" style={draw(420)} />
       <line x1="150" y1="310" x2="330" y2="310" pathLength={1} className="vr-d" style={draw(500)} />
@@ -98,7 +97,37 @@ function SalaLines() {
   );
 }
 
-export function SportChalkLines() {
+function PitchGeometry({ sport }: { sport: Sport }) {
+  switch (sport) {
+    case "basquet":
+      return <BasquetLines />;
+    case "voleibol":
+      return <VoleibolLines />;
+    case "padel":
+      return <PadelLines />;
+    case "futbol_sala":
+      return <SalaLines />;
+    default:
+      return <SoccerLines />;
+  }
+}
+
+type SportChalkLinesProps = {
+  /** Clase contextual del envoltorio (posicionamiento/visuales del sitio). */
+  className?: string;
+  /** Etiqueta mono con el deporte actual (hero de registro). */
+  showLabel?: boolean;
+  intervalMs?: number;
+  /** "slice" para llenar un hero absoluto; "meet" para contenedores con aspect fijo. */
+  fit?: "slice" | "meet";
+};
+
+export function SportChalkLines({
+  className = "vr-sport-lines",
+  showLabel = true,
+  intervalMs = 4200,
+  fit = "slice",
+}: SportChalkLinesProps) {
   const [index, setIndex] = useState(0);
   const [rotating, setRotating] = useState(true);
 
@@ -114,26 +143,24 @@ export function SportChalkLines() {
     if (!rotating) return;
     const t = window.setInterval(() => {
       setIndex((i) => (i + 1) % ROTATION.length);
-    }, ROTATE_MS);
+    }, intervalMs);
     return () => window.clearInterval(t);
-  }, [rotating]);
+  }, [rotating, intervalMs]);
 
   const sport = ROTATION[index];
 
   return (
-    <div className="vr-sport-lines" aria-hidden="true">
-      <svg viewBox="0 0 1200 620" preserveAspectRatio="xMidYMid slice">
+    <div className={`sport-chalk ${className}`} aria-hidden="true">
+      <svg viewBox="0 0 1200 620" preserveAspectRatio={`xMidYMid ${fit}`}>
         <g key={sport}>
-          {sport === "futbol" && <SoccerLines />}
-          {sport === "basquet" && <BasquetLines />}
-          {sport === "voleibol" && <VoleibolLines />}
-          {sport === "padel" && <PadelLines />}
-          {sport === "futbol_sala" && <SalaLines />}
+          <PitchGeometry sport={sport} />
         </g>
       </svg>
-      <p key={`label-${sport}`} className="vr-lines-label">
-        {sportLabel[sport]}
-      </p>
+      {showLabel ? (
+        <p key={`label-${sport}`} className="sport-chalk-label">
+          {sportLabel[sport]}
+        </p>
+      ) : null}
     </div>
   );
 }
