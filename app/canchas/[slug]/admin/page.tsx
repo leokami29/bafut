@@ -40,6 +40,12 @@ export default async function VenueAdminPage({ params }: Props) {
     .eq("user_id", userId)
     .single();
 
+  const { data: photos } = await supabase
+    .from("venue_photos")
+    .select("id, url, caption, sort_order")
+    .eq("venue_id", venue.id)
+    .order("sort_order", { ascending: true });
+
   if (!isOwner && !isAdmin) {
     return (
       <main className="page page-narrow" id="main">
@@ -63,14 +69,18 @@ export default async function VenueAdminPage({ params }: Props) {
         <p className="eyebrow">Administración · {city.name}</p>
         <h1>{venue.name}</h1>
         <p className="lede">
-          Gestioná tu cancha, subí fotos y revisá las estadísticas de partidos.
+          {isOwner
+            ? "Gestioná los datos de tu cancha, sus fotos y revisá la actividad."
+            : "Estás editando esta ficha como admin de BaFut."}
         </p>
       </header>
 
       <VenueAdminDashboard
         venue={venue}
+        photos={photos ?? []}
         userId={userId}
         isAdmin={!!isAdmin}
+        isOwner={isOwner}
       />
     </main>
   );

@@ -281,6 +281,17 @@ export const getIsAdmin = cache(async (userId: string | null): Promise<boolean> 
   return Boolean(data);
 });
 
+/** Rutas de objeto (bucket venue-photos) subidas por el dueño, en orden. */
+export const getVenuePhotoPaths = cache(async (venueId: string): Promise<string[]> => {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("venue_photos")
+    .select("url")
+    .eq("venue_id", venueId)
+    .order("sort_order", { ascending: true });
+  return (data ?? []).map((row) => row.url);
+});
+
 /**
  * Estado de reclamos para el flujo "reclamar cancha":
  * - hasPendingClaim: la cancha tiene ALGÚN reclamo en revisión (visible público por RPC).

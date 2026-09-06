@@ -888,6 +888,48 @@ export type Database = {
         Args: { p_venue_id: string };
         Returns: boolean;
       };
+      update_venue: {
+        Args: {
+          p_venue_id: string;
+          p_name?: string;
+          p_neighborhood?: string;
+          p_address?: string;
+          p_phone?: string;
+          p_website?: string;
+          p_sports?: string[];
+          p_surface?: string;
+          p_covered?: boolean | null;
+          p_venue_kind?: string;
+          p_notes?: string;
+          p_lat?: number | null;
+          p_lng?: number | null;
+        };
+        Returns: undefined;
+      };
+      create_venue: {
+        Args: {
+          p_city_id: string;
+          p_name: string;
+          p_neighborhood?: string;
+          p_address?: string;
+          p_lat: number;
+          p_lng: number;
+          p_sports?: string[];
+          p_surface?: string;
+          p_covered?: boolean | null;
+          p_venue_kind?: string;
+          p_notes?: string | null;
+        };
+        Returns: string;
+      };
+      delete_venue: {
+        Args: { p_venue_id: string };
+        Returns: undefined;
+      };
+      unclaim_venue: {
+        Args: { p_venue_id: string };
+        Returns: undefined;
+      };
       get_venue_stats: {
         Args: {
           p_venue_id: string;

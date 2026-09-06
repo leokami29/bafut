@@ -245,6 +245,168 @@
   border-radius: 0;
 }
 
+/* —— Editor de ficha de cancha (dueño/admin) —— */
+.venue-edit-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(14rem, 100%), 1fr));
+  gap: 0.9rem 1.1rem;
+  margin-top: 0.5rem;
+}
+
+.venue-edit-field {
+  display: grid;
+  gap: 0.3rem;
+  font-size: 0.92rem;
+  min-width: 0;
+}
+
+.venue-edit-wide {
+  grid-column: 1 / -1;
+}
+
+.venue-edit-field > span,
+.venue-edit-field legend {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--ink) 62%, transparent);
+}
+
+.venue-edit-field legend {
+  margin-bottom: 0.4rem;
+}
+
+.venue-edit-field input[type="text"],
+.venue-edit-field input:not([type]),
+.venue-edit-field select,
+.venue-edit-field textarea {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid color-mix(in oklab, var(--ink) 20%, transparent);
+  border-bottom-width: 2px;
+  background: color-mix(in oklab, var(--paper) 70%, white);
+  color: var(--ink);
+  font: inherit;
+  border-radius: 0;
+}
+
+.venue-edit-field input:focus-visible,
+.venue-edit-field select:focus-visible,
+.venue-edit-field textarea:focus-visible {
+  outline: 2px solid var(--flood);
+  outline-offset: 1px;
+  border-color: var(--turf);
+}
+
+.venue-edit-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.venue-edit-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.6rem;
+  padding: 0.45rem 0.8rem;
+  border: 1px solid color-mix(in oklab, var(--ink) 22%, transparent);
+  background: transparent;
+  font-size: 0.88rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.venue-edit-chip:has(input:checked) {
+  border-color: var(--turf);
+  background: color-mix(in oklab, var(--turf) 12%, transparent);
+  font-weight: 600;
+}
+
+.venue-edit-chip input {
+  accent-color: var(--turf);
+  margin: 0;
+}
+
+.venue-edit-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: 0.75rem;
+}
+
+.venue-edit-actions .btn-flood,
+.venue-edit-actions .btn-ghost {
+  min-height: 2.85rem;
+}
+
+.venue-edit-actions .btn-ghost {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+/* Gestor de fotos */
+.venue-admin-photo-grid {
+  list-style: none;
+  margin: 0 0 0.75rem;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(11rem, 100%), 1fr));
+  gap: 0.75rem;
+}
+
+.venue-admin-photo {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.venue-admin-photo .venue-photo {
+  aspect-ratio: 4 / 3;
+  width: 100%;
+}
+
+.venue-admin-photo-del {
+  justify-self: start;
+  min-height: 2.25rem;
+  padding: 0.3rem 0.75rem;
+  background: transparent;
+  border: 1px solid color-mix(in oklab, var(--bib) 45%, transparent);
+  color: var(--bib);
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: 0;
+}
+
+.venue-admin-photo-del:hover {
+  background: color-mix(in oklab, var(--bib) 10%, transparent);
+}
+
+.venue-photo-input {
+  display: none;
+}
+
+.venue-admin-danger {
+  border-top: 2px solid color-mix(in oklab, var(--bib) 45%, transparent);
+  padding-top: 1.25rem;
+}
+
+.venue-admin-danger .subhead {
+  color: var(--bib);
+}
+
+.venue-admin-danger .btn-ghost {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
 .venue-hero h1 {
   margin: 0.35rem 0 0.65rem;
   line-height: 1.08;

@@ -60,6 +60,12 @@ export default async function AdminHomePage() {
             {totalVenues ?? 0} fichas: verificación, suscripciones y estado de cada cancha.
           </span>
         </Link>
+        <Link href="/admin/venues/nuevo" className="profile-nav-card">
+          <span className="profile-nav-title">Crear cancha</span>
+          <span className="profile-nav-desc">
+            Alta de una ficha nueva en el directorio (nombre, coords, deportes).
+          </span>
+        </Link>
       </div>
 
       <p className="foot-link">

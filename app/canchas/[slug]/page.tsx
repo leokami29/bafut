@@ -11,10 +11,11 @@ import { VenueMapLazy } from "@/components/VenueMapLazy";
 import { VenueOwnerBlock } from "@/components/VenueOwnerBlock";
 import { VenueVerifiedBadge } from "@/components/VenueVerifiedBadge";
 import type { Sport } from "@/lib/constants";
-import { getActiveCity, getSessionUserId, getUpcomingMatches, getVenueBySlug, getVenueClaimState, getVenueDayOccupancy } from "@/lib/data";
+import { getActiveCity, getSessionUserId, getUpcomingMatches, getVenueBySlug, getVenueClaimState, getVenueDayOccupancy, getVenuePhotoPaths } from "@/lib/data";
 import { cityDayBoundsFromLocal } from "@/lib/datetime";
 import { sportLabel, surfaceLabel, venueKindLabel } from "@/lib/labels";
 import { safeHttpUrl } from "@/lib/safe-http-url";
+import { venuePhotoPublicUrl } from "@/lib/venue-photos";
 import {
   absoluteUrl,
   defaultOg,
@@ -166,7 +167,11 @@ export default async function CanchaPage({ params }: Props) {
   const description = meta.description;
   const descriptionLong = description != null && description.length > 180;
   const hoursLines = formatHoursLines(meta.hours);
-  const photos = meta.images.slice(0, 4);
+  const ownerPhotoPaths = await getVenuePhotoPaths(venue.id);
+  const photoGallery: Array<{ src: string; own: boolean }> = [
+    ...ownerPhotoPaths.map((p) => ({ src: venuePhotoPublicUrl(p), own: true })),
+    ...meta.images.map((src) => ({ src, own: false })),
+  ].slice(0, 6);
   const reviews = meta.reviews.slice(0, 8);
 
   const photoAlt = `${venue.name}, ${venue.neighborhood ?? city.name}`;
@@ -346,16 +351,16 @@ export default async function CanchaPage({ params }: Props) {
         </section>
       ) : null}
 
-      {photos.length > 0 ? (
+      {photoGallery.length > 0 ? (
         <section className="venue-photos-section" aria-labelledby="venue-photos-heading">
           <h2 className="subhead" id="venue-photos-heading">
             Fotos
           </h2>
           <ul className="venue-photo-grid">
-            {photos.map((src, index) => (
-              <li key={src}>
+            {photoGallery.map((item, index) => (
+              <li key={`${item.src}-${index}`}>
                 <Image
-                  src={src}
+                  src={item.src}
                   alt={index === 0 ? photoAlt : ""}
                   width={408}
                   height={306}
@@ -364,12 +369,13 @@ export default async function CanchaPage({ params }: Props) {
                   loading={index === 0 ? "eager" : "lazy"}
                   fetchPriority={index === 0 ? "high" : "auto"}
                   decoding="async"
-                  referrerPolicy="no-referrer"
+                  unoptimized={item.own}
+                  referrerPolicy={item.own ? undefined : "no-referrer"}
                 />
               </li>
             ))}
           </ul>
-          {meta.source === "google" ? (
+          {ownerPhotoPaths.length === 0 && meta.source === "google" ? (
             <p className="venue-section-meta">Fotos desde Google Maps</p>
           ) : null}
         </section>
