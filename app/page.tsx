@@ -4,6 +4,7 @@ import { HeroBanner } from "@/components/HeroBanner";
 import { HomeFeed } from "@/components/HomeFeed";
 import { HomeFeedSkeleton } from "@/components/HomeFeedSkeleton";
 import { HomeHowItWorks } from "@/components/HomeHowItWorks";
+import { HomeVenueOwner } from "@/components/HomeVenueOwner";
 import { JsonLd, homeJsonLd } from "@/components/JsonLd";
 import { getActiveCity, getUpcomingMatches } from "@/lib/data";
 import {
@@ -40,6 +41,8 @@ export default async function HomePage() {
       </Suspense>
 
       <HomeHowItWorks cityName={cityName} />
+
+      <HomeVenueOwner cityName={cityName} />
     </main>
   );
 }

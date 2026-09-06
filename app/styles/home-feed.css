@@ -247,3 +247,89 @@
   color: color-mix(in oklab, var(--ink) 55%, transparent);
   font-size: 0.92rem;
 }
+
+/* ——— Invitación a dueños de cancha (secundaria, al final de la home) ——— */
+.home-venue-owner {
+  padding: 1.75rem 1.25rem calc(2rem + env(safe-area-inset-bottom));
+}
+
+.home-venue-owner-inner {
+  position: relative;
+  display: grid;
+  gap: 0.75rem;
+  padding: 1.4rem 1.5rem;
+  background: color-mix(in oklab, var(--turf) 5%, var(--paper));
+  border-left: 3px solid var(--flood);
+}
+
+.home-venue-owner-copy {
+  display: grid;
+  gap: 0.45rem;
+  max-width: 54ch;
+}
+
+.home-venue-owner-copy h2 {
+  margin: 0;
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(1.25rem, 3.2vw, 1.55rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.home-venue-owner-copy > p {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: color-mix(in oklab, var(--ink) 72%, transparent);
+}
+
+.home-venue-owner-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem 1.1rem;
+  margin-top: 0.5rem;
+}
+
+.home-venue-owner-actions .btn-ghost {
+  border-color: var(--ink);
+  color: var(--ink);
+  min-height: 2.6rem;
+  padding: 0.4rem 1rem;
+  font-size: 0.92rem;
+  text-decoration: none;
+}
+
+.home-venue-owner-actions .btn-ghost:hover {
+  background: color-mix(in oklab, var(--ink) 7%, transparent);
+}
+
+.home-venue-owner-actions .text-link {
+  margin-top: 0;
+}
+
+.home-venue-owner-lines {
+  position: absolute;
+  top: 50%;
+  right: 1.5rem;
+  transform: translateY(-50%);
+  width: clamp(9rem, 16vw, 13rem);
+  height: auto;
+  color: var(--turf-deep);
+  opacity: 0.14;
+  pointer-events: none;
+}
+
+@media (max-width: 639px) {
+  .home-venue-owner-lines {
+    display: none;
+  }
+}
+
+@media (min-width: 720px) {
+  .home-venue-owner {
+    padding-inline: 2.5rem;
+  }
+}

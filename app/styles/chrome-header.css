@@ -32,6 +32,17 @@
   box-shadow: none;
 }
 
+/* Home: al salir el hero del navbar, volvemos a fondo sólido para no perder
+   las letras claras sobre secciones claras / footer flood */
+.site-header-field {
+  transition: background-color 0.2s ease;
+}
+
+.site-header-field:has(+ #main .hero).is-past-hero {
+  background: var(--turf-deep);
+  color: var(--chalk);
+}
+
 .site-header-paper {
   background: var(--paper);
   color: var(--ink);

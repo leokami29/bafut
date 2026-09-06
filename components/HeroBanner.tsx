@@ -74,6 +74,32 @@ export function HeroBanner({ cityName, hasUpcoming = false }: HeroBannerProps) {
   const primary = hasUpcoming ? SEEKER_CTA : HOST_CTA;
   const secondary = hasUpcoming ? HOST_CTA : SEEKER_CTA;
 
+  useEffect(() => {
+    const header = document.querySelector<HTMLElement>(".site-header");
+    const hero = document.querySelector<HTMLElement>(".hero");
+    if (!header || !hero) return undefined;
+
+    let rafId = 0;
+    const update = () => {
+      rafId = 0;
+      const past = hero.getBoundingClientRect().bottom <= header.offsetHeight;
+      header.classList.toggle("is-past-hero", past);
+    };
+    const onScroll = () => {
+      if (rafId === 0) rafId = window.requestAnimationFrame(update);
+    };
+
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (rafId !== 0) window.cancelAnimationFrame(rafId);
+      header.classList.remove("is-past-hero");
+    };
+  }, []);
+
   return (
     <>
       <PitchFieldDynamic
