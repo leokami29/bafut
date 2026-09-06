@@ -280,9 +280,18 @@
     bottom: calc(3.25rem + env(safe-area-inset-bottom));
   }
 
+  .seeker-sticky {
+    display: block;
+    bottom: calc(3.25rem + env(safe-area-inset-bottom));
+  }
+
   .venue-sticky-cta {
     display: block;
     bottom: calc(3.25rem + env(safe-area-inset-bottom));
+  }
+
+  .page-match-detail {
+    padding-bottom: calc(7.5rem + env(safe-area-inset-bottom));
   }
 
   .page-venue-detail {

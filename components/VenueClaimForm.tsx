@@ -2,27 +2,38 @@
 
 import Link from "next/link";
 import { useState, type FormEvent } from "react";
+import {
+  LegalAcceptCheckbox,
+  useLegalAcceptance,
+} from "@/components/LegalAcceptCheckbox";
+import { trackVenueClaimSubmit } from "@/lib/analytics";
 import { createClient } from "@/lib/supabase/client";
 import { validateClaimInput } from "@/lib/venue-claims";
 import { formatWhatsappDisplay } from "@/lib/whatsapp-contact";
 
 type VenueClaimFormProps = {
   venueId: string;
-  venueName: string;
   venueSlug: string;
 };
 
-export function VenueClaimForm({ venueId, venueName, venueSlug }: VenueClaimFormProps) {
+export function VenueClaimForm({ venueId, venueSlug }: VenueClaimFormProps) {
   const [whatsapp, setWhatsapp] = useState("");
   const [email, setEmail] = useState("");
   const [note, setNote] = useState("");
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submittedWhatsapp, setSubmittedWhatsapp] = useState<string | null>(null);
+  const legal = useLegalAcceptance("claim");
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
+
+    const legalError = legal.validate();
+    if (legalError) {
+      setError(legalError);
+      return;
+    }
 
     const check = validateClaimInput({ whatsapp, email, note });
     if ("error" in check) {
@@ -45,6 +56,7 @@ export function VenueClaimForm({ venueId, venueName, venueSlug }: VenueClaimForm
       return;
     }
 
+    trackVenueClaimSubmit({ venue_id: venueId, venue_slug: venueSlug });
     setSubmittedWhatsapp(check.whatsapp);
     setPending(false);
   }
@@ -121,13 +133,24 @@ export function VenueClaimForm({ venueId, venueName, venueSlug }: VenueClaimForm
         documentos por acá.
       </p>
 
+      <LegalAcceptCheckbox
+        {...legal.checkboxProps}
+        id="venue-claim-legal-accept"
+        disabled={pending}
+      />
+
       {error && (
         <p className="form-error" role="alert">
           {error}
         </p>
       )}
 
-      <button type="submit" className="btn-flood" disabled={pending} aria-busy={pending}>
+      <button
+        type="submit"
+        className="btn-flood"
+        disabled={pending || !legal.accepted}
+        aria-busy={pending}
+      >
         {pending ? "Enviando…" : "Enviar reclamo para revisión"}
       </button>
       <p className="field-help">

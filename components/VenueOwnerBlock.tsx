@@ -32,12 +32,18 @@ export function VenueOwnerBlock({
   hasActivity,
   matchCount = 0,
   openSlots = 0,
+  isVenueOwner = false,
+  canClaim = false,
+  claimPending = false,
 }: {
   venueName: string;
   venueSlug: string;
   hasActivity: boolean;
   matchCount?: number;
   openSlots?: number;
+  isVenueOwner?: boolean;
+  canClaim?: boolean;
+  claimPending?: boolean;
 }) {
   const wa = ownerWhatsappHref(venueName, venueSlug);
   const mail = ownerEmailHref(venueName, venueSlug);
@@ -51,25 +57,71 @@ export function VenueOwnerBlock({
           {openSlots > 0 && ` · ${openSlots} ${openSlots === 1 ? "cupo" : "cupos"}`}
         </p>
       )}
-      <p>
-        {hasActivity
-          ? "Acá se ven las pateadas que se arman en tu cancha. BaFut no cobra el alquiler ni reserva por vos: concentra la demanda."
-          : "Cuando publiquen huecos acá, aparecen aquí. Escribimos si querés destacar la ficha."}
-      </p>
-      {wa || mail ? (
+      {isVenueOwner ? (
+        <p>
+          Esta ficha está a tu nombre: el contacto y las fotos que cargaste son los oficiales.
+          BaFut no cobra el alquiler ni reserva por vos: concentra la demanda.
+        </p>
+      ) : claimPending ? (
+        <p>
+          Esta cancha tiene un reclamo en revisión. Un editor de BaFut lo está verificando.
+          BaFut no cobra el alquiler ni reserva por vos: concentra la demanda.
+        </p>
+      ) : canClaim ? (
+        <p>
+          Reclamar la ficha es gratis y toma dos minutos: el contacto pasa a ser el tuyo y la
+          cancha luce el sello de verificada. BaFut no reserva ni cobra el alquiler — concentra
+          la demanda.
+        </p>
+      ) : (
+        <p>
+          {hasActivity
+            ? "Acá se ven las pateadas que se arman en tu cancha. BaFut no cobra el alquiler ni reserva por vos: concentra la demanda."
+            : "Cuando publiquen huecos acá, aparecen aquí. Escribimos si querés destacar la ficha."}
+        </p>
+      )}
+      {canClaim ? (
         <div className="venue-owner-actions">
-          {wa ? (
-            <VenueOwnerCta className="btn-flood" href={wa} target="_blank" rel="noopener noreferrer" method="whatsapp">
-              Escribir por WhatsApp
-            </VenueOwnerCta>
-          ) : null}
-          {mail ? (
-            <VenueOwnerCta className="btn-ghost" href={mail} method="email">
-              Escribir por correo
-            </VenueOwnerCta>
+          <Link className="btn-flood" href={`/canchas/${venueSlug}/reclamar`}>
+            Reclamar esta cancha
+          </Link>
+          {wa || mail ? (
+            <>
+              {wa ? (
+                <VenueOwnerCta className="btn-ghost" href={wa} target="_blank" rel="noopener noreferrer" method="whatsapp">
+                  O escribir por WhatsApp
+                </VenueOwnerCta>
+              ) : null}
+              {mail ? (
+                <VenueOwnerCta className="btn-ghost" href={mail} method="email">
+                  O por correo
+                </VenueOwnerCta>
+              ) : null}
+            </>
           ) : null}
         </div>
-      ) : null}
+      ) : isVenueOwner ? (
+        <div className="venue-owner-actions">
+          <Link className="btn-flood" href={`/canchas/${venueSlug}/admin`}>
+            Ir a mi panel
+          </Link>
+        </div>
+      ) : claimPending ? null : (
+        wa || mail ? (
+          <div className="venue-owner-actions">
+            {wa ? (
+              <VenueOwnerCta className="btn-flood" href={wa} target="_blank" rel="noopener noreferrer" method="whatsapp">
+                Escribir por WhatsApp
+              </VenueOwnerCta>
+            ) : null}
+            {mail ? (
+              <VenueOwnerCta className="btn-ghost" href={mail} method="email">
+                Escribir por correo
+              </VenueOwnerCta>
+            ) : null}
+          </div>
+        ) : null
+      )}
       <p className="venue-section-meta" style={{ marginTop: "0.75rem" }}>
         También podés{" "}
         <Link href="/apoyar">apoyar BaFut</Link>

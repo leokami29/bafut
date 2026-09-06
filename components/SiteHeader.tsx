@@ -10,6 +10,7 @@ export function SiteHeader({
   cities,
   userId,
   pendingCount = 0,
+  pendingInboxHref = "/perfil/partidos",
   isAdmin = false,
   tone = "field",
 }: {
@@ -17,6 +18,7 @@ export function SiteHeader({
   cities: City[];
   userId: string | null;
   pendingCount?: number;
+  pendingInboxHref?: string;
   isAdmin?: boolean;
   tone?: "field" | "paper";
 }) {
@@ -33,7 +35,12 @@ export function SiteHeader({
 
       <nav className="site-nav" aria-label="Principal">
         <div className="site-nav-links">
-          <NavLinks userId={userId} pendingCount={pendingCount} isAdmin={isAdmin} />
+          <NavLinks
+            userId={userId}
+            pendingCount={pendingCount}
+            pendingInboxHref={pendingInboxHref}
+            isAdmin={isAdmin}
+          />
         </div>
 
         {userId ? (

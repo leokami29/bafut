@@ -24,12 +24,19 @@ const items = [
 export function MobileNav({
   userId,
   pendingCount = 0,
+  pendingInboxHref = "/perfil/partidos",
 }: {
   userId: string | null;
   pendingCount?: number;
+  /** Con pendientes: deep-link al partido #cupos; si no, lista de partidos. */
+  pendingInboxHref?: string;
 }) {
   const pathname = usePathname();
-  const profileHref = userId ? "/perfil/partidos" : "/entrar";
+  const profileHref = userId
+    ? pendingCount > 0
+      ? pendingInboxHref
+      : "/perfil/partidos"
+    : "/entrar";
   const profileLabel = userId ? "Yo" : "Entrar";
   const profileMatch = userId
     ? (p: string) => p.startsWith("/perfil")
@@ -40,11 +47,11 @@ export function MobileNav({
   return (
     <nav className="mobile-nav" aria-label="Navegación móvil">
       {all.map(({ href, label, match }) => {
-        const showBadge = href.startsWith("/perfil") && pendingCount > 0;
+        const showBadge = Boolean(userId) && href === profileHref && pendingCount > 0;
         const active = match(pathname);
         return (
           <Link
-            key={href}
+            key={`${href}-${label}`}
             href={href}
             aria-current={active ? "page" : undefined}
             className={active ? "is-active" : undefined}

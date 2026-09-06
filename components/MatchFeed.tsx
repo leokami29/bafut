@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { MatchRow } from "@/components/MatchRow";
 import { SPORTS, type Sport } from "@/lib/constants";
@@ -13,7 +13,16 @@ import {
   type MatchTimePeriod,
 } from "@/lib/datetime";
 import { formatDistance, haversineDistance } from "@/lib/geo";
-import { sportLabel, timePeriodLabel } from "@/lib/labels";
+import { levelLabel, sportLabel, timePeriodLabel } from "@/lib/labels";
+import { isDeclaredLevel, type DeclaredLevel } from "@/lib/level-trust";
+import { matchFitsProfileLevel, selectUpcomingOutsideFilter } from "@/lib/match-feed-filters";
+import {
+  clearNearMePreference,
+  getNearMeServerSnapshot,
+  readNearMePreference,
+  subscribeNearMe,
+  writeNearMePreference,
+} from "@/lib/near-me-preference";
 import { openSlotCount, type MatchDetail } from "@/lib/types";
 import { aggregateVenueDemand, venuesWithDemandCount } from "@/lib/venue-demand";
 
@@ -43,7 +52,25 @@ function partidosCountLabel(count: number, timeFilter: TimeFilter, sport: Sport 
   return parts.join(" · ");
 }
 
-function emptyCopy(timeFilter: TimeFilter, sportFilter: Sport | "all") {
+function emptyCopy(
+  timeFilter: TimeFilter,
+  sportFilter: Sport | "all",
+  myLevelOnly: boolean,
+  profileLevel: DeclaredLevel | null,
+) {
+  if (myLevelOnly && profileLevel) {
+    const nivel = levelLabel[profileLevel].toLowerCase();
+    if (timeFilter === "3h") {
+      return `No hay cupos de tu nivel (${nivel}) o abiertos a cualquiera en las próximas 3 horas.`;
+    }
+    if (timeFilter === "noche") {
+      return `No hay cupos de tu nivel (${nivel}) o abiertos a cualquiera para esta noche.`;
+    }
+    if (sportFilter !== "all") {
+      return `No hay ${sportLabel[sportFilter]} con cupos de tu nivel (${nivel}) o abiertos a cualquiera hoy.`;
+    }
+    return `No hay cupos de tu nivel (${nivel}) o abiertos a cualquiera hoy.`;
+  }
   if (timeFilter === "3h") {
     return sportFilter !== "all"
       ? `No hay ${sportLabel[sportFilter]} con cupos en las próximas 3 horas.`
@@ -88,18 +115,44 @@ export function MatchFeed({
   matches,
   timezone,
   cityName,
+  profileLevel = null,
 }: {
   matches: MatchDetail[];
   timezone: string;
   cityName: string;
+  profileLevel?: string | null;
 }) {
   const router = useRouter();
   const params = useSearchParams();
   const timeFilter = parseTimeFilter(params.get("filtro"));
+  const resolvedLevel = isDeclaredLevel(profileLevel) ? profileLevel : null;
   const [sportFilter, setSportFilter] = useState<Sport | "all">("all");
-  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [myLevelOnly, setMyLevelOnly] = useState(false);
+  const nearMe = useSyncExternalStore(subscribeNearMe, readNearMePreference, getNearMeServerSnapshot);
+  const userLocation = useMemo(
+    () => (nearMe ? { lat: nearMe.lat, lng: nearMe.lng } : null),
+    [nearMe],
+  );
   const [geoError, setGeoError] = useState<string | null>(null);
   const [geoLoading, setGeoLoading] = useState(false);
+
+  useEffect(() => {
+    if (!readNearMePreference() || !navigator.geolocation) return;
+    let cancelled = false;
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        if (cancelled) return;
+        writeNearMePreference(position.coords.latitude, position.coords.longitude);
+      },
+      () => {
+        /* Mantener coords guardadas si el refresh falla. */
+      },
+      { timeout: 10000, enableHighAccuracy: false },
+    );
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const requestLocation = useCallback(() => {
     if (!navigator.geolocation) {
@@ -110,7 +163,7 @@ export function MatchFeed({
     setGeoError(null);
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        setUserLocation({ lat: position.coords.latitude, lng: position.coords.longitude });
+        writeNearMePreference(position.coords.latitude, position.coords.longitude);
         setGeoLoading(false);
       },
       (error) => {
@@ -126,8 +179,8 @@ export function MatchFeed({
   }, []);
 
   const clearLocation = useCallback(() => {
-    setUserLocation(null);
     setGeoError(null);
+    clearNearMePreference();
   }, []);
 
   const open = useMemo(() => matches.filter(hasOpenSlot), [matches]);
@@ -146,29 +199,42 @@ export function MatchFeed({
     return open.filter((match) => isSameCityDay(match.starts_at, timezone));
   }, [open, timeFilter, timezone]);
 
+  const levelFiltered = useMemo(() => {
+    if (!myLevelOnly || !resolvedLevel) return timeFiltered;
+    return timeFiltered.filter((match) => matchFitsProfileLevel(match, resolvedLevel));
+  }, [timeFiltered, myLevelOnly, resolvedLevel]);
+
   const availableSports = useMemo(() => {
     const set = new Set<Sport>();
-    for (const match of timeFiltered) {
+    for (const match of levelFiltered) {
       if (SPORTS.includes(match.sport as Sport)) set.add(match.sport as Sport);
     }
     return SPORTS.filter((sport) => set.has(sport));
-  }, [timeFiltered]);
+  }, [levelFiltered]);
 
   const shown = useMemo(() => {
-    const filtered = sportFilter === "all" ? timeFiltered : timeFiltered.filter((match) => match.sport === sportFilter);
+    const filtered =
+      sportFilter === "all"
+        ? levelFiltered
+        : levelFiltered.filter((match) => match.sport === sportFilter);
     if (!userLocation) return filtered;
     return [...filtered].sort((a, b) => {
       const distA = haversineDistance(userLocation.lat, userLocation.lng, a.venues.lat, a.venues.lng);
       const distB = haversineDistance(userLocation.lat, userLocation.lng, b.venues.lat, b.venues.lng);
       return distA - distB;
     });
-  }, [timeFiltered, sportFilter, userLocation]);
+  }, [levelFiltered, sportFilter, userLocation]);
 
   const upcomingFallback = useMemo(() => {
-    if (shown.length > 0 || (timeFilter !== "hoy" && timeFilter !== "3h")) return [];
-    const shownIds = new Set(shown.map((m) => m.id));
-    return open.filter((match) => !shownIds.has(match.id)).slice(0, 5);
-  }, [open, shown, timeFilter]);
+    const outside = selectUpcomingOutsideFilter(open, timeFiltered, timeFilter);
+    const byLevel =
+      myLevelOnly && resolvedLevel
+        ? outside.filter((match) => matchFitsProfileLevel(match, resolvedLevel))
+        : outside;
+    return sportFilter === "all"
+      ? byLevel
+      : byLevel.filter((match) => match.sport === sportFilter);
+  }, [open, timeFiltered, timeFilter, myLevelOnly, resolvedLevel, sportFilter]);
 
   const groups = useMemo(() => {
     if (timeFilter !== "hoy" || shown.length < 2) return null;
@@ -240,7 +306,7 @@ export function MatchFeed({
             </div>
           ) : null}
 
-          <div className="filter-chips filter-chips-location">
+          <div className="filter-chips filter-chips-location" role="group" aria-label="Cercanía y nivel">
             {userLocation ? (
               <button
                 type="button"
@@ -256,20 +322,42 @@ export function MatchFeed({
                 type="button"
                 onClick={requestLocation}
                 disabled={geoLoading}
-                title="Ordenar por distancia"
+                title="Ordenar por distancia. La ubicación queda en este dispositivo."
               >
                 {geoLoading ? "Buscando…" : "Cerca de mí"}
               </button>
             )}
+            {resolvedLevel ? (
+              <button
+                type="button"
+                className={myLevelOnly ? "is-on" : undefined}
+                aria-pressed={myLevelOnly}
+                onClick={() => setMyLevelOnly((on) => !on)}
+                title={`Cupos abiertos a cualquiera o nivel ${levelLabel[resolvedLevel].toLowerCase()}`}
+              >
+                Mi nivel
+              </button>
+            ) : null}
           </div>
         </div>
 
         {geoError ? (
           <p className="partidos-geo-error">{geoError}</p>
         ) : null}
+        {userLocation && !geoError ? (
+          <p className="partidos-geo-hint">
+            Ubicación guardada solo en este dispositivo para ordenar por cercanía.
+          </p>
+        ) : null}
 
         <p className="partidos-count" aria-live="polite">
           {countLabel}
+          {myLevelOnly && resolvedLevel ? (
+            <span className="partidos-count-level">
+              {" · "}
+              Mi nivel ({levelLabel[resolvedLevel].toLowerCase()})
+            </span>
+          ) : null}
           {userLocation && shown.length > 0 ? (
             <span className="partidos-count-distance">
               {" · "}
@@ -308,7 +396,7 @@ export function MatchFeed({
       ) : (
         <div className="empty empty-partidos">
           <p className="empty-title">No hay cupos abiertos</p>
-          <p>{emptyCopy(timeFilter, sportFilter)}</p>
+          <p>{emptyCopy(timeFilter, sportFilter, myLevelOnly, resolvedLevel)}</p>
           <div className="empty-actions">
             <Link className="btn-flood" href="/partidos/nuevo">
               Publicar hueco

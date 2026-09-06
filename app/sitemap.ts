@@ -30,6 +30,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly",
       priority: 0.3,
     },
+    {
+      url: absoluteUrl("/terminos"),
+      lastModified: staticLastMod,
+      changeFrequency: "yearly",
+      priority: 0.2,
+    },
+    {
+      url: absoluteUrl("/privacidad"),
+      lastModified: staticLastMod,
+      changeFrequency: "yearly",
+      priority: 0.2,
+    },
   ];
 
   const city = await getActiveCity();

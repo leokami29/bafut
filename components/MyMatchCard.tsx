@@ -113,6 +113,8 @@ export function MyMatchCard({
 
   const roleText = roleLabel(role, claim?.status, past);
   const aria = [roleText, tone.label, when, match.venues.name, sportName, format].join(". ");
+  const needsReview = role === "host" && pending > 0 && !cancelled && !past;
+  const matchHref = needsReview ? `/p/${match.share_code}#cupos` : `/p/${match.share_code}`;
 
   return (
     <article className="my-match" data-sport={sport} data-tone={tone.tone} aria-label={aria}>
@@ -132,8 +134,8 @@ export function MyMatchCard({
         </div>
 
         <h3 className="my-match-title">
-          <Link href={`/p/${match.share_code}`}>{title}</Link>
-          {role === "host" && pending > 0 && !cancelled && !past ? (
+          <Link href={matchHref}>{title}</Link>
+          {needsReview ? (
             <span className="nav-badge" aria-label={`${pending} pedidos pendientes`}>
               {pending}
             </span>
@@ -174,8 +176,8 @@ export function MyMatchCard({
         ) : null}
 
         <div className="my-match-actions">
-          <Link className="btn-flood" href={`/p/${match.share_code}`}>
-            Ver partido
+          <Link className={needsReview ? "btn-bib" : "btn-flood"} href={matchHref}>
+            {needsReview ? "Revisar pedidos" : "Ver partido"}
           </Link>
           {canEdit ? (
             <Link className="btn-ghost" href={`/p/${match.share_code}/editar`}>

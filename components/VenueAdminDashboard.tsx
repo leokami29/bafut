@@ -15,14 +15,27 @@ import {
   type VenueEditableFields,
 } from "@/lib/venue-edit";
 import {
+  MAX_VENUE_PHOTOS,
   VENUE_PHOTOS_BUCKET,
-  validateVenuePhotoFile,
+  validateVenuePhotoUpload,
   venuePhotoObjectPath,
   venuePhotoPublicUrl,
 } from "@/lib/venue-photos";
+import { isRateLimitError } from "@/lib/rate-limit";
 import type { Venue } from "@/lib/types";
+import {
+  VenuePremiumPaywall,
+  type VenueSubRequestSummary,
+} from "@/components/VenuePremiumPaywall";
 
 type VenuePhotoRow = { id: string; url: string; caption: string | null; sort_order: number };
+
+type ActiveSubscription = {
+  id: string;
+  plan: string;
+  expires_at: string;
+  status: string;
+} | null;
 
 type VenueAdminDashboardProps = {
   venue: Venue;
@@ -30,6 +43,11 @@ type VenueAdminDashboardProps = {
   userId: string;
   isAdmin: boolean;
   isOwner: boolean;
+  activeSubscription?: ActiveSubscription;
+  pendingRequest?: VenueSubRequestSummary | null;
+  latestRequest?: VenueSubRequestSummary | null;
+  /** Feature flag premium_paywall. */
+  premiumPaywallEnabled?: boolean;
 };
 
 type FormState = {
@@ -87,6 +105,10 @@ export function VenueAdminDashboard({
   userId,
   isAdmin,
   isOwner,
+  activeSubscription = null,
+  pendingRequest = null,
+  latestRequest = null,
+  premiumPaywallEnabled = true,
 }: VenueAdminDashboardProps) {
   const router = useRouter();
   const original = useMemo(() => toFormState(venue), [venue]);
@@ -180,7 +202,7 @@ export function VenueAdminDashboard({
 
   async function uploadPhoto(file: File) {
     setPhotoError(null);
-    const check = validateVenuePhotoFile(file);
+    const check = validateVenuePhotoUpload(file, photos.length);
     if ("error" in check) {
       setPhotoError(check.error);
       return;
@@ -193,7 +215,11 @@ export function VenueAdminDashboard({
       .upload(path, file, { contentType: file.type, upsert: false });
 
     if (uploadError) {
-      setPhotoError(`No se pudo subir "${file.name}": ${uploadError.message}`);
+      setPhotoError(
+        isRateLimitError(uploadError.message)
+          ? uploadError.message
+          : `No se pudo subir "${file.name}": ${uploadError.message}`,
+      );
       return;
     }
 
@@ -204,7 +230,11 @@ export function VenueAdminDashboard({
       .single();
 
     if (rowError || !row) {
-      setPhotoError(`La foto se subió pero no se registró: ${rowError?.message ?? "error"}`);
+      setPhotoError(
+        isRateLimitError(rowError?.message)
+          ? (rowError?.message ?? "Demasiadas fotos. Esperá un rato.")
+          : `La foto se subió pero no se registró: ${rowError?.message ?? "error"}`,
+      );
       return;
     }
     setPhotos((prev) => [...prev, row as VenuePhotoRow]);
@@ -241,7 +271,13 @@ export function VenueAdminDashboard({
   }
 
   async function deleteVenue() {
-    if (!confirm("¿ELIMINAR la cancha del directorio? Solo si no tiene partidos. Es irreversible.")) return;
+    if (
+      !confirm(
+        "¿Ocultar esta cancha del directorio? Soft-delete: se retiene en DB (claims/subs). No es hard-delete.",
+      )
+    ) {
+      return;
+    }
     const supabase = createClient();
     const { error } = await supabase.rpc("delete_venue", { p_venue_id: venue.id });
     if (error) {
@@ -405,10 +441,26 @@ export function VenueAdminDashboard({
         </div>
       </section>
 
+      {premiumPaywallEnabled ? (
+        <VenuePremiumPaywall
+          venueId={venue.id}
+          venueSlug={venue.slug}
+          isOwner={isOwner}
+          activeSubscription={activeSubscription}
+          pendingRequest={pendingRequest}
+          latestRequest={latestRequest}
+        />
+      ) : null}
+
       {/* Fotos */}
       <section className="venue-admin-section">
-        <h2 className="subhead">Fotos ({photos.length})</h2>
-        <p className="field-help">JPG, PNG o WEBP de hasta 5 MB. Lo primero que ve el jugador en la ficha.</p>
+        <h2 className="subhead">
+          Fotos ({photos.length}/{MAX_VENUE_PHOTOS})
+        </h2>
+        <p className="field-help">
+          JPG, PNG o WEBP de hasta 5 MB. Máximo {MAX_VENUE_PHOTOS} por cancha. Lo primero que ve el
+          jugador en la ficha.
+        </p>
         {photos.length > 0 ? (
           <ul className="venue-admin-photo-grid">
             {photos.map((photo) => (
@@ -449,10 +501,14 @@ export function VenueAdminDashboard({
           <button
             type="button"
             className="btn-ghost"
-            disabled={uploading}
+            disabled={uploading || photos.length >= MAX_VENUE_PHOTOS}
             onClick={() => fileInput.current?.click()}
           >
-            {uploading ? "Subiendo…" : "Subir fotos"}
+            {uploading
+              ? "Subiendo…"
+              : photos.length >= MAX_VENUE_PHOTOS
+                ? "Máximo de fotos"
+                : "Subir fotos"}
           </button>
         </div>
         {photoError ? <p className="form-error">{photoError}</p> : null}
@@ -493,7 +549,7 @@ export function VenueAdminDashboard({
             </button>
             {isAdmin ? (
               <button type="button" className="btn-bib" onClick={() => void deleteVenue()}>
-                Eliminar cancha del directorio
+                Ocultar cancha del directorio
               </button>
             ) : null}
           </div>

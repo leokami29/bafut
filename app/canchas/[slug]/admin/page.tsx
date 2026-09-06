@@ -5,6 +5,7 @@ import { VenueAdminDashboard } from "@/components/VenueAdminDashboard";
 import { requireUserId } from "@/lib/auth";
 import { getVenueBySlug } from "@/lib/data";
 import { getActiveCity } from "@/lib/data";
+import { isFeatureEnabled } from "@/lib/feature-flags";
 import { createClient } from "@/lib/supabase/server";
 import { robotsNoIndex } from "@/lib/seo";
 
@@ -46,6 +47,29 @@ export default async function VenueAdminPage({ params }: Props) {
     .eq("venue_id", venue.id)
     .order("sort_order", { ascending: true });
 
+  const { data: activeSubs } = await supabase
+    .from("venue_subscriptions")
+    .select("id, plan, expires_at, status")
+    .eq("venue_id", venue.id)
+    .eq("status", "active")
+    .gt("expires_at", new Date().toISOString())
+    .order("expires_at", { ascending: false })
+    .limit(1);
+
+  const { data: recentRequests } = await supabase
+    .from("venue_subscription_requests")
+    .select(
+      "id, status, plan, payment_method, amount_cop, created_at, reject_reason, invoice_number, subscription_id",
+    )
+    .eq("venue_id", venue.id)
+    .order("created_at", { ascending: false })
+    .limit(5);
+
+  const pendingRequest =
+    recentRequests?.find((r) => r.status === "pending") ?? null;
+  const latestRequest = recentRequests?.[0] ?? null;
+  const premiumPaywallEnabled = await isFeatureEnabled("premium_paywall");
+
   if (!isOwner && !isAdmin) {
     return (
       <main className="page page-narrow" id="main">
@@ -81,6 +105,10 @@ export default async function VenueAdminPage({ params }: Props) {
         userId={userId}
         isAdmin={!!isAdmin}
         isOwner={isOwner}
+        activeSubscription={activeSubs?.[0] ?? null}
+        pendingRequest={pendingRequest}
+        latestRequest={latestRequest}
+        premiumPaywallEnabled={premiumPaywallEnabled}
       />
     </main>
   );

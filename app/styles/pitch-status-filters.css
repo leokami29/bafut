@@ -344,7 +344,14 @@
   color: var(--bib);
 }
 
-.partidos-count-distance {
+.partidos-geo-hint {
+  margin: 0.35rem 0 0;
+  font-size: 0.78rem;
+  color: color-mix(in oklab, var(--ink) 55%, transparent);
+}
+
+.partidos-count-distance,
+.partidos-count-level {
   color: var(--turf);
   font-weight: 500;
 }

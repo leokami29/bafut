@@ -32,6 +32,14 @@ export default async function AdminHomePage() {
     .from("venue_claims")
     .select("id", { count: "exact", head: true })
     .eq("status", "pending");
+  const { count: pendingPremium } = await supabase
+    .from("venue_subscription_requests")
+    .select("id", { count: "exact", head: true })
+    .eq("status", "pending");
+  const { count: pendingRenewals } = await supabase
+    .from("subscription_renewal_reminders")
+    .select("id", { count: "exact", head: true })
+    .eq("status", "pending");
   const { count: totalVenues } = await supabase
     .from("venues")
     .select("id", { count: "exact", head: true });
@@ -52,6 +60,24 @@ export default async function AdminHomePage() {
           {pendingClaims ? <span className="profile-nav-badge">{pendingClaims}</span> : null}
           <span className="profile-nav-desc">
             Dueños que reclamaron su cancha. Verificá y aprobá o rechazá.
+          </span>
+        </Link>
+        <Link href="/admin/subscriptions" className="profile-nav-card">
+          <span className="profile-nav-title">Solicitudes Premium</span>
+          {pendingPremium ? (
+            <span className="profile-nav-badge">{pendingPremium}</span>
+          ) : null}
+          <span className="profile-nav-desc">
+            Comprobantes Nequi/banco: aprobar activa la suscripción y genera factura.
+          </span>
+        </Link>
+        <Link href="/admin/renewals" className="profile-nav-card">
+          <span className="profile-nav-title">Renovaciones</span>
+          {pendingRenewals ? (
+            <span className="profile-nav-badge">{pendingRenewals}</span>
+          ) : null}
+          <span className="profile-nav-desc">
+            Cola T-7 / T-1: avisá por WhatsApp a dueños con Premium por vencer.
           </span>
         </Link>
         <Link href="/admin/venues" className="profile-nav-card">

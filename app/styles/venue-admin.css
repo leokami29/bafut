@@ -264,3 +264,164 @@
     display: none;
   }
 }
+
+/* —— Premium paywall (dueño) —— */
+.venue-premium-paywall .venue-premium-instructions {
+  display: grid;
+  gap: 0.85rem;
+  padding: 1rem;
+  background: color-mix(in oklab, var(--turf) 6%, var(--paper));
+  border-left: 3px solid var(--turf);
+}
+
+.venue-premium-paywall .venue-premium-instructions > div {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.venue-premium-account {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.95rem;
+  word-break: break-word;
+}
+
+.venue-premium-methods {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.venue-premium-methods legend {
+  font-size: 0.85rem;
+  margin-bottom: 0.35rem;
+}
+
+.venue-premium-status {
+  padding: 1rem;
+  border-radius: 4px;
+  border: 1px solid color-mix(in oklab, var(--ink) 16%, transparent);
+}
+
+.venue-premium-status.is-active {
+  border-color: color-mix(in oklab, var(--turf) 45%, transparent);
+  background: color-mix(in oklab, var(--turf) 8%, var(--paper));
+}
+
+.venue-premium-status.is-pending {
+  background: color-mix(in oklab, var(--ink) 4%, var(--paper));
+}
+
+.venue-premium-reject {
+  margin-bottom: 0.5rem;
+}
+
+.legal-accept {
+  display: flex;
+  gap: 0.65rem;
+  align-items: flex-start;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  margin: 0.5rem 0;
+}
+
+.legal-accept input {
+  margin-top: 0.2rem;
+  flex-shrink: 0;
+}
+
+.claim-duration-field input[type="number"] {
+  width: 4.5rem;
+  min-height: 2.5rem;
+  padding: 0.35rem 0.5rem;
+  margin-right: 0.5rem;
+}
+
+/* —— Factura HTML/PDF —— */
+.invoice-doc {
+  display: grid;
+  gap: 1.5rem;
+  padding: 1.5rem 0 2rem;
+}
+
+.invoice-doc-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+  border-bottom: 2px solid var(--ink);
+  padding-bottom: 1rem;
+}
+
+.invoice-brand {
+  margin: 0;
+  font-family: var(--font-display), serif;
+  font-size: 1.75rem;
+  letter-spacing: 0.02em;
+}
+
+.invoice-doc-head h1 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.invoice-number {
+  margin: 0.35rem 0 0;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.95rem;
+}
+
+.invoice-doc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 1rem;
+  margin: 0;
+}
+
+.invoice-doc-grid dt {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--ink) 55%, transparent);
+}
+
+.invoice-doc-grid dd {
+  margin: 0.2rem 0 0;
+}
+
+.invoice-total dd {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.invoice-note {
+  margin: 0;
+  font-size: 0.82rem;
+  color: color-mix(in oklab, var(--ink) 55%, transparent);
+  line-height: 1.45;
+}
+
+.invoice-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+@media print {
+  .no-print,
+  .venue-back.no-print {
+    display: none !important;
+  }
+
+  .invoice-page {
+    max-width: none;
+    padding: 0;
+  }
+
+  .invoice-doc {
+    padding: 0;
+  }
+}

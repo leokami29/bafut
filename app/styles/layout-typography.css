@@ -159,6 +159,53 @@ h2,
   margin-inline: auto;
 }
 
+.legal-doc {
+  max-width: 40rem;
+}
+
+.legal-doc-updated {
+  margin: 0.5rem 0 0;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--ink) 55%, transparent);
+}
+
+.legal-doc-body {
+  display: grid;
+  gap: 0.15rem;
+  line-height: 1.55;
+  color: color-mix(in oklab, var(--ink) 88%, transparent);
+}
+
+.legal-doc-body h2 {
+  margin: 1.75rem 0 0.55rem;
+  font-size: 1.15rem;
+}
+
+.legal-doc-body p,
+.legal-doc-body li {
+  font-size: 0.98rem;
+}
+
+.legal-doc-body ul {
+  margin: 0.35rem 0 0.75rem;
+  padding-left: 1.2rem;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.legal-doc-nav {
+  margin-top: 2.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid color-mix(in oklab, var(--ink) 12%, transparent);
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
 .eyebrow {
   margin: 0 0 0.35rem;
   font-family: var(--font-mono), monospace;

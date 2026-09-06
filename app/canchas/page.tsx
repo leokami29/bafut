@@ -3,6 +3,7 @@ import Link from "next/link";
 import { JsonLd, venueDirectoryJsonLd } from "@/components/JsonLd";
 import { VenueDirectory } from "@/components/VenueDirectory";
 import { getActiveCity, getUpcomingMatches, getVenuesByCity } from "@/lib/data";
+import { isFeatureEnabled } from "@/lib/feature-flags";
 import {
   DIRECTORY_DESCRIPTION,
   DIRECTORY_TITLE,
@@ -39,9 +40,10 @@ export default async function CanchasPage() {
       </main>
     );
   }
-  const [venues, matches] = await Promise.all([
+  const [venues, matches, premiumBoost] = await Promise.all([
     getVenuesByCity(city.id),
     getUpcomingMatches(city.id),
+    isFeatureEnabled("directory_premium_boost"),
   ]);
   const demandByVenueId = aggregateVenueDemand(matches, city.timezone);
   const withDemand = Object.values(demandByVenueId).filter((d) => d.matchCount > 0).length;
@@ -63,6 +65,7 @@ export default async function CanchasPage() {
         venues={venues}
         center={{ lat: city.lat, lng: city.lng }}
         demandByVenueId={demandByVenueId}
+        premiumBoost={premiumBoost}
       />
     </main>
   );

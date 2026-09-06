@@ -3,6 +3,7 @@ import Link from "next/link";
 import { AdminClaimsPanel, type AdminVenueClaim } from "@/components/AdminClaimsPanel";
 import { requireUserId } from "@/lib/auth";
 import { getActiveCity } from "@/lib/data";
+import { recentReviewCutoffIso } from "@/lib/venue-claims";
 import { createClient } from "@/lib/supabase/server";
 import { robotsNoIndex } from "@/lib/seo";
 
@@ -38,14 +39,18 @@ export default async function AdminClaimsPage() {
     );
   }
 
+  // Pendientes + resueltos en las últimas 24 h (para avisar al dueño tras aprobar/rechazar).
   const { data: claims, error } = await supabase
     .from("venue_claims")
     .select(
-      `id, created_at, whatsapp, email, note,
+      `id, created_at, status, reject_reason, reviewed_at, whatsapp, email, note,
+       proof_facade, proof_nit, proof_call_note,
        venues ( name, slug, neighborhood ),
        profiles!venue_claims_user_id_fkey ( display_name )`,
     )
-    .eq("status", "pending")
+    .or(
+      `status.eq.pending,and(status.in.(approved,rejected),reviewed_at.gte.${recentReviewCutoffIso()})`,
+    )
     .order("created_at", { ascending: true });
 
   return (
@@ -57,9 +62,9 @@ export default async function AdminClaimsPage() {
         <p className="eyebrow">Moderación</p>
         <h1>Reclamos pendientes</h1>
         <p className="lede">
-          Verificá cada reclamo antes de aprobar: llamá a la recepción, chequeá el grupo de
-          WhatsApp o el contacto declarado. Al aprobar, la cancha pasa a ese usuario con sello
-          de verificada.
+          Verificá cada reclamo antes de aprobar: foto de fachada, NIT/razón social o nota de
+          llamada. Sin al menos una prueba no se puede aprobar. Al aprobar, la cancha pasa a
+          ese usuario con sello de verificada.
         </p>
       </header>
 

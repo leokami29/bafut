@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import type { Sport } from "@/lib/constants";
-import type { Venue } from "@/lib/types";
+import type { VenueWithPremium } from "@/lib/types";
 import { sportLabel, venueKindLabel } from "@/lib/labels";
 import { venueDemandLabel, venueDemandScore, type VenueDemand } from "@/lib/venue-demand";
 import { trackEvent } from "@/lib/analytics";
@@ -13,10 +13,29 @@ type KindFilter = "all" | "alquiler" | "publica" | "club";
 type SportFilter = "all" | Sport;
 type MobileView = "both" | "list" | "map";
 type SortMode = "relevancia" | "az";
+type StatusFilter = "all" | "verified" | "premium";
 
 function formatSports(sports: string[] | undefined) {
   if (!sports?.length) return "";
   return sports.map((s) => sportLabel[s as Sport] ?? s).join(" · ");
+}
+
+function sortVenues(
+  list: VenueWithPremium[],
+  sort: SortMode,
+  demandByVenueId: Record<string, VenueDemand>,
+  premiumBoost: boolean,
+) {
+  return [...list].sort((a, b) => {
+    if (premiumBoost) {
+      const premiumDiff = Number(b.is_premium) - Number(a.is_premium);
+      if (premiumDiff !== 0) return premiumDiff;
+    }
+    if (sort === "relevancia") {
+      return venueDemandScore(demandByVenueId[b.id]) - venueDemandScore(demandByVenueId[a.id]);
+    }
+    return a.name.localeCompare(b.name, "es");
+  });
 }
 
 function VenueListLink({
@@ -24,7 +43,7 @@ function VenueListLink({
   demand,
   onActivate,
 }: {
-  venue: Venue;
+  venue: VenueWithPremium;
   demand?: VenueDemand;
   onActivate?: () => void;
 }) {
@@ -43,7 +62,21 @@ function VenueListLink({
         onFocus={onActivate}
       >
         <span className="venue-list-main">
-          <strong>{venue.name}</strong>
+          <strong className="venue-list-name">
+            {venue.name}
+            <span className="venue-list-badges">
+              {venue.is_premium ? (
+                <span className="venue-list-premium" title="Cancha con plan Premium activo">
+                  Premium
+                </span>
+              ) : null}
+              {venue.is_verified ? (
+                <span className="venue-list-verified" title="Cancha verificada por su dueño">
+                  Verificada
+                </span>
+              ) : null}
+            </span>
+          </strong>
           {demandText ? <span className="venue-list-demand">{demandText}</span> : null}
         </span>
         {meta ? <span className="venue-list-meta">{meta}</span> : null}
@@ -79,10 +112,13 @@ export function VenueDirectory({
   venues,
   center,
   demandByVenueId = {},
+  premiumBoost = true,
 }: {
-  venues: Venue[];
+  venues: VenueWithPremium[];
   center: { lat: number; lng: number };
   demandByVenueId?: Record<string, VenueDemand>;
+  /** Feature flag directory_premium_boost — kill-switch de orden premium. */
+  premiumBoost?: boolean;
 }) {
   const isDesktop = useIsDesktop();
   const [query, setQuery] = useState("");
@@ -92,6 +128,7 @@ export function VenueDirectory({
   const [mobileView, setMobileView] = useState<MobileView>("both");
   const [focusId, setFocusId] = useState<string | undefined>();
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
 
   const hasDemand = useMemo(
     () => Object.values(demandByVenueId).some((d) => d.matchCount > 0),
@@ -103,6 +140,15 @@ export function VenueDirectory({
     setSort(mode);
     trackEvent("canchas_sort_applied", { sort: mode });
   };
+
+  const verifiedCount = useMemo(
+    () => venues.filter((v) => v.is_verified).length,
+    [venues],
+  );
+  const premiumCount = useMemo(
+    () => venues.filter((v) => v.is_premium).length,
+    [venues],
+  );
 
   const availableSports = useMemo(() => {
     const set = new Set<Sport>();
@@ -129,6 +175,8 @@ export function VenueDirectory({
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return venues.filter((venue) => {
+      if (statusFilter === "verified" && !venue.is_verified) return false;
+      if (statusFilter === "premium" && !venue.is_premium) return false;
       if (kind !== "all" && venue.venue_kind !== kind) return false;
       if (sport !== "all" && !venue.sports?.includes(sport)) return false;
       if (neighborhood !== "all" && venue.neighborhood !== neighborhood) return false;
@@ -136,10 +184,40 @@ export function VenueDirectory({
       const hay = `${venue.name} ${venue.neighborhood ?? ""} ${venue.address ?? ""}`.toLowerCase();
       return hay.includes(q);
     });
-  }, [venues, query, kind, sport, neighborhood]);
+  }, [venues, query, kind, sport, neighborhood, statusFilter]);
+
+  const premiumRail = useMemo(() => {
+    if (!premiumBoost || statusFilter === "premium" || premiumCount === 0) return [];
+    const q = query.trim().toLowerCase();
+    return sortVenues(
+      venues.filter((venue) => {
+        if (!venue.is_premium) return false;
+        if (kind !== "all" && venue.venue_kind !== kind) return false;
+        if (sport !== "all" && !venue.sports?.includes(sport)) return false;
+        if (neighborhood !== "all" && venue.neighborhood !== neighborhood) return false;
+        if (!q) return true;
+        const hay = `${venue.name} ${venue.neighborhood ?? ""} ${venue.address ?? ""}`.toLowerCase();
+        return hay.includes(q);
+      }),
+      sort,
+      demandByVenueId,
+      premiumBoost,
+    );
+  }, [
+    venues,
+    statusFilter,
+    premiumCount,
+    kind,
+    sport,
+    neighborhood,
+    query,
+    sort,
+    demandByVenueId,
+    premiumBoost,
+  ]);
 
   const grouped = useMemo(() => {
-    const map = new Map<string, Venue[]>();
+    const map = new Map<string, VenueWithPremium[]>();
     for (const venue of filtered) {
       const key = venue.neighborhood ?? "Sin barrio";
       const list = map.get(key) ?? [];
@@ -147,24 +225,34 @@ export function VenueDirectory({
       map.set(key, list);
     }
     const entries = [...map.entries()].sort(([a], [b]) => a.localeCompare(b, "es"));
-    if (sort === "relevancia") {
-      for (const [, list] of entries) {
-        list.sort((a, b) => venueDemandScore(demandByVenueId[b.id]) - venueDemandScore(demandByVenueId[a.id]));
-      }
-    } else {
-      for (const [, list] of entries) {
-        list.sort((a, b) => a.name.localeCompare(b.name, "es"));
-      }
+    for (const [, list] of entries) {
+      list.sort((a, b) => {
+        if (premiumBoost) {
+          const premiumDiff = Number(b.is_premium) - Number(a.is_premium);
+          if (premiumDiff !== 0) return premiumDiff;
+        }
+        if (sort === "relevancia") {
+          return venueDemandScore(demandByVenueId[b.id]) - venueDemandScore(demandByVenueId[a.id]);
+        }
+        return a.name.localeCompare(b.name, "es");
+      });
     }
     return entries;
-  }, [filtered, sort, demandByVenueId]);
+  }, [filtered, sort, demandByVenueId, premiumBoost]);
 
   const showMap = isDesktop || mobileView !== "list";
   const showList = isDesktop || mobileView !== "map";
   const hasActiveFilter =
-    query.trim() !== "" || kind !== "all" || sport !== "all" || neighborhood !== "all";
+    query.trim() !== "" ||
+    kind !== "all" ||
+    sport !== "all" ||
+    neighborhood !== "all" ||
+    statusFilter !== "all";
   const activeFilterCount =
-    (kind !== "all" ? 1 : 0) + (sport !== "all" ? 1 : 0) + (neighborhood !== "all" ? 1 : 0);
+    (kind !== "all" ? 1 : 0) +
+    (sport !== "all" ? 1 : 0) +
+    (neighborhood !== "all" ? 1 : 0) +
+    (statusFilter !== "all" ? 1 : 0);
 
   const groupDefaultOpen = (barrio: string) =>
     isDesktop || neighborhood === barrio || (hasActiveFilter && grouped.length <= 4);
@@ -200,6 +288,44 @@ export function VenueDirectory({
           ))}
         </div>
       </div>
+
+      {verifiedCount > 0 || premiumCount > 0 ? (
+        <div className="venue-filter-row">
+          <span className="venue-filter-label" id="venue-filter-state-label">
+            Estado
+          </span>
+          <div className="filter-chips" role="group" aria-labelledby="venue-filter-state-label">
+            <button
+              type="button"
+              className={statusFilter === "all" ? "is-on" : undefined}
+              aria-pressed={statusFilter === "all"}
+              onClick={() => setStatusFilter("all")}
+            >
+              Todas
+            </button>
+            {verifiedCount > 0 ? (
+              <button
+                type="button"
+                className={statusFilter === "verified" ? "is-on" : undefined}
+                aria-pressed={statusFilter === "verified"}
+                onClick={() => setStatusFilter("verified")}
+              >
+                Verificadas ({verifiedCount})
+              </button>
+            ) : null}
+            {premiumCount > 0 ? (
+              <button
+                type="button"
+                className={statusFilter === "premium" ? "is-on" : undefined}
+                aria-pressed={statusFilter === "premium"}
+                onClick={() => setStatusFilter("premium")}
+              >
+                Solo premium ({premiumCount})
+              </button>
+            ) : null}
+          </div>
+        </div>
+      ) : null}
 
       {availableSports.length > 1 ? (
         <div className="venue-filter-row">
@@ -369,6 +495,26 @@ export function VenueDirectory({
       <div className={`venue-layout${showMap && showList ? " has-both" : ""}`}>
         {showList ? (
           <div className="venue-panel-list">
+            {premiumRail.length > 0 ? (
+              <section className="venue-premium-rail" aria-labelledby="venue-premium-rail-title">
+                <h2 className="venue-premium-rail-title" id="venue-premium-rail-title">
+                  Premium
+                  <span className="venue-group-count">{premiumRail.length}</span>
+                </h2>
+                <ul className="venue-premium-rail-list">
+                  {premiumRail.map((venue) => (
+                    <li key={venue.id}>
+                      <VenueListLink
+                        venue={venue}
+                        demand={demandByVenueId[venue.id]}
+                        onActivate={() => setFocusId(venue.id)}
+                      />
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ) : null}
+
             {filtered.length > 0 ? (
               <div id="venue-list" className="venue-groups">
                 {grouped.map(([barrio, list]) =>

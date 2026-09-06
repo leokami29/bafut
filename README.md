@@ -50,12 +50,20 @@ Requisitos: Node.js 20+ y un proyecto Supabase.
 
    | Variable | Obligatoria | Notas |
    | --- | --- | --- |
-   | `NEXT_PUBLIC_SUPABASE_URL` | Sí | URL del proyecto Supabase |
+   | `NEXT_PUBLIC_SUPABASE_URL` | Sí | URL del proyecto Supabase (prod o staging según entorno) |
    | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Sí | Publishable key del cliente |
    | `NEXT_PUBLIC_SITE_URL` | Sí | Local: `http://localhost:3005` |
-   | `NEXT_PUBLIC_DONATE_*` | No | Ko-fi / GitHub Sponsors / Nequi |
+   | `STAGING_SUPABASE_*` / `STAGING_SITE_URL` | No | Plantilla del proyecto staging; la app no las lee en runtime (ver [docs/staging.md](./docs/staging.md)) |
+   | `NEXT_PUBLIC_DONATE_*` | No | Ko-fi / GitHub Sponsors / Nequi (donaciones) |
+   | `NEXT_PUBLIC_PREMIUM_*` | No | Precio, días, Nequi/banco para pago premium dueños |
    | `NEXT_PUBLIC_VENUE_OWNER_*` | No | WhatsApp / email para dueños de cancha |
    | `NEXT_PUBLIC_GA4_MEASUREMENT_ID` | No | Google Analytics 4 |
+   | `CRON_SECRET` | Prod (cron) | Bearer para `/api/cron/*` (`openssl rand -hex 32`; distinto staging vs prod) |
+   | `SUPABASE_SERVICE_ROLE_KEY` | Prod (cron push/renewals) | Solo server; nunca `NEXT_PUBLIC_` |
+   | `NEXT_PUBLIC_VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` | No* | Web Push (fase C); *obligatorias si `push_alerts` está on |
+   | `VAPID_SUBJECT` | No | `mailto:` o `https:` del emisor |
+   | `FEATURE_*` | No | Pisa DB (`PREMIUM_PAYWALL`, `PUSH_ALERTS`, `DIRECTORY_PREMIUM_BOOST`) |
+   | `RESEND_API_KEY` | No | Email renovaciones; sin esto → cola WhatsApp/admin |
 
 3. Aplica las migraciones en `supabase/migrations/` (orden de nombre de archivo) y, si hace falta datos base, `supabase/seed.sql`.
 
@@ -146,11 +154,82 @@ npx supabase gen types typescript --linked > lib/database.types.ts
 
 Sin credenciales de CLI, los tipos se pueden validar contra las migraciones con `npm test`.
 
+## Ops: cron, admins y límites
+
+### Cron (`CRON_SECRET`)
+
+Todos los endpoints bajo `/api/cron/*` deben validar:
+
+```http
+Authorization: Bearer <CRON_SECRET>
+```
+
+Hoy:
+- `GET /api/cron/weekly-matches` — templates → partidos del día
+- `GET /api/cron/expire-subscriptions` — `venue_subscriptions` `active` → `expired` si `expires_at < now()`
+
+Helper: `lib/cron-auth.ts` (`requireCronSecret`). La respuesta solo incluye ids/conteos y mensajes de error de RPC (sin PII).
+
+En Railway/Vercel: variable `CRON_SECRET` + crons diarios que peguen ese header.
+
+### Soft-delete de canchas
+
+`delete_venue` pone `venues.deleted_at` (no borra la fila). Claims, suscripciones y fotos se retienen para auditoría/habeas data. El directorio y fichas públicas filtran `deleted_at is null`; admins siguen viendo soft-deleted vía RLS.
+
+### Pago premium (Nequi / banco)
+
+Variables `NEXT_PUBLIC_PREMIUM_NEQUI`, `NEXT_PUBLIC_PREMIUM_BANK_*`, precio y duración: ver `.env.example`. El dueño sube comprobante; un admin con rol `billing` o `super` aprueba.
+
+### Web Push (VAPID)
+
+Cuando esté activa la fase C (`push_alerts`):
+
+| Variable | Dónde |
+| --- | --- |
+| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | Cliente (subscribe) |
+| `VAPID_PRIVATE_KEY` | Solo servidor (enviar push; nunca `NEXT_PUBLIC_`) |
+
+Generar con `npx web-push generate-vapid-keys`. Safari/iOS: solo con PWA instalada. Detalle de staging: [docs/staging.md](./docs/staging.md).
+
+### Crear un admin
+
+```sql
+insert into public.admins (user_id, role)
+values ('<uuid-del-perfil>', 'super');
+-- roles: moderation (claims) | billing (subs) | super (todo)
+```
+
+`role` default `super` — el operador actual no pierde permisos. UI de roles diferida hasta haber >1 editor.
+
+### Web Push y alertas
+
+1. Generá VAPID: `npx web-push generate-vapid-keys` → `NEXT_PUBLIC_VAPID_PUBLIC_KEY` + `VAPID_PRIVATE_KEY`.
+2. Configurá `SUPABASE_SERVICE_ROLE_KEY` y `CRON_SECRET` en Railway.
+3. Cron horario: `GET /api/cron/push-alerts` con header `Authorization: Bearer $CRON_SECRET`.
+4. Cron diario renovaciones: `GET /api/cron/renewal-reminders` (misma auth) → cola en `/admin/renewals`.
+5. UI usuario: `/perfil/alertas` (opt-in Notification + preferencias).
+6. Kill-switch: `update feature_flags set enabled=false where key='push_alerts';` (sin redeploy) o `FEATURE_PUSH_ALERTS=0`.
+7. iOS / WhatsApp: ver [docs/ios-pwa-push.md](./docs/ios-pwa-push.md).
+
+Flags DB: `premium_paywall`, `push_alerts`, `directory_premium_boost`.
+
+### Rate limits / caps (DB)
+
+| Acción | Límite |
+| --- | --- |
+| Reclamar cancha | 5 / hora / usuario |
+| Subir foto | 20 / hora / usuario; máx. 12 fotos por cancha; 5 MB JPG/PNG/WEBP |
+| Crear suscripción (admin) | 30 / hora |
+| Subscribe dueño (A2) | usar scope `venue_subscribe` en el RPC de solicitud |
+
+Mutaciones admin clave escriben en `admin_actions` (sin PII en `meta`).
+
 ## Estructura
 
 ```
 app/           # Rutas App Router (/, /canchas, /partidos, /p/[code], auth…)
 components/    # UI (feed, mapa, nav, forms…)
+docs/          # Ops: staging, cold-start BQ, iOS PWA push + WA
 lib/           # Datos, reglas de deporte, Supabase, SEO
 hooks/         # Hooks de cliente
 scripts/       # Scripts one-off (scrape de canchas, generación de SQL)
@@ -168,9 +247,21 @@ En Next.js 16 el middleware se llama `proxy.ts` (antes `middleware.ts`). El suyo
 
 El matcher excluye assets estáticos (`_next/*`, imágenes, `sw.js`).
 
+## Staging vs producción
+
+Usá un **proyecto Supabase aparte** para staging; las migraciones se prueban ahí antes de prod. La app siempre lee `NEXT_PUBLIC_SUPABASE_*` del entorno activo; `STAGING_*` en `.env.example` es plantilla/referencia (sin secrets reales en el repo).
+
+Detalle: [docs/staging.md](./docs/staging.md).
+
+## Cold-start Barranquilla
+
+Sin partidos del día en el feed, premium no convierte. Runbook corto (N hosts semilla, 3–5 partidos hoy, outreach WhatsApp): [docs/cold-start-barranquilla.md](./docs/cold-start-barranquilla.md).
+
+Segunda ciudad solo cuando BQ tenga liquidez estable.
+
 ## Añadir otra ciudad
 
-Inserta una fila en `cities` y sus `venues`. No hace falta ramificar código. El selector guarda la ciudad en la cookie `bafut_city`.
+Inserta una fila en `cities` y sus `venues`. No hace falta ramificar código. El selector guarda la ciudad en la cookie `bafut_city`. Preferí esperar liquidez en Barranquilla (ver cold-start arriba).
 
 ## Contribuir
 

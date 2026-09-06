@@ -2,6 +2,8 @@ import type { Tables } from "@/lib/database.types";
 
 export type City = Tables<"cities">;
 export type Venue = Tables<"venues">;
+/** Venue del directorio con flag de suscripción premium activa. */
+export type VenueWithPremium = Venue & { is_premium: boolean };
 export type Profile = Tables<"profiles">;
 export type ProfileWithContact = Profile & { whatsapp: string | null };
 export type Match = Tables<"matches">;

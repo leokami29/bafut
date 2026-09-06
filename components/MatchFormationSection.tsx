@@ -15,6 +15,7 @@ export function MatchFormationSection({
   canOpenRival,
   userId,
   cancelled,
+  secondaryToClaim = false,
 }: {
   board: MatchFormationBoard;
   matchId: string;
@@ -23,6 +24,8 @@ export function MatchFormationSection({
   canOpenRival: boolean;
   userId: string | null;
   cancelled: boolean;
+  /** Si el CTA Pedir cupo ya está arriba, la formación se lee como secundaria. */
+  secondaryToClaim?: boolean;
 }) {
   const [showRival, setShowRival] = useState(false);
   const cuposHref = `#cupos`;
@@ -30,7 +33,12 @@ export function MatchFormationSection({
   useEffect(() => {
     if (!canOpenRival) return;
     if (window.location.hash !== "#armar-rival") return;
-    const timer = window.setTimeout(() => setShowRival(true), 0);
+    const timer = window.setTimeout(() => {
+      setShowRival(true);
+      queueMicrotask(() => {
+        document.getElementById("armar-rival")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    }, 0);
     return () => window.clearTimeout(timer);
   }, [canOpenRival]);
 
@@ -41,18 +49,24 @@ export function MatchFormationSection({
     });
   };
 
+  const lead = secondaryToClaim
+    ? canOpenRival
+      ? "Orientación: izquierda = con ellos · derecha = rival. El pedido de cupo va arriba."
+      : board.hasSideB
+        ? "Dos equipos en la misma cancha y hora. Pedí cupo arriba en el que te toque."
+        : "Así va armada esta pateada (secundario al pedido de cupo)."
+    : canOpenRival
+      ? "Mitad izquierda = pedir cupo con ellos. Mitad derecha = armar el rival."
+      : board.hasSideB
+        ? "Dos equipos en la misma cancha y hora. Pedí cupo en el que te toque."
+        : "Así va la formación de esta pateada.";
+
   return (
-    <section className="match-formation-section" aria-labelledby="match-formation-heading">
+    <section className="match-formation-section" id="formacion" aria-labelledby="match-formation-heading">
       <h2 className="subhead" id="match-formation-heading">
         Formación
       </h2>
-      <p className="match-formation-lead">
-        {canOpenRival
-          ? "Mitad izquierda = pedir cupo con ellos. Mitad derecha = armar el rival."
-          : board.hasSideB
-            ? "Dos equipos en la misma cancha y hora. Pedí cupo en el que te toque."
-            : "Así va la formación de esta pateada."}
-      </p>
+      <p className="match-formation-lead">{lead}</p>
 
       <MatchPitchBoard
         board={board}
@@ -77,22 +91,13 @@ export function MatchFormationSection({
       />
 
       {canOpenRival ? (
-        <div className="match-choice-grid" role="group" aria-label="¿Vas con ellos o en contra?">
-          <a className="occupancy-choice is-join" href={cuposHref}>
-            <span className="occupancy-choice-kicker">Misma formación</span>
-            <strong>Voy con ellos</strong>
-            <span className="occupancy-choice-result">Pedís un cupo en el equipo que publicó</span>
-          </a>
-          <button
-            type="button"
-            className={`occupancy-choice is-rival ${showRival ? "is-on" : ""}`}
-            onClick={openForm}
-          >
-            <span className="occupancy-choice-kicker">Misma pateada</span>
-            <strong>Voy en contra</strong>
-            <span className="occupancy-choice-result">Armás el rival en esta cancha y hora</span>
+        <p className="match-formation-secondary-links">
+          <a href={cuposHref}>Pedí cupo con ellos</a>
+          <span aria-hidden="true"> · </span>
+          <button type="button" className="linkish" onClick={openForm}>
+            Armá el rival
           </button>
-        </div>
+        </p>
       ) : null}
 
       {canOpenRival && showRival ? (

@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { JsonLd, matchRadarJsonLd } from "@/components/JsonLd";
 import { MatchFeed } from "@/components/MatchFeed";
 import { RosterSkeleton } from "@/components/RosterSkeleton";
-import { getActiveCity, getUpcomingMatches } from "@/lib/data";
+import { getActiveCity, getProfile, getSessionUserId, getUpcomingMatches } from "@/lib/data";
 import {
   RADAR_DESCRIPTION,
   RADAR_TITLE,
@@ -41,7 +41,8 @@ export default async function PartidosPage() {
     );
   }
 
-  const matches = await getUpcomingMatches(city.id);
+  const [matches, userId] = await Promise.all([getUpcomingMatches(city.id), getSessionUserId()]);
+  const profile = userId ? await getProfile(userId) : null;
 
   return (
     <main className="page page-partidos" id="main">
@@ -64,7 +65,12 @@ export default async function PartidosPage() {
       </header>
 
       <Suspense fallback={<RosterSkeleton rows={5} />}>
-        <MatchFeed matches={matches} timezone={city.timezone} cityName={city.name} />
+        <MatchFeed
+          matches={matches}
+          timezone={city.timezone}
+          cityName={city.name}
+          profileLevel={profile?.level ?? null}
+        />
       </Suspense>
     </main>
   );

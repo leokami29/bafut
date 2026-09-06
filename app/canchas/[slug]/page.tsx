@@ -462,7 +462,16 @@ export default async function CanchaPage({ params }: Props) {
         )}
       </section>
 
-      <VenueOwnerBlock venueName={venue.name} venueSlug={venue.slug} hasActivity={here.length > 0} matchCount={here.length} openSlots={openSlotsHere} />
+      <VenueOwnerBlock
+        venueName={venue.name}
+        venueSlug={venue.slug}
+        hasActivity={here.length > 0}
+        matchCount={here.length}
+        openSlots={openSlotsHere}
+        isVenueOwner={isVenueOwner}
+        canClaim={canClaim}
+        claimPending={claimState.hasPendingClaim}
+      />
 
       <p className="foot-link">
         <Link href="/canchas">Todas las canchas sintéticas</Link>

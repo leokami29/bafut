@@ -2,9 +2,20 @@ import { cache } from "react";
 import { cookies } from "next/headers";
 import { CITY_COOKIE, DEFAULT_CITY_SLUG } from "@/lib/constants";
 import { createClient } from "@/lib/supabase/server";
-import type { MatchDetail, ProfileWithContact } from "@/lib/types";
+import type { MatchDetail, ProfileWithContact, VenueWithPremium } from "@/lib/types";
+import { venueHasActivePremium } from "@/lib/venue-premium";
 
-export type { City, Venue, Profile, Match, MatchSlot, SlotClaim, MatchDetail, ProfileWithContact } from "@/lib/types";
+export type {
+  City,
+  Venue,
+  VenueWithPremium,
+  Profile,
+  Match,
+  MatchSlot,
+  SlotClaim,
+  MatchDetail,
+  ProfileWithContact,
+} from "@/lib/types";
 export { openSlotCount, slotIsOpen } from "@/lib/types";
 
 const matchSelect = `
@@ -64,18 +75,31 @@ export async function getActiveCity() {
   return requested ?? fallback;
 }
 
-export const getVenuesByCity = cache(async (cityId: string) => {
+export const getVenuesByCity = cache(async (cityId: string): Promise<VenueWithPremium[]> => {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("venues")
-    .select("*")
+    .select(
+      `
+      *,
+      venue_subscriptions (
+        status,
+        plan,
+        expires_at
+      )
+    `,
+    )
     .eq("city_id", cityId)
+    .is("deleted_at", null)
     .order("neighborhood")
     .order("name");
   if (error) {
     throw error;
   }
-  return data;
+  return (data ?? []).map(({ venue_subscriptions, ...venue }) => ({
+    ...venue,
+    is_premium: venueHasActivePremium(venue_subscriptions),
+  }));
 });
 
 export const getVenueBySlug = cache(async (cityId: string, slug: string) => {
@@ -85,6 +109,7 @@ export const getVenueBySlug = cache(async (cityId: string, slug: string) => {
     .select("*")
     .eq("city_id", cityId)
     .eq("slug", slug)
+    .is("deleted_at", null)
     .maybeSingle();
   if (error) {
     throw error;
@@ -161,17 +186,71 @@ export const getProfile = cache(async (userId: string): Promise<ProfileWithConta
   return { ...profile, whatsapp: contact?.whatsapp ?? null };
 });
 
-export const getHostPendingClaimCount = cache(async (userId: string) => {
+export type HostPendingInbox = {
+  count: number;
+  /** Deep-link al partido con pedidos; cae a la lista si no hay target. */
+  href: string;
+};
+
+type PendingClaimMatchRow = {
+  id: string;
+  created_at: string;
+  matches:
+    | { host_id: string; share_code: string; starts_at: string; status: string }
+    | { host_id: string; share_code: string; starts_at: string; status: string }[]
+    | null;
+};
+
+function pendingClaimMatch(
+  row: PendingClaimMatchRow,
+): { share_code: string; starts_at: string; status: string } | null {
+  const match = Array.isArray(row.matches) ? row.matches[0] : row.matches;
+  if (!match?.share_code) return null;
+  return match;
+}
+
+/** Pedidos pendientes del host + deep-link al partido (#cupos) más urgente. */
+export const getHostPendingInbox = cache(async (userId: string): Promise<HostPendingInbox> => {
   const supabase = await createClient();
-  const { count, error } = await supabase
+  const { data, error, count } = await supabase
     .from("slot_claims")
-    .select("id, matches!inner(host_id)", { count: "exact", head: true })
+    .select("id, created_at, matches!inner(host_id, share_code, starts_at, status)", {
+      count: "exact",
+    })
     .eq("status", "pending")
-    .eq("matches.host_id", userId);
+    .eq("matches.host_id", userId)
+    .order("created_at", { ascending: true })
+    .limit(40);
   if (error) {
     throw error;
   }
-  return count ?? 0;
+
+  const rows = (data ?? []) as PendingClaimMatchRow[];
+  const total = count ?? rows.length;
+  if (total === 0) {
+    return { count: 0, href: "/perfil/partidos" };
+  }
+
+  const nowIso = new Date().toISOString();
+  const targets = rows
+    .map(pendingClaimMatch)
+    .filter((m): m is NonNullable<typeof m> => Boolean(m))
+    .filter((m) => m.status !== "cancelled");
+
+  const upcoming = targets
+    .filter((m) => m.starts_at > nowIso)
+    .sort((a, b) => a.starts_at.localeCompare(b.starts_at));
+  const pick = upcoming[0] ?? [...targets].sort((a, b) => a.starts_at.localeCompare(b.starts_at))[0];
+
+  return {
+    count: total,
+    href: pick ? `/p/${pick.share_code}#cupos` : "/perfil/partidos",
+  };
+});
+
+export const getHostPendingClaimCount = cache(async (userId: string) => {
+  const inbox = await getHostPendingInbox(userId);
+  return inbox.count;
 });
 
 export const getMyHostedMatches = cache(async (userId: string) => {
@@ -303,12 +382,18 @@ export const getVenueClaimState = cache(async (venueId: string, userId: string |
     p_venue_id: venueId,
   });
 
-  type OwnClaim = { id: string; status: string; created_at: string };
+  type OwnClaim = {
+    id: string;
+    status: string;
+    created_at: string;
+    reviewed_at: string | null;
+    reject_reason: string | null;
+  };
   let ownRows: OwnClaim[] | null = null;
   if (userId) {
     const { data } = await supabase
       .from("venue_claims")
-      .select("id, status, created_at")
+      .select("id, status, created_at, reviewed_at, reject_reason")
       .eq("venue_id", venueId)
       .eq("user_id", userId)
       .order("created_at", { ascending: false })

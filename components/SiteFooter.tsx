@@ -34,6 +34,10 @@ export function SiteFooter() {
           <span className="site-footer-sep" aria-hidden="true" />
           <Link href="/apoyar">Apoyar BaFut</Link>
           <span className="site-footer-sep" aria-hidden="true" />
+          <Link href="/terminos">Términos</Link>
+          <span className="site-footer-sep" aria-hidden="true" />
+          <Link href="/privacidad">Privacidad</Link>
+          <span className="site-footer-sep" aria-hidden="true" />
           <a
             href="https://github.com/leokami29/bafut"
             target="_blank"

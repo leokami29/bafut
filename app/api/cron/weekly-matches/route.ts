@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { requireCronSecret } from "@/lib/cron-auth";
 import { createClient } from "@/lib/supabase/server";
 
 /**
@@ -7,19 +8,15 @@ import { createClient } from "@/lib/supabase/server";
  * Se ejecuta diariamente a las 00:00 (configurar en Railway/Vercel cron).
  * Para cada template activo con day_of_week = hoy, crea un partido si no existe.
  *
- * Endpoint protegido con CRON_SECRET (variable de entorno).
+ * Protegido con CRON_SECRET vía Authorization Bearer.
+ * Respuesta sin PII (solo ids de template/match y mensajes de error de RPC).
  */
 export async function GET(request: Request) {
-  const authHeader = request.headers.get("authorization");
-  const cronSecret = process.env.CRON_SECRET;
-
-  if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const denied = requireCronSecret(request);
+  if (denied) return denied;
 
   const supabase = await createClient();
 
-  // Obtener templates activos para hoy.
   const today = new Date();
   const dayOfWeek = today.getDay(); // 0=domingo, 6=sábado
   const todayStr = today.toISOString().split("T")[0]; // YYYY-MM-DD

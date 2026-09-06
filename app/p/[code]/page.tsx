@@ -5,6 +5,8 @@ import { cancelMatchAction } from "@/app/actions";
 import { JsonLd, matchJsonLd } from "@/components/JsonLd";
 import { MatchRow } from "@/components/MatchRow";
 import { MatchFormationSection } from "@/components/MatchFormationSection";
+import { MatchHashScroll } from "@/components/MatchHashScroll";
+import { MatchSeekerCta } from "@/components/MatchSeekerCta";
 import { HostShareBanner, ShareWhatsApp } from "@/components/ShareWhatsApp";
 import { SlotList } from "@/components/SlotList";
 import { VenueMapLazy } from "@/components/VenueMapLazy";
@@ -107,6 +109,9 @@ export default async function PartidoPage({ params }: Props) {
   const relatedHeading =
     moreHere.length > 0 ? "Más huecos en esta cancha" : `Más ${sportLabel[match.sport as keyof typeof sportLabel] ?? match.sport}`;
   const hasSideB = Boolean(match.away_opened_by) || match.match_slots.some((slot) => slot.side === "b");
+  const canOpenRival =
+    !cancelled && !isHost && !match.away_opened_by && match.starts_at > new Date().toISOString();
+  const showSeekerCta = !isHost && !cancelled && open > 0;
   const formationBoard = buildFormationFromSlots({
     sport: match.sport,
     format: match.format,
@@ -117,6 +122,7 @@ export default async function PartidoPage({ params }: Props) {
 
   return (
     <main className="page page-match-detail" id="main">
+      <MatchHashScroll />
       <JsonLd data={matchJsonLd(match)} />
       <div className="match-detail-layout">
         <div className="match-detail-primary">
@@ -168,6 +174,10 @@ export default async function PartidoPage({ params }: Props) {
           </p>
           {match.notes ? <p className="notes">{match.notes}</p> : null}
 
+          {showSeekerCta ? (
+            <MatchSeekerCta open={open} canOpenRival={canOpenRival} cancelled={cancelled} />
+          ) : null}
+
           {isHost && !cancelled && open > 0 ? <HostShareBanner {...shareProps} /> : null}
           {!cancelled ? (
             <ShareWhatsApp
@@ -192,18 +202,6 @@ export default async function PartidoPage({ params }: Props) {
             </div>
           ) : null}
 
-          <MatchFormationSection
-            board={formationBoard}
-            matchId={match.id}
-            shareCode={match.share_code}
-            sport={isSport(match.sport) ? match.sport : "futbol"}
-            canOpenRival={
-              !cancelled && !isHost && !match.away_opened_by && match.starts_at > new Date().toISOString()
-            }
-            userId={userId}
-            cancelled={cancelled}
-          />
-
           <h2 className="subhead" id="cupos">
             Cupos
           </h2>
@@ -215,6 +213,17 @@ export default async function PartidoPage({ params }: Props) {
             matchCancelled={cancelled}
             profileLevel={profile?.level ?? null}
             showSides={hasSideB}
+          />
+
+          <MatchFormationSection
+            board={formationBoard}
+            matchId={match.id}
+            shareCode={match.share_code}
+            sport={isSport(match.sport) ? match.sport : "futbol"}
+            canOpenRival={canOpenRival}
+            userId={userId}
+            cancelled={cancelled}
+            secondaryToClaim={showSeekerCta}
           />
         </div>
 

@@ -196,7 +196,8 @@
   width: 100%;
 }
 
-.claim-ack {
+.claim-ack,
+.legal-accept {
   display: flex;
   gap: 0.4rem;
   align-items: flex-start;
@@ -205,8 +206,26 @@
   color: var(--ink);
 }
 
-.claim-ack input {
+.claim-ack input,
+.legal-accept input {
   margin-top: 0.15rem;
+  flex-shrink: 0;
+}
+
+.legal-accept {
+  margin: 0.35rem 0 0.15rem;
+  font-size: 0.84rem;
+  line-height: 1.4;
+}
+
+.legal-accept a {
+  color: var(--turf);
+  text-decoration: underline;
+  text-underline-offset: 0.12em;
+}
+
+.legal-accept a:hover {
+  color: var(--flood);
 }
 
 .level-feedback {
@@ -283,4 +302,42 @@
 .btn-google:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+/* Alertas / renovaciones (Fase C) */
+.match-alerts-list,
+.admin-renewals-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.85rem;
+}
+
+.match-alerts-item,
+.admin-renewals-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid color-mix(in oklab, var(--ink) 12%, transparent);
+}
+
+.match-alerts-item-actions,
+.admin-renewals-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.match-alerts-push {
+  margin-bottom: 1.5rem;
+}
+
+.match-alerts-push-actions {
+  display: grid;
+  gap: 0.5rem;
 }

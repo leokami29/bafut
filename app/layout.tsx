@@ -6,7 +6,7 @@ import { MobileNav } from "@/components/MobileNav";
 import { PwaRegister } from "@/components/PwaRegister";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
-import { getActiveCity, getCities, getHostPendingClaimCount, getIsAdmin, getSessionUserId } from "@/lib/data";
+import { getActiveCity, getCities, getHostPendingInbox, getIsAdmin, getSessionUserId } from "@/lib/data";
 import { siteUrl } from "@/lib/env";
 import {
   DEFAULT_DESCRIPTION,
@@ -77,7 +77,10 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
     getCities(),
     getSessionUserId(),
   ]);
-  const pendingCount = userId ? await getHostPendingClaimCount(userId) : 0;
+  const pendingInbox = userId
+    ? await getHostPendingInbox(userId)
+    : { count: 0, href: "/perfil/partidos" };
+  const pendingCount = pendingInbox.count;
   const isAdmin = await getIsAdmin(userId);
 
   return (
@@ -94,11 +97,16 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
           cities={cities}
           userId={userId}
           pendingCount={pendingCount}
+          pendingInboxHref={pendingInbox.href}
           isAdmin={isAdmin}
         />
         {children}
         <SiteFooter />
-        <MobileNav userId={userId} pendingCount={pendingCount} />
+        <MobileNav
+          userId={userId}
+          pendingCount={pendingCount}
+          pendingInboxHref={pendingInbox.href}
+        />
       </body>
     </html>
   );

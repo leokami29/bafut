@@ -1,9 +1,9 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 import { ProfileForm } from "@/components/ProfileForm";
 import { requireUserId } from "@/lib/auth";
 import { DEFAULT_CITY_SLUG } from "@/lib/constants";
-import { getActiveCity, getCities, getHostPendingClaimCount, getProfile } from "@/lib/data";
+import { getActiveCity, getCities, getHostPendingInbox, getProfile } from "@/lib/data";
 import { profileCompletenessHint } from "@/lib/profile";
 import { safeNextPath } from "@/lib/safe-next";
 import { createClient } from "@/lib/supabase/server";
@@ -22,13 +22,14 @@ export default async function PerfilPage({
   const { userId } = await requireUserId("/perfil");
   const { next } = await searchParams;
   const nextPath = safeNextPath(next, "");
-  const [profile, cities, city, supabase, pendingCount] = await Promise.all([
+  const [profile, cities, city, supabase, pendingInbox] = await Promise.all([
     getProfile(userId),
     getCities(),
     getActiveCity(),
     createClient(),
-    getHostPendingClaimCount(userId),
+    getHostPendingInbox(userId),
   ]);
+  const pendingCount = pendingInbox.count;
 
   if (!profile) {
     return (
@@ -57,12 +58,23 @@ export default async function PerfilPage({
       </header>
 
       <div className="profile-nav-grid">
-        <Link href="/perfil/partidos" className="profile-nav-card">
+        <Link
+          href={pendingCount > 0 ? pendingInbox.href : "/perfil/partidos"}
+          className="profile-nav-card"
+        >
           <span className="profile-nav-title">Mis partidos</span>
           {pendingCount > 0 && (
             <span className="profile-nav-badge">{pendingCount}</span>
           )}
-          <span className="profile-nav-desc">Partidos que organizás y cupos que pediste</span>
+          <span className="profile-nav-desc">
+            {pendingCount > 0
+              ? "Tenés pedidos por revisar — entrá al partido"
+              : "Partidos que organizás y cupos que pediste"}
+          </span>
+        </Link>
+        <Link href="/perfil/alertas" className="profile-nav-card">
+          <span className="profile-nav-title">Alertas de partidos</span>
+          <span className="profile-nav-desc">Push cuando salga un partido que te encaje</span>
         </Link>
         <Link href="/perfil/templates" className="profile-nav-card">
           <span className="profile-nav-title">Templates recurrentes</span>
@@ -70,7 +82,7 @@ export default async function PerfilPage({
         </Link>
         <Link href="/apoyar" className="profile-nav-card">
           <span className="profile-nav-title">BaFut es open source</span>
-          <span className="profile-nav-desc">ApoYá el proyecto o contribuí con código</span>
+          <span className="profile-nav-desc">Apoyá el proyecto o contribuí con código</span>
         </Link>
       </div>
 

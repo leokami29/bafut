@@ -2,6 +2,7 @@
 
 import { useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { trackSubActivated } from "@/lib/analytics";
 import { createClient } from "@/lib/supabase/client";
 import type { Venue } from "@/lib/types";
 
@@ -112,6 +113,12 @@ export function VenueAdminPanel({ venues }: VenueAdminPanelProps) {
 
     if (error) {
       alert(`Error: ${error.message}`);
+    } else {
+      trackSubActivated({
+        venue_id: venueId,
+        plan,
+        payment_method: "manual",
+      });
     }
 
     setLoading(null);

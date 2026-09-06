@@ -19,13 +19,16 @@ function isActive(pathname: string, href: string) {
 export function NavLinks({
   userId,
   pendingCount = 0,
+  pendingInboxHref = "/perfil/partidos",
   isAdmin = false,
 }: {
   userId: string | null;
   pendingCount?: number;
+  pendingInboxHref?: string;
   isAdmin?: boolean;
 }) {
   const pathname = usePathname();
+  const partidosHref = pendingCount > 0 ? pendingInboxHref : "/perfil/partidos";
   const pedidosActive = pathname.startsWith("/perfil/partidos");
   const perfilActive = pathname === "/perfil";
   const adminActive = pathname === "/admin" || pathname.startsWith("/admin/");
@@ -45,7 +48,7 @@ export function NavLinks({
       {userId ? (
         <>
           <Link
-            href="/perfil/partidos"
+            href={partidosHref}
             aria-current={pedidosActive ? "page" : undefined}
             className={pedidosActive ? "is-active" : undefined}
           >

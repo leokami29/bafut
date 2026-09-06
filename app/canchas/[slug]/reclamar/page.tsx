@@ -4,7 +4,15 @@ import { notFound } from "next/navigation";
 import { VenueClaimForm } from "@/components/VenueClaimForm";
 import { requireUserId } from "@/lib/auth";
 import { getActiveCity, getVenueBySlug, getVenueClaimState } from "@/lib/data";
+import { siteUrl } from "@/lib/env";
+import { LEGAL_CONTACT_EMAIL } from "@/lib/legal";
 import { robotsNoIndex } from "@/lib/seo";
+import {
+  CLAIM_REJECT_COOLDOWN_DAYS,
+  formatClaimCooldownUntil,
+  isClaimInCooldown,
+  venueOwnershipDisputeMailto,
+} from "@/lib/venue-claims";
 
 export const metadata: Metadata = {
   title: "Reclamar cancha",
@@ -46,6 +54,7 @@ export default async function VenueClaimPage({ params }: Props) {
   if (!venue) notFound();
 
   const claimState = await getVenueClaimState(venue.id, userId);
+  const timezone = city.timezone ?? "America/Bogota";
 
   // El usuario ya es el dueño asignado: no hay nada que reclamar.
   if (venue.owner_id === userId) {
@@ -64,15 +73,39 @@ export default async function VenueClaimPage({ params }: Props) {
     );
   }
 
-  // La cancha ya tiene dueño (aprobado por un editor).
+  // La cancha ya tiene dueño (aprobado por un editor) → disputa, no nuevo reclamo.
   if (venue.owner_id) {
+    const disputeHref = venueOwnershipDisputeMailto({
+      venueName: venue.name,
+      venueSlug: slug,
+      siteOrigin: siteUrl(),
+    });
+
     return (
       <ClaimShell title="Esta cancha ya tiene un dueño" venueSlug={slug}>
-        <p>
-          <strong>{venue.name}</strong> está verificada y su ficha pertenece a otro usuario. Si
-          creés que hubo un error, escribinos a{" "}
-          <a href="mailto:duenos@bafut.com">duenos@bafut.com</a> con tus datos.
-        </p>
+        <div className="venue-claim-dispute" role="region" aria-label="Disputa de titularidad">
+          <p>
+            <strong>{venue.name}</strong> está verificada y su ficha pertenece a otro usuario.
+            No podés enviar otro reclamo por este flujo.
+          </p>
+          <p>
+            Si creés que hubo un error o sos el dueño legítimo, abrí una{" "}
+            <strong>disputa de titularidad</strong>. Pedimos prueba razonable (foto de fachada,
+            NIT/razón social o dato de contacto de la recepción).
+          </p>
+          <div className="empty-home-actions venue-claim-dispute-actions">
+            <a href={disputeHref} className="btn-flood">
+              Abrir disputa por correo
+            </a>
+            <a href={`mailto:${LEGAL_CONTACT_EMAIL}`} className="btn-ghost">
+              {LEGAL_CONTACT_EMAIL}
+            </a>
+          </div>
+          <p className="field-help">
+            Un editor revisa a mano. Mientras tanto, la ficha sigue a nombre del dueño
+            registrado.
+          </p>
+        </div>
       </ClaimShell>
     );
   }
@@ -105,6 +138,36 @@ export default async function VenueClaimPage({ params }: Props) {
     );
   }
 
+  // Rechazo reciente: cooldown antes de reintentar.
+  if (
+    claimState.ownClaim?.status === "rejected" &&
+    isClaimInCooldown(claimState.ownClaim.reviewed_at)
+  ) {
+    const until = formatClaimCooldownUntil(claimState.ownClaim.reviewed_at!, timezone);
+    return (
+      <ClaimShell title="Reclamo rechazado — en espera" venueSlug={slug}>
+        <div className="venue-claim-cooldown" role="status">
+          <p>
+            Revisamos tu reclamo de <strong>{venue.name}</strong> y no pudimos confirmar la
+            propiedad
+            {claimState.ownClaim.reject_reason
+              ? `: ${claimState.ownClaim.reject_reason}`
+              : "."}
+          </p>
+          <p>
+            Por seguridad hay un cooldown de {CLAIM_REJECT_COOLDOWN_DAYS} días. Podés volver a
+            reclamar después del <strong>{until}</strong>.
+          </p>
+          <p className="field-help">
+            Si tenés prueba nueva (fachada, NIT o contacto de recepción), escribinos a{" "}
+            <a href={`mailto:${LEGAL_CONTACT_EMAIL}`}>{LEGAL_CONTACT_EMAIL}</a> y lo miramos
+            antes.
+          </p>
+        </div>
+      </ClaimShell>
+    );
+  }
+
   // Alguien más ya tiene un reclamo pendiente sobre esta cancha.
   if (claimState.hasPendingClaim) {
     return (
@@ -112,7 +175,7 @@ export default async function VenueClaimPage({ params }: Props) {
         <p>
           Alguien reclamó <strong>{venue.name}</strong> antes y un editor de BaFut lo está
           verificando. Si sos el dueño legítimo, escribinos a{" "}
-          <a href="mailto:duenos@bafut.com">duenos@bafut.com</a> y lo miramos.
+          <a href={`mailto:${LEGAL_CONTACT_EMAIL}`}>{LEGAL_CONTACT_EMAIL}</a> y lo miramos.
         </p>
       </ClaimShell>
     );
@@ -126,7 +189,7 @@ export default async function VenueClaimPage({ params }: Props) {
         comisión.
       </p>
       <div className="venue-claim-form-wrap">
-        <VenueClaimForm venueId={venue.id} venueName={venue.name} venueSlug={venue.slug} />
+        <VenueClaimForm venueId={venue.id} venueSlug={venue.slug} />
       </div>
     </ClaimShell>
   );
