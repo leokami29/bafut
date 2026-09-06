@@ -1,0 +1,475 @@
+/* ——— Página de registro de dueños de cancha ———
+   Mundo: cancha de noche, líneas de tiza, reflector. Sin cards genéricas. */
+
+.page-venue-register {
+  padding: 0 0 4rem;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.vr-section {
+  width: 100%;
+  max-width: 68rem;
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 5vw, 2.5rem);
+}
+
+/* ——— Hero ——— */
+.vr-hero {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(60rem 28rem at 18% -12%, rgba(255, 210, 90, 0.16), transparent 62%),
+    radial-gradient(48rem 24rem at 88% -8%, rgba(255, 210, 90, 0.1), transparent 58%),
+    var(--turf-deep);
+  color: var(--chalk);
+  padding-block: clamp(4.5rem, 12vh, 7rem) clamp(3rem, 8vh, 4.5rem);
+}
+
+/* ——— Líneas de cancha multideporte ——— */
+.vr-sport-lines {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  color: var(--chalk);
+}
+
+.vr-sport-lines svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.15;
+}
+
+.vr-sport-lines .vr-d {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: vr-draw 1.15s ease-out forwards;
+}
+
+.vr-sport-lines .vr-f {
+  fill: currentColor;
+  opacity: 0;
+  animation: vr-fade 0.5s ease-out forwards;
+}
+
+.vr-sport-lines .vr-hatch {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-dasharray: 7 9;
+  opacity: 0;
+  animation: vr-fade 0.8s ease-out forwards;
+}
+
+.vr-lines-label {
+  position: absolute;
+  right: clamp(1.25rem, 4vw, 2.5rem);
+  bottom: 1.1rem;
+  margin: 0;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--chalk) 55%, transparent);
+  animation: vr-fade 0.6s ease-out both;
+}
+
+@keyframes vr-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes vr-fade {
+  to {
+    opacity: 1;
+  }
+}
+
+.vr-hero-inner {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 68rem;
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 5vw, 2.5rem);
+  display: grid;
+  gap: 1.4rem;
+}
+
+.vr-meta {
+  margin: 0;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--chalk) 62%, transparent);
+  display: flex;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+}
+
+.vr-meta-city {
+  color: var(--flood);
+}
+
+.vr-title {
+  margin: 0;
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(2.35rem, 7vw, 4.6rem);
+  font-weight: 800;
+  line-height: 0.92;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--chalk);
+  max-width: 22ch;
+}
+
+.vr-accent {
+  color: var(--flood);
+}
+
+.vr-lede {
+  margin: 0;
+  max-width: 52ch;
+  font-size: clamp(1rem, 1.6vw, 1.12rem);
+  line-height: 1.55;
+  color: color-mix(in oklab, var(--chalk) 84%, transparent);
+}
+
+.vr-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.35rem;
+}
+
+.vr-ctas .btn-flood,
+.vr-ctas .btn-ghost,
+.vr-ctas .btn-bib {
+  min-height: 3rem;
+  padding: 0.7rem 1.4rem;
+  font-weight: 650;
+}
+
+/* Botones sobre banderín flood */
+.vr-final .btn-ink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3rem;
+  padding: 0.7rem 1.4rem;
+  background: var(--ink);
+  color: var(--flood);
+  border: 1px solid var(--ink);
+  text-decoration: none;
+  font-weight: 650;
+}
+
+.vr-final .btn-outline-ink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3rem;
+  padding: 0.7rem 1.4rem;
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid color-mix(in oklab, var(--ink) 55%, transparent);
+  text-decoration: none;
+  font-weight: 650;
+}
+
+.vr-final .btn-ink:hover {
+  background: var(--turf-deep);
+  border-color: var(--turf-deep);
+}
+
+.vr-final .btn-outline-ink:hover {
+  border-color: var(--ink);
+  background: color-mix(in oklab, var(--ink) 8%, transparent);
+}
+
+.vr-stats {
+  list-style: none;
+  margin: 1.4rem 0 0;
+  padding: 1.1rem 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem 1.4rem;
+  border-top: 1px dashed color-mix(in oklab, var(--chalk) 30%, transparent);
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--chalk) 66%, transparent);
+}
+
+.vr-stats strong {
+  color: var(--flood);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ——— Alineación (beneficios como formación) ——— */
+.vr-lineup {
+  padding-block: clamp(3rem, 8vh, 4.5rem);
+}
+
+.vr-section-head {
+  margin: 0 0 0.4rem;
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(1.7rem, 4.4vw, 2.6rem);
+  font-weight: 800;
+  line-height: 0.98;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.vr-section-lede {
+  margin: 0 0 1.75rem;
+  color: color-mix(in oklab, var(--ink) 68%, transparent);
+  line-height: 1.5;
+}
+
+.lineup-list {
+  list-style: none;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  border-top: 2px solid var(--ink);
+}
+
+.lineup-row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1.25rem 1.75rem;
+  align-items: baseline;
+  padding: 1.35rem 0;
+  border-bottom: 1px solid color-mix(in oklab, var(--ink) 22%, transparent);
+}
+
+.lineup-num {
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(3rem, 8vw, 4.6rem);
+  font-weight: 800;
+  line-height: 0.78;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+  color: color-mix(in oklab, var(--turf) 14%, transparent);
+  -webkit-text-stroke: 1.6px color-mix(in oklab, var(--turf-deep) 55%, transparent);
+}
+
+.lineup-body h3 {
+  margin: 0 0 0.35rem;
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.lineup-body p {
+  margin: 0;
+  max-width: 56ch;
+  line-height: 1.5;
+  color: color-mix(in oklab, var(--ink) 74%, transparent);
+}
+
+/* ——— Pizarrón (pasos) ——— */
+.vr-chalkboard {
+  margin-block: clamp(2.5rem, 6vh, 4rem);
+  padding-block: clamp(3rem, 8vh, 4.5rem);
+  background:
+    repeating-linear-gradient(
+      -40deg,
+      transparent 0 14px,
+      color-mix(in oklab, var(--chalk) 2%, transparent) 14px 15px
+    ),
+    var(--turf-deep);
+  border-block: 1px solid color-mix(in oklab, var(--chalk) 18%, transparent);
+  color: var(--chalk);
+}
+
+.vr-board-heading {
+  margin: 0 0 1.75rem;
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(1.7rem, 4.4vw, 2.6rem);
+  font-weight: 800;
+  line-height: 0.98;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--chalk);
+}
+
+.chalk-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0;
+}
+
+.chalk-step {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1.25rem 1.75rem;
+  align-items: baseline;
+  padding: 1.35rem 0;
+  border-top: 1px dashed color-mix(in oklab, var(--chalk) 26%, transparent);
+}
+
+.chalk-step:first-child {
+  border-top: 0;
+  padding-top: 0.25rem;
+}
+
+.chalk-num {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  color: var(--flood);
+}
+
+.chalk-step h3 {
+  margin: 0 0 0.35rem;
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--chalk);
+}
+
+.chalk-step p {
+  margin: 0;
+  max-width: 58ch;
+  line-height: 1.55;
+  color: color-mix(in oklab, var(--chalk) 78%, transparent);
+}
+
+.chalk-step em {
+  font-style: normal;
+  color: var(--flood);
+}
+
+@media (min-width: 760px) {
+  .chalk-steps {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0 2rem;
+  }
+
+  .chalk-step {
+    grid-template-columns: 1fr;
+    border-top: 0;
+    border-left: 1px dashed color-mix(in oklab, var(--chalk) 26%, transparent);
+    padding: 0.25rem 0 0.25rem 1.5rem;
+  }
+
+  .chalk-step:first-child {
+    border-left: 0;
+    padding-left: 0;
+  }
+
+  .chalk-num {
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+}
+
+/* ——— Preguntas ——— */
+.vr-faq {
+  padding-block: clamp(2.5rem, 6vh, 3.5rem);
+}
+
+.vr-faq-list {
+  margin-top: 1.5rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.vr-faq-item {
+  padding: 1rem 1.15rem;
+  background: color-mix(in oklab, var(--turf) 5%, var(--paper));
+  border-left: 3px solid var(--turf);
+}
+
+.vr-faq-item h3 {
+  margin: 0 0 0.3rem;
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.08rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.vr-faq-item p {
+  margin: 0;
+  max-width: 62ch;
+  line-height: 1.5;
+  color: color-mix(in oklab, var(--ink) 74%, transparent);
+}
+
+/* ——— Banderín final ——— */
+.vr-final {
+  margin-top: clamp(2.5rem, 6vh, 4rem);
+  padding-block: clamp(3rem, 8vh, 4.5rem);
+  background: var(--flood);
+  color: var(--ink);
+}
+
+.vr-final-title {
+  margin: 0 0 1.5rem;
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(1.9rem, 5.4vw, 3.4rem);
+  font-weight: 800;
+  line-height: 0.92;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--ink);
+  max-width: 26ch;
+}
+
+.vr-final .vr-ctas {
+  margin-top: 0;
+}
+
+.vr-final .btn-bib {
+  min-height: 3rem;
+  padding: 0.7rem 1.4rem;
+  font-weight: 650;
+}
+
+.vr-final-note {
+  margin: 1.5rem 0 0;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+  color: color-mix(in oklab, var(--ink) 72%, transparent);
+}
+
+/* ——— Motion reducido ——— */
+@media (prefers-reduced-motion: reduce) {
+  .vr-sport-lines .vr-d {
+    animation: none;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+  }
+
+  .vr-sport-lines .vr-f,
+  .vr-sport-lines .vr-hatch {
+    animation: none;
+    opacity: 1;
+  }
+
+  .vr-lines-label {
+    animation: none;
+  }
+}

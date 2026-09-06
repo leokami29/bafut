@@ -9,6 +9,7 @@ import { MatchRow } from "@/components/MatchRow";
 import { VenueDayTimeline } from "@/components/VenueDayTimeline";
 import { VenueMapLazy } from "@/components/VenueMapLazy";
 import { VenueOwnerBlock } from "@/components/VenueOwnerBlock";
+import { VenueVerifiedBadge } from "@/components/VenueVerifiedBadge";
 import type { Sport } from "@/lib/constants";
 import { getActiveCity, getUpcomingMatches, getVenueBySlug, getVenueDayOccupancy } from "@/lib/data";
 import { cityDayBoundsFromLocal } from "@/lib/datetime";
@@ -34,6 +35,7 @@ import {
   phoneHref,
   resolveVenuePublicMeta,
 } from "@/lib/venue-meta";
+import { getSessionUserId } from "@/lib/data";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -98,13 +100,17 @@ export default async function CanchaPage({ params }: Props) {
   if (!city) {
     notFound();
   }
-  const [venue, matches] = await Promise.all([
+  const [venue, matches, userId] = await Promise.all([
     getVenueBySlug(city.id, slug),
     getUpcomingMatches(city.id),
+    getSessionUserId(),
   ]);
   if (!venue) {
     notFound();
   }
+
+  // Verificar si el usuario puede reclamar la cancha
+  const canClaim = venue.owner_id === null || venue.owner_id !== userId;
 
   const todayBounds = cityDayBoundsFromLocal(new Date().toISOString(), city.timezone);
   const tomorrowBounds = todayBounds
@@ -173,14 +179,17 @@ export default async function CanchaPage({ params }: Props) {
       <header className="venue-hero">
         <div className="venue-hero-top">
           <p className="eyebrow">{city.name}</p>
-          {meta.rating != null ? (
-            <span className="venue-rating" aria-label={`Calificación ${meta.rating} de 5`}>
-              ★ {meta.rating.toFixed(1)}
-              {meta.reviewCount != null ? (
-                <span className="venue-rating-count">({meta.reviewCount})</span>
-              ) : null}
-            </span>
-          ) : null}
+          <div className="venue-hero-badges">
+            <VenueVerifiedBadge isVerified={venue.is_verified} />
+            {meta.rating != null ? (
+              <span className="venue-rating" aria-label={`Calificación ${meta.rating} de 5`}>
+                ★ {meta.rating.toFixed(1)}
+                {meta.reviewCount != null ? (
+                  <span className="venue-rating-count">({meta.reviewCount})</span>
+                ) : null}
+              </span>
+            ) : null}
+          </div>
         </div>
         <h1>{venue.name}</h1>
         <p className="lede venue-hero-lede">
@@ -200,6 +209,20 @@ export default async function CanchaPage({ params }: Props) {
             </span>
           ))}
         </div>
+        {canClaim && userId && (
+          <div className="venue-claim-cta">
+            <Link href={`/canchas/${venue.slug}/reclamar`} className="btn-ghost btn-small">
+              ¿Sos el dueño? Reclamar cancha
+            </Link>
+          </div>
+        )}
+        {!userId && (
+          <div className="venue-claim-cta">
+            <Link href={`/entrar?next=/canchas/${venue.slug}/reclamar`} className="btn-ghost btn-small">
+              ¿Sos el dueño? Entrá para reclamar
+            </Link>
+          </div>
+        )}
       </header>
 
       <div className="venue-detail-layout">

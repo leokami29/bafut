@@ -47,6 +47,23 @@
   flex-wrap: wrap;
 }
 
+.venue-hero-badges {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.venue-claim-cta {
+  margin-top: 1rem;
+}
+
+.venue-claim-cta .btn-small {
+  min-height: 2.25rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.88rem;
+}
+
 .venue-hero h1 {
   margin: 0.35rem 0 0.65rem;
   line-height: 1.08;
@@ -343,4 +360,185 @@
   to {
     background-position: -200% 0;
   }
+}
+
+/* —— Badge de cancha verificada —— */
+.venue-verified-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.6rem;
+  background: var(--turf);
+  color: var(--paper);
+  font-family: var(--font-mono), monospace;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border-radius: 2px;
+  box-shadow: 0 2px 4px color-mix(in oklab, var(--turf) 30%, transparent);
+}
+
+.venue-verified-badge svg {
+  flex-shrink: 0;
+}
+
+/* —— Dashboard de administración de canchas —— */
+.venue-admin-dashboard {
+  display: grid;
+  gap: 2rem;
+  max-width: 72rem;
+  margin: 0 auto;
+}
+
+.venue-admin-section {
+  display: grid;
+  gap: 1rem;
+}
+
+.venue-admin-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  padding: 1rem;
+  background: color-mix(in oklab, var(--turf) 5%, var(--paper));
+  border-left: 3px solid var(--turf);
+}
+
+.venue-admin-info-grid > div {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.venue-admin-label {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--ink) 60%, transparent);
+}
+
+.venue-admin-verified {
+  color: var(--turf);
+  font-weight: 600;
+}
+
+.venue-admin-not-verified {
+  color: color-mix(in oklab, var(--ink) 50%, transparent);
+}
+
+.venue-admin-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.venue-admin-stat-card {
+  display: grid;
+  gap: 0.5rem;
+  padding: 1.25rem;
+  background: var(--paper);
+  border: 1px solid color-mix(in oklab, var(--ink) 18%, transparent);
+  border-radius: 4px;
+  text-align: center;
+}
+
+.venue-admin-stat-value {
+  font-family: var(--font-display), sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--turf-deep);
+}
+
+.venue-admin-stat-label {
+  font-size: 0.82rem;
+  color: color-mix(in oklab, var(--ink) 65%, transparent);
+}
+
+.venue-admin-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.venue-admin-actions .btn-flood,
+.venue-admin-actions .btn-ghost {
+  min-height: 2.75rem;
+  padding: 0.65rem 1.25rem;
+}
+
+@media (max-width: 640px) {
+  .venue-admin-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .venue-admin-info-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ——— Reclamar cancha ——— */
+
+.venue-back {
+  margin: 0 0 1.25rem;
+  font-size: 0.88rem;
+}
+
+.venue-back a {
+  color: color-mix(in oklab, var(--ink) 60%, transparent);
+}
+
+.venue-back a:hover,
+.venue-back a:focus-visible {
+  color: var(--ink);
+}
+
+.venue-claim-form {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: var(--paper);
+  border: 1px solid color-mix(in oklab, var(--ink) 18%, transparent);
+  border-radius: 4px;
+}
+
+.venue-claim-form .optional {
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: color-mix(in oklab, var(--ink) 50%, transparent);
+}
+
+.venue-claim-form input:focus-visible {
+  outline: 2px solid var(--turf);
+  outline-offset: 2px;
+}
+
+.venue-claim-note {
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: color-mix(in oklab, var(--ink) 60%, transparent);
+}
+
+.venue-claim-card {
+  display: grid;
+  gap: 0.65rem;
+  justify-items: start;
+  margin-top: 2rem;
+  padding: 1.75rem;
+  background: color-mix(in oklab, var(--turf) 8%, var(--paper));
+  border: 1px solid color-mix(in oklab, var(--turf) 40%, transparent);
+  border-radius: 4px;
+}
+
+.venue-claim-card h2 {
+  margin: 0;
+}
+
+.venue-claim-card p {
+  margin: 0;
+}
+
+.venue-claim-card .btn-flood {
+  margin-top: 0.75rem;
+  min-height: 2.75rem;
+  padding: 0.65rem 1.25rem;
 }

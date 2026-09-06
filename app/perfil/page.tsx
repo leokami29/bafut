@@ -45,24 +45,35 @@ export default async function PerfilPage({
   const citySlug = cities.find((item) => item.id === profile.city_id)?.slug ?? city?.slug ?? DEFAULT_CITY_SLUG;
 
   return (
-    <main className="page page-narrow" id="main">
-      <header className="page-head">
+    <main className="page page-nuevo-partido" id="main">
+      <header className="page-head match-compose-head">
         <h1>Tu ficha</h1>
-        <p>Nombre, WhatsApp y nivel. Lo mínimo para que el host sepa quién pide el cupo.</p>
+        <p className="lede">Nombre, WhatsApp y nivel. Lo mínimo para que el host sepa quién pide el cupo.</p>
         {nextPath ? (
           <p className="form-ok" role="status">
             Cuando guardes, volvemos al partido.
           </p>
         ) : null}
-        <p className="profile-links">
-          <Link href="/perfil/partidos">
-            Mis partidos
-            {pendingCount > 0 ? ` (${pendingCount} pendientes)` : ""}
-          </Link>
-          {" · "}
-          <Link href="/apoyar">BaFut es open source</Link>
-        </p>
       </header>
+
+      <div className="profile-nav-grid">
+        <Link href="/perfil/partidos" className="profile-nav-card">
+          <span className="profile-nav-title">Mis partidos</span>
+          {pendingCount > 0 && (
+            <span className="profile-nav-badge">{pendingCount}</span>
+          )}
+          <span className="profile-nav-desc">Partidos que organizás y cupos que pediste</span>
+        </Link>
+        <Link href="/perfil/templates" className="profile-nav-card">
+          <span className="profile-nav-title">Templates recurrentes</span>
+          <span className="profile-nav-desc">Partidos que se publican automáticamente cada semana</span>
+        </Link>
+        <Link href="/apoyar" className="profile-nav-card">
+          <span className="profile-nav-title">BaFut es open source</span>
+          <span className="profile-nav-desc">ApoYá el proyecto o contribuí con código</span>
+        </Link>
+      </div>
+
       <ProfileForm
         profile={profile}
         cities={cities}

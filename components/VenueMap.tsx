@@ -151,6 +151,7 @@ export function VenueMap({
     }
 
     return () => {
+      map.stop(); // Detener animaciones en curso
       map.remove();
     };
   }, [venues, center.lat, center.lng, focusId, navigateOnClick, router]);

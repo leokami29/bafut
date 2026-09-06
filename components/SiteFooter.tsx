@@ -30,6 +30,8 @@ export function SiteFooter() {
           <span className="site-footer-sep" aria-hidden="true" />
           <Link href="/canchas">Canchas sintéticas</Link>
           <span className="site-footer-sep" aria-hidden="true" />
+          <Link href="/canchas/registro">Registro de canchas</Link>
+          <span className="site-footer-sep" aria-hidden="true" />
           <Link href="/apoyar">Apoyar BaFut</Link>
           <span className="site-footer-sep" aria-hidden="true" />
           <a

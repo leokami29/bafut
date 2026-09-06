@@ -1,0 +1,174 @@
+/* Panel de administracion de canchas */
+.venue-admin-panel {
+  display: grid;
+  gap: 2rem;
+}
+
+.venue-admin-filters {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid color-mix(in oklab, var(--ink) 10%, transparent);
+}
+
+.venue-admin-filters button {
+  padding: 0.75rem 1.25rem;
+  background: transparent;
+  border: 1px solid color-mix(in oklab, var(--ink) 20%, transparent);
+  border-radius: 0;
+  cursor: pointer;
+  font-weight: 600;
+  font-family: var(--font-sans), sans-serif;
+  transition: all 0.2s;
+}
+
+.venue-admin-filters button:hover {
+  background: color-mix(in oklab, var(--ink) 5%, transparent);
+}
+
+.venue-admin-filters button.active {
+  background: var(--turf);
+  color: var(--chalk);
+  border-color: var(--turf);
+}
+
+.venue-admin-list {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.venue-admin-item {
+  padding: 1.5rem;
+  background: var(--paper);
+  border: 1px solid color-mix(in oklab, var(--ink) 10%, transparent);
+  display: grid;
+  gap: 1rem;
+}
+
+.venue-admin-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.venue-admin-item-header h3 {
+  margin: 0;
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--turf-deep);
+}
+
+.venue-admin-item-badges {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.badge {
+  padding: 0.35rem 0.75rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-radius: 0;
+}
+
+.badge.verified {
+  background: var(--turf);
+  color: var(--chalk);
+}
+
+.badge.premium {
+  background: var(--flood);
+  color: var(--ink);
+}
+
+.badge.basic {
+  background: color-mix(in oklab, var(--ink) 20%, transparent);
+  color: var(--ink);
+}
+
+.venue-admin-item-info {
+  display: grid;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: color-mix(in oklab, var(--ink) 3%, transparent);
+}
+
+.venue-admin-item-info p {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.venue-admin-item-info strong {
+  color: var(--turf-deep);
+  font-weight: 600;
+}
+
+.venue-admin-item-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.venue-admin-item-actions button,
+.venue-admin-item-actions a {
+  padding: 0.75rem 1.25rem;
+  border-radius: 0;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+  display: inline-block;
+  font-family: var(--font-sans), sans-serif;
+  min-height: 2.75rem;
+}
+
+.venue-admin-item-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.venue-admin-item-actions .btn-ghost {
+  background: transparent;
+  border: 1px solid var(--turf);
+  color: var(--turf);
+}
+
+.venue-admin-item-actions .btn-ghost:hover:not(:disabled) {
+  background: var(--turf);
+  color: var(--chalk);
+}
+
+.venue-admin-item-actions .btn-flood {
+  background: var(--flood);
+  border: 1px solid var(--flood);
+  color: var(--ink);
+}
+
+.venue-admin-item-actions .btn-flood:hover:not(:disabled) {
+  background: color-mix(in oklab, var(--flood) 85%, white);
+}
+
+@media (max-width: 768px) {
+  .venue-admin-item-header {
+    flex-direction: column;
+  }
+
+  .venue-admin-item-actions {
+    flex-direction: column;
+  }
+
+  .venue-admin-item-actions button,
+  .venue-admin-item-actions a {
+    width: 100%;
+    text-align: center;
+  }
+}

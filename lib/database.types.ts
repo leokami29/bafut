@@ -372,14 +372,18 @@ export type Database = {
         Row: {
           address: string | null;
           city_id: string;
+          contact_email: string | null;
+          contact_whatsapp: string | null;
           covered: boolean | null;
           created_at: string;
           id: string;
+          is_verified: boolean;
           lat: number;
           lng: number;
           name: string;
           neighborhood: string | null;
           notes: string | null;
+          owner_id: string | null;
           phone: string | null;
           rating: number | null;
           slug: string;
@@ -391,14 +395,18 @@ export type Database = {
         Insert: {
           address?: string | null;
           city_id: string;
+          contact_email?: string | null;
+          contact_whatsapp?: string | null;
           covered?: boolean | null;
           created_at?: string;
           id?: string;
+          is_verified?: boolean;
           lat: number;
           lng: number;
           name: string;
           neighborhood?: string | null;
           notes?: string | null;
+          owner_id?: string | null;
           phone?: string | null;
           rating?: number | null;
           slug: string;
@@ -410,14 +418,18 @@ export type Database = {
         Update: {
           address?: string | null;
           city_id?: string;
+          contact_email?: string | null;
+          contact_whatsapp?: string | null;
           covered?: boolean | null;
           created_at?: string;
           id?: string;
+          is_verified?: boolean;
           lat?: number;
           lng?: number;
           name?: string;
           neighborhood?: string | null;
           notes?: string | null;
+          owner_id?: string | null;
           phone?: string | null;
           rating?: number | null;
           slug?: string;
@@ -432,6 +444,236 @@ export type Database = {
             columns: ["city_id"];
             isOneToOne: false;
             referencedRelation: "cities";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "venues_owner_id_fkey";
+            columns: ["owner_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      venue_subscriptions: {
+        Row: {
+          auto_renew: boolean;
+          created_at: string;
+          expires_at: string;
+          id: string;
+          payment_method: string | null;
+          plan: string;
+          started_at: string;
+          status: string;
+          updated_at: string;
+          venue_id: string;
+        };
+        Insert: {
+          auto_renew?: boolean;
+          created_at?: string;
+          expires_at: string;
+          id?: string;
+          payment_method?: string | null;
+          plan: string;
+          started_at?: string;
+          status: string;
+          updated_at?: string;
+          venue_id: string;
+        };
+        Update: {
+          auto_renew?: boolean;
+          created_at?: string;
+          expires_at?: string;
+          id?: string;
+          payment_method?: string | null;
+          plan?: string;
+          started_at?: string;
+          status?: string;
+          updated_at?: string;
+          venue_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "venue_subscriptions_venue_id_fkey";
+            columns: ["venue_id"];
+            isOneToOne: false;
+            referencedRelation: "venues";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      venue_photos: {
+        Row: {
+          caption: string | null;
+          created_at: string;
+          id: string;
+          sort_order: number;
+          uploaded_by: string | null;
+          url: string;
+          venue_id: string;
+        };
+        Insert: {
+          caption?: string | null;
+          created_at?: string;
+          id?: string;
+          sort_order?: number;
+          uploaded_by?: string | null;
+          url: string;
+          venue_id: string;
+        };
+        Update: {
+          caption?: string | null;
+          created_at?: string;
+          id?: string;
+          sort_order?: number;
+          uploaded_by?: string | null;
+          url?: string;
+          venue_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "venue_photos_venue_id_fkey";
+            columns: ["venue_id"];
+            isOneToOne: false;
+            referencedRelation: "venues";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "venue_photos_uploaded_by_fkey";
+            columns: ["uploaded_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      admins: {
+        Row: {
+          created_at: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "admins_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: true;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      match_templates: {
+        Row: {
+          active: boolean;
+          cost_per_person: number | null;
+          created_at: string;
+          day_of_week: number;
+          duration_min: number;
+          format: string;
+          gender_policy: string;
+          host_id: string;
+          id: string;
+          notes: string | null;
+          open_count: number;
+          sport: string;
+          starts_at_time: string;
+          updated_at: string;
+          venue_id: string;
+        };
+        Insert: {
+          active?: boolean;
+          cost_per_person?: number | null;
+          created_at?: string;
+          day_of_week: number;
+          duration_min?: number;
+          format?: string;
+          gender_policy?: string;
+          host_id: string;
+          id?: string;
+          notes?: string | null;
+          open_count?: number;
+          sport?: string;
+          starts_at_time: string;
+          updated_at?: string;
+          venue_id: string;
+        };
+        Update: {
+          active?: boolean;
+          cost_per_person?: number | null;
+          created_at?: string;
+          day_of_week?: number;
+          duration_min?: number;
+          format?: string;
+          gender_policy?: string;
+          host_id?: string;
+          id?: string;
+          notes?: string | null;
+          open_count?: number;
+          sport?: string;
+          starts_at_time?: string;
+          updated_at?: string;
+          venue_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "match_templates_host_id_fkey";
+            columns: ["host_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "match_templates_venue_id_fkey";
+            columns: ["venue_id"];
+            isOneToOne: false;
+            referencedRelation: "venues";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      match_template_runs: {
+        Row: {
+          created_at: string;
+          id: string;
+          match_id: string;
+          run_date: string;
+          template_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          match_id: string;
+          run_date: string;
+          template_id: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          match_id?: string;
+          run_date?: string;
+          template_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "match_template_runs_template_id_fkey";
+            columns: ["template_id"];
+            isOneToOne: false;
+            referencedRelation: "match_templates";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "match_template_runs_match_id_fkey";
+            columns: ["match_id"];
+            isOneToOne: false;
+            referencedRelation: "matches";
             referencedColumns: ["id"];
           },
         ];
@@ -528,6 +770,57 @@ export type Database = {
         Returns: undefined;
       };
       withdraw_claim: { Args: { p_claim_id: string }; Returns: undefined };
+      create_match_from_template: {
+        Args: {
+          p_run_date: string;
+          p_template_id: string;
+        };
+        Returns: string;
+      };
+      has_active_subscription: {
+        Args: { p_venue_id: string };
+        Returns: boolean;
+      };
+      get_active_subscription: {
+        Args: { p_venue_id: string };
+        Returns: {
+          id: string;
+          plan: string;
+          started_at: string;
+          expires_at: string;
+          status: string;
+        }[];
+      };
+      create_venue_subscription: {
+        Args: {
+          p_venue_id: string;
+          p_plan: string;
+          p_duration_days?: number;
+          p_payment_method?: string;
+        };
+        Returns: string;
+      };
+      claim_venue: {
+        Args: {
+          p_venue_id: string;
+          p_whatsapp?: string;
+          p_email?: string;
+        };
+        Returns: boolean;
+      };
+      get_venue_stats: {
+        Args: {
+          p_venue_id: string;
+          p_month_start?: string;
+          p_month_end?: string;
+        };
+        Returns: {
+          total_matches: number;
+          total_slots: number;
+          filled_slots: number;
+          occupancy_rate: number;
+        }[];
+      };
     };
     Enums: {
       [_ in never]: never;
