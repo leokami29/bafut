@@ -6,7 +6,7 @@ import { MobileNav } from "@/components/MobileNav";
 import { PwaRegister } from "@/components/PwaRegister";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
-import { getActiveCity, getCities, getHostPendingClaimCount, getSessionUserId } from "@/lib/data";
+import { getActiveCity, getCities, getHostPendingClaimCount, getIsAdmin, getSessionUserId } from "@/lib/data";
 import { siteUrl } from "@/lib/env";
 import {
   DEFAULT_DESCRIPTION,
@@ -78,6 +78,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
     getSessionUserId(),
   ]);
   const pendingCount = userId ? await getHostPendingClaimCount(userId) : 0;
+  const isAdmin = await getIsAdmin(userId);
 
   return (
     <html lang="es" className={`${display.variable} ${sans.variable} ${mono.variable}`} suppressHydrationWarning>
@@ -88,7 +89,13 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         <GoogleAnalytics />
         <PwaRegister />
         <AuthHashHandler />
-        <SiteHeader city={city} cities={cities} userId={userId} pendingCount={pendingCount} />
+        <SiteHeader
+          city={city}
+          cities={cities}
+          userId={userId}
+          pendingCount={pendingCount}
+          isAdmin={isAdmin}
+        />
         {children}
         <SiteFooter />
         <MobileNav userId={userId} pendingCount={pendingCount} />

@@ -158,6 +158,20 @@
   min-width: 0;
 }
 
+/* Enlace Admin: discreto (uso interno), subrayado punteado para marcar
+   que no es navegación de jugador. */
+.nav-link-admin {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-bottom: 1px dashed color-mix(in oklab, var(--chalk) 40%, transparent);
+}
+
+.site-header-paper .nav-link-admin {
+  border-bottom-color: color-mix(in oklab, var(--ink) 35%, transparent);
+}
+
 .city-switch select {
   background: transparent;
   border: 0;

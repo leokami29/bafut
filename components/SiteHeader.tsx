@@ -10,12 +10,14 @@ export function SiteHeader({
   cities,
   userId,
   pendingCount = 0,
+  isAdmin = false,
   tone = "field",
 }: {
   city: City | null;
   cities: City[];
   userId: string | null;
   pendingCount?: number;
+  isAdmin?: boolean;
   tone?: "field" | "paper";
 }) {
   const light = tone === "field";
@@ -31,7 +33,7 @@ export function SiteHeader({
 
       <nav className="site-nav" aria-label="Principal">
         <div className="site-nav-links">
-          <NavLinks userId={userId} pendingCount={pendingCount} />
+          <NavLinks userId={userId} pendingCount={pendingCount} isAdmin={isAdmin} />
         </div>
 
         {userId ? (

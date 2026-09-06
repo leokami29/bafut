@@ -19,13 +19,16 @@ function isActive(pathname: string, href: string) {
 export function NavLinks({
   userId,
   pendingCount = 0,
+  isAdmin = false,
 }: {
   userId: string | null;
   pendingCount?: number;
+  isAdmin?: boolean;
 }) {
   const pathname = usePathname();
   const pedidosActive = pathname.startsWith("/perfil/partidos");
   const perfilActive = pathname === "/perfil";
+  const adminActive = pathname === "/admin" || pathname.startsWith("/admin/");
 
   return (
     <>
@@ -63,6 +66,15 @@ export function NavLinks({
           >
             Perfil
           </Link>
+          {isAdmin ? (
+            <Link
+              href="/admin"
+              aria-current={adminActive ? "page" : undefined}
+              className={`nav-link-admin ${adminActive ? "is-active" : ""}`.trim()}
+            >
+              Admin
+            </Link>
+          ) : null}
         </>
       ) : (
         <Link

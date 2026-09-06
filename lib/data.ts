@@ -269,6 +269,18 @@ export async function getSessionUserId() {
   return data?.claims?.sub ?? null;
 }
 
+/** ¿Este usuario es editor/admin de BaFut? (RLS: solo puede leer su propia fila). */
+export const getIsAdmin = cache(async (userId: string | null): Promise<boolean> => {
+  if (!userId) return false;
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("admins")
+    .select("user_id")
+    .eq("user_id", userId)
+    .maybeSingle();
+  return Boolean(data);
+});
+
 /**
  * Estado de reclamos para el flujo "reclamar cancha":
  * - hasPendingClaim: la cancha tiene ALGÚN reclamo en revisión (visible público por RPC).
