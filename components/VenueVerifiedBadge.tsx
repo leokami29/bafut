@@ -1,10 +1,6 @@
-export function VenueVerifiedBadge({ isVerified }: { isVerified: boolean }) {
-  if (!isVerified) {
-    return null;
-  }
-
+export function VenueVerifiedBadge() {
   return (
-    <span className="venue-verified-badge" title="Cancha verificada">
+    <span className="venue-verified-badge" title="Cancha reclamada y verificada por su dueño">
       <svg
         width="16"
         height="16"

@@ -64,6 +64,187 @@
   font-size: 0.88rem;
 }
 
+.venue-claim-note {
+  margin: 0.75rem 0 0;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  color: color-mix(in oklab, var(--ink) 62%, transparent);
+}
+
+.venue-claim-note a {
+  color: var(--turf);
+}
+
+/* Formulario de reclamo */
+.venue-claim-form-wrap {
+  margin-top: 1.5rem;
+}
+
+.venue-claim-form .req-mark {
+  color: var(--bib);
+  font-weight: 700;
+}
+
+.venue-claim-form .field-optional {
+  font-weight: 400;
+  font-size: 0.85em;
+  color: color-mix(in oklab, var(--ink) 55%, transparent);
+}
+
+.venue-claim-pending {
+  display: grid;
+  gap: 0.85rem;
+  padding: 1.25rem 1.3rem;
+  background: color-mix(in oklab, var(--flood) 16%, var(--paper));
+  border-left: 3px solid var(--flood);
+}
+
+.venue-claim-pending .subhead {
+  margin: 0;
+}
+
+.venue-claim-pending p {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.venue-claim-pending-meta {
+  font-size: 0.88rem;
+  color: color-mix(in oklab, var(--ink) 65%, transparent);
+}
+
+/* ——— Moderación de reclamos (admin) ——— */
+.claim-review-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--ink);
+}
+
+.claim-review-row {
+  padding: 1.15rem 0;
+  border-bottom: 1px solid color-mix(in oklab, var(--ink) 18%, transparent);
+  display: grid;
+  gap: 0.85rem;
+}
+
+.claim-review-head h3 {
+  margin: 0;
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.claim-review-head h3 a {
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in oklab, var(--turf) 40%, transparent);
+}
+
+.claim-review-head h3 a:hover {
+  color: var(--turf-deep);
+}
+
+.claim-review-neighborhood {
+  color: color-mix(in oklab, var(--ink) 55%, transparent);
+  font-weight: 500;
+  text-transform: none;
+}
+
+.claim-review-meta {
+  margin: 0.2rem 0 0;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.78rem;
+  color: color-mix(in oklab, var(--ink) 58%, transparent);
+}
+
+.claim-review-facts {
+  margin: 0;
+  display: grid;
+  gap: 0.4rem;
+  padding: 0.85rem 1rem;
+  background: color-mix(in oklab, var(--turf) 5%, var(--paper));
+  border-left: 3px solid var(--turf);
+}
+
+.claim-review-facts dt {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--ink) 52%, transparent);
+}
+
+.claim-review-facts dd {
+  margin: 0.1rem 0 0;
+  font-size: 0.95rem;
+  word-break: break-word;
+}
+
+.claim-review-note dd {
+  max-width: 62ch;
+  line-height: 1.45;
+}
+
+.claim-review-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  align-items: flex-start;
+}
+
+.claim-review-actions form {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.claim-review-actions .btn-flood,
+.claim-review-actions .btn-bib {
+  min-height: 2.75rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.92rem;
+}
+
+.claim-review-actions button:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+
+.claim-reject-summary {
+  list-style: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  border: 0;
+  font-family: inherit;
+}
+
+.claim-reject-summary::-webkit-details-marker {
+  display: none;
+}
+
+.claim-reject-details[open] .claim-reject-summary {
+  display: none;
+}
+
+.claim-reject-form input[type="text"] {
+  min-height: 2.6rem;
+  max-width: 18rem;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid color-mix(in oklab, var(--ink) 22%, transparent);
+  border-bottom-width: 2px;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.92rem;
+  border-radius: 0;
+}
+
 .venue-hero h1 {
   margin: 0.35rem 0 0.65rem;
   line-height: 1.08;

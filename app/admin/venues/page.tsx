@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
 import { VenueAdminPanel } from "@/components/VenueAdminPanel";
 import { requireUserId } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
@@ -62,13 +61,23 @@ export default async function AdminVenuesPage() {
     );
   }
 
+  // Cola de moderación de reclamos (dueños que reclaman su cancha).
+  const { count: pendingClaims } = await supabase
+    .from("venue_claims")
+    .select("id", { count: "exact", head: true })
+    .eq("status", "pending");
+
   return (
     <main className="page page-nuevo-partido" id="main">
       <header className="page-head match-compose-head">
         <p className="eyebrow">Panel de administración</p>
         <h1>Gestión de canchas</h1>
         <p className="lede">
-          Administrá las canchas, suscripciones y verificaciones de BaFut.
+          Administrá las canchas, suscripciones y verificaciones de BaFut.{" "}
+          <Link href="/admin/claims">
+            Reclamos pendientes
+            {pendingClaims ? ` (${pendingClaims})` : ""}
+          </Link>
         </p>
       </header>
 

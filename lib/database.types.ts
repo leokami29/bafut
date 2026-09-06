@@ -502,6 +502,73 @@ export type Database = {
           },
         ];
       };
+      venue_claims: {
+        Row: {
+          created_at: string;
+          email: string | null;
+          id: string;
+          note: string;
+          reject_reason: string | null;
+          reviewed_at: string | null;
+          reviewed_by: string | null;
+          status: string;
+          updated_at: string;
+          user_id: string;
+          venue_id: string;
+          whatsapp: string;
+        };
+        Insert: {
+          created_at?: string;
+          email?: string | null;
+          id?: string;
+          note: string;
+          reject_reason?: string | null;
+          reviewed_at?: string | null;
+          reviewed_by?: string | null;
+          status?: string;
+          updated_at?: string;
+          user_id: string;
+          venue_id: string;
+          whatsapp: string;
+        };
+        Update: {
+          created_at?: string;
+          email?: string | null;
+          id?: string;
+          note?: string;
+          reject_reason?: string | null;
+          reviewed_at?: string | null;
+          reviewed_by?: string | null;
+          status?: string;
+          updated_at?: string;
+          user_id?: string;
+          venue_id?: string;
+          whatsapp?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "venue_claims_venue_id_fkey";
+            columns: ["venue_id"];
+            isOneToOne: false;
+            referencedRelation: "venues";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "venue_claims_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "venue_claims_reviewed_by_fkey";
+            columns: ["reviewed_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       venue_photos: {
         Row: {
           caption: string | null;
@@ -803,9 +870,22 @@ export type Database = {
       claim_venue: {
         Args: {
           p_venue_id: string;
-          p_whatsapp?: string;
+          p_whatsapp: string;
+          p_note: string;
           p_email?: string;
         };
+        Returns: string;
+      };
+      approve_venue_claim: {
+        Args: { p_claim_id: string };
+        Returns: undefined;
+      };
+      reject_venue_claim: {
+        Args: { p_claim_id: string; p_reason?: string };
+        Returns: undefined;
+      };
+      venue_has_pending_claim: {
+        Args: { p_venue_id: string };
         Returns: boolean;
       };
       get_venue_stats: {

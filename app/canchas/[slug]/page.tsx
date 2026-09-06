@@ -11,7 +11,7 @@ import { VenueMapLazy } from "@/components/VenueMapLazy";
 import { VenueOwnerBlock } from "@/components/VenueOwnerBlock";
 import { VenueVerifiedBadge } from "@/components/VenueVerifiedBadge";
 import type { Sport } from "@/lib/constants";
-import { getActiveCity, getUpcomingMatches, getVenueBySlug, getVenueDayOccupancy } from "@/lib/data";
+import { getActiveCity, getSessionUserId, getUpcomingMatches, getVenueBySlug, getVenueClaimState, getVenueDayOccupancy } from "@/lib/data";
 import { cityDayBoundsFromLocal } from "@/lib/datetime";
 import { sportLabel, surfaceLabel, venueKindLabel } from "@/lib/labels";
 import { safeHttpUrl } from "@/lib/safe-http-url";
@@ -35,7 +35,6 @@ import {
   phoneHref,
   resolveVenuePublicMeta,
 } from "@/lib/venue-meta";
-import { getSessionUserId } from "@/lib/data";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -109,8 +108,11 @@ export default async function CanchaPage({ params }: Props) {
     notFound();
   }
 
-  // Verificar si el usuario puede reclamar la cancha
-  const canClaim = venue.owner_id === null || venue.owner_id !== userId;
+  // Estado de reclamos: solo se puede reclamar si no hay dueño ni reclamo pendiente.
+  const claimState = await getVenueClaimState(venue.id, userId);
+  const isVenueOwner = Boolean(userId) && venue.owner_id === userId;
+  const canClaim = !venue.owner_id && !claimState.hasPendingClaim;
+  const claimPendingForOthers = !isVenueOwner && claimState.hasPendingClaim;
 
   const todayBounds = cityDayBoundsFromLocal(new Date().toISOString(), city.timezone);
   const tomorrowBounds = todayBounds
@@ -180,7 +182,7 @@ export default async function CanchaPage({ params }: Props) {
         <div className="venue-hero-top">
           <p className="eyebrow">{city.name}</p>
           <div className="venue-hero-badges">
-            <VenueVerifiedBadge isVerified={venue.is_verified} />
+            {venue.is_verified ? <VenueVerifiedBadge /> : null}
             {meta.rating != null ? (
               <span className="venue-rating" aria-label={`Calificación ${meta.rating} de 5`}>
                 ★ {meta.rating.toFixed(1)}
@@ -209,20 +211,31 @@ export default async function CanchaPage({ params }: Props) {
             </span>
           ))}
         </div>
-        {canClaim && userId && (
+        {canClaim && userId ? (
           <div className="venue-claim-cta">
             <Link href={`/canchas/${venue.slug}/reclamar`} className="btn-ghost btn-small">
               ¿Sos el dueño? Reclamar cancha
             </Link>
           </div>
-        )}
-        {!userId && (
+        ) : null}
+        {canClaim && !userId ? (
           <div className="venue-claim-cta">
             <Link href={`/entrar?next=/canchas/${venue.slug}/reclamar`} className="btn-ghost btn-small">
               ¿Sos el dueño? Entrá para reclamar
             </Link>
           </div>
-        )}
+        ) : null}
+        {claimPendingForOthers ? (
+          <p className="venue-claim-note" role="note">
+            Reclamo en revisión — un editor de BaFut está verificando al dueño de esta cancha.
+          </p>
+        ) : null}
+        {isVenueOwner ? (
+          <p className="venue-claim-note" role="note">
+            Sos el dueño registrado de esta cancha ·{" "}
+            <Link href={`/canchas/${venue.slug}/admin`}>Ir al panel</Link>
+          </p>
+        ) : null}
       </header>
 
       <div className="venue-detail-layout">

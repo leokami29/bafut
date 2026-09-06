@@ -216,13 +216,12 @@ begin
     raise exception 'Cancha no encontrada';
   end if;
 
-  -- Actualizar datos del dueño
+  -- Actualizar datos del dueño (venues no tiene updated_at)
   update public.venues
   set
     owner_id = auth.uid(),
-    contact_whatsapp = p_whatsapp,
-    contact_email = p_email,
-    updated_at = now()
+    contact_whatsapp = nullif(btrim(coalesce(p_whatsapp, '')), ''),
+    contact_email = nullif(btrim(lower(coalesce(p_email, ''))), '')
   where id = p_venue_id;
 
   return true;

@@ -268,3 +268,33 @@ export async function getSessionUserId() {
   const { data } = await supabase.auth.getClaims();
   return data?.claims?.sub ?? null;
 }
+
+/**
+ * Estado de reclamos para el flujo "reclamar cancha":
+ * - hasPendingClaim: la cancha tiene ALGÚN reclamo en revisión (visible público por RPC).
+ * - ownClaim: último reclamo del usuario sobre esa cancha (RLS: solo ve el propio).
+ */
+export const getVenueClaimState = cache(async (venueId: string, userId: string | null) => {
+  const supabase = await createClient();
+  const { data: hasPending } = await supabase.rpc("venue_has_pending_claim", {
+    p_venue_id: venueId,
+  });
+
+  type OwnClaim = { id: string; status: string; created_at: string };
+  let ownRows: OwnClaim[] | null = null;
+  if (userId) {
+    const { data } = await supabase
+      .from("venue_claims")
+      .select("id, status, created_at")
+      .eq("venue_id", venueId)
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(1);
+    ownRows = data as OwnClaim[] | null;
+  }
+
+  return {
+    hasPendingClaim: Boolean(hasPending),
+    ownClaim: ownRows?.[0] ?? null,
+  };
+});
