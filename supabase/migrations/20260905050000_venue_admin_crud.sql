@@ -126,8 +126,8 @@ create or replace function public.create_venue(
   p_name text,
   p_neighborhood text default null,
   p_address text default null,
-  p_lat double precision not null,
-  p_lng double precision not null,
+  p_lat double precision default null,
+  p_lng double precision default null,
   p_sports text[] default array['futbol']::text[],
   p_surface text default 'sintetica',
   p_covered boolean default null,
@@ -150,6 +150,10 @@ begin
   end if;
   if not exists (select 1 from public.admins where user_id = v_uid) then
     raise exception 'Solo administradores de BaFut pueden crear canchas.';
+  end if;
+
+  if p_lat is null or p_lng is null then
+    raise exception 'Faltan las coordenadas (lat, long).';
   end if;
 
   if char_length(btrim(coalesce(p_name, ''))) < 2 or char_length(btrim(p_name)) > 120 then
