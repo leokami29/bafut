@@ -426,6 +426,250 @@
   border-bottom-color: var(--bib);
 }
 
+/* —— Dashboard de precios —— */
+.price-dashboard {
+  display: grid;
+  gap: 2rem;
+  margin-top: 1.5rem;
+}
+
+.price-sport-tabs {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid color-mix(in oklab, var(--ink) 18%, transparent);
+}
+
+.price-sport-tab {
+  min-height: 2.75rem;
+  padding: 0.5rem 1.25rem;
+  border: 1px solid color-mix(in oklab, var(--ink) 22%, transparent);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.92rem;
+  cursor: pointer;
+  border-radius: 0;
+}
+
+.price-sport-tab:hover {
+  border-color: var(--turf);
+  background: color-mix(in oklab, var(--turf) 8%, transparent);
+}
+
+.price-sport-tab.is-active {
+  border-color: var(--turf);
+  background: var(--turf);
+  color: var(--chalk);
+  font-weight: 600;
+}
+
+.price-section {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.price-section .subhead {
+  margin: 0;
+}
+
+.price-min-form {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-end;
+}
+
+.price-min-form label {
+  display: grid;
+  gap: 0.3rem;
+  font-size: 0.92rem;
+}
+
+.price-min-form label > span {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--ink) 62%, transparent);
+}
+
+.price-min-form input {
+  width: 10rem;
+  min-height: 2.75rem;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid color-mix(in oklab, var(--ink) 20%, transparent);
+  border-bottom-width: 2px;
+  background: color-mix(in oklab, var(--paper) 70%, white);
+  color: var(--ink);
+  font: inherit;
+  border-radius: 0;
+}
+
+.price-min-form input:focus-visible {
+  outline: 2px solid var(--flood);
+  outline-offset: 1px;
+  border-color: var(--turf);
+}
+
+.price-min-form .btn-flood {
+  min-height: 2.75rem;
+}
+
+.price-defaults-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+  gap: 0.75rem;
+}
+
+.price-default-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  align-items: center;
+  font-size: 0.92rem;
+}
+
+.price-default-row input {
+  min-height: 2.75rem;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid color-mix(in oklab, var(--ink) 20%, transparent);
+  border-bottom-width: 2px;
+  background: color-mix(in oklab, var(--paper) 70%, white);
+  color: var(--ink);
+  font: inherit;
+  border-radius: 0;
+}
+
+.price-default-row input:focus-visible {
+  outline: 2px solid var(--flood);
+  outline-offset: 1px;
+  border-color: var(--turf);
+}
+
+.price-grid {
+  display: grid;
+  gap: 0;
+  border: 1px solid color-mix(in oklab, var(--ink) 18%, transparent);
+  overflow-x: auto;
+}
+
+.price-grid-header {
+  display: grid;
+  grid-template-columns: 4rem repeat(7, minmax(6rem, 1fr));
+  background: color-mix(in oklab, var(--turf) 8%, var(--paper));
+  border-bottom: 1px solid color-mix(in oklab, var(--ink) 18%, transparent);
+}
+
+.price-grid-header > div {
+  padding: 0.5rem;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.price-grid-row {
+  display: grid;
+  grid-template-columns: 4rem repeat(7, minmax(6rem, 1fr));
+  border-bottom: 1px solid color-mix(in oklab, var(--ink) 10%, transparent);
+}
+
+.price-grid-row:last-child {
+  border-bottom: 0;
+}
+
+.price-grid-time {
+  padding: 0.5rem;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  text-align: center;
+  color: color-mix(in oklab, var(--ink) 62%, transparent);
+  border-right: 1px solid color-mix(in oklab, var(--ink) 10%, transparent);
+}
+
+.price-grid-cell {
+  border-right: 1px solid color-mix(in oklab, var(--ink) 10%, transparent);
+  min-height: 2.5rem;
+}
+
+.price-grid-cell:last-child {
+  border-right: 0;
+}
+
+.price-grid-slot {
+  position: relative;
+  height: 100%;
+  padding: 0.25rem 0.5rem;
+  background: var(--turf);
+  color: var(--chalk);
+  font-size: 0.78rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.price-grid-delete {
+  background: transparent;
+  border: 0;
+  color: var(--chalk);
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 0.25rem;
+}
+
+.price-grid-delete:hover {
+  color: var(--bib);
+}
+
+.price-grid-empty {
+  width: 100%;
+  height: 100%;
+  min-height: 2.5rem;
+  background: transparent;
+  border: 0;
+  color: color-mix(in oklab, var(--ink) 30%, transparent);
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.price-grid-empty:hover {
+  background: color-mix(in oklab, var(--turf) 8%, transparent);
+  color: var(--turf);
+}
+
+.price-promotions-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.price-promotion-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: color-mix(in oklab, var(--flood) 8%, var(--paper));
+  border-left: 3px solid var(--flood);
+  gap: 1rem;
+}
+
+.price-promotion-item > div {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.price-promotion-kind {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.78rem;
+  color: color-mix(in oklab, var(--ink) 62%, transparent);
+}
+
 .venue-hero h1 {
   margin: 0.35rem 0 0.65rem;
   line-height: 1.08;

@@ -301,6 +301,21 @@ export async function createMatchAction(formData: FormData): Promise<MatchCompos
     return { error: "El partido se armó mal. Inténtalo de nuevo." };
   }
 
+  // Aplicar pricing (calcula según franjas + promos, o usa override si el dueño lo puso)
+  const overridePriceRaw = String(formData.get("override_price_cop") ?? "").trim();
+  const overridePrice = overridePriceRaw ? Number(overridePriceRaw) : null;
+
+  const { error: pricingError } = await supabase.rpc("apply_match_pricing", {
+    p_match_id: match.id,
+    p_overridden_price_cop: overridePrice,
+  });
+
+  if (pricingError) {
+    await supabase.from("match_slots").delete().eq("match_id", match.id);
+    await supabase.from("matches").delete().eq("id", match.id);
+    return { error: pricingError.message };
+  }
+
   revalidatePath("/partidos");
   redirect(`/p/${match.share_code}`);
 }
