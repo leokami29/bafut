@@ -38,6 +38,8 @@ type ActiveSubscription = {
   status: string;
 } | null;
 
+export type VenueAdminTab = "mesa" | "ficha" | "premium" | "fotos" | "cuenta";
+
 type VenueAdminDashboardProps = {
   venue: Venue;
   photos: VenuePhotoRow[];
@@ -51,6 +53,8 @@ type VenueAdminDashboardProps = {
   premiumPaywallEnabled?: boolean;
   /** Centro de la ciudad activa para el picker de ubicación (fallback: coords actuales). */
   cityCenter?: { lat: number; lng: number };
+  /** Sección activa vía ?tab= (default mesa). */
+  tab?: VenueAdminTab;
 };
 
 type FormState = {
@@ -113,6 +117,7 @@ export function VenueAdminDashboard({
   latestRequest = null,
   premiumPaywallEnabled = true,
   cityCenter,
+  tab = "mesa",
 }: VenueAdminDashboardProps) {
   const router = useRouter();
   const original = useMemo(() => toFormState(venue), [venue]);
@@ -295,34 +300,104 @@ export function VenueAdminDashboard({
     router.refresh();
   }
 
+  const base = `/canchas/${venue.slug}/admin`;
+  const showMesa = tab === "mesa";
+  const showFicha = tab === "ficha";
+  const showPremium = tab === "premium";
+  const showFotos = tab === "fotos";
+  const showCuenta = tab === "cuenta";
+
   return (
     <div className="venue-admin-dashboard">
-      {/* Actividad del mes */}
-      {stats ? (
+      {showMesa ? (
         <section className="venue-admin-section">
           <h2 className="subhead">Actividad del mes</h2>
-          <div className="venue-admin-stats-grid">
-            <div className="venue-admin-stat-card">
-              <span className="venue-admin-stat-value">{stats.total_matches}</span>
-              <span className="venue-admin-stat-label">Partidos publicados</span>
+          {stats ? (
+            <div className="venue-admin-stats-grid">
+              <div className="venue-admin-stat-card">
+                <span className="venue-admin-stat-value">{stats.total_matches}</span>
+                <span className="venue-admin-stat-label">Partidos publicados</span>
+              </div>
+              <div className="venue-admin-stat-card">
+                <span className="venue-admin-stat-value">{stats.total_slots}</span>
+                <span className="venue-admin-stat-label">Cupos totales</span>
+              </div>
+              <div className="venue-admin-stat-card">
+                <span className="venue-admin-stat-value">{stats.filled_slots}</span>
+                <span className="venue-admin-stat-label">Cupos confirmados</span>
+              </div>
+              <div className="venue-admin-stat-card">
+                <span className="venue-admin-stat-value">{stats.occupancy_rate}%</span>
+                <span className="venue-admin-stat-label">Ocupación</span>
+              </div>
             </div>
-            <div className="venue-admin-stat-card">
-              <span className="venue-admin-stat-value">{stats.total_slots}</span>
-              <span className="venue-admin-stat-label">Cupos totales</span>
-            </div>
-            <div className="venue-admin-stat-card">
-              <span className="venue-admin-stat-value">{stats.filled_slots}</span>
-              <span className="venue-admin-stat-label">Cupos confirmados</span>
-            </div>
-            <div className="venue-admin-stat-card">
-              <span className="venue-admin-stat-value">{stats.occupancy_rate}%</span>
-              <span className="venue-admin-stat-label">Ocupación</span>
-            </div>
-          </div>
+          ) : (
+            <p className="field-help">Cargando actividad…</p>
+          )}
+
+          <ul className="venue-admin-shortcuts" aria-label="Atajos del panel">
+            <li>
+              <Link href={`${base}?tab=ficha`} className="venue-admin-shortcut">
+                <span className="venue-admin-shortcut-label">Ficha</span>
+                <span className="venue-admin-shortcut-hint">Nombre, barrio, deportes, mapa</span>
+              </Link>
+            </li>
+            {premiumPaywallEnabled ? (
+              <li>
+                <Link
+                  href={`${base}?tab=premium`}
+                  className={`venue-admin-shortcut${pendingRequest ? " is-hot" : ""}`}
+                >
+                  <span className="venue-admin-shortcut-label">Premium</span>
+                  <span className="venue-admin-shortcut-hint">
+                    {pendingRequest
+                      ? "Solicitud en revisión"
+                      : activeSubscription
+                        ? "Plan activo"
+                        : "Destacá la cancha"}
+                  </span>
+                </Link>
+              </li>
+            ) : null}
+            <li>
+              <Link href={`${base}?tab=fotos`} className="venue-admin-shortcut">
+                <span className="venue-admin-shortcut-label">Fotos</span>
+                <span className="venue-admin-shortcut-hint">
+                  {photos.length}/{MAX_VENUE_PHOTOS} cargadas
+                </span>
+              </Link>
+            </li>
+            <li>
+              <Link href={`${base}/precios`} className="venue-admin-shortcut">
+                <span className="venue-admin-shortcut-label">Precios</span>
+                <span className="venue-admin-shortcut-hint">Franjas, mínimos y promociones</span>
+              </Link>
+            </li>
+            <li>
+              <Link href={`${base}/precios?tab=promos&crear=1`} className="venue-admin-shortcut">
+                <span className="venue-admin-shortcut-label">Crear promoción</span>
+                <span className="venue-admin-shortcut-hint">Descuento o precio cerrado</span>
+              </Link>
+            </li>
+            <li>
+              <Link href={`${base}/ingresos`} className="venue-admin-shortcut">
+                <span className="venue-admin-shortcut-label">Ingresos</span>
+                <span className="venue-admin-shortcut-hint">Estimado del mes</span>
+              </Link>
+            </li>
+            {(isOwner || isAdmin) && venue.owner_id ? (
+              <li>
+                <Link href={`${base}?tab=cuenta`} className="venue-admin-shortcut">
+                  <span className="venue-admin-shortcut-label">Cuenta</span>
+                  <span className="venue-admin-shortcut-hint">Dueño y zona de peligro</span>
+                </Link>
+              </li>
+            ) : null}
+          </ul>
         </section>
       ) : null}
 
-      {/* Información */}
+      {showFicha ? (
       <section className="venue-admin-section">
         <h2 className="subhead">Editar información</h2>
         <p className="field-help">
@@ -451,8 +526,9 @@ export function VenueAdminDashboard({
           ) : null}
         </div>
       </section>
+      ) : null}
 
-      {premiumPaywallEnabled ? (
+      {showPremium && premiumPaywallEnabled ? (
         <VenuePremiumPaywall
           venueId={venue.id}
           venueSlug={venue.slug}
@@ -463,7 +539,14 @@ export function VenueAdminDashboard({
         />
       ) : null}
 
-      {/* Fotos */}
+      {showPremium && !premiumPaywallEnabled ? (
+        <section className="venue-admin-section">
+          <h2 className="subhead">Plan Premium</h2>
+          <p className="field-help">El paywall Premium no está activo en este momento.</p>
+        </section>
+      ) : null}
+
+      {showFotos ? (
       <section className="venue-admin-section">
         <h2 className="subhead">
           Fotos ({photos.length}/{MAX_VENUE_PHOTOS})
@@ -524,8 +607,10 @@ export function VenueAdminDashboard({
         </div>
         {photoError ? <p className="form-error">{photoError}</p> : null}
       </section>
+      ) : null}
 
-      {/* Datos de dueño (solo visible si sos dueño o admin) */}
+      {showCuenta ? (
+        <>
       {(isOwner || isAdmin) && (venue.owner_id || venue.contact_whatsapp) ? (
         <section className="venue-admin-section">
           <h2 className="subhead">Dueño</h2>
@@ -550,22 +635,6 @@ export function VenueAdminDashboard({
         </section>
       ) : null}
 
-      {/* Gestión */}
-      {(isOwner || isAdmin) && venue.owner_id ? (
-        <section className="venue-admin-section">
-          <h2 className="subhead">Gestión</h2>
-          <div className="venue-admin-actions">
-            <Link href={`/canchas/${venue.slug}/admin/precios`} className="btn-ghost">
-              Configurar precios
-            </Link>
-            <Link href={`/canchas/${venue.slug}/admin/ingresos`} className="btn-ghost">
-              Ver ingresos del mes
-            </Link>
-          </div>
-        </section>
-      ) : null}
-
-      {/* Zona de peligro */}
       {(isOwner || isAdmin) && venue.owner_id ? (
         <section className="venue-admin-section venue-admin-danger">
           <h2 className="subhead">Zona de peligro</h2>
@@ -587,6 +656,12 @@ export function VenueAdminDashboard({
             </p>
           ) : null}
         </section>
+      ) : (
+        <section className="venue-admin-section">
+          <p className="field-help">No hay acciones de cuenta disponibles.</p>
+        </section>
+      )}
+        </>
       ) : null}
     </div>
   );

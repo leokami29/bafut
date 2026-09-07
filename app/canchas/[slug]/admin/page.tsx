@@ -1,7 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { VenueAdminDashboard } from "@/components/VenueAdminDashboard";
+import { Suspense } from "react";
+import {
+  VenueAdminDashboard,
+  type VenueAdminTab,
+} from "@/components/VenueAdminDashboard";
+import { VenueAdminNav } from "@/components/VenueAdminNav";
 import { requireUserId } from "@/lib/auth";
 import { getVenueBySlug } from "@/lib/data";
 import { getActiveCity } from "@/lib/data";
@@ -14,10 +19,22 @@ export const metadata: Metadata = {
   robots: robotsNoIndex,
 };
 
-type Props = { params: Promise<{ slug: string }> };
+type Props = {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ tab?: string }>;
+};
 
-export default async function VenueAdminPage({ params }: Props) {
+const TABS: VenueAdminTab[] = ["mesa", "ficha", "premium", "fotos", "cuenta"];
+
+function parseTab(raw: string | undefined): VenueAdminTab {
+  if (raw && TABS.includes(raw as VenueAdminTab)) return raw as VenueAdminTab;
+  return "mesa";
+}
+
+export default async function VenueAdminPage({ params, searchParams }: Props) {
   const { slug } = await params;
+  const { tab: tabRaw } = await searchParams;
+  const tab = parseTab(tabRaw);
   const { userId } = await requireUserId(`/canchas/${slug}/admin`);
   const city = await getActiveCity();
 
@@ -65,6 +82,12 @@ export default async function VenueAdminPage({ params }: Props) {
     .order("created_at", { ascending: false })
     .limit(5);
 
+  const { count: promoCount } = await supabase
+    .from("venue_promotions")
+    .select("id", { count: "exact", head: true })
+    .eq("venue_id", venue.id)
+    .eq("active", true);
+
   const pendingRequest =
     recentRequests?.find((r) => r.status === "pending") ?? null;
   const latestRequest = recentRequests?.[0] ?? null;
@@ -84,20 +107,37 @@ export default async function VenueAdminPage({ params }: Props) {
     );
   }
 
+  const ledeByTab: Record<VenueAdminTab, string> = {
+    mesa: isOwner
+      ? "Resumen de actividad y atajos al resto del panel."
+      : "Estás editando esta ficha como admin de BaFut.",
+    ficha: "Datos públicos de la cancha: nombre, ubicación, deportes y nota.",
+    premium: "Plan Premium, comprobantes y facturas.",
+    fotos: "Fotos propias que ve el jugador en la ficha.",
+    cuenta: "Dueño, liberar cancha y acciones sensibles.",
+  };
+
   return (
-    <main className="page page-nuevo-partido" id="main">
+    <main className="page page-venue-admin" id="main">
       <p className="venue-back">
         <Link href={`/canchas/${slug}`}>← Volver a la cancha</Link>
       </p>
-      <header className="page-head match-compose-head">
+      <header className="page-head page-head-compact">
         <p className="eyebrow">Administración · {city.name}</p>
         <h1>{venue.name}</h1>
-        <p className="lede">
-          {isOwner
-            ? "Gestioná los datos de tu cancha, sus fotos y revisá la actividad."
-            : "Estás editando esta ficha como admin de BaFut."}
-        </p>
+        <p className="lede">{ledeByTab[tab]}</p>
       </header>
+
+      <Suspense fallback={<div className="venue-admin-board admin-board" aria-hidden="true" />}>
+        <VenueAdminNav
+          venueSlug={slug}
+          counts={{
+            photos: photos?.length ?? 0,
+            pendingPremium: pendingRequest ? 1 : 0,
+            promotions: promoCount ?? 0,
+          }}
+        />
+      </Suspense>
 
       <VenueAdminDashboard
         venue={venue}
@@ -110,6 +150,7 @@ export default async function VenueAdminPage({ params }: Props) {
         latestRequest={latestRequest}
         premiumPaywallEnabled={premiumPaywallEnabled}
         cityCenter={{ lat: city.lat, lng: city.lng }}
+        tab={tab}
       />
     </main>
   );

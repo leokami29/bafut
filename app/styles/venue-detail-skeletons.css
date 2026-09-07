@@ -429,8 +429,8 @@
 /* —— Dashboard de precios —— */
 .price-dashboard {
   display: grid;
-  gap: 2rem;
-  margin-top: 1.5rem;
+  gap: 1.15rem;
+  margin-top: 0.5rem;
 }
 
 .price-sport-tabs {
@@ -470,175 +470,239 @@
   gap: 0.75rem;
 }
 
+.price-section-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.price-section-head > div {
+  display: grid;
+  gap: 0.25rem;
+  max-width: 46ch;
+}
+
 .price-section .subhead {
   margin: 0;
 }
 
-.price-min-form {
-  display: flex;
-  gap: 1rem;
-  align-items: flex-end;
+.price-status {
+  min-height: 1.2rem;
+  margin: 0;
+  font-size: 0.88rem;
 }
 
-.price-min-form label {
+.price-status-ok {
+  color: var(--turf);
+  font-weight: 600;
+}
+
+.price-status-error {
+  color: var(--bib);
+  font-weight: 600;
+}
+
+/* ——— Semana de precios: una fila por día ——— */
+.price-week {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid color-mix(in oklab, var(--ink) 16%, transparent);
+  background: var(--paper);
+}
+
+.price-week-row {
   display: grid;
-  gap: 0.3rem;
-  font-size: 0.92rem;
-}
-
-.price-min-form label > span {
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 0.72rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: color-mix(in oklab, var(--ink) 62%, transparent);
-}
-
-.price-min-form input {
-  width: 10rem;
-  min-height: 2.75rem;
-  padding: 0.6rem 0.7rem;
-  border: 1px solid color-mix(in oklab, var(--ink) 20%, transparent);
-  border-bottom-width: 2px;
-  background: color-mix(in oklab, var(--paper) 70%, white);
-  color: var(--ink);
-  font: inherit;
-  border-radius: 0;
-}
-
-.price-min-form input:focus-visible {
-  outline: 2px solid var(--flood);
-  outline-offset: 1px;
-  border-color: var(--turf);
-}
-
-.price-min-form .btn-flood {
-  min-height: 2.75rem;
-}
-
-.price-defaults-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
-  gap: 0.75rem;
-}
-
-.price-default-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.5rem;
+  grid-template-columns: 5.5rem 1fr 8.5rem;
   align-items: center;
-  font-size: 0.92rem;
-}
-
-.price-default-row input {
-  min-height: 2.75rem;
-  padding: 0.6rem 0.7rem;
-  border: 1px solid color-mix(in oklab, var(--ink) 20%, transparent);
-  border-bottom-width: 2px;
-  background: color-mix(in oklab, var(--paper) 70%, white);
-  color: var(--ink);
-  font: inherit;
-  border-radius: 0;
-}
-
-.price-default-row input:focus-visible {
-  outline: 2px solid var(--flood);
-  outline-offset: 1px;
-  border-color: var(--turf);
-}
-
-.price-grid {
-  display: grid;
-  gap: 0;
-  border: 1px solid color-mix(in oklab, var(--ink) 18%, transparent);
-  overflow-x: auto;
-}
-
-.price-grid-header {
-  display: grid;
-  grid-template-columns: 4rem repeat(7, minmax(6rem, 1fr));
-  background: color-mix(in oklab, var(--turf) 8%, var(--paper));
-  border-bottom: 1px solid color-mix(in oklab, var(--ink) 18%, transparent);
-}
-
-.price-grid-header > div {
-  padding: 0.5rem;
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 0.72rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  text-align: center;
-}
-
-.price-grid-row {
-  display: grid;
-  grid-template-columns: 4rem repeat(7, minmax(6rem, 1fr));
+  gap: 0.75rem;
+  padding: 0.55rem 0.75rem;
   border-bottom: 1px solid color-mix(in oklab, var(--ink) 10%, transparent);
 }
 
-.price-grid-row:last-child {
+.price-week-row:last-child {
   border-bottom: 0;
 }
 
-.price-grid-time {
-  padding: 0.5rem;
+.price-week-day {
   font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 0.72rem;
-  text-align: center;
-  color: color-mix(in oklab, var(--ink) 62%, transparent);
-  border-right: 1px solid color-mix(in oklab, var(--ink) 10%, transparent);
-}
-
-.price-grid-cell {
-  border-right: 1px solid color-mix(in oklab, var(--ink) 10%, transparent);
-  min-height: 2.5rem;
-}
-
-.price-grid-cell:last-child {
-  border-right: 0;
-}
-
-.price-grid-slot {
-  position: relative;
-  height: 100%;
-  padding: 0.25rem 0.5rem;
-  background: var(--turf);
-  color: var(--chalk);
-  font-size: 0.78rem;
+  font-size: 0.74rem;
   font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--turf-deep);
+}
+
+.price-week-slots {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
+  gap: 0.4rem;
+  min-width: 0;
 }
 
-.price-grid-delete {
-  background: transparent;
+.price-week-empty {
+  font-size: 0.85rem;
+  color: color-mix(in oklab, var(--ink) 45%, transparent);
+  font-style: italic;
+}
+
+.price-chip {
+  display: inline-flex;
+  align-items: stretch;
+  border: 1px solid color-mix(in oklab, var(--turf) 45%, transparent);
+  background: color-mix(in oklab, var(--turf) 8%, var(--paper));
+}
+
+.price-chip-main {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 2.1rem;
+  padding: 0.15rem 0.6rem;
+  background: none;
   border: 0;
-  color: var(--chalk);
-  font-size: 1.2rem;
-  line-height: 1;
   cursor: pointer;
-  padding: 0 0.25rem;
+  font: inherit;
+  font-size: 0.85rem;
+  color: var(--ink);
 }
 
-.price-grid-delete:hover {
+.price-chip-main strong {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-weight: 600;
+}
+
+.price-chip-main:hover {
+  background: color-mix(in oklab, var(--turf) 16%, transparent);
+}
+
+.price-chip-remove {
+  border: 0;
+  border-left: 1px solid color-mix(in oklab, var(--turf) 30%, transparent);
+  background: none;
+  color: color-mix(in oklab, var(--ink) 45%, transparent);
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0 0.45rem;
+  cursor: pointer;
+}
+
+.price-chip-remove:hover:not(:disabled) {
   color: var(--bib);
 }
 
-.price-grid-empty {
-  width: 100%;
-  height: 100%;
-  min-height: 2.5rem;
-  background: transparent;
-  border: 0;
-  color: color-mix(in oklab, var(--ink) 30%, transparent);
-  font-size: 1.2rem;
+.price-chip-remove:disabled {
+  opacity: 0.4;
+  cursor: wait;
+}
+
+.price-chip-add {
+  width: 2.1rem;
+  height: 2.1rem;
+  border: 1px dashed color-mix(in oklab, var(--ink) 30%, transparent);
+  background: none;
+  color: var(--turf);
+  font-size: 1.05rem;
+  line-height: 1;
   cursor: pointer;
 }
 
-.price-grid-empty:hover {
+.price-chip-add:hover:not(:disabled) {
+  border-color: var(--turf);
+  background: color-mix(in oklab, var(--turf) 10%, transparent);
+}
+
+.price-chip-add:disabled {
+  opacity: 0.4;
+  cursor: wait;
+}
+
+.price-week-fallback input {
+  width: 100%;
+  min-height: 2.25rem;
+  padding: 0.3rem 0.55rem;
+  border: 1px solid color-mix(in oklab, var(--ink) 18%, transparent);
+  border-bottom-width: 2px;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+  border-radius: 0;
+  text-align: right;
+}
+
+.price-week-fallback input::placeholder {
+  color: color-mix(in oklab, var(--ink) 40%, transparent);
+  text-align: left;
+}
+
+.price-week-fallback input:focus-visible {
+  outline: 2px solid var(--flood);
+  outline-offset: 1px;
+  border-color: var(--turf);
+}
+
+/* ——— Duración mínima ——— */
+.price-min-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.price-min-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.price-preset {
+  min-height: 2.25rem;
+  padding: 0.3rem 0.85rem;
+  border: 1px solid color-mix(in oklab, var(--ink) 25%, transparent);
+  background: none;
+  color: var(--ink);
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.price-preset:hover:not(:disabled) {
+  border-color: var(--turf);
   background: color-mix(in oklab, var(--turf) 8%, transparent);
-  color: var(--turf);
+}
+
+.price-preset.is-on {
+  background: var(--turf);
+  border-color: var(--turf);
+  color: var(--chalk);
+  font-weight: 600;
+}
+
+.price-min-custom input {
+  width: 6.5rem;
+  min-height: 2.25rem;
+  padding: 0.3rem 0.55rem;
+  border: 1px solid color-mix(in oklab, var(--ink) 18%, transparent);
+  border-bottom-width: 2px;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+  border-radius: 0;
+}
+
+.price-min-custom input:focus-visible {
+  outline: 2px solid var(--flood);
+  outline-offset: 1px;
+  border-color: var(--turf);
 }
 
 .price-promotions-list {
@@ -662,12 +726,161 @@
 .price-promotion-item > div {
   display: grid;
   gap: 0.25rem;
+  min-width: 0;
 }
 
 .price-promotion-kind {
   font-family: var(--font-mono), ui-monospace, monospace;
   font-size: 0.78rem;
+  color: var(--turf-deep);
+  font-weight: 600;
+}
+
+.price-promotion-cond {
+  font-size: 0.8rem;
+  color: color-mix(in oklab, var(--ink) 55%, transparent);
+}
+
+.slot-modal-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.slot-modal-day {
+  color: color-mix(in oklab, var(--ink) 50%, transparent);
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.promo-modal {
+  width: min(34rem, 92vw);
+}
+
+.promo-kind {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+}
+
+.promo-kind-option {
+  display: grid;
+  gap: 0.15rem;
+  padding: 0.7rem 0.8rem;
+  border: 1px solid color-mix(in oklab, var(--ink) 20%, transparent);
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.promo-kind-option.is-on {
+  border-color: var(--turf);
+  background: color-mix(in oklab, var(--turf) 8%, transparent);
+}
+
+.promo-kind-option input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.promo-kind-option:has(input:focus-visible) {
+  outline: 2px solid var(--flood);
+  outline-offset: 2px;
+}
+
+.promo-kind-option strong {
+  font-size: 0.95rem;
+}
+
+.promo-kind-option span {
+  color: color-mix(in oklab, var(--ink) 55%, transparent);
+}
+
+.promo-days {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.promo-days legend {
+  padding: 0;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   color: color-mix(in oklab, var(--ink) 62%, transparent);
+}
+
+.promo-day-all {
+  display: inline-flex;
+  gap: 0.45rem;
+  align-items: center;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.promo-day-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.promo-day-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2rem;
+  padding: 0.2rem 0.7rem;
+  border: 1px solid color-mix(in oklab, var(--ink) 25%, transparent);
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.74rem;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  user-select: none;
+}
+
+.promo-day-chip input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.promo-day-chip:has(input:focus-visible),
+.promo-day-all:has(input:focus-visible) {
+  outline: 2px solid var(--flood);
+  outline-offset: 2px;
+}
+
+.promo-day-chip.is-on {
+  background: var(--turf);
+  border-color: var(--turf);
+  color: var(--chalk);
+}
+
+.promo-window {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.promo-check {
+  display: inline-flex;
+  gap: 0.45rem;
+  align-items: center;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.promo-check input {
+  accent-color: var(--turf);
+}
+
+.promo-time-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
 }
 
 /* —— Modal de edición de franjas —— */
@@ -991,6 +1204,162 @@
   font-size: 0.88rem;
   color: color-mix(in oklab, var(--ink) 50%, transparent);
   font-style: italic;
+}
+
+/* —— Barra de navegación del dashboard —— */
+.venue-admin-nav {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: color-mix(in oklab, var(--turf) 8%, var(--paper));
+  border-left: 3px solid var(--turf);
+  border-radius: 2px;
+}
+
+.venue-admin-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: var(--paper);
+  border: 1px solid color-mix(in oklab, var(--ink) 20%, transparent);
+  border-radius: 2px;
+  text-decoration: none;
+  color: var(--ink);
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.venue-admin-nav-link:hover {
+  background: var(--turf);
+  color: var(--chalk);
+  border-color: var(--turf);
+  transform: translateY(-1px);
+}
+
+.venue-admin-nav-icon {
+  font-size: 1.2rem;
+}
+
+/* —— Marcador sticky del admin de cancha (mismo lenguaje que /admin) —— */
+.page-venue-admin .venue-admin-board.admin-board {
+  position: sticky;
+  top: 3.6rem;
+  z-index: 25;
+  margin-bottom: 1.25rem;
+  flex-wrap: nowrap;
+  gap: 0.65rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+.page-venue-admin .venue-admin-board-segments.admin-board-segments {
+  flex-wrap: nowrap;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.page-venue-admin .venue-admin-board .admin-board-new {
+  flex-shrink: 0;
+}
+
+.venue-admin-shortcuts {
+  list-style: none;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.venue-admin-shortcut {
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.85rem 1rem;
+  background: var(--paper);
+  border: 1px solid color-mix(in oklab, var(--ink) 14%, transparent);
+  text-decoration: none;
+  color: var(--ink);
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.venue-admin-shortcut:hover {
+  border-color: color-mix(in oklab, var(--turf) 55%, transparent);
+  background: color-mix(in oklab, var(--turf) 6%, var(--paper));
+}
+
+.venue-admin-shortcut.is-hot {
+  border-color: color-mix(in oklab, var(--bib) 45%, transparent);
+}
+
+.venue-admin-shortcut-label {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.venue-admin-shortcut-hint {
+  font-size: 0.9rem;
+  color: color-mix(in oklab, var(--ink) 55%, transparent);
+}
+
+.price-section-tabs.admin-tabs {
+  margin-top: 0.25rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  flex-wrap: nowrap;
+}
+
+.price-section-tabs.admin-tabs button {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  padding: 0.55rem 0.85rem;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--ink) 55%, transparent);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.price-section-tabs.admin-tabs button:hover {
+  color: var(--ink);
+}
+
+.price-section-tabs.admin-tabs button.is-on {
+  color: var(--ink);
+  box-shadow: inset 0 -2px 0 var(--bib);
+}
+
+.price-crosslink {
+  margin: 0.35rem 0 0;
+  font-size: 0.9rem;
+  color: color-mix(in oklab, var(--ink) 60%, transparent);
+}
+
+.price-crosslink .linkish,
+.price-crosslink a {
+  color: var(--turf-deep);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 0.12em;
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+}
+
+.price-promo-empty {
+  display: grid;
+  gap: 0.85rem;
+  justify-items: start;
+  padding: 1rem 0 0.25rem;
 }
 
 .venue-hero h1 {

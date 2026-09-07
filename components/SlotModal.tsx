@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type SlotModalProps = {
   isOpen: boolean;
   onClose: () => void;
   onSave: (start: string, end: string, price: number) => void;
+  dayLabel?: string;
   initialStart?: string;
   initialEnd?: string;
   initialPrice?: number;
@@ -16,6 +17,7 @@ export function SlotModal({
   isOpen,
   onClose,
   onSave,
+  dayLabel,
   initialStart = "06:00",
   initialEnd = "07:00",
   initialPrice = 60000,
@@ -25,6 +27,15 @@ export function SlotModal({
   const [end, setEnd] = useState(initialEnd);
   const [price, setPrice] = useState(initialPrice);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -43,41 +54,50 @@ export function SlotModal({
     }
 
     onSave(start, end, price);
-    onClose();
   };
 
   return (
     <div className="slot-modal-overlay" onClick={onClose}>
-      <div className="slot-modal" onClick={(e) => e.stopPropagation()}>
-        <h3 className="slot-modal-title">
+      <div
+        className="slot-modal"
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="slot-modal-title"
+      >
+        <h3 className="slot-modal-title" id="slot-modal-title">
           {isEdit ? "Editar franja" : "Nueva franja"}
+          {dayLabel ? <span className="slot-modal-day"> · {dayLabel}</span> : null}
         </h3>
         <form onSubmit={handleSubmit} className="slot-modal-form">
-          <div className="slot-modal-field">
-            <label>
-              <span>Hora de inicio</span>
-              <input
-                type="time"
-                value={start}
-                onChange={(e) => setStart(e.target.value)}
-                required
-              />
-            </label>
+          <div className="slot-modal-row">
+            <div className="slot-modal-field">
+              <label>
+                <span>Hora de inicio</span>
+                <input
+                  type="time"
+                  value={start}
+                  onChange={(e) => setStart(e.target.value)}
+                  required
+                  autoFocus
+                />
+              </label>
+            </div>
+            <div className="slot-modal-field">
+              <label>
+                <span>Hora de fin</span>
+                <input
+                  type="time"
+                  value={end}
+                  onChange={(e) => setEnd(e.target.value)}
+                  required
+                />
+              </label>
+            </div>
           </div>
           <div className="slot-modal-field">
             <label>
-              <span>Hora de fin</span>
-              <input
-                type="time"
-                value={end}
-                onChange={(e) => setEnd(e.target.value)}
-                required
-              />
-            </label>
-          </div>
-          <div className="slot-modal-field">
-            <label>
-              <span>Precio (COP)</span>
+              <span>Precio del bloque (COP)</span>
               <input
                 type="number"
                 min={0}
@@ -94,7 +114,7 @@ export function SlotModal({
               Cancelar
             </button>
             <button type="submit" className="btn-flood">
-              {isEdit ? "Actualizar" : "Crear"}
+              {isEdit ? "Guardar cambios" : "Crear franja"}
             </button>
           </div>
         </form>
