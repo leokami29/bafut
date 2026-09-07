@@ -1,0 +1,27 @@
+{
+  "id": "asset_6ba807b6b19cffa4",
+  "provider": "pexels",
+  "providerAssetId": "1",
+  "originalFilename": "asset_6ba807b6b19cffa4.png",
+  "storedFilename": "asset_6ba807b6b19cffa4.png",
+  "path": "assets/raw/asset_6ba807b6b19cffa4.png",
+  "mimeType": "image/png",
+  "extension": "png",
+  "sizeBytes": 7060,
+  "width": 400,
+  "height": 400,
+  "aspectRatio": 1,
+  "sha256": "ece4f0ac83ced02bd82ff584eebd2966a0b7417d533dc7b58dcb6d1764f682c5",
+  "originalUrl": "https://example.com/ball.png",
+  "previewUrl": "",
+  "tags": [
+    "test-real"
+  ],
+  "downloadedAt": "2026-09-07T01:37:40.864Z",
+  "status": "ready",
+  "hasTransparency": false,
+  "brandId": "bafut",
+  "processing": {
+    "operations": []
+  }
+}

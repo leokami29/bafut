@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   diffVenueFields,
   parseCoordinate,
+  parsePastedCoords,
   validateVenueFields,
   type VenueEditableFields,
 } from "@/lib/venue-edit";
@@ -82,5 +83,26 @@ describe("parseCoordinate", () => {
     expect(parseCoordinate("-74.78132")).toBeCloseTo(-74.78132, 5);
     expect(parseCoordinate("")).toBeNull();
     expect(parseCoordinate("abc")).toBeNull();
+  });
+});
+
+describe("parsePastedCoords", () => {
+  it("entiende lo que Google Maps copia al portapapeles", () => {
+    expect(parsePastedCoords("10.96854, -74.78132")).toEqual({ lat: 10.96854, lng: -74.78132 });
+    expect(parsePastedCoords("10.96854 -74.78132")).toEqual({ lat: 10.96854, lng: -74.78132 });
+    expect(parsePastedCoords(" 10.96854 ; -74.78132 ")).toEqual({ lat: 10.96854, lng: -74.78132 });
+  });
+
+  it("acepta punto y coma como separador", () => {
+    expect(parsePastedCoords("10.96854; -74.78132")).toEqual({ lat: 10.96854, lng: -74.78132 });
+  });
+
+  it("rechaza pares incompletos, no numéricos o fuera de rango", () => {
+    expect(parsePastedCoords("10.9")).toBeNull();
+    expect(parsePastedCoords("10.9, 20.5, 30.1")).toBeNull();
+    expect(parsePastedCoords("abc, def")).toBeNull();
+    expect(parsePastedCoords("100, 0")).toBeNull();
+    expect(parsePastedCoords("0, 500")).toBeNull();
+    expect(parsePastedCoords("")).toBeNull();
   });
 });

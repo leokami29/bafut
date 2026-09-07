@@ -1,0 +1,34 @@
+{
+  "$comment": "Fuentes de imágenes. Cada proveedor se declara sin acoplar el sistema a uno solo. enabled=false hasta conectar en fase 2. Los valores de API keys van por variables de entorno, nunca en este archivo.",
+  "providers": [
+    {
+      "id": "pexels",
+      "type": "stock",
+      "enabled": true,
+      "api_env_var": "PEXELS_API_KEY",
+      "capabilities": ["search", "download"],
+      "license_note": "Licencia Pexels, sin atribución obligatoria",
+      "output_dir": "assets/raw/downloads/pexels/"
+    },
+    {
+      "id": "unsplash",
+      "type": "stock",
+      "enabled": false,
+      "api_env_var": "UNSPLASH_ACCESS_KEY",
+      "capabilities": ["search", "download"],
+      "license_note": "Licencia Unsplash",
+      "output_dir": "assets/raw/downloads/unsplash/"
+    },
+    {
+      "id": "local",
+      "type": "local",
+      "enabled": true,
+      "capabilities": ["import"],
+      "output_dir": "assets/raw/downloads/manual/"
+    }
+  ],
+  "generation": {
+    "default_provider_ref": "ai.json#/providers/openai-images",
+    "output_dir": "assets/raw/generated/"
+  }
+}

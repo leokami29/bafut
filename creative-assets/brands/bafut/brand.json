@@ -1,0 +1,67 @@
+{
+  "$schema": "./brand.schema.md",
+  "id": "bafut",
+  "name": "BaFut",
+  "owner": "Macuttech",
+  "website": "https://bafut.macuttech.com",
+  "type": "web-app / PWA",
+  "tagline": "El Reflector en la Cancha",
+  "description": "Radar de huecos y pateadas abiertas en Barranquilla. El organizador publica un hueco; los jugadores piden el cupo; el host confirma.",
+  "audience": "Jugadores y organizadores de pateadas en canchas sintéticas de Barranquilla (móvil, mismo día)",
+  "links": {
+    "production": "https://bafut.macuttech.com",
+    "maker": "https://www.macuttech.com/"
+  },
+  "colors": {
+    "turf": { "hex": "#0C6B4C", "role": "primary / césped" },
+    "turf-deep": { "hex": "#073828", "role": "fondo oscuro / header" },
+    "flood": { "hex": "#FFD25A", "role": "CTA / acento reflector" },
+    "bib": { "hex": "#C42A16", "role": "urgencia / errores" },
+    "paper": { "hex": "#DFF3E6", "role": "fondo claro" },
+    "ink": { "hex": "#10231C", "role": "texto sobre claro" },
+    "chalk": { "hex": "#D9F2A5", "role": "líneas de cancha / acento suave" },
+    "mist": { "hex": "#C8E6D4", "role": "texto secundario sobre oscuro" }
+  },
+  "typography": {
+    "display": { "family": "Barlow Condensed", "usage": "titulares, CTA, wordmark" },
+    "body": { "family": "Outfit", "usage": "cuerpo de texto" },
+    "mono": { "family": "IBM Plex Mono", "usage": "labels, meta, badges" }
+  },
+  "copy": {
+    "hero_examples": ["Falta uno a las 8. ¿Quién entra?", "Faltan dos para las 6. ¿Quién entra?"],
+    "value_props": ["Publica tu partido", "Comparte el link por WhatsApp", "El host confirma el cupo"],
+    "sports": ["Fútbol 5/7", "Fútbol sala", "Básquet", "Voleibol", "Pádel"],
+    "footer": "GRATIS · SIN REGISTRO · INSTÁLALA COMO APP",
+    "tone": "callejero, directo, urgente, en español costeño"
+  },
+  "visual_rules": {
+    "concept": "El Reflector en la Cancha — estética de cancha sintética nocturna",
+    "backgrounds": {
+      "dark": "#073828",
+      "light": "#DFF3E6"
+    },
+    "cta": {
+      "fill": "#FFD25A",
+      "text_color": "#073828",
+      "radius": "14px",
+      "glow": "drop-shadow #FFD25A 40% blur 32"
+    },
+    "field_motif": "líneas de cancha en chalk #D9F2A5 al 25-70% de opacidad",
+    "logos": {
+      "original": "logos/original/",
+      "note": "verde #0C6B4C con líneas chalk y centro flood"
+    }
+  },
+  "design_system_ref": "../../../DESIGN.md",
+  "assets_registered": {
+    "logos": ["logos/original/icon.svg", "logos/original/icon-512.png"],
+    "penpot_shapes": {
+      "flyer_1080": "Flyer BaFut · 1080x1080",
+      "flyer_light_1080": "Flyer BaFut · Light · 1080x1080",
+      "flyer_story_1080x1920": "Flyer BaFut · Story · 1080x1920",
+      "brand_card_1080": "BaFut · Presentación de Marca · 1080x1080",
+      "brand_card_light": "BaFut · Presentación de Marca · Light · 1080x1080",
+      "brand_card_story": "BaFut · Presentación de Marca · Story · 1080x1920"
+    }
+  }
+}

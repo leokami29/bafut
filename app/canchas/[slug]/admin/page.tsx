@@ -109,6 +109,7 @@ export default async function VenueAdminPage({ params }: Props) {
         pendingRequest={pendingRequest}
         latestRequest={latestRequest}
         premiumPaywallEnabled={premiumPaywallEnabled}
+        cityCenter={{ lat: city.lat, lng: city.lng }}
       />
     </main>
   );

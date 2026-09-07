@@ -118,7 +118,10 @@ export default async function VenueClaimPage({ params }: Props) {
           Ya enviaste el reclamo de <strong>{venue.name}</strong>. Un editor de BaFut lo está
           verificando: te avisamos por WhatsApp cuando se resuelva.
         </p>
-        <p className="field-help">No hace falta enviarlo otra vez — los duplicados se descartan.</p>
+        <p className="venue-claim-pending-meta">
+          No hace falta enviarlo otra vez — los duplicados se descartan. Seguilo en{" "}
+          <Link href="/perfil/canchas">Mis canchas</Link>.
+        </p>
       </ClaimShell>
     );
   }

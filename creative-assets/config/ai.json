@@ -1,0 +1,24 @@
+{
+  "$comment": "Generación de imágenes por IA. Declarativo: phase 1 no conecta APIs. Keys por variables de entorno.",
+  "providers": [
+    {
+      "id": "openai-images",
+      "enabled": false,
+      "api_env_var": "OPENAI_API_KEY",
+      "capabilities": ["text-to-image", "edit", "inpaint"],
+      "output_dir": "assets/raw/generated/openai/"
+    },
+    {
+      "id": "placeholder",
+      "enabled": false,
+      "api_env_var": null,
+      "capabilities": ["text-to-image"],
+      "output_dir": "assets/raw/generated/placeholder/"
+    }
+  ],
+  "defaults": {
+    "when_to_generate": "Solo cuando no exista asset adecuado en raw/ o processed/ tras agotar la búsqueda",
+    "save_prompt_with_asset": true,
+    "prompt_style_hint": "Incluir siempre el concepto de marca (ver brands/[brand]/guidelines.md) en el prompt"
+  }
+}

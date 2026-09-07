@@ -1,0 +1,39 @@
+{
+  "$comment": "Herramientas de procesamiento local. rembg y sharp están integrados (Fase 4). El comando de rembg se configura vía REMBG_COMMAND (env) o el default [python, -m, rembg, i].",
+  "tools": [
+    {
+      "id": "sharp",
+      "type": "node-library",
+      "enabled": true,
+      "capabilities": ["resize", "crop", "convert", "optimize", "has_transparency"],
+      "notes": "Dependencia npm. Usada por los processors resize/crop/convert/optimize."
+    },
+    {
+      "id": "rembg",
+      "binary": "python -m rembg i",
+      "enabled": true,
+      "capabilities": ["remove-background"],
+      "env_var_command": "REMBG_COMMAND",
+      "requirements": ["Python 3.10+", "pip install rembg onnxruntime", "modelo u2net (~170MB, ~/.u2net/u2net.onnx, se descarga en el primer uso)"],
+      "output": "PNG con transparencia",
+      "notes": "Se invoca con execFile (argumentos separados, nunca string concatenado). Ver troubleshooting en docs/image-processing.md."
+    },
+    {
+      "id": "imagemagick",
+      "binary": "magick",
+      "enabled": false,
+      "capabilities": ["effects", "shadows", "textures"],
+      "notes": "Reservado para efectos avanzados (fase futura). Verificar binario antes de habilitar."
+    }
+  ],
+  "rules": {
+    "never_modify_raw": true,
+    "processed_output_dir": "assets/processed/{parentAssetId}/",
+    "raw_output_dir": "assets/raw/",
+    "validate_every_output": true,
+    "deterministic_derived_ids": true,
+    "default_jpeg_quality": 85,
+    "default_webp_quality": 80,
+    "png_keep_transparency": true
+  }
+}

@@ -462,16 +462,20 @@ export default async function CanchaPage({ params }: Props) {
         )}
       </section>
 
-      <VenueOwnerBlock
-        venueName={venue.name}
-        venueSlug={venue.slug}
-        hasActivity={here.length > 0}
-        matchCount={here.length}
-        openSlots={openSlotsHere}
-        isVenueOwner={isVenueOwner}
-        canClaim={canClaim}
-        claimPending={claimState.hasPendingClaim}
-      />
+      {/* Sin bloque de dueños cuando la ficha ya está asignada a otro usuario:
+          no hay nada para reclamar ni invitación que tenga sentido. */}
+      {!venue.owner_id || isVenueOwner ? (
+        <VenueOwnerBlock
+          venueName={venue.name}
+          venueSlug={venue.slug}
+          hasActivity={here.length > 0}
+          matchCount={here.length}
+          openSlots={openSlotsHere}
+          isVenueOwner={isVenueOwner}
+          canClaim={canClaim}
+          claimPending={claimState.hasPendingClaim}
+        />
+      ) : null}
 
       <p className="foot-link">
         <Link href="/canchas">Todas las canchas sintéticas</Link>

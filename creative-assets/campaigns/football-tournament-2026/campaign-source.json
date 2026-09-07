@@ -1,0 +1,35 @@
+{
+  "brief": {
+    "campaignId": "football-tournament-2026",
+    "brandId": "bafut",
+    "objective": "Promocionar torneo de fútbol 5 en Barranquilla",
+    "format": { "preset": "ig-portrait", "width": 1080, "height": 1350 },
+    "headline": "TORNEO 2026",
+    "subheadline": "FÚTBOL 5",
+    "callToAction": "INSCRIPCIONES ABIERTAS",
+    "ctaUrl": "https://bafut.macuttech.com",
+    "visualStyle": "deportivo, energético, nocturno (El Reflector en la Cancha)",
+    "targetAudience": "Jugadores de pateadas en Barranquilla",
+    "requirements": ["Espacio negativo superior izquierdo para el titular", "Fotografía protagonista"]
+  },
+  "composition": {
+    "canvas": { "preset": "ig-portrait", "width": 1080, "height": 1350 },
+    "brandId": "bafut",
+    "backgroundColor": "#073828",
+    "layers": [
+      { "type": "image", "role": "background", "asset": "stadium", "bleed": true },
+      { "type": "overlay", "role": "overlay", "color": "#073828", "gradient": { "direction": "up", "opacity": 0.85 }, "bleed": true },
+      { "type": "image", "role": "hero", "asset": "hero-player", "position": "right", "sizeHint": { "width": 0.6, "height": 0.85 }, "shadow": { "color": "#000000", "opacity": 0.4, "blur": 24, "offsetY": 10 } },
+      { "type": "image", "role": "decorative", "asset": "football", "position": "bottom-right", "sizeHint": { "width": 0.22 }, "shadow": { "color": "#000000", "opacity": 0.35, "blur": 16 } },
+      { "type": "text", "role": "headline", "content": "TORNEO 2026", "position": "top-left", "colorFromBrand": "paper" },
+      { "type": "text", "role": "subheadline", "content": "FÚTBOL 5", "position": "top-left", "offset": { "y": 130 }, "colorFromBrand": "flood" },
+      { "type": "text", "role": "cta", "content": "INSCRIPCIONES ABIERTAS → bafut.macuttech.com", "position": "bottom-left", "colorFromBrand": "flood" },
+      { "type": "text", "role": "logo", "content": "BAFUT", "position": "top-right", "colorFromBrand": "chalk" }
+    ],
+    "assets": [
+      { "id": "stadium", "role": "background", "query": "football stadium night floodlights", "minResolution": { "width": 1600, "height": 900 } },
+      { "id": "hero-player", "role": "hero", "query": "football player action kick", "requiresBackgroundRemoval": true, "minResolution": { "width": 1200, "height": 1600 } },
+      { "id": "football", "role": "decorative", "query": "soccer ball close up", "requiresBackgroundRemoval": true }
+    ]
+  }
+}

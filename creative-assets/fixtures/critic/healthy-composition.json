@@ -1,0 +1,18 @@
+{
+  "canvas": { "preset": "ig-portrait", "width": 1080, "height": 1350 },
+  "brandId": "bafut",
+  "backgroundColor": "#073828",
+  "layers": [
+    { "type": "image", "role": "background", "asset": "stadium", "bleed": true },
+    { "type": "overlay", "role": "overlay", "color": "#073828", "gradient": { "direction": "up", "opacity": 0.8 }, "bleed": true },
+    { "type": "image", "role": "hero", "asset": "hero-player", "position": "right", "sizeHint": { "width": 0.6, "height": 0.85 } },
+    { "type": "text", "role": "headline", "content": "TORNEO 2026", "position": "top-left", "sizeHint": { "width": 0.45 }, "colorFromBrand": "paper" },
+    { "type": "text", "role": "subheadline", "content": "FÚTBOL 5", "position": "top-left", "sizeHint": { "width": 0.45 }, "offset": { "y": 130 }, "colorFromBrand": "flood" },
+    { "type": "text", "role": "cta", "content": "INSCRIPCIONES ABIERTAS", "position": "bottom-left", "sizeHint": { "width": 0.5 }, "colorFromBrand": "flood" },
+    { "type": "text", "role": "logo", "content": "BAFUT", "position": "top-right", "colorFromBrand": "chalk" }
+  ],
+  "assets": [
+    { "id": "stadium", "role": "background", "query": "football stadium night" },
+    { "id": "hero-player", "role": "hero", "query": "football player action", "requiresBackgroundRemoval": true }
+  ]
+}

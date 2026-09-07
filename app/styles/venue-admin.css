@@ -184,6 +184,59 @@
   color: var(--ink);
 }
 
+.badge.is-pending {
+  background: color-mix(in oklab, var(--flood) 35%, var(--paper));
+  color: var(--turf-deep);
+  border: 1px solid color-mix(in oklab, var(--flood) 60%, transparent);
+}
+
+.badge.is-approved {
+  background: var(--turf);
+  color: var(--chalk);
+}
+
+.badge.is-rejected {
+  background: var(--bib);
+  color: var(--bib-ink);
+}
+
+/* ——— Mis canchas (perfil del dueño) ——— */
+.owner-admin-note {
+  margin: 0 0 1.25rem;
+  padding: 0.6rem 0.9rem;
+  background: color-mix(in oklab, var(--turf) 8%, var(--paper));
+  border-left: 3px solid var(--turf);
+  font-size: 0.88rem;
+}
+
+.owner-admin-note a {
+  color: var(--turf-deep);
+  font-weight: 600;
+}
+
+.owner-empty {
+  display: grid;
+  gap: 1rem;
+  justify-items: start;
+  padding: 1.5rem;
+  background: var(--paper);
+  border: 1px dashed color-mix(in oklab, var(--ink) 30%, transparent);
+}
+
+.owner-empty p {
+  margin: 0;
+  max-width: 46ch;
+}
+
+.venue-admin-row .venue-admin-row-name:is(a) {
+  text-decoration: none;
+}
+
+.venue-admin-row .venue-admin-row-name:is(a):hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 /* ——— Preview flotante al hover ——— */
 .venue-admin-preview {
   position: fixed;

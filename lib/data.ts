@@ -406,3 +406,99 @@ export const getVenueClaimState = cache(async (venueId: string, userId: string |
     ownClaim: ownRows?.[0] ?? null,
   };
 });
+
+export type OwnedVenue = {
+  id: string;
+  name: string;
+  slug: string;
+  neighborhood: string | null;
+  sports: string[];
+  is_verified: boolean;
+  activePlan: string | null;
+  subscriptionExpiresAt: string | null;
+};
+
+/** Canchas donde el usuario es el dueño asignado (reclamo aprobado). */
+export const getOwnedVenues = cache(async (userId: string): Promise<OwnedVenue[]> => {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("venues")
+    .select(
+      `id, name, slug, neighborhood, sports, is_verified,
+       venue_subscriptions ( plan, status, expires_at )`,
+    )
+    .eq("owner_id", userId)
+    .order("name");
+  if (error) {
+    throw error;
+  }
+  return (data ?? []).map((venue) => {
+    const subs = (venue.venue_subscriptions ?? []) as Array<{
+      plan: string;
+      status: string;
+      expires_at: string;
+    }>;
+    const active = subs
+      .filter((s) => s.status === "active" && new Date(s.expires_at).getTime() > Date.now())
+      .sort((a, b) => new Date(b.expires_at).getTime() - new Date(a.expires_at).getTime())[0];
+    return {
+      id: venue.id,
+      name: venue.name,
+      slug: venue.slug,
+      neighborhood: venue.neighborhood,
+      sports: venue.sports,
+      is_verified: venue.is_verified,
+      activePlan: active?.plan ?? null,
+      subscriptionExpiresAt: active?.expires_at ?? null,
+    };
+  });
+});
+
+export type UserVenueClaim = {
+  id: string;
+  status: string;
+  created_at: string;
+  reviewed_at: string | null;
+  reject_reason: string | null;
+  venue: { name: string; slug: string } | null;
+};
+
+/** Historial de reclamos del usuario sobre canchas (RLS: solo los propios). */
+export const getUserVenueClaims = cache(async (userId: string): Promise<UserVenueClaim[]> => {  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("venue_claims")
+    .select(
+      `id, status, created_at, reviewed_at, reject_reason,
+       venues ( name, slug )`,
+    )
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
+  if (error) {
+    throw error;
+  }
+  return (data ?? []).map((row) => ({
+    id: row.id,
+    status: row.status,
+    created_at: row.created_at,
+    reviewed_at: row.reviewed_at,
+    reject_reason: row.reject_reason,
+    venue: row.venues as { name: string; slug: string } | null,
+  }));
+});
+
+/** Contadores para el acceso "Mis canchas" en el perfil. */
+export const getVenueOwnerSummary = cache(async (userId: string) => {
+  const supabase = await createClient();
+  const [owned, pending] = await Promise.all([
+    supabase.from("venues").select("id", { count: "exact", head: true }).eq("owner_id", userId),
+    supabase
+      .from("venue_claims")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", userId)
+      .eq("status", "pending"),
+  ]);
+  return {
+    ownedCount: owned.count ?? 0,
+    pendingCount: pending.count ?? 0,
+  };
+});

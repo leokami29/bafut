@@ -9,16 +9,26 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "search": "tsx --env-file-if-exists=.env.local creative-assets/src/cli.ts",
+    "asset:download": "tsx --env-file-if-exists=.env.local creative-assets/src/asset-cli.ts download",
+    "asset:info": "tsx --env-file-if-exists=.env.local creative-assets/src/asset-cli.ts info",
+    "asset:list": "tsx --env-file-if-exists=.env.local creative-assets/src/asset-cli.ts list",
+    "asset:process": "tsx --env-file-if-exists=.env.local creative-assets/src/asset-cli.ts process",
+    "campaign:create": "tsx --env-file-if-exists=.env.local creative-assets/src/asset-cli.ts campaign",
+    "mcp": "tsx --env-file-if-exists=.env.local creative-assets/src/mcp/server.ts"
   },
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.57.0",
     "maplibre-gl": "^5.9.0",
     "next": "16.3.4",
     "react": "19.2.8",
     "react-dom": "19.2.8",
-    "web-push": "^3.6.7"
+    "sharp": "^0.35.4",
+    "web-push": "^3.6.7",
+    "zod": "^4.5.4"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -31,6 +41,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.3.4",
     "tailwindcss": "^4",
+    "tsx": "^4.23.13",
     "typescript": "^5",
     "vitest": "^5.0.0"
   }

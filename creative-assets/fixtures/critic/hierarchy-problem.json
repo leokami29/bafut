@@ -1,0 +1,10 @@
+{
+  "canvas": { "width": 1080, "height": 1350 },
+  "layers": [
+    { "type": "image", "role": "background", "asset": "stadium", "bleed": true },
+    { "type": "text", "role": "headline", "content": "TORNEO 2026", "position": "top-left", "fontSize": 60 },
+    { "type": "text", "role": "subheadline", "content": "FÚTBOL 5", "position": "top-left", "offset": { "y": 100 }, "fontSize": 58 },
+    { "type": "text", "role": "cta", "content": "INSCRIPCIONES", "position": "bottom-left", "fontSize": 55 }
+  ],
+  "assets": [{ "id": "stadium", "role": "background", "query": "stadium" }]
+}

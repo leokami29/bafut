@@ -1,0 +1,8 @@
+{
+  "canvas": { "preset": "ig-portrait", "width": 1080, "height": 1350 },
+  "layers": [
+    { "type": "image", "role": "background", "asset": "stadium", "bleed": true },
+    { "type": "text", "role": "cta", "content": "INSCRIPCIONES ABIERTAS", "position": "bottom-left", "color": "#FFFFFF" }
+  ],
+  "assets": [{ "id": "stadium", "role": "background", "query": "stadium night" }]
+}

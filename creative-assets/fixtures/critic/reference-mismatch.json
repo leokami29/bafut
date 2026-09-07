@@ -1,0 +1,14 @@
+{
+  "canvas": { "width": 1080, "height": 1350 },
+  "layers": [
+    { "type": "image", "role": "background", "asset": "stadium", "bleed": true },
+    { "type": "overlay", "role": "overlay", "color": "#073828", "opacity": 0.6, "bleed": true },
+    { "type": "image", "role": "hero", "asset": "player", "position": "left", "sizeHint": { "width": 0.6, "height": 0.85 } },
+    { "type": "text", "role": "headline", "content": "TORNEO 2026", "position": "top-right", "color": "#FFFFFF" },
+    { "type": "text", "role": "cta", "content": "INSCRIPCIONES", "position": "bottom-left", "color": "#FFFFFF" }
+  ],
+  "assets": [
+    { "id": "stadium", "role": "background", "query": "stadium" },
+    { "id": "player", "role": "hero", "query": "player" }
+  ]
+}

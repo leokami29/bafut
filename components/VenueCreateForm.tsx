@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { sportLabel } from "@/lib/labels";
 import { SPORTS, type Sport } from "@/lib/sport-rules";
+import { VenueLocationPicker } from "@/components/VenueLocationPicker";
 import {
   KIND_OPTIONS,
   SURFACE_OPTIONS,
@@ -16,9 +17,10 @@ import {
 type VenueCreateFormProps = {
   cityId: string;
   cityName: string;
+  cityCenter: { lat: number; lng: number };
 };
 
-export function VenueCreateForm({ cityId, cityName }: VenueCreateFormProps) {
+export function VenueCreateForm({ cityId, cityName, cityCenter }: VenueCreateFormProps) {
   const router = useRouter();
   const [name, setName] = useState("");
   const [neighborhood, setNeighborhood] = useState("");
@@ -145,14 +147,18 @@ export function VenueCreateForm({ cityId, cityName }: VenueCreateFormProps) {
           <span>Dirección</span>
           <input value={address} onChange={(e) => setAddress(e.target.value)} maxLength={240} />
         </label>
-        <label className="venue-edit-field">
-          <span>Latitud *</span>
-          <input value={lat} onChange={(e) => setLat(e.target.value)} placeholder="10.96854" inputMode="decimal" required />
-        </label>
-        <label className="venue-edit-field">
-          <span>Longitud *</span>
-          <input value={lng} onChange={(e) => setLng(e.target.value)} placeholder="-74.78132" inputMode="decimal" required />
-        </label>
+        <div className="venue-edit-field venue-edit-wide">
+          <span>Ubicación de la cancha *</span>
+          <VenueLocationPicker
+            latStr={lat}
+            lngStr={lng}
+            onCoordsChange={(nextLat, nextLng) => {
+              setLat(nextLat);
+              setLng(nextLng);
+            }}
+            center={cityCenter}
+          />
+        </div>
         <fieldset className="venue-edit-field venue-edit-wide">
           <legend>Deportes *</legend>
           <div className="venue-edit-chips">
@@ -205,11 +211,6 @@ export function VenueCreateForm({ cityId, cityName }: VenueCreateFormProps) {
           <textarea rows={3} value={notes} onChange={(e) => setNotes(e.target.value)} maxLength={500} />
         </label>
       </div>
-
-      <p className="field-help">
-        Tip: en Google Maps, clic derecho sobre la cancha y copiá las coordenadas (“10.96854,
-        -74.78132”). Pegá la primera parte en Latitud y la segunda en Longitud.
-      </p>
 
       {error && (
         <p className="form-error" role="alert">

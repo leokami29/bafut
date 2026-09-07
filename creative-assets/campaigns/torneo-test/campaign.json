@@ -1,0 +1,37 @@
+{
+  "brief": {
+    "campaignId": "torneo-test",
+    "brandId": "bafut",
+    "objective": "Promocionar torneo",
+    "format": {
+      "width": 1080,
+      "height": 1350,
+      "preset": "ig-portrait"
+    },
+    "headline": "TORNEO 2026"
+  },
+  "composition": {
+    "canvas": {
+      "width": 1080,
+      "height": 1350,
+      "preset": "ig-portrait"
+    },
+    "brandId": "bafut",
+    "layers": [
+      {
+        "type": "image",
+        "role": "background",
+        "asset": "stadium"
+      }
+    ],
+    "assets": [
+      {
+        "id": "stadium",
+        "role": "background",
+        "query": "stadium night"
+      }
+    ]
+  },
+  "status": "needs_assets",
+  "createdAt": "2026-09-07T17:10:08.983Z"
+}

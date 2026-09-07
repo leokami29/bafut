@@ -104,3 +104,20 @@ export function parseCoordinate(raw: string): number | null {
   const n = Number(trimmed);
   return Number.isFinite(n) ? n : null;
 }
+
+/**
+ * Acepta el par que Google Maps copia al portapapeles:
+ * "10.96854, -74.78132" o "10.96854 -74.78132". Devuelve null si no son
+ * dos números en rango.
+ */
+export function parsePastedCoords(
+  raw: string,
+): { lat: number; lng: number } | null {
+  const parts = raw.trim().split(/[,;\s]+/).filter(Boolean);
+  if (parts.length !== 2) return null;
+  const lat = parseCoordinate(parts[0]);
+  const lng = parseCoordinate(parts[1]);
+  if (lat == null || lng == null) return null;
+  if (lat < -90 || lat > 90 || lng < -180 || lng > 180) return null;
+  return { lat, lng };
+}

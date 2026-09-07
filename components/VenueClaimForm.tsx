@@ -74,6 +74,9 @@ export function VenueClaimForm({ venueId, venueSlug }: VenueClaimFormProps) {
           No reclamés la misma cancha otra vez: el primer reclamo pendiente es el que se revisa.
         </p>
         <div className="empty-home-actions">
+          <Link href="/perfil/canchas" className="btn-flood">
+            Ver mis reclamos
+          </Link>
           <Link href={`/canchas/${venueSlug}`} className="btn-ghost empty-home-ghost">
             Volver a la cancha
           </Link>

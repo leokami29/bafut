@@ -1,0 +1,9 @@
+{
+  "canvas": { "width": 1080, "height": 1350 },
+  "layers": [
+    { "type": "image", "role": "background", "asset": "stadium", "bleed": true },
+    { "type": "text", "role": "headline", "content": "TORNEO", "rect": { "x": -60, "y": 20, "width": 700, "height": 90 } },
+    { "type": "text", "role": "cta", "content": "INSCRIPCIONES", "rect": { "x": 60, "y": 1300, "width": 500, "height": 60 } }
+  ],
+  "assets": [{ "id": "stadium", "role": "background", "query": "stadium" }]
+}

@@ -43,7 +43,11 @@ export default async function NewVenueAdminPage() {
       </header>
 
       {city ? (
-        <VenueCreateForm cityId={city.id} cityName={city.name} />
+        <VenueCreateForm
+          cityId={city.id}
+          cityName={city.name}
+          cityCenter={{ lat: city.lat, lng: city.lng }}
+        />
       ) : (
         <p className="form-error">No hay ciudad activa. Verificá el seed de cities.</p>
       )}

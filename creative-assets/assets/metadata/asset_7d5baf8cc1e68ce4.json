@@ -1,0 +1,49 @@
+{
+  "id": "asset_7d5baf8cc1e68ce4",
+  "provider": "pexels",
+  "providerAssetId": "1",
+  "originalFilename": "asset_6ba807b6b19cffa4.png",
+  "storedFilename": "asset_7d5baf8cc1e68ce4.webp",
+  "path": "assets/processed/asset_0a5cda0c053c07ab/asset_7d5baf8cc1e68ce4.webp",
+  "mimeType": "image/webp",
+  "extension": "webp",
+  "sizeBytes": 5776,
+  "width": 1080,
+  "height": 1080,
+  "aspectRatio": 1,
+  "sha256": "a9962fb91d7a86383a5749ebdd1b32b90e4303393f79c5973235d92ce593eebd",
+  "originalUrl": "https://example.com/ball.png",
+  "previewUrl": "",
+  "tags": [
+    "test-real"
+  ],
+  "downloadedAt": "2026-09-07T02:30:58.552Z",
+  "status": "ready",
+  "brandId": "bafut",
+  "hasTransparency": false,
+  "processing": {
+    "operations": [
+      {
+        "operation": "resize",
+        "tool": "sharp",
+        "options": {
+          "width": 1080
+        },
+        "timestamp": "2026-09-07T02:30:58.243Z",
+        "inputAssetId": "asset_6ba807b6b19cffa4",
+        "outputAssetId": "asset_0a5cda0c053c07ab"
+      },
+      {
+        "operation": "convert",
+        "tool": "sharp",
+        "options": {
+          "format": "webp"
+        },
+        "timestamp": "2026-09-07T02:30:58.570Z",
+        "inputAssetId": "asset_0a5cda0c053c07ab",
+        "outputAssetId": "asset_7d5baf8cc1e68ce4"
+      }
+    ]
+  },
+  "parentAssetId": "asset_0a5cda0c053c07ab"
+}

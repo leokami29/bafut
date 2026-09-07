@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ProfileForm } from "@/components/ProfileForm";
 import { requireUserId } from "@/lib/auth";
 import { DEFAULT_CITY_SLUG } from "@/lib/constants";
-import { getActiveCity, getCities, getHostPendingInbox, getProfile } from "@/lib/data";
+import { getActiveCity, getCities, getHostPendingInbox, getProfile, getVenueOwnerSummary } from "@/lib/data";
 import { profileCompletenessHint } from "@/lib/profile";
 import { safeNextPath } from "@/lib/safe-next";
 import { createClient } from "@/lib/supabase/server";
@@ -22,14 +22,16 @@ export default async function PerfilPage({
   const { userId } = await requireUserId("/perfil");
   const { next } = await searchParams;
   const nextPath = safeNextPath(next, "");
-  const [profile, cities, city, supabase, pendingInbox] = await Promise.all([
+  const [profile, cities, city, supabase, pendingInbox, venueSummary] = await Promise.all([
     getProfile(userId),
     getCities(),
     getActiveCity(),
     createClient(),
     getHostPendingInbox(userId),
+    getVenueOwnerSummary(userId),
   ]);
   const pendingCount = pendingInbox.count;
+  const { ownedCount, pendingCount: venuePendingClaims } = venueSummary;
 
   if (!profile) {
     return (
@@ -70,6 +72,19 @@ export default async function PerfilPage({
             {pendingCount > 0
               ? "Tenés pedidos por revisar — entrá al partido"
               : "Partidos que organizás y cupos que pediste"}
+          </span>
+        </Link>
+        <Link href="/perfil/canchas" className="profile-nav-card">
+          <span className="profile-nav-title">Mis canchas</span>
+          {(ownedCount > 0 || venuePendingClaims > 0) && (
+            <span className="profile-nav-badge">{ownedCount + venuePendingClaims}</span>
+          )}
+          <span className="profile-nav-desc">
+            {ownedCount > 0
+              ? `${ownedCount} ${ownedCount === 1 ? "cancha a tu nombre" : "canchas a tu nombre"}${venuePendingClaims > 0 ? ` · ${venuePendingClaims} en revisión` : ""}`
+              : venuePendingClaims > 0
+                ? `${venuePendingClaims} ${venuePendingClaims === 1 ? "reclamo esperando revisión" : "reclamos esperando revisión"}`
+                : "Reclamá tu cancha y gestioná su ficha"}
           </span>
         </Link>
         <Link href="/perfil/alertas" className="profile-nav-card">

@@ -529,6 +529,135 @@
   color: var(--ink);
 }
 
+/* —— Selector de ubicación con mapa (crear/editar cancha) —— */
+.venue-loc-picker {
+  display: grid;
+  gap: 0.65rem;
+  min-width: 0;
+}
+
+.venue-loc-hint {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  color: color-mix(in oklab, var(--ink) 68%, transparent);
+}
+
+.venue-loc-map {
+  width: 100%;
+  height: min(46vh, 340px);
+  min-height: 240px;
+  border: 1px solid color-mix(in oklab, var(--turf) 35%, transparent);
+  background: color-mix(in oklab, var(--turf) 4%, var(--paper));
+}
+
+.venue-loc-map-loading {
+  display: grid;
+  place-items: center;
+  color: color-mix(in oklab, var(--ink) 55%, transparent);
+  font-size: 0.92rem;
+}
+
+.venue-loc-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  align-items: center;
+}
+
+.venue-loc-btn {
+  min-height: 2.75rem;
+  padding: 0.5rem 0.95rem;
+  border: 1px solid color-mix(in oklab, var(--ink) 30%, transparent);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border-radius: 0;
+}
+
+.venue-loc-btn:hover:not(:disabled) {
+  border-color: var(--turf);
+  background: color-mix(in oklab, var(--turf) 8%, transparent);
+}
+
+.venue-loc-btn:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.venue-loc-paste {
+  display: inline-flex;
+  flex: 1 1 18rem;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.venue-loc-paste input {
+  flex: 1;
+  min-width: 0;
+  min-height: 2.75rem;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid color-mix(in oklab, var(--ink) 22%, transparent);
+  border-bottom-width: 2px;
+  background: color-mix(in oklab, var(--paper) 70%, white);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.92rem;
+  border-radius: 0;
+}
+
+.venue-loc-paste input:focus-visible {
+  outline: 2px solid var(--flood);
+  outline-offset: 1px;
+  border-color: var(--turf);
+}
+
+.venue-loc-fine {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.venue-loc-fine label {
+  display: grid;
+  gap: 0.3rem;
+  font-size: 0.92rem;
+  min-width: 0;
+}
+
+.venue-loc-fine label > span {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--ink) 62%, transparent);
+}
+
+.venue-loc-fine input {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid color-mix(in oklab, var(--ink) 20%, transparent);
+  border-bottom-width: 2px;
+  background: color-mix(in oklab, var(--paper) 70%, white);
+  color: var(--ink);
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  border-radius: 0;
+}
+
+.venue-loc-fine input:focus-visible {
+  outline: 2px solid var(--flood);
+  outline-offset: 1px;
+  border-color: var(--turf);
+}
+
+.venue-loc-fine input[aria-invalid="true"] {
+  border-bottom-color: var(--bib);
+}
+
 .venue-hero h1 {
   margin: 0.35rem 0 0.65rem;
   line-height: 1.08;

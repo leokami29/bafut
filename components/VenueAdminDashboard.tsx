@@ -22,6 +22,7 @@ import {
   venuePhotoPublicUrl,
 } from "@/lib/venue-photos";
 import { isRateLimitError } from "@/lib/rate-limit";
+import { VenueLocationPicker } from "@/components/VenueLocationPicker";
 import type { Venue } from "@/lib/types";
 import {
   VenuePremiumPaywall,
@@ -48,6 +49,8 @@ type VenueAdminDashboardProps = {
   latestRequest?: VenueSubRequestSummary | null;
   /** Feature flag premium_paywall. */
   premiumPaywallEnabled?: boolean;
+  /** Centro de la ciudad activa para el picker de ubicación (fallback: coords actuales). */
+  cityCenter?: { lat: number; lng: number };
 };
 
 type FormState = {
@@ -109,6 +112,7 @@ export function VenueAdminDashboard({
   pendingRequest = null,
   latestRequest = null,
   premiumPaywallEnabled = true,
+  cityCenter,
 }: VenueAdminDashboardProps) {
   const router = useRouter();
   const original = useMemo(() => toFormState(venue), [venue]);
@@ -259,7 +263,10 @@ export function VenueAdminDashboard({
   }
 
   async function unclaimVenue() {
-    if (!confirm("¿Liberar esta cancha? Perderás el sello de verificada y el acceso al panel.")) return;
+    const warn = activeSubscription
+      ? "¿Liberar esta cancha? Perderás la verificada, el acceso al panel y el tiempo Premium activo que no hayas usado (queda cancelado; cualquier rembolso lo resuelve un admin de BaFut)."
+      : "¿Liberar esta cancha? Perderás el sello de verificada y el acceso al panel.";
+    if (!confirm(warn)) return;
     const supabase = createClient();
     const { error } = await supabase.rpc("unclaim_venue", { p_venue_id: venue.id });
     if (error) {
@@ -358,14 +365,18 @@ export function VenueAdminDashboard({
               inputMode="url"
             />
           </label>
-          <label className="venue-edit-field">
-            <span>Latitud *</span>
-            <input value={form.lat} onChange={(e) => set("lat", e.target.value)} inputMode="decimal" />
-          </label>
-          <label className="venue-edit-field">
-            <span>Longitud *</span>
-            <input value={form.lng} onChange={(e) => set("lng", e.target.value)} inputMode="decimal" />
-          </label>
+          <div className="venue-edit-field venue-edit-wide">
+            <span>Ubicación de la cancha *</span>
+            <VenueLocationPicker
+              latStr={form.lat}
+              lngStr={form.lng}
+              onCoordsChange={(nextLat, nextLng) => {
+                set("lat", nextLat);
+                set("lng", nextLng);
+              }}
+              center={cityCenter ?? { lat: venue.lat, lng: venue.lng }}
+            />
+          </div>
           <fieldset className="venue-edit-field venue-edit-wide">
             <legend>Deportes *</legend>
             <div className="venue-edit-chips">
@@ -545,7 +556,9 @@ export function VenueAdminDashboard({
           <h2 className="subhead">Zona de peligro</h2>
           <div className="venue-admin-actions">
             <button type="button" className="btn-ghost" onClick={() => void unclaimVenue()}>
-              Liberar esta cancha (pierde la verificada)
+              {activeSubscription
+                ? "Liberar cancha (pierde verificada y Premium)"
+                : "Liberar esta cancha (pierde la verificada)"}
             </button>
             {isAdmin ? (
               <button type="button" className="btn-bib" onClick={() => void deleteVenue()}>
