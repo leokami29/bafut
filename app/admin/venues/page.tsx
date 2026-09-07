@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { VenueAdminPanel } from "@/components/VenueAdminPanel";
+import { AdminScoreboard } from "@/components/AdminScoreboard";
 import { requireUserId } from "@/lib/auth";
+import { getAdminQueueCounts } from "@/lib/admin-queues";
+import { getIsAdmin } from "@/lib/data";
 import { createClient } from "@/lib/supabase/server";
 import { robotsNoIndex } from "@/lib/seo";
 
@@ -13,16 +16,7 @@ export const metadata: Metadata = {
 export default async function AdminVenuesPage() {
   const { userId } = await requireUserId("/admin/venues");
 
-  const supabase = await createClient();
-
-  // Verificar que el usuario sea admin
-  const { data: adminData } = await supabase
-    .from("admins")
-    .select("user_id")
-    .eq("user_id", userId)
-    .single();
-
-  if (!adminData) {
+  if (!(await getIsAdmin(userId))) {
     return (
       <main className="page page-narrow" id="main">
         <header className="page-head">
@@ -35,6 +29,8 @@ export default async function AdminVenuesPage() {
       </main>
     );
   }
+
+  const supabase = await createClient();
 
   // Obtener todas las canchas con información de suscripción
   const { data: venues, error } = await supabase
@@ -61,23 +57,18 @@ export default async function AdminVenuesPage() {
     );
   }
 
-  // Cola de moderación de reclamos (dueños que reclaman su cancha).
-  const { count: pendingClaims } = await supabase
-    .from("venue_claims")
-    .select("id", { count: "exact", head: true })
-    .eq("status", "pending");
+  const counts = await getAdminQueueCounts();
 
   return (
-    <main className="page page-nuevo-partido" id="main">
-      <header className="page-head match-compose-head">
-        <p className="eyebrow">Panel de administración</p>
+    <main className="page page-admin" id="main">
+      <AdminScoreboard counts={counts} />
+
+      <header className="page-head page-head-compact">
+        <p className="eyebrow">Directorio</p>
         <h1>Gestión de canchas</h1>
         <p className="lede">
-          Administrá las canchas, suscripciones y verificaciones de BaFut.{" "}
-          <Link href="/admin/claims">
-            Reclamos pendientes
-            {pendingClaims ? ` (${pendingClaims})` : ""}
-          </Link>
+          {counts.totalVenues} fichas: verificación, suscripciones y estado. Pasá el cursor por
+          una fila para ver la ficha completa.
         </p>
       </header>
 

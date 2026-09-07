@@ -4,7 +4,9 @@ import {
   AdminRenewalsPanel,
   type RenewalRow,
 } from "@/components/AdminRenewalsPanel";
+import { AdminScoreboard } from "@/components/AdminScoreboard";
 import { requireUserId } from "@/lib/auth";
+import { getAdminQueueCounts } from "@/lib/admin-queues";
 import { renewalWhatsAppHref, renewalWhatsAppMessage } from "@/lib/renewals";
 import { createClient } from "@/lib/supabase/server";
 import { normalizeWhatsapp } from "@/lib/whatsapp-contact";
@@ -101,17 +103,22 @@ export default async function AdminRenewalsPage() {
     });
   }
 
+  const t7 = rows.filter((r) => r.reminder_type === "t7").length;
+  const t1 = rows.filter((r) => r.reminder_type === "t1").length;
+  const noWa = rows.filter((r) => !r.whatsapp).length;
+  const counts = await getAdminQueueCounts();
+
   return (
-    <main className="page page-nuevo-partido" id="main">
-      <p className="venue-back">
-        <Link href="/admin">← Admin</Link>
-      </p>
-      <header className="page-head match-compose-head">
+    <main className="page page-admin" id="main">
+      <AdminScoreboard counts={counts} />
+
+      <header className="page-head page-head-compact">
         <p className="eyebrow">Billing · renovaciones</p>
         <h1>Cola de renovaciones</h1>
         <p className="lede">
-          T-7 y T-1 de Premium. Preferí WhatsApp al dueño; no dependemos del SMTP free de
-          Supabase. Email solo si configurás Resend.
+          {rows.length === 0
+            ? "Nada por vencer esta semana."
+            : `${t7} avisos T-7 y ${t1} avisos T-1.${noWa > 0 ? ` ${noWa} sin WhatsApp cargado — conseguí el número antes de avisar.` : " Preferí WhatsApp al dueño."}`}
         </p>
       </header>
 

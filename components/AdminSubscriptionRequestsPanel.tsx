@@ -1,11 +1,12 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useEffect, useActionState, useState } from "react";
 import { trackSubActivated } from "@/lib/analytics";
 import { formatWhen } from "@/lib/format";
 import { formatCop, paymentMethodLabel } from "@/lib/premium-payment";
 import { createClient } from "@/lib/supabase/client";
 import { SUBSCRIPTION_PROOFS_BUCKET } from "@/lib/subscription-proofs";
+import type { Aged } from "@/lib/admin-queues";
 import {
   approveSubscriptionRequestAction,
   rejectSubscriptionRequestAction,
@@ -28,7 +29,7 @@ export type AdminSubscriptionRequest = {
   duration_days: number;
   venues: { name: string; slug: string; neighborhood: string | null } | null;
   profiles: { display_name: string } | null;
-};
+} & Aged;
 
 function ProofLink({ path }: { path: string }) {
   const [url, setUrl] = useState<string | null>(null);
@@ -57,7 +58,12 @@ function ProofLink({ path }: { path: string }) {
   if (error) return <span className="form-error">{error}</span>;
   if (!url) return <span className="field-help">Cargando comprobante…</span>;
   return (
-    <a href={url} target="_blank" rel="noopener noreferrer" className="btn-ghost">
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="btn-flood planilla-proof-btn"
+    >
       Ver comprobante
     </a>
   );
@@ -80,6 +86,7 @@ function RequestRow({
   );
   const busy = approvePending || rejectPending;
   const pending = request.status === "pending";
+  const urgency = request.urgency;
 
   useEffect(() => {
     if (!approveState?.ok) return;
@@ -91,124 +98,136 @@ function RequestRow({
   }, [approveState?.ok, request.venue_id, request.plan, request.payment_method]);
 
   return (
-    <li className="claim-review-row">
-      <div className="claim-review-head">
-        <h3>
-          <a
-            href={`/canchas/${request.venues?.slug ?? ""}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {request.venues?.name ?? "Cancha eliminada"}
-          </a>
-          {request.venues?.neighborhood ? (
-            <span className="claim-review-neighborhood">
-              {" "}
-              · {request.venues.neighborhood}
+    <li
+      className={`planilla planilla-${request.status}`}
+      data-urgency={pending ? urgency : undefined}
+    >
+      <header className="planilla-head">
+        <span className="planilla-rail" aria-hidden="true" />
+        <div className="planilla-title">
+          <h3>
+            <a
+              href={`/canchas/${request.venues?.slug ?? ""}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {request.venues?.name ?? "Cancha eliminada"}
+            </a>
+          </h3>
+          <p className="planilla-sub">
+            {request.venues?.neighborhood ? `${request.venues.neighborhood} · ` : ""}
+            {request.profiles?.display_name ?? "—"} · {formatWhen(request.created_at, timezone)}
+          </p>
+        </div>
+        <div className="planilla-tags">
+          <span className="planilla-price">{formatCop(request.amount_cop)}</span>
+          {pending ? (
+            <span className={`planilla-age planilla-age-${urgency}`}>
+              en cola {request.ageLabel}
             </span>
-          ) : null}
-        </h3>
-        <p className="claim-review-meta">
-          {request.profiles?.display_name ?? "—"} ·{" "}
-          {formatWhen(request.created_at, timezone)}
-          {pending ? null : (
-            <span className={`claim-review-outcome ${request.status}`}>
-              {request.status === "approved" ? " · Aprobado" : " · Rechazado"}
+          ) : (
+            <span className={`planilla-stamp planilla-stamp-${request.status}`}>
+              {request.status === "approved" ? "Activado" : "Rechazado"}
             </span>
           )}
-        </p>
-      </div>
+        </div>
+      </header>
 
-      <dl className="claim-review-facts">
-        <div>
-          <dt>Plan</dt>
-          <dd>{request.plan}</dd>
-        </div>
-        <div>
-          <dt>Método</dt>
-          <dd>{paymentMethodLabel(request.payment_method)}</dd>
-        </div>
-        <div>
-          <dt>Monto</dt>
-          <dd>{formatCop(request.amount_cop)}</dd>
-        </div>
-        <div>
-          <dt>Referencia</dt>
-          <dd>{request.payment_reference || "—"}</dd>
-        </div>
-        <div>
-          <dt>Duración</dt>
-          <dd>{request.duration_days} días</dd>
-        </div>
-        {request.invoice_number ? (
+      <details className="planilla-body" open={pending}>
+        <summary className="planilla-summary">
+          <span className="planilla-summary-label">Pago · {request.plan}</span>
+          <span className="planilla-summary-hint" aria-hidden="true">
+            desplegar
+          </span>
+        </summary>
+
+        <div className="planilla-content">
+        <dl className="planilla-facts">
           <div>
-            <dt>Factura</dt>
-            <dd>
-              <a href={`/admin/subscriptions/${request.id}/invoice`}>
-                {request.invoice_number}
-              </a>
-            </dd>
+            <dt>Método</dt>
+            <dd>{paymentMethodLabel(request.payment_method)}</dd>
           </div>
-        ) : null}
-        {request.reject_reason ? (
-          <div className="claim-review-note">
-            <dt>Motivo rechazo</dt>
-            <dd>{request.reject_reason}</dd>
+          <div>
+            <dt>Referencia</dt>
+            <dd>{request.payment_reference || "—"}</dd>
           </div>
-        ) : null}
-      </dl>
+          <div>
+            <dt>Duración</dt>
+            <dd>{request.duration_days} días</dd>
+          </div>
+          {request.invoice_number ? (
+            <div>
+              <dt>Factura</dt>
+              <dd>
+                <a href={`/admin/subscriptions/${request.id}/invoice`}>
+                  {request.invoice_number}
+                </a>
+              </dd>
+            </div>
+          ) : null}
+          {request.reject_reason ? (
+            <div className="planilla-fact-note">
+              <dt>Motivo rechazo</dt>
+              <dd>{request.reject_reason}</dd>
+            </div>
+          ) : null}
+        </dl>
 
-      <div className="claim-review-actions">
-        <ProofLink path={request.proof_path} />
-        {pending ? (
-          <>
-            <form action={approveAction}>
-              <input type="hidden" name="request_id" value={request.id} />
-              <label className="claim-duration-field">
-                <span className="sr-only">Días de suscripción</span>
-                <input
-                  type="number"
-                  name="duration_days"
-                  min={1}
-                  max={366}
-                  defaultValue={request.duration_days}
-                  disabled={busy}
-                  aria-label="Días de suscripción"
-                />
-              </label>
-              <button type="submit" className="btn-flood" disabled={busy}>
-                Aprobar y activar
-              </button>
-            </form>
-            <details className="claim-reject-details">
-              <summary className="btn-bib claim-reject-summary">Rechazar</summary>
-              <form action={rejectAction} className="claim-reject-form">
-                <input type="hidden" name="request_id" value={request.id} />
-                <label>
-                  <span className="sr-only">Motivo del rechazo</span>
-                  <input
-                    type="text"
-                    name="reason"
-                    maxLength={300}
-                    placeholder="Motivo (opcional)"
-                    disabled={busy}
-                  />
-                </label>
-                <button type="submit" className="btn-bib" disabled={busy}>
-                  Confirmar rechazo
-                </button>
-              </form>
-            </details>
-          </>
-        ) : request.status === "approved" && request.invoice_number ? (
-          <a href={`/admin/subscriptions/${request.id}/invoice`} className="btn-ghost">
-            Ver factura
-          </a>
-        ) : null}
-      </div>
-      {approveState?.error ? <p className="form-error">{approveState.error}</p> : null}
-      {rejectState?.error ? <p className="form-error">{rejectState.error}</p> : null}
-      {approveState?.ok ? <p className="form-ok">Premium activado.</p> : null}
+        <div className="planilla-actions">
+          <div className="planilla-action-row">
+            <ProofLink path={request.proof_path} />
+            {pending ? (
+              <>
+                <form action={approveAction}>
+                  <input type="hidden" name="request_id" value={request.id} />
+                  <label className="planilla-duration">
+                    <span className="sr-only">Días de suscripción</span>
+                    <input
+                      type="number"
+                      name="duration_days"
+                      min={1}
+                      max={366}
+                      defaultValue={request.duration_days}
+                      disabled={busy}
+                      aria-label="Días de suscripción"
+                    />
+                  </label>
+                  <button type="submit" className="btn-flood" disabled={busy}>
+                    {approvePending ? "Activando…" : "Aprobar y activar"}
+                  </button>
+                </form>
+                <details className="planilla-reject">
+                  <summary className="planilla-reject-summary">Rechazar</summary>
+                  <form action={rejectAction} className="planilla-reject-form">
+                    <input type="hidden" name="request_id" value={request.id} />
+                    <label>
+                      <span className="sr-only">Motivo del rechazo</span>
+                      <input
+                        type="text"
+                        name="reason"
+                        maxLength={300}
+                        placeholder="Motivo (opcional)"
+                        disabled={busy}
+                      />
+                    </label>
+                    <button type="submit" className="btn-bib" disabled={busy}>
+                      Confirmar rechazo
+                    </button>
+                  </form>
+                </details>
+              </>
+            ) : request.status === "approved" && request.invoice_number ? (
+              <a href={`/admin/subscriptions/${request.id}/invoice`} className="btn-ghost">
+                Ver factura
+              </a>
+            ) : null}
+          </div>
+          {approveState?.error ? <p className="form-error">{approveState.error}</p> : null}
+          {rejectState?.error ? <p className="form-error">{rejectState.error}</p> : null}
+          {approveState?.ok ? <p className="form-ok">Premium activado.</p> : null}
+        </div>
+        </div>
+      </details>
     </li>
   );
 }
@@ -223,11 +242,16 @@ export function AdminSubscriptionRequestsPanel({
   timezone,
 }: AdminSubscriptionRequestsPanelProps) {
   if (requests.length === 0) {
-    return <p className="venue-info-empty">No hay solicitudes Premium para revisar.</p>;
+    return (
+      <div className="admin-empty" role="status">
+        <p className="admin-empty-title">Nada por cobrar todavía</p>
+        <p>No hay solicitudes Premium esperando revisión en esta vista.</p>
+      </div>
+    );
   }
 
   return (
-    <ul className="claim-review-list">
+    <ul className="planilla-list">
       {requests.map((request) => (
         <RequestRow key={request.id} request={request} timezone={timezone} />
       ))}

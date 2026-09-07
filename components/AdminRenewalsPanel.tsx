@@ -37,35 +37,50 @@ export function AdminRenewalsPanel({ rows }: { rows: RenewalRow[] }) {
   );
 
   if (!rows.length) {
-    return <p className="empty">No hay renovaciones pendientes en la cola.</p>;
+    return (
+      <div className="admin-empty" role="status">
+        <p className="admin-empty-title">Sin avisos en la cola</p>
+        <p>
+          No hay renovaciones T-7 / T-1 pendientes. El cron las carga cuando un Premium está
+          por vencer.
+        </p>
+      </div>
+    );
   }
 
   return (
-    <div className="admin-renewals">
-      <ul className="admin-renewals-list">
+    <>
+      <ul className="renewal-list">
         {rows.map((row) => (
-          <li key={row.id} className="admin-renewals-item">
-            <div>
-              <strong>
-                {row.venue_name} · {row.reminder_type === "t7" ? "T-7" : "T-1"}
-              </strong>
+          <li key={row.id} className="renewal-card">
+            <div className="renewal-main">
+              <p className="renewal-kicker">
+                {row.reminder_type === "t7" ? "T-7" : "T-1"} ·{" "}
+                {new Date(row.expires_at).toLocaleDateString("es-CO", {
+                  day: "numeric",
+                  month: "short",
+                })}
+              </p>
+              <a
+                className="renewal-venue"
+                href={`/canchas/${row.venue_slug}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {row.venue_name}
+              </a>
               <p className="field-help">
-                Vence {new Date(row.expires_at).toLocaleDateString("es-CO")} · canal{" "}
-                {row.channel}
-                {row.whatsapp ? " · WA listo" : " · sin WhatsApp"}
+                {row.whatsapp
+                  ? `Vence ${new Date(row.expires_at).toLocaleDateString("es-CO")} · WhatsApp ${row.whatsapp}`
+                  : "Vence pronto · sin número de contacto cargado"}
               </p>
               {row.meta?.message_preview ? (
-                <p className="field-help">{row.meta.message_preview}</p>
+                <p className="renewal-preview">{row.meta.message_preview}</p>
               ) : null}
             </div>
-            <div className="admin-renewals-actions">
+            <div className="renewal-actions">
               {row.waHref ? (
-                <a
-                  className="btn-bib"
-                  href={row.waHref}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
+                <a className="btn-flood" href={row.waHref} target="_blank" rel="noopener noreferrer">
                   Abrir WhatsApp
                 </a>
               ) : null}
@@ -88,6 +103,6 @@ export function AdminRenewalsPanel({ rows }: { rows: RenewalRow[] }) {
       {sentState?.error || skipState?.error ? (
         <p className="form-error">{sentState?.error ?? skipState?.error}</p>
       ) : null}
-    </div>
+    </>
   );
 }

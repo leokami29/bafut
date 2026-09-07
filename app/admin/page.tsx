@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getIsAdmin } from "@/lib/data";
+import { AdminScoreboard } from "@/components/AdminScoreboard";
 import { requireUserId } from "@/lib/auth";
-import { createClient } from "@/lib/supabase/server";
+import { formatOldestDetail, getAdminQueueCounts } from "@/lib/admin-queues";
+import { getIsAdmin } from "@/lib/data";
 import { robotsNoIndex } from "@/lib/seo";
 
 export const metadata: Metadata = {
@@ -27,75 +28,92 @@ export default async function AdminHomePage() {
     );
   }
 
-  const supabase = await createClient();
-  const { count: pendingClaims } = await supabase
-    .from("venue_claims")
-    .select("id", { count: "exact", head: true })
-    .eq("status", "pending");
-  const { count: pendingPremium } = await supabase
-    .from("venue_subscription_requests")
-    .select("id", { count: "exact", head: true })
-    .eq("status", "pending");
-  const { count: pendingRenewals } = await supabase
-    .from("subscription_renewal_reminders")
-    .select("id", { count: "exact", head: true })
-    .eq("status", "pending");
-  const { count: totalVenues } = await supabase
-    .from("venues")
-    .select("id", { count: "exact", head: true });
+  const counts = await getAdminQueueCounts();
+
+  const queues = [
+    {
+      href: "/admin/claims",
+      eyebrow: "Moderación",
+      title: "Reclamos de cancha",
+      count: counts.pendingClaims,
+      detail:
+        counts.pendingClaims === 0
+          ? "Cola al día: no hay reclamos esperando."
+          : formatOldestDetail(
+              counts.oldestClaim,
+              "verificá la prueba antes de aprobar.",
+            ),
+      action: counts.pendingClaims > 0 ? "Atender la cola" : "Ver resueltos (24 h)",
+    },
+    {
+      href: "/admin/subscriptions",
+      eyebrow: "Pagos",
+      title: "Solicitudes Premium",
+      count: counts.pendingSubRequests,
+      detail:
+        counts.pendingSubRequests === 0
+          ? "Ningún comprobante esperando revisión."
+          : formatOldestDetail(
+              counts.oldestSubRequest,
+              "comprobantes Nequi/banco por validar.",
+            ),
+      action: counts.pendingSubRequests > 0 ? "Revisar comprobantes" : "Ver histórico",
+    },
+    {
+      href: "/admin/renewals",
+      eyebrow: "Billing",
+      title: "Renovaciones por avisar",
+      count: counts.pendingRenewals,
+      detail:
+        counts.pendingRenewals === 0
+          ? "Sin avisos T-7 / T-1 pendientes."
+          : "Avisá por WhatsApp a los dueños con Premium por vencer.",
+      action: counts.pendingRenewals > 0 ? "Ver la cola" : "Ver la cola",
+    },
+  ];
 
   return (
-    <main className="page page-narrow" id="main">
-      <header className="page-head">
-        <p className="eyebrow">BaFut · uso interno</p>
-        <h1>Panel de administración</h1>
-        <p>
-          Moderación de reclamos y gestión de fichas. Solo visible para editores de BaFut.
+    <main className="page page-admin" id="main">
+      <header className="page-head page-head-compact">
+        <p className="eyebrow">BaFut · mesa de control</p>
+        <h1>Buen día, editor.</h1>
+        <p className="lede">
+          {counts.pendingClaims + counts.pendingSubRequests + counts.pendingRenewals > 0
+            ? `Hay ${counts.pendingClaims + counts.pendingSubRequests + counts.pendingRenewals} cosas esperando tu mano.`
+            : "Todo tranquilo: no hay nada esperando revisión."}{" "}
+            {counts.totalVenues} canchas en el directorio.
         </p>
       </header>
 
-      <div className="profile-nav-grid">
-        <Link href="/admin/claims" className="profile-nav-card">
-          <span className="profile-nav-title">Reclamos pendientes</span>
-          {pendingClaims ? <span className="profile-nav-badge">{pendingClaims}</span> : null}
-          <span className="profile-nav-desc">
-            Dueños que reclamaron su cancha. Verificá y aprobá o rechazá.
-          </span>
-        </Link>
-        <Link href="/admin/subscriptions" className="profile-nav-card">
-          <span className="profile-nav-title">Solicitudes Premium</span>
-          {pendingPremium ? (
-            <span className="profile-nav-badge">{pendingPremium}</span>
-          ) : null}
-          <span className="profile-nav-desc">
-            Comprobantes Nequi/banco: aprobar activa la suscripción y genera factura.
-          </span>
-        </Link>
-        <Link href="/admin/renewals" className="profile-nav-card">
-          <span className="profile-nav-title">Renovaciones</span>
-          {pendingRenewals ? (
-            <span className="profile-nav-badge">{pendingRenewals}</span>
-          ) : null}
-          <span className="profile-nav-desc">
-            Cola T-7 / T-1: avisá por WhatsApp a dueños con Premium por vencer.
-          </span>
-        </Link>
-        <Link href="/admin/venues" className="profile-nav-card">
-          <span className="profile-nav-title">Gestión de canchas</span>
-          <span className="profile-nav-desc">
-            {totalVenues ?? 0} fichas: verificación, suscripciones y estado de cada cancha.
-          </span>
-        </Link>
-        <Link href="/admin/venues/nuevo" className="profile-nav-card">
-          <span className="profile-nav-title">Crear cancha</span>
-          <span className="profile-nav-desc">
-            Alta de una ficha nueva en el directorio (nombre, coords, deportes).
-          </span>
-        </Link>
-      </div>
+      <AdminScoreboard counts={counts} />
 
-      <p className="foot-link">
-        <Link href="/">← Volver al sitio</Link>
+      <ul className="admin-queues">
+        {queues.map((queue) => (
+          <li key={queue.href}>
+            <Link
+              href={queue.href}
+              className={`admin-queue-card${queue.count > 0 ? " is-hot" : ""}`}
+            >
+              <p className="admin-queue-eyebrow">{queue.eyebrow}</p>
+              <div className="admin-queue-top">
+                <span className="admin-queue-num">{String(queue.count).padStart(2, "0")}</span>
+                <div className="admin-queue-heading">
+                  <strong>{queue.title}</strong>
+                  <span className="admin-queue-detail">{queue.detail}</span>
+                </div>
+              </div>
+              <span className="admin-queue-action">{queue.action} →</span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+
+      <p className="admin-quiet-links">
+        <Link href="/admin/venues">Gestión de canchas ({counts.totalVenues})</Link>
+        {" · "}
+        <Link href="/admin/venues/nuevo">Crear cancha</Link>
+        {" · "}
+        <Link href="/">Volver al sitio</Link>
       </p>
     </main>
   );

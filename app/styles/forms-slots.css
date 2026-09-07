@@ -305,8 +305,7 @@
 }
 
 /* Alertas / renovaciones (Fase C) */
-.match-alerts-list,
-.admin-renewals-list {
+.match-alerts-list {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -314,8 +313,7 @@
   gap: 0.85rem;
 }
 
-.match-alerts-item,
-.admin-renewals-item {
+.match-alerts-item {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
@@ -325,8 +323,7 @@
   border-bottom: 1px solid color-mix(in oklab, var(--ink) 12%, transparent);
 }
 
-.match-alerts-item-actions,
-.admin-renewals-actions {
+.match-alerts-item-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem;

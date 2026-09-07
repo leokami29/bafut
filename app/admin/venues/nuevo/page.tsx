@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { VenueCreateForm } from "@/components/VenueCreateForm";
+import { AdminScoreboard } from "@/components/AdminScoreboard";
 import { requireUserId } from "@/lib/auth";
+import { getAdminQueueCounts } from "@/lib/admin-queues";
 import { getActiveCity, getIsAdmin } from "@/lib/data";
 import { robotsNoIndex } from "@/lib/seo";
 
@@ -28,14 +30,13 @@ export default async function NewVenueAdminPage() {
   }
 
   const city = await getActiveCity();
+  const counts = await getAdminQueueCounts();
 
   return (
-    <main className="page page-nuevo-partido" id="main">
-      <p className="venue-back">
-        <Link href="/admin/venues">← Canchas</Link>
-      </p>
-      <header className="page-head match-compose-head">
-        <p className="eyebrow">Admin · {city?.name ?? "BaFut"}</p>
+    <main className="page page-admin" id="main">
+      <AdminScoreboard counts={counts} />
+      <header className="page-head page-head-compact">
+        <p className="eyebrow">Alta · {city?.name ?? "BaFut"}</p>
         <h1>Crear cancha</h1>
         <p className="lede">
           Alta de una ficha nueva en el directorio. Los campos marcados * son obligatorios.
