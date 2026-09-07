@@ -1561,6 +1561,15 @@ export type Database = {
         Returns: string
       }
       delete_price_slot: { Args: { p_slot_id: string }; Returns: undefined }
+      update_price_slot: {
+        Args: {
+          p_end_time: string
+          p_price_cop: number
+          p_slot_id: string
+          p_start_time: string
+        }
+        Returns: undefined
+      }
       set_price_min: {
         Args: { p_min_minutes: number; p_sport: string; p_venue_id: string }
         Returns: undefined

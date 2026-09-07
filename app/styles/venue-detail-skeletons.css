@@ -670,6 +670,329 @@
   color: color-mix(in oklab, var(--ink) 62%, transparent);
 }
 
+/* —— Modal de edición de franjas —— */
+.slot-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: color-mix(in oklab, var(--ink) 60%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.slot-modal {
+  background: var(--paper);
+  padding: 2rem;
+  border-radius: 4px;
+  min-width: 24rem;
+  max-width: 90vw;
+  box-shadow: 0 8px 32px color-mix(in oklab, var(--ink) 30%, transparent);
+}
+
+.slot-modal-title {
+  margin: 0 0 1.5rem;
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.slot-modal-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.slot-modal-field {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.slot-modal-field label {
+  display: grid;
+  gap: 0.3rem;
+  font-size: 0.92rem;
+}
+
+.slot-modal-field label > span {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--ink) 62%, transparent);
+}
+
+.slot-modal-field input {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid color-mix(in oklab, var(--ink) 20%, transparent);
+  border-bottom-width: 2px;
+  background: color-mix(in oklab, var(--paper) 70%, white);
+  color: var(--ink);
+  font: inherit;
+  border-radius: 0;
+}
+
+.slot-modal-field input:focus-visible {
+  outline: 2px solid var(--flood);
+  outline-offset: 1px;
+  border-color: var(--turf);
+}
+
+.slot-modal-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+}
+
+.slot-modal-actions .btn-ghost,
+.slot-modal-actions .btn-flood {
+  min-height: 2.75rem;
+}
+
+/* —— Preview de precio en vivo —— */
+.price-preview {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: color-mix(in oklab, var(--turf) 5%, var(--paper));
+  border-left: 3px solid var(--turf);
+}
+
+.price-preview-title {
+  margin: 0 0 0.75rem;
+  font-family: var(--font-display), sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.price-preview-loading {
+  margin: 0;
+  font-size: 0.88rem;
+  color: color-mix(in oklab, var(--ink) 62%, transparent);
+}
+
+.price-preview-details {
+  display: grid;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.price-preview-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.92rem;
+}
+
+.price-preview-row strong {
+  font-weight: 600;
+}
+
+.price-preview-warning {
+  color: var(--bib);
+}
+
+.price-preview-discount {
+  color: var(--turf);
+}
+
+.price-preview-final {
+  padding-top: 0.5rem;
+  border-top: 1px solid color-mix(in oklab, var(--ink) 18%, transparent);
+  font-size: 1.05rem;
+}
+
+.price-preview-final strong {
+  font-size: 1.15rem;
+  color: var(--turf-deep);
+}
+
+.price-preview-override {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.88rem;
+  cursor: pointer;
+}
+
+.price-preview-override input[type="checkbox"] {
+  accent-color: var(--turf);
+  width: 1rem;
+  height: 1rem;
+}
+
+.price-preview-override-input {
+  margin-top: 0.75rem;
+}
+
+.price-preview-override-input label {
+  display: grid;
+  gap: 0.3rem;
+  font-size: 0.92rem;
+}
+
+.price-preview-override-input label > span {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--ink) 62%, transparent);
+}
+
+.price-preview-override-input input {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid color-mix(in oklab, var(--ink) 20%, transparent);
+  border-bottom-width: 2px;
+  background: color-mix(in oklab, var(--paper) 70%, white);
+  color: var(--ink);
+  font: inherit;
+  border-radius: 0;
+}
+
+.price-preview-override-input input:focus-visible {
+  outline: 2px solid var(--flood);
+  outline-offset: 1px;
+  border-color: var(--turf);
+}
+
+/* —— Dashboard de ingresos —— */
+.revenue-dashboard {
+  display: grid;
+  gap: 2rem;
+  margin-top: 1.5rem;
+}
+
+.revenue-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 1rem;
+}
+
+.revenue-summary-card {
+  padding: 1.25rem;
+  background: color-mix(in oklab, var(--turf) 5%, var(--paper));
+  border-left: 3px solid var(--turf);
+  display: grid;
+  gap: 0.5rem;
+}
+
+.revenue-summary-label {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--ink) 62%, transparent);
+}
+
+.revenue-summary-value {
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.revenue-summary-revenue {
+  color: var(--turf-deep);
+}
+
+.revenue-summary-discount {
+  color: var(--bib);
+}
+
+.revenue-matches .subhead {
+  margin: 0 0 1rem;
+}
+
+.revenue-matches-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.revenue-match-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: var(--paper);
+  border: 1px solid color-mix(in oklab, var(--ink) 10%, transparent);
+  border-radius: 2px;
+}
+
+.revenue-match-info {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.revenue-match-date {
+  font-size: 0.92rem;
+  font-weight: 500;
+}
+
+.revenue-match-duration {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.78rem;
+  color: color-mix(in oklab, var(--ink) 62%, transparent);
+}
+
+.revenue-match-status {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.5rem;
+  border-radius: 2px;
+}
+
+.status-open {
+  background: var(--turf);
+  color: var(--chalk);
+}
+
+.status-full {
+  background: color-mix(in oklab, var(--ink) 20%, transparent);
+  color: var(--ink);
+}
+
+.status-cancelled {
+  background: var(--bib);
+  color: var(--bib-ink);
+}
+
+.revenue-match-price {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.revenue-match-final {
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: var(--turf-deep);
+}
+
+.revenue-match-discount {
+  font-size: 0.88rem;
+  color: var(--bib);
+}
+
+.revenue-match-no-price {
+  font-size: 0.88rem;
+  color: color-mix(in oklab, var(--ink) 50%, transparent);
+  font-style: italic;
+}
+
 .venue-hero h1 {
   margin: 0.35rem 0 0.65rem;
   line-height: 1.08;

@@ -6,6 +6,7 @@ import { createMatchAction, lookupVenueOccupancyAction, listVenueDayOccupancyAct
 import { OccupancyBanner } from "@/components/OccupancyBanner";
 import { FormationPicker, type PitchOpenSlot } from "@/components/FormationPicker";
 import { VenueDayTimeline } from "@/components/VenueDayTimeline";
+import { PricePreview } from "@/components/PricePreview";
 import { trackEvent } from "@/lib/analytics";
 import { VenueMapLazy } from "@/components/VenueMapLazy";
 import { VenuePicker } from "@/components/VenuePicker";
@@ -121,6 +122,8 @@ export function CreateMatchForm({
   const [costPerPerson, setCostPerPerson] = useState<string>(
     edit?.costPerPerson != null ? String(edit.costPerPerson) : "",
   );
+  const [calculatedPrice, setCalculatedPrice] = useState<number | null>(null);
+  const [useCalculatedPrice, setUseCalculatedPrice] = useState(false);
   const [venueMissing, setVenueMissing] = useState(false);
   const [startsAt, setStartsAt] = useState(() =>
     edit ? edit.startsAtLocal : defaultStartsAtLocal(),
@@ -732,6 +735,22 @@ export function CreateMatchForm({
                   Gratis
                 </button>
               </div>
+
+              {venueId && sport && startsAt && durationMin && !isEdit && (
+                <PricePreview
+                  venueId={venueId}
+                  sport={sport}
+                  startsAt={datetimeLocalInZoneToDate(startsAt, city.timezone)?.toISOString() ?? ""}
+                  durationMin={durationMin}
+                  currentPrice={calculatedPrice}
+                  onPriceChange={(price) => {
+                    setCalculatedPrice(price);
+                    if (useCalculatedPrice && price !== null) {
+                      setCostPerPerson(String(price));
+                    }
+                  }}
+                />
+              )}
             </fieldset>
 
             <fieldset className="match-compose-group">

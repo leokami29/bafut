@@ -358,6 +358,48 @@ begin
 end;
 $$;
 
+-- update_price_slot
+create or replace function public.update_price_slot(
+  p_slot_id uuid,
+  p_start_time time,
+  p_end_time time,
+  p_price_cop int
+)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_uid uuid := (select auth.uid());
+begin
+  if v_uid is null then
+    raise exception 'No autenticado';
+  end if;
+
+  if not exists (
+    select 1 from public.venue_price_slots s
+    join public.venues v on v.id = s.venue_id
+    where s.id = p_slot_id
+      and (v.owner_id = v_uid or v_uid in (select user_id from public.admins))
+  ) then
+    raise exception 'Solo el dueño o un admin pueden actualizar franjas.';
+  end if;
+
+  if p_start_time >= p_end_time then
+    raise exception 'La hora de inicio debe ser anterior a la de fin.';
+  end if;
+
+  if p_price_cop <= 0 then
+    raise exception 'El precio debe ser mayor a cero.';
+  end if;
+
+  update public.venue_price_slots
+  set start_time = p_start_time, end_time = p_end_time, price_cop = p_price_cop, updated_at = now()
+  where id = p_slot_id;
+end;
+$$;
+
 -- set_price_min
 create or replace function public.set_price_min(
   p_venue_id uuid,

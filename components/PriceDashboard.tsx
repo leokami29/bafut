@@ -4,6 +4,7 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { sportLabel } from "@/lib/labels";
 import { SPORTS, type Sport } from "@/lib/sport-rules";
+import { SlotModal } from "@/components/SlotModal";
 
 type PriceSlot = {
   id: string;
@@ -75,8 +76,82 @@ export function PriceDashboard({
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalData, setModalData] = useState<{
+    day: number;
+    start: string;
+    end: string;
+    price: number;
+    slotId?: string;
+  } | null>(null);
 
   const supabase = createClient();
+
+  const handleOpenModal = (day: number, start: string, end: string, price?: number, slotId?: string) => {
+    setModalData({ day, start, end, price: price ?? 60000, slotId });
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    setModalData(null);
+  };
+
+  const handleSaveSlot = async (start: string, end: string, price: number) => {
+    if (!modalData) return;
+    setSaving(true);
+    setError(null);
+
+    if (modalData.slotId) {
+      // Editar franja existente
+      const { error } = await supabase.rpc("update_price_slot", {
+        p_slot_id: modalData.slotId,
+        p_start_time: start,
+        p_end_time: end,
+        p_price_cop: price,
+      });
+      if (error) {
+        setError(error.message);
+      } else {
+        setSlots((prev) =>
+          prev.map((s) =>
+            s.id === modalData.slotId
+              ? { ...s, start_time: start, end_time: end, price_cop: price }
+              : s,
+          ),
+        );
+        setMessage("Franja actualizada");
+      }
+    } else {
+      // Crear nueva franja
+      const { data, error } = await supabase.rpc("create_price_slot", {
+        p_venue_id: venueId,
+        p_sport: selectedSport,
+        p_day_of_week: modalData.day,
+        p_start_time: start,
+        p_end_time: end,
+        p_price_cop: price,
+      });
+      if (error) {
+        setError(error.message);
+      } else {
+        setSlots((prev) => [
+          ...prev,
+          {
+            id: data,
+            venue_id: venueId,
+            sport: selectedSport,
+            day_of_week: modalData.day,
+            start_time: start,
+            end_time: end,
+            price_cop: price,
+          },
+        ]);
+        setMessage("Franja creada");
+      }
+    }
+    setSaving(false);
+  };
 
   async function handleSaveMin() {
     setSaving(true);
@@ -108,26 +183,6 @@ export function PriceDashboard({
     } else {
       setDefaults((prev) => ({ ...prev, [day]: price }));
       setMessage("Precio fallback actualizado");
-    }
-    setSaving(false);
-  }
-
-  async function handleAddSlot(day: number, start: string, end: string, price: number) {
-    setSaving(true);
-    setError(null);
-    const { data, error } = await supabase.rpc("create_price_slot", {
-      p_venue_id: venueId,
-      p_sport: selectedSport,
-      p_day_of_week: day,
-      p_start_time: start,
-      p_end_time: end,
-      p_price_cop: price,
-    });
-    if (error) {
-      setError(error.message);
-    } else {
-      setSlots((prev) => [...prev, { id: data, venue_id: venueId, sport: selectedSport, day_of_week: day, start_time: start, end_time: end, price_cop: price }]);
-      setMessage("Franja creada");
     }
     setSaving(false);
   }
@@ -239,31 +294,28 @@ export function PriceDashboard({
                     {slot ? (
                       <div className="price-grid-slot" title={`${slot.start_time}-${slot.end_time}: $${slot.price_cop.toLocaleString()}`}>
                         <span>${(slot.price_cop / 1000).toFixed(0)}k</span>
-                        <button
-                          type="button"
-                          className="price-grid-delete"
-                          onClick={() => handleDeleteSlot(slot.id)}
-                          disabled={saving}
-                        >
-                          ×
-                        </button>
-                      </div>
-                    ) : (
                       <button
                         type="button"
-                        className="price-grid-empty"
-                        onClick={() => {
-                          const end = TIME_SLOTS[timeIdx + 2] ?? "23:00";
-                          const price = prompt("Precio COP para esta franja:");
-                          if (price && Number(price) > 0) {
-                            handleAddSlot(dayIdx, time, end, Number(price));
-                          }
-                        }}
+                        className="price-grid-delete"
+                        onClick={() => handleDeleteSlot(slot.id)}
                         disabled={saving}
                       >
-                        +
+                        ×
                       </button>
-                    )}
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      className="price-grid-empty"
+                      onClick={() => {
+                        const end = TIME_SLOTS[timeIdx + 2] ?? "23:00";
+                        handleOpenModal(dayIdx, time, end);
+                      }}
+                      disabled={saving}
+                    >
+                      +
+                    </button>
+                  )}
                   </div>
                 );
               })}
@@ -308,6 +360,19 @@ export function PriceDashboard({
       {/* Mensajes */}
       {message && <p className="form-ok">{message}</p>}
       {error && <p className="form-error">{error}</p>}
+
+      {/* Modal de edición */}
+      {modalData && (
+        <SlotModal
+          isOpen={modalOpen}
+          onClose={handleCloseModal}
+          onSave={handleSaveSlot}
+          initialStart={modalData.start}
+          initialEnd={modalData.end}
+          initialPrice={modalData.price}
+          isEdit={!!modalData.slotId}
+        />
+      )}
     </div>
   );
 }

@@ -550,6 +550,21 @@ export function VenueAdminDashboard({
         </section>
       ) : null}
 
+      {/* Gestión */}
+      {(isOwner || isAdmin) && venue.owner_id ? (
+        <section className="venue-admin-section">
+          <h2 className="subhead">Gestión</h2>
+          <div className="venue-admin-actions">
+            <Link href={`/canchas/${venue.slug}/admin/precios`} className="btn-ghost">
+              Configurar precios
+            </Link>
+            <Link href={`/canchas/${venue.slug}/admin/ingresos`} className="btn-ghost">
+              Ver ingresos del mes
+            </Link>
+          </div>
+        </section>
+      ) : null}
+
       {/* Zona de peligro */}
       {(isOwner || isAdmin) && venue.owner_id ? (
         <section className="venue-admin-section venue-admin-danger">
