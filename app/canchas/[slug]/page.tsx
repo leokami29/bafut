@@ -9,10 +9,20 @@ import { MatchRow } from "@/components/MatchRow";
 import { VenueDayTimeline } from "@/components/VenueDayTimeline";
 import { VenueMapLazy } from "@/components/VenueMapLazy";
 import { VenueOwnerBlock } from "@/components/VenueOwnerBlock";
+import { VenuePricingSection } from "@/components/VenuePricingSection";
 import { VenueVerifiedBadge } from "@/components/VenueVerifiedBadge";
 import type { Sport } from "@/lib/constants";
-import { getActiveCity, getSessionUserId, getUpcomingMatches, getVenueBySlug, getVenueClaimState, getVenueDayOccupancy, getVenuePhotoPaths } from "@/lib/data";
-import { cityDayBoundsFromLocal } from "@/lib/datetime";
+import {
+  getActiveCity,
+  getSessionUserId,
+  getUpcomingMatches,
+  getVenueBySlug,
+  getVenueClaimState,
+  getVenueDayOccupancy,
+  getVenuePhotoPaths,
+  getVenuePublicPricing,
+} from "@/lib/data";
+import { cityDayBoundsFromLocal, zonedDateParts } from "@/lib/datetime";
 import { sportLabel, surfaceLabel, venueKindLabel } from "@/lib/labels";
 import { safeHttpUrl } from "@/lib/safe-http-url";
 import { venuePhotoPublicUrl } from "@/lib/venue-photos";
@@ -109,8 +119,11 @@ export default async function CanchaPage({ params }: Props) {
     notFound();
   }
 
+  const [claimState, publicPricing] = await Promise.all([
+    getVenueClaimState(venue.id, userId),
+    getVenuePublicPricing(venue.id),
+  ]);
   // Estado de reclamos: solo se puede reclamar si no hay dueño ni reclamo pendiente.
-  const claimState = await getVenueClaimState(venue.id, userId);
   const isVenueOwner = Boolean(userId) && venue.owner_id === userId;
   const canClaim = !venue.owner_id && !claimState.hasPendingClaim;
   const claimPendingForOthers = !isVenueOwner && claimState.hasPendingClaim;
@@ -173,6 +186,12 @@ export default async function CanchaPage({ params }: Props) {
     ...meta.images.map((src) => ({ src, own: false })),
   ].slice(0, 6);
   const reviews = meta.reviews.slice(0, 8);
+  const todayYmd =
+    todayBounds?.dayKey ??
+    (() => {
+      const p = zonedDateParts(new Date(), city.timezone);
+      return `${p.year}-${String(p.month).padStart(2, "0")}-${String(p.day).padStart(2, "0")}`;
+    })();
 
   const photoAlt = `${venue.name}, ${venue.neighborhood ?? city.name}`;
 
@@ -331,6 +350,12 @@ export default async function CanchaPage({ params }: Props) {
           </p>
         </section>
       </div>
+
+      <VenuePricingSection
+        sports={venue.sports ?? ["futbol"]}
+        pricing={publicPricing}
+        todayYmd={todayYmd}
+      />
 
       {description ? (
         <section className="venue-notes-section" aria-labelledby="venue-notes-heading">

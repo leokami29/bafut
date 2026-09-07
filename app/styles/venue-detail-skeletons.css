@@ -1508,6 +1508,233 @@
   align-items: center;
 }
 
+/* ——— Precios públicos (ficha cancha) ——— */
+.venue-pricing-section {
+  margin-top: 1.75rem;
+  margin-bottom: 1.75rem;
+  display: grid;
+  gap: 0.85rem;
+}
+
+.venue-pricing-empty {
+  margin: 0;
+  padding: 0.85rem 0;
+  font-size: 0.95rem;
+  color: color-mix(in oklab, var(--ink) 55%, transparent);
+  border-top: 1px solid color-mix(in oklab, var(--ink) 12%, transparent);
+}
+
+.venue-pricing-sports {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.venue-pricing-sport {
+  min-height: 2.5rem;
+  padding: 0.4rem 0.85rem;
+  border: 1px solid color-mix(in oklab, var(--ink) 22%, transparent);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+  border-radius: 0;
+}
+
+.venue-pricing-sport:hover {
+  border-color: var(--turf);
+  background: color-mix(in oklab, var(--turf) 8%, transparent);
+}
+
+.venue-pricing-sport.is-active {
+  border-color: var(--turf);
+  background: var(--turf);
+  color: var(--chalk);
+  font-weight: 600;
+}
+
+.venue-pricing-body {
+  display: grid;
+  gap: 1.1rem;
+}
+
+.venue-pricing-subhead {
+  margin: 0 0 0.55rem;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--turf-deep);
+}
+
+.venue-pricing-promos {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.venue-pricing-promo {
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.75rem 0.9rem;
+  background: color-mix(in oklab, var(--flood) 12%, var(--paper));
+  border-left: 3px solid var(--flood);
+}
+
+.venue-pricing-promo-main {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.35rem 0.85rem;
+}
+
+.venue-pricing-promo-name {
+  font-family: var(--font-display), "Barlow Condensed", sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.1;
+}
+
+.venue-pricing-promo-value {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.82rem;
+  font-weight: 650;
+  color: var(--turf-deep);
+}
+
+.venue-pricing-promo-cond,
+.venue-pricing-promo-soon {
+  margin: 0;
+  font-size: 0.82rem;
+  color: color-mix(in oklab, var(--ink) 55%, transparent);
+}
+
+.venue-pricing-promo-soon {
+  color: var(--turf);
+  font-weight: 600;
+}
+
+.venue-pricing-min {
+  margin: 0;
+  font-size: 0.9rem;
+  color: color-mix(in oklab, var(--ink) 70%, transparent);
+}
+
+.venue-pricing-week-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 0 -0.15rem;
+  padding: 0 0.15rem;
+}
+
+.venue-pricing-week {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid color-mix(in oklab, var(--ink) 14%, transparent);
+  background: var(--paper);
+  min-width: min(100%, 22rem);
+}
+
+.venue-pricing-day {
+  display: grid;
+  grid-template-columns: 5.25rem minmax(0, 1fr);
+  gap: 0.55rem 0.75rem;
+  align-items: start;
+  padding: 0.55rem 0.7rem;
+  border-bottom: 1px solid color-mix(in oklab, var(--ink) 10%, transparent);
+}
+
+.venue-pricing-day:last-child {
+  border-bottom: 0;
+}
+
+.venue-pricing-day-name {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--turf-deep);
+  padding-top: 0.2rem;
+}
+
+.venue-pricing-day-body {
+  display: grid;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.venue-pricing-day-empty {
+  font-size: 0.85rem;
+  color: color-mix(in oklab, var(--ink) 42%, transparent);
+  font-style: italic;
+}
+
+.venue-pricing-slots {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.venue-pricing-slot {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2rem;
+  padding: 0.2rem 0.55rem;
+  border: 1px solid color-mix(in oklab, var(--turf) 40%, transparent);
+  background: color-mix(in oklab, var(--turf) 7%, var(--paper));
+  font-size: 0.85rem;
+}
+
+.venue-pricing-slot-time {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-weight: 600;
+  font-size: 0.78rem;
+}
+
+.venue-pricing-slot-price {
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+.venue-pricing-fallback {
+  margin: 0;
+  font-size: 0.82rem;
+  color: color-mix(in oklab, var(--ink) 60%, transparent);
+}
+
+.venue-pricing-fallback strong {
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+  font-weight: 650;
+}
+
+@media (max-width: 519px) {
+  .venue-pricing-day {
+    grid-template-columns: 3.4rem minmax(12rem, 1fr);
+  }
+
+  .venue-pricing-day-name {
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+  }
+
+  .venue-pricing-week {
+    min-width: 26rem;
+  }
+}
+
 .venue-notes-section {
   margin-top: 1.5rem;
   margin-bottom: 1.5rem;

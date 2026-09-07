@@ -502,3 +502,77 @@ export const getVenueOwnerSummary = cache(async (userId: string) => {
     pendingCount: pending.count ?? 0,
   };
 });
+
+export type VenuePublicPriceSlot = {
+  id: string;
+  sport: string;
+  day_of_week: number;
+  start_time: string;
+  end_time: string;
+  price_cop: number;
+};
+
+export type VenuePublicPricingDefault = {
+  sport: string;
+  day_of_week: number;
+  default_price_cop: number;
+};
+
+export type VenuePublicPromotion = {
+  id: string;
+  sport: string;
+  name: string;
+  kind: "override_slot" | "discount_pct";
+  override_price_cop: number | null;
+  discount_pct: number | null;
+  start_time: string | null;
+  end_time: string | null;
+  days_of_week: number[] | null;
+  date_start: string | null;
+  date_end: string | null;
+  lead_time_minutes: number;
+};
+
+export type VenuePublicPricing = {
+  slots: VenuePublicPriceSlot[];
+  defaults: VenuePublicPricingDefault[];
+  mins: Array<{ sport: string; min_minutes: number }>;
+  promotions: VenuePublicPromotion[];
+};
+
+/** Precios públicos de una cancha (RLS: SELECT para anon/authenticated). */
+export const getVenuePublicPricing = cache(async (venueId: string): Promise<VenuePublicPricing> => {
+  const supabase = await createClient();
+  const [{ data: slots }, { data: mins }, { data: defaults }, { data: promotions }] =
+    await Promise.all([
+      supabase
+        .from("venue_price_slots")
+        .select("id, sport, day_of_week, start_time, end_time, price_cop")
+        .eq("venue_id", venueId)
+        .order("day_of_week")
+        .order("start_time"),
+      supabase.from("venue_pricing_min").select("sport, min_minutes").eq("venue_id", venueId),
+      supabase
+        .from("venue_pricing_default")
+        .select("sport, day_of_week, default_price_cop")
+        .eq("venue_id", venueId),
+      supabase
+        .from("venue_promotions")
+        .select(
+          "id, sport, name, kind, override_price_cop, discount_pct, start_time, end_time, days_of_week, date_start, date_end, lead_time_minutes",
+        )
+        .eq("venue_id", venueId)
+        .eq("active", true)
+        .order("created_at", { ascending: false }),
+    ]);
+
+  return {
+    slots: slots ?? [],
+    defaults: defaults ?? [],
+    mins: mins ?? [],
+    promotions: (promotions ?? []).map((p) => ({
+      ...p,
+      kind: p.kind as "override_slot" | "discount_pct",
+    })),
+  };
+});
