@@ -562,6 +562,12 @@ export function VenueAdminDashboard({
                 <span className="venue-admin-shortcut-hint">Estimado del mes</span>
               </Link>
             </li>
+            <li>
+              <Link href={`${base}/torneos`} className="venue-admin-shortcut">
+                <span className="venue-admin-shortcut-label">Torneos</span>
+                <span className="venue-admin-shortcut-hint">Campeonatos premium</span>
+              </Link>
+            </li>
             {(isOwner || isAdmin) && venue.owner_id ? (
               <li>
                 <Link href={`${base}?tab=cuenta`} className="venue-admin-shortcut">

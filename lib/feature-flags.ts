@@ -5,6 +5,7 @@ export const FEATURE_FLAG_KEYS = [
   "push_alerts",
   "directory_premium_boost",
   "venue_booking",
+  "venue_tournaments",
 ] as const;
 
 export type FeatureFlagKey = (typeof FEATURE_FLAG_KEYS)[number];
@@ -14,17 +15,19 @@ const ENV_BY_KEY: Record<FeatureFlagKey, string> = {
   push_alerts: "FEATURE_PUSH_ALERTS",
   directory_premium_boost: "FEATURE_DIRECTORY_PREMIUM_BOOST",
   venue_booking: "FEATURE_VENUE_BOOKING",
+  venue_tournaments: "FEATURE_VENUE_TOURNAMENTS",
 };
 
 /**
  * Default si no hay env ni fila DB.
- * Excepción: `venue_booking` arranca OFF (kill-switch; además requiere venues.booking_enabled).
+ * Excepción: `venue_booking` y `venue_tournaments` arrancan OFF (kill-switch).
  */
 const DEFAULT_BY_KEY: Record<FeatureFlagKey, boolean> = {
   premium_paywall: true,
   push_alerts: true,
   directory_premium_boost: true,
   venue_booking: false,
+  venue_tournaments: false,
 };
 
 /** Default efectivo si no hay env ni fila DB (tests / docs). */
@@ -46,7 +49,7 @@ export function parseFeatureEnv(raw: string | undefined): boolean | null {
  * Kill-switch:
  * 1) Env FEATURE_* si está seteado (fuerza on/off; requiere restart).
  * 2) Fila DB `feature_flags` (toggle sin redeploy).
- * 3) Default por key (casi siempre true; venue_booking false).
+ * 3) Default por key (casi siempre true; venue_booking / venue_tournaments false).
  */
 export async function isFeatureEnabled(key: FeatureFlagKey): Promise<boolean> {
   const fromEnv = parseFeatureEnv(process.env[ENV_BY_KEY[key]]);

@@ -86,6 +86,12 @@ export function VenueAdminNav({
       count: null,
       match: (path) => path.startsWith(`${base}/ingresos`),
     },
+    {
+      href: `${base}/torneos`,
+      label: "Torneos",
+      count: null,
+      match: (path) => path.startsWith(`${base}/torneos`),
+    },
   ];
 
   return (

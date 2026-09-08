@@ -316,6 +316,7 @@ describe("feature flag venue_booking", () => {
     expect(FEATURE_FLAG_KEYS).not.toContain("venue_bookings");
     expect(featureFlagDefault("venue_booking")).toBe(false);
     expect(featureFlagDefault("premium_paywall")).toBe(true);
+    expect(featureFlagDefault("venue_tournaments")).toBe(false);
     expect(parseFeatureEnv("0")).toBe(false);
     expect(parseFeatureEnv("1")).toBe(true);
     expect(parseFeatureEnv(undefined)).toBeNull();
