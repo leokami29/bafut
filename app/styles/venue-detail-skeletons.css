@@ -1424,6 +1424,7 @@
 }
 
 .venue-detail-actions-primary .btn-flood,
+.venue-detail-actions-primary .btn-turf,
 .venue-detail-actions-primary .btn-ghost,
 .venue-detail-actions-primary .venue-copy-btn {
   flex: 1 1 auto;
@@ -1817,9 +1818,32 @@
   backdrop-filter: blur(8px);
 }
 
+.venue-sticky-cta-row {
+  display: flex;
+  align-items: stretch;
+  gap: 0.5rem;
+}
+
 .venue-sticky-cta .btn-flood {
   width: 100%;
   font-weight: 650;
+}
+
+.venue-sticky-cta-row--split .btn-flood {
+  flex: 1.35 1 0;
+  width: auto;
+  min-width: 0;
+}
+
+.venue-sticky-cta-row--split .venue-cta-secondary {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 2.8rem;
+  padding-inline: 0.75rem;
+  font-size: 0.92rem;
+  font-weight: 650;
+  text-align: center;
+  line-height: 1.2;
 }
 
 .profile-hint {

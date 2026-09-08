@@ -23,7 +23,18 @@ export function CopyAddressButton({ address }: { address: string }) {
   );
 }
 
-export function VenueStickyCta({ href, label }: { href: string; label: string }) {
+export function VenueStickyCta({
+  href,
+  label,
+  secondaryHref,
+  secondaryLabel,
+}: {
+  href: string;
+  label: string;
+  /** CTA secundaria (p. ej. Publicar hueco) cuando Reservar es primario */
+  secondaryHref?: string;
+  secondaryLabel?: string;
+}) {
   const [show, setShow] = useState(false);
 
   useEffect(() => {
@@ -39,11 +50,22 @@ export function VenueStickyCta({ href, label }: { href: string; label: string })
     return null;
   }
 
+  const hasSecondary = Boolean(secondaryHref && secondaryLabel);
+
   return (
-    <div className="venue-sticky-cta" role="region" aria-label="Publicar hueco">
-      <Link className="btn-flood" href={href}>
-        {label}
-      </Link>
+    <div className="venue-sticky-cta" role="region" aria-label={label}>
+      <div
+        className={`venue-sticky-cta-row${hasSecondary ? " venue-sticky-cta-row--split" : ""}`}
+      >
+        <Link className="btn-flood" href={href}>
+          {label}
+        </Link>
+        {hasSecondary ? (
+          <Link className="btn-turf venue-cta-secondary" href={secondaryHref!}>
+            {secondaryLabel}
+          </Link>
+        ) : null}
+      </div>
     </div>
   );
 }

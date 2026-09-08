@@ -35,7 +35,7 @@
   display: grid;
   gap: 0.45rem;
   margin-top: 1rem;
-  justify-items: start;
+  justify-items: stretch;
 }
 
 .venue-booking-cta-hint {
@@ -44,8 +44,47 @@
   color: color-mix(in oklab, var(--ink) 58%, transparent);
 }
 
-.venue-detail-actions-primary .venue-booking-cta {
-  min-height: 2.75rem;
+/* CTA primario: domina sobre “Publicar hueco” (turf) / ghost */
+.venue-booking-cta--primary {
+  min-height: 3.15rem;
+  padding-inline: 1.35rem;
+  font-family: var(--font-display), "Barlow Condensed", sans-serif;
+  font-size: clamp(1.05rem, 2.8vw, 1.2rem);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  box-shadow: 0 4px 14px color-mix(in oklab, var(--flood) 32%, transparent);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.venue-booking-cta--primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 7px 20px color-mix(in oklab, var(--flood) 42%, transparent);
+}
+
+.venue-booking-cta--primary:active {
+  transform: translateY(0);
+}
+
+.venue-detail-actions-primary .venue-booking-cta--primary {
+  flex: 1.35 1 auto;
+  min-width: min(100%, 11rem);
+}
+
+/* Publicar hueco: secundario visible (outline turf), no ghost */
+.venue-detail-actions-primary .venue-cta-secondary {
+  flex: 1.1 1 auto;
+  min-width: min(100%, 10rem);
+  min-height: 3rem;
+  font-weight: 650;
+}
+
+.venue-booking-cta-section .venue-booking-cta--primary {
+  width: 100%;
+  max-width: 22rem;
+  justify-self: start;
 }
 
 .venue-pricing-booking-cta {

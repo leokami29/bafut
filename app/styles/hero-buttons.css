@@ -229,6 +229,7 @@
 
 .btn-flood,
 .btn-bib,
+.btn-turf,
 .btn-ghost {
   display: inline-flex;
   align-items: center;
@@ -248,6 +249,20 @@
 .btn-bib {
   background: var(--bib);
   color: var(--bib-ink);
+}
+
+/* Secundario sólido (outline turf): debajo de flood, por encima de ghost */
+.btn-turf {
+  background: color-mix(in oklab, var(--turf) 9%, var(--paper));
+  border-color: var(--turf);
+  color: var(--turf-deep);
+  font-weight: 650;
+}
+
+.btn-turf:hover {
+  background: color-mix(in oklab, var(--turf) 16%, var(--paper));
+  border-color: var(--turf-deep);
+  color: var(--turf-deep);
 }
 
 .btn-ghost {

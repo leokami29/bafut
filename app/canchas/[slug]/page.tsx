@@ -285,10 +285,13 @@ export default async function CanchaPage({ params }: Props) {
       <div className="venue-detail-layout">
         <div className="venue-detail-primary">
           <div className="venue-detail-actions venue-detail-actions-primary">
-            <Link className="btn-flood" href={publishHref}>
+            {showBookingCta ? <VenueBookingCta venueSlug={venue.slug} /> : null}
+            <Link
+              className={showBookingCta ? "btn-turf venue-cta-secondary" : "btn-flood"}
+              href={publishHref}
+            >
               Publicar hueco aquí
             </Link>
-            {showBookingCta ? <VenueBookingCta venueSlug={venue.slug} /> : null}
             <a className="btn-ghost" href={directionsHref} target="_blank" rel="noopener noreferrer">
               Cómo llegar
             </a>
@@ -534,7 +537,12 @@ export default async function CanchaPage({ params }: Props) {
         <Link href="/partidos?filtro=hoy">Partidos y huecos de hoy</Link>
       </p>
 
-      <VenueStickyCta href={publishHref} label="Publicar hueco aquí" />
+      <VenueStickyCta
+        href={showBookingCta ? `/canchas/${venue.slug}/turno` : publishHref}
+        label={showBookingCta ? "Reservar" : "Publicar hueco aquí"}
+        secondaryHref={showBookingCta ? publishHref : undefined}
+        secondaryLabel={showBookingCta ? "Publicar hueco" : undefined}
+      />
     </main>
   );
 }

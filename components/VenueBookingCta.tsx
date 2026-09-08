@@ -17,7 +17,7 @@ export function VenueBookingCta({
   if (variant === "section") {
     return (
       <div className={`venue-booking-cta-section${className ? ` ${className}` : ""}`}>
-        <Link href={href} className="btn-flood venue-booking-cta">
+        <Link href={href} className="btn-flood venue-booking-cta venue-booking-cta--primary">
           Reservar
         </Link>
         <p className="venue-booking-cta-hint">Alquilá un horario · el dueño confirma el pago</p>
@@ -27,7 +27,7 @@ export function VenueBookingCta({
   return (
     <Link
       href={href}
-      className={`btn-ghost venue-booking-cta${className ? ` ${className}` : ""}`}
+      className={`btn-flood venue-booking-cta venue-booking-cta--primary${className ? ` ${className}` : ""}`}
     >
       Reservar
     </Link>
