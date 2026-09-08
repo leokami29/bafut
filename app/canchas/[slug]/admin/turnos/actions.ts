@@ -169,6 +169,10 @@ export async function getBookingProofSignedUrlAction(
     return { error: "No tenés permiso para ver este comprobante." };
   }
 
+  if (!booking.proof_path) {
+    return { error: "Esta reserva todavía no tiene comprobante." };
+  }
+
   const { data, error } = await supabase.storage
     .from(BOOKING_PROOFS_BUCKET)
     .createSignedUrl(booking.proof_path, 60 * 30);
