@@ -52,4 +52,31 @@ describe("analytics funnel helpers", () => {
       plan: "premium",
     });
   });
+
+  it("emite funnel Pedir turno", async () => {
+    const {
+      trackTurnoStart,
+      trackTurnoProofSubmit,
+      trackTurnoApproved,
+      FUNNEL_EVENTS,
+    } = await import("@/lib/analytics");
+
+    trackTurnoStart({ venue_id: "v1", venue_slug: "cancha-x" });
+    trackTurnoProofSubmit({ venue_id: "v1", sport: "padel", duration_min: 90 });
+    trackTurnoApproved({ venue_id: "v1", booking_id: "b1" });
+
+    expect(gtag).toHaveBeenCalledWith("event", FUNNEL_EVENTS.turno_start, {
+      venue_id: "v1",
+      venue_slug: "cancha-x",
+    });
+    expect(gtag).toHaveBeenCalledWith("event", FUNNEL_EVENTS.turno_proof_submit, {
+      venue_id: "v1",
+      sport: "padel",
+      duration_min: 90,
+    });
+    expect(gtag).toHaveBeenCalledWith("event", FUNNEL_EVENTS.turno_approved, {
+      venue_id: "v1",
+      booking_id: "b1",
+    });
+  });
 });

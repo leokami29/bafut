@@ -55,18 +55,31 @@ export function VenueDayTimeline({
                 ? "lleno"
                 : "sin rival · armar";
           return (
-            <li key={item.match_id}>
-              <Link
-                href={`/p/${item.share_code}`}
-                className={`venue-day-chip ${overlaps ? "is-overlap" : ""}`}
-                aria-current={overlaps ? "true" : undefined}
-              >
-                <span className="venue-day-chip-time">{formatTimeOfDay(item.starts_at, timeZone)}</span>
-                <span className="venue-day-chip-meta">
-                  {item.duration_min} min · {sport} {format}
-                </span>
-                <span className="venue-day-chip-slots">{openBit}</span>
-              </Link>
+            <li key={item.booking_id ?? item.match_id ?? `${item.starts_at}-${item.duration_min}`}>
+              {item.block_kind === "booking" || !item.share_code ? (
+                <div
+                  className={`venue-day-chip is-booking ${overlaps ? "is-overlap" : ""}`}
+                  aria-current={overlaps ? "true" : undefined}
+                >
+                  <span className="venue-day-chip-time">{formatTimeOfDay(item.starts_at, timeZone)}</span>
+                  <span className="venue-day-chip-meta">
+                    {item.duration_min} min · {sport} · Turno
+                  </span>
+                  <span className="venue-day-chip-slots">ocupado</span>
+                </div>
+              ) : (
+                <Link
+                  href={`/p/${item.share_code}`}
+                  className={`venue-day-chip ${overlaps ? "is-overlap" : ""}`}
+                  aria-current={overlaps ? "true" : undefined}
+                >
+                  <span className="venue-day-chip-time">{formatTimeOfDay(item.starts_at, timeZone)}</span>
+                  <span className="venue-day-chip-meta">
+                    {item.duration_min} min · {sport} {format} · Partido
+                  </span>
+                  <span className="venue-day-chip-slots">{openBit}</span>
+                </Link>
+              )}
             </li>
           );
         })}

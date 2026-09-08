@@ -22,8 +22,10 @@ export function OccupancyBanner({
 }) {
   const [choice, setChoice] = useState<"join" | "rival" | null>(null);
   const when = formatWhen(occupancy.starts_at, timeZone);
-  const showJoin = occupancy.open_slot_count > 0 && occupancy.reason !== "own";
-  const showOpenB = !occupancy.has_side_b && occupancy.reason !== "own" && !isEdit;
+  const isBooking = occupancy.block_kind === "booking";
+  const showJoin = !isBooking && occupancy.open_slot_count > 0 && occupancy.reason !== "own";
+  const showOpenB =
+    !isBooking && !occupancy.has_side_b && occupancy.reason !== "own" && !isEdit;
   const boardSport = isSport(occupancy.sport) ? occupancy.sport : sport;
   const formSport = boardSport;
   const board = buildFormationFromOccupancy({
@@ -32,7 +34,22 @@ export function OccupancyBanner({
     openSlotCount: occupancy.open_slot_count,
     hasSideB: occupancy.has_side_b,
   });
-  const matchHref = `/p/${occupancy.share_code}`;
+  const matchHref = occupancy.share_code ? `/p/${occupancy.share_code}` : "/partidos";
+
+  if (isBooking) {
+    return (
+      <div className="occupancy-banner" role="status">
+        <div className="occupancy-banner-copy">
+          <p className="occupancy-banner-kicker">Misma cancha · misma hora</p>
+          <p className="occupancy-banner-title">Horario con turno</p>
+          <p>
+            Hay un horario alquilado a las {when} en {occupancy.venue_name}. Elegí otra franja para
+            publicar.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   if (occupancy.reason === "own") {
     return (
@@ -165,7 +182,7 @@ export function OccupancyBanner({
         </div>
       ) : null}
 
-      {showRivalForm ? (
+      {showRivalForm && occupancy.match_id && occupancy.share_code ? (
         <div className="occupancy-banner-rival" id="occupancy-rival">
           <OpenSideBForm
             matchId={occupancy.match_id}

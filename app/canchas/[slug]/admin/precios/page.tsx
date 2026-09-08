@@ -65,7 +65,7 @@ export default async function VenuePricingPage({ params, searchParams }: Props) 
     );
   }
 
-  const [{ data: slots }, { data: mins }, { data: defaults }, { data: promotions }, { data: photos }] =
+  const [{ data: slots }, { data: mins }, { data: defaults }, { data: promotions }, { data: photos }, { count: pendingTurnosCount }] =
     await Promise.all([
       supabase
         .from("venue_price_slots")
@@ -82,6 +82,11 @@ export default async function VenuePricingPage({ params, searchParams }: Props) 
         .eq("active", true)
         .order("created_at", { ascending: false }),
       supabase.from("venue_photos").select("id").eq("venue_id", venue.id),
+      supabase
+        .from("venue_bookings")
+        .select("id", { count: "exact", head: true })
+        .eq("venue_id", venue.id)
+        .eq("status", "pending"),
     ]);
 
   const { data: pendingReq } = await supabase
@@ -122,6 +127,7 @@ export default async function VenuePricingPage({ params, searchParams }: Props) 
             photos: photos?.length ?? 0,
             pendingPremium: pendingReq ? 1 : 0,
             promotions: typedPromotions.length,
+            pendingTurnos: pendingTurnosCount ?? 0,
           }}
         />
       </Suspense>

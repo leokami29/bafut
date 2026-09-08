@@ -1,9 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useActionState, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import {
+  setVenueBookingEnabledAction,
+  type SetBookingEnabledState,
+} from "@/app/canchas/[slug]/admin/turnos/actions";
 import { createClient } from "@/lib/supabase/client";
 import { sportLabel } from "@/lib/labels";
 import { SPORTS, type Sport } from "@/lib/sport-rules";
@@ -51,6 +55,10 @@ type VenueAdminDashboardProps = {
   latestRequest?: VenueSubRequestSummary | null;
   /** Feature flag premium_paywall. */
   premiumPaywallEnabled?: boolean;
+  /** Feature flag global venue_booking (kill-switch). */
+  venueBookingFeatureEnabled?: boolean;
+  /** Pedidos de turno pendientes (badge / atajo Mesa). */
+  pendingTurnosCount?: number;
   /** Centro de la ciudad activa para el picker de ubicación (fallback: coords actuales). */
   cityCenter?: { lat: number; lng: number };
   /** Sección activa vía ?tab= (default mesa). */
@@ -116,6 +124,8 @@ export function VenueAdminDashboard({
   pendingRequest = null,
   latestRequest = null,
   premiumPaywallEnabled = true,
+  venueBookingFeatureEnabled = false,
+  pendingTurnosCount = 0,
   cityCenter,
   tab = "mesa",
 }: VenueAdminDashboardProps) {
@@ -135,6 +145,17 @@ export function VenueAdminDashboard({
     filled_slots: number;
     occupancy_rate: number;
   } | null>(null);
+
+  const setBookingEnabledBound = setVenueBookingEnabledAction.bind(null, venue.slug);
+  const [bookingEnabledState, bookingEnabledAction, bookingEnabledPending] = useActionState(
+    setBookingEnabledBound,
+    undefined as SetBookingEnabledState | undefined,
+  );
+
+  useEffect(() => {
+    if (!bookingEnabledState?.ok) return;
+    router.refresh();
+  }, [bookingEnabledState?.ok, router]);
 
   useEffect(() => {
     let cancelled = false;
@@ -335,6 +356,53 @@ export function VenueAdminDashboard({
             <p className="field-help">Cargando actividad…</p>
           )}
 
+          <section className="venue-booking-mesa" aria-labelledby="venue-booking-mesa-title">
+            <h3 id="venue-booking-mesa-title" className="subhead">
+              Pedidos de turno
+            </h3>
+            {!venueBookingFeatureEnabled ? (
+              <p className="field-help">
+                Los pedidos de turno no están disponibles ahora (flag global). Cuando se active,
+                vas a poder aceptar alquileres de horario acá.
+              </p>
+            ) : (
+              <>
+                <p className="field-help">
+                  Si está activo, los jugadores pueden pedir un turno con comprobante. Vos
+                  confirmás o rechazás en la cola de Turnos.
+                </p>
+                <form
+                  key={String(venue.booking_enabled)}
+                  action={bookingEnabledAction}
+                  className="venue-booking-toggle"
+                >
+                  <input type="hidden" name="venue_id" value={venue.id} />
+                  <label className="venue-booking-toggle-label">
+                    <input
+                      type="checkbox"
+                      name="booking_enabled"
+                      value="1"
+                      defaultChecked={Boolean(venue.booking_enabled)}
+                      disabled={bookingEnabledPending}
+                      onChange={(e) => e.currentTarget.form?.requestSubmit()}
+                    />
+                    <span>Aceptar pedidos de turno</span>
+                  </label>
+                </form>
+                {bookingEnabledState?.error ? (
+                  <p className="form-error">{bookingEnabledState.error}</p>
+                ) : null}
+                {bookingEnabledState?.ok ? (
+                  <p className="form-ok">
+                    {bookingEnabledState.enabled
+                      ? "Ya aceptás pedidos de turno."
+                      : "Pedidos de turno desactivados."}
+                  </p>
+                ) : null}
+              </>
+            )}
+          </section>
+
           <ul className="venue-admin-shortcuts" aria-label="Atajos del panel">
             <li>
               <Link href={`${base}?tab=ficha`} className="venue-admin-shortcut">
@@ -377,6 +445,21 @@ export function VenueAdminDashboard({
               <Link href={`${base}/precios?tab=promos&crear=1`} className="venue-admin-shortcut">
                 <span className="venue-admin-shortcut-label">Crear promoción</span>
                 <span className="venue-admin-shortcut-hint">Descuento o precio cerrado</span>
+              </Link>
+            </li>
+            <li>
+              <Link
+                href={`${base}/turnos`}
+                className={`venue-admin-shortcut${pendingTurnosCount > 0 ? " is-hot" : ""}`}
+              >
+                <span className="venue-admin-shortcut-label">Turnos</span>
+                <span className="venue-admin-shortcut-hint">
+                  {pendingTurnosCount > 0
+                    ? `${pendingTurnosCount} pendiente${pendingTurnosCount === 1 ? "" : "s"}`
+                    : venue.booking_enabled
+                      ? "Cola e historial de pedidos"
+                      : "Activá pedidos arriba o revisá historial"}
+                </span>
               </Link>
             </li>
             <li>

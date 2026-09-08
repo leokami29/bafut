@@ -149,10 +149,6 @@
   .how-it-works {
     padding-inline: 2.5rem;
   }
-
-  .site-nav-signout {
-    display: none;
-  }
 }
 
 @media (min-width: 900px) {
@@ -240,7 +236,7 @@
     bottom: 0;
     z-index: 28;
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 0;
     padding-bottom: env(safe-area-inset-bottom);
     background: var(--turf-deep);
@@ -252,22 +248,102 @@
     padding-bottom: calc(1.5rem + 3.25rem + env(safe-area-inset-bottom));
   }
 
-  .mobile-nav a {
+  .mobile-nav a,
+  .mobile-nav > .mobile-nav-more > button {
     display: flex;
     align-items: center;
     justify-content: center;
     min-height: 3.25rem;
+    min-width: 44px;
+    width: 100%;
     padding: 0.35rem 0.35rem;
     color: var(--chalk);
+    font: inherit;
     font-size: clamp(0.72rem, 2.8vw, 0.8rem);
     text-decoration: none;
     text-transform: uppercase;
     letter-spacing: 0.04em;
+    background: none;
+    border: 0;
+    cursor: pointer;
   }
 
-  .mobile-nav a.is-active {
+  .mobile-nav a.is-active,
+  .mobile-nav > .mobile-nav-more > button.is-active {
     color: var(--flood);
     box-shadow: inset 0 -2px 0 var(--flood);
+  }
+
+  .mobile-nav-more {
+    position: relative;
+  }
+
+  .mobile-nav-panel {
+    position: absolute;
+    right: 0.35rem;
+    bottom: calc(100% + 0.45rem);
+    z-index: 29;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: min(16.5rem, calc(100vw - 1.5rem));
+    padding: 0.45rem;
+    background: var(--turf-deep);
+    border: 1px solid color-mix(in oklab, var(--chalk) 28%, transparent);
+    box-shadow: 0 -8px 28px color-mix(in oklab, #000 35%, transparent);
+  }
+
+  .mobile-nav-panel a,
+  .mobile-nav-panel button {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 2.75rem;
+    width: 100%;
+    padding: 0.55rem 0.75rem;
+    color: var(--chalk);
+    font: inherit;
+    font-size: 0.85rem;
+    text-align: left;
+    text-decoration: none;
+    text-transform: none;
+    letter-spacing: 0.01em;
+    background: none;
+    border: 0;
+    cursor: pointer;
+  }
+
+  .mobile-nav-panel a:hover,
+  .mobile-nav-panel button:hover,
+  .mobile-nav-panel a.is-active {
+    color: var(--flood);
+    background: color-mix(in oklab, var(--chalk) 8%, transparent);
+  }
+
+  .mobile-nav-panel a.nav-link-donate {
+    color: var(--turf-deep);
+    background: var(--flood);
+    font-weight: 700;
+    justify-content: center;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .mobile-nav-panel a.nav-link-donate:hover,
+  .mobile-nav-panel a.nav-link-donate.is-active {
+    color: var(--turf-deep);
+    background: color-mix(in oklab, var(--flood) 82%, white);
+  }
+
+  .mobile-nav-panel form {
+    margin: 0;
+  }
+
+  .mobile-nav-panel .nav-link-admin {
+    font-family: var(--font-mono), ui-monospace, monospace;
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
   }
 
   .sheet,
@@ -348,6 +424,10 @@
 
   .site-nav-links {
     gap: 0.55rem 0.85rem;
+  }
+
+  .site-nav-signout {
+    display: block;
   }
 
   .nav-label-long {
@@ -438,10 +518,6 @@
 
   .nav-label-short {
     display: none;
-  }
-
-  .site-nav-signout {
-    display: block;
   }
 
   .city-switch select {

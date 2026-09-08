@@ -463,6 +463,60 @@
   gap: 0.75rem;
 }
 
+/* —— Pedidos de turno (Mesa / inbox) —— */
+.venue-booking-mesa {
+  margin-top: 1.35rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid color-mix(in oklab, var(--ink) 14%, transparent);
+  background: color-mix(in oklab, var(--turf) 4%, var(--paper));
+}
+
+.venue-booking-mesa .subhead {
+  margin-top: 0;
+}
+
+.venue-booking-toggle {
+  margin: 0.65rem 0 0;
+}
+
+.venue-booking-toggle-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.venue-booking-toggle-label input {
+  width: 1.1rem;
+  height: 1.1rem;
+  accent-color: var(--turf);
+}
+
+.venue-booking-flag-hint {
+  margin: 0 0 1rem;
+}
+
+.venue-booking-inbox {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.planilla-cancelled > .planilla-head > .planilla-rail,
+.planilla-expired > .planilla-head > .planilla-rail {
+  background: color-mix(in oklab, var(--ink) 28%, transparent);
+}
+
+.planilla-stamp-confirmed {
+  color: var(--turf);
+}
+
+.planilla-stamp-cancelled,
+.planilla-stamp-expired {
+  color: color-mix(in oklab, var(--ink) 45%, transparent);
+}
+
 @media print {
   .no-print,
   .venue-back.no-print {

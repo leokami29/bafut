@@ -191,6 +191,15 @@
   font-family: var(--font-sans), sans-serif;
 }
 
+.match-compose-disclaimer {
+  margin: 0.75rem 0 0;
+  padding: 0.65rem 0.85rem;
+  border-left: 3px solid var(--flood);
+  background: color-mix(in oklab, var(--flood) 10%, var(--paper));
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
 .match-compose-banner-error {
   padding: 0.75rem 0.85rem;
   background: color-mix(in oklab, var(--bib) 10%, var(--paper));

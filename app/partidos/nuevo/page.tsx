@@ -3,7 +3,8 @@ import Link from "next/link";
 import { CreateMatchForm } from "@/components/CreateMatchForm";
 import { CitySwitcher } from "@/components/CitySwitcher";
 import { requireUserId } from "@/lib/auth";
-import { getActiveCity, getCities, getVenueBySlug, getVenuesByCity } from "@/lib/data";
+import { getActiveCity, getCities, getIsAdmin, getVenueBySlug, getVenuesByCity } from "@/lib/data";
+import { isFeatureEnabled } from "@/lib/feature-flags";
 import { robotsNoIndex } from "@/lib/seo";
 
 export const metadata: Metadata = {
@@ -16,8 +17,13 @@ export default async function NuevoPartidoPage({
 }: {
   searchParams: Promise<{ venue?: string }>;
 }) {
-  await requireUserId("/partidos/nuevo");
-  const [city, cities] = await Promise.all([getActiveCity(), getCities()]);
+  const { userId } = await requireUserId("/partidos/nuevo");
+  const [city, cities, isPlatformAdmin, venueBookingFlagOn] = await Promise.all([
+    getActiveCity(),
+    getCities(),
+    getIsAdmin(userId),
+    isFeatureEnabled("venue_booking"),
+  ]);
   const { venue: venueSlug } = await searchParams;
 
   if (!city) {
@@ -60,7 +66,14 @@ export default async function NuevoPartidoPage({
           ) : null}
         </div>
       </header>
-      <CreateMatchForm city={city} venues={venues} defaultVenueId={preselected?.id} />
+      <CreateMatchForm
+        city={city}
+        venues={venues}
+        defaultVenueId={preselected?.id}
+        currentUserId={userId}
+        isPlatformAdmin={isPlatformAdmin}
+        venueBookingFlagOn={venueBookingFlagOn}
+      />
     </main>
   );
 }

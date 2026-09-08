@@ -21,6 +21,8 @@ function hit(overrides: Partial<OccupancyHit> = {}): OccupancyHit {
     has_side_b: false,
     sport: "futbol",
     format: "5v5",
+    block_kind: "match",
+    booking_id: null,
     ...overrides,
   };
 }
@@ -45,9 +47,10 @@ describe("occupancyReason", () => {
     expect(occupancyReason("otro", hit({ open_slot_count: 0, has_side_b: true }))).toBe("blocked");
   });
 
-  it("userId null nunca produce own", () => {
-    expect(occupancyReason(null, hit())).toBe("join");
-    expect(occupancyReason(undefined, hit())).toBe("join");
+  it("booking siempre es blocked", () => {
+    expect(
+      occupancyReason("host-1", hit({ block_kind: "booking", booking_id: "b1", match_id: null, share_code: null })),
+    ).toBe("blocked");
   });
 });
 
@@ -71,6 +74,15 @@ describe("occupancyUserMessage", () => {
   it("mensaje blocked sugiere otra hora", () => {
     const msg = occupancyUserMessage({ ...hit(), reason: "blocked" });
     expect(msg).toContain("otra hora");
+  });
+
+  it("mensaje booking habla de turno, no de reserva", () => {
+    const msg = occupancyUserMessage({
+      ...hit({ block_kind: "booking", booking_id: "b1", match_id: null, share_code: null }),
+      reason: "blocked",
+    });
+    expect(msg).toContain("turno");
+    expect(msg).not.toContain("reserva");
   });
 
   it("sin venue_name usa fallback genérico", () => {

@@ -426,6 +426,7 @@ export type Database = {
           host_id: string
           id?: string
           notes?: string | null
+          /** Rellenado por trigger private.sync_match_occupy_range */
           occupy_range?: unknown
           share_code?: string
           sport?: string
@@ -482,6 +483,51 @@ export type Database = {
             columns: ["venue_id"]
             isOneToOne: false
             referencedRelation: "venues"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      matches_pricing_snapshot: {
+        Row: {
+          base_cop: number
+          discount_cop: number
+          final_cop: number
+          match_id: string
+          overridden_by_owner: boolean
+          promo_id: string | null
+          snapshotted_at: string
+        }
+        Insert: {
+          base_cop: number
+          discount_cop?: number
+          final_cop: number
+          match_id: string
+          overridden_by_owner?: boolean
+          promo_id?: string | null
+          snapshotted_at?: string
+        }
+        Update: {
+          base_cop?: number
+          discount_cop?: number
+          final_cop?: number
+          match_id?: string
+          overridden_by_owner?: boolean
+          promo_id?: string | null
+          snapshotted_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "matches_pricing_snapshot_match_id_fkey"
+            columns: ["match_id"]
+            isOneToOne: true
+            referencedRelation: "matches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "matches_pricing_snapshot_promo_id_fkey"
+            columns: ["promo_id"]
+            isOneToOne: false
+            referencedRelation: "venue_promotions"
             referencedColumns: ["id"]
           },
         ]
@@ -754,6 +800,165 @@ export type Database = {
           },
         ]
       }
+      venue_booking_events: {
+        Row: {
+          actor_id: string | null
+          booking_id: string
+          created_at: string
+          from_status: string | null
+          id: string
+          meta: Json
+          to_status: string
+        }
+        Insert: {
+          actor_id?: string | null
+          booking_id: string
+          created_at?: string
+          from_status?: string | null
+          id?: string
+          meta?: Json
+          to_status: string
+        }
+        Update: {
+          actor_id?: string | null
+          booking_id?: string
+          created_at?: string
+          from_status?: string | null
+          id?: string
+          meta?: Json
+          to_status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "venue_booking_events_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "venue_booking_events_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "venue_bookings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      venue_bookings: {
+        Row: {
+          base_cop: number
+          billed_min: number
+          contact_whatsapp: string
+          created_at: string
+          currency: string
+          decided_at: string | null
+          decided_by: string | null
+          discount_cop: number
+          duration_min: number
+          final_cop: number
+          hold_expires_at: string | null
+          id: string
+          legal_accepted_at: string
+          note: string | null
+          occupy_range: unknown
+          payment_method: string
+          player_id: string
+          promo_id: string | null
+          proof_path: string
+          reject_reason: string | null
+          sport: string
+          starts_at: string
+          status: string
+          updated_at: string
+          venue_id: string
+        }
+        Insert: {
+          base_cop: number
+          billed_min: number
+          contact_whatsapp: string
+          created_at?: string
+          currency?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          discount_cop?: number
+          duration_min: number
+          final_cop: number
+          hold_expires_at?: string | null
+          id?: string
+          legal_accepted_at: string
+          note?: string | null
+          /** Rellenado por trigger private.sync_venue_booking_occupy_range */
+          occupy_range?: unknown
+          payment_method: string
+          player_id: string
+          promo_id?: string | null
+          proof_path: string
+          reject_reason?: string | null
+          sport: string
+          starts_at: string
+          status?: string
+          updated_at?: string
+          venue_id: string
+        }
+        Update: {
+          base_cop?: number
+          billed_min?: number
+          contact_whatsapp?: string
+          created_at?: string
+          currency?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          discount_cop?: number
+          duration_min?: number
+          final_cop?: number
+          hold_expires_at?: string | null
+          id?: string
+          legal_accepted_at?: string
+          note?: string | null
+          occupy_range?: unknown
+          payment_method?: string
+          player_id?: string
+          promo_id?: string | null
+          proof_path?: string
+          reject_reason?: string | null
+          sport?: string
+          starts_at?: string
+          status?: string
+          updated_at?: string
+          venue_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "venue_bookings_decided_by_fkey"
+            columns: ["decided_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "venue_bookings_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "venue_bookings_promo_id_fkey"
+            columns: ["promo_id"]
+            isOneToOne: false
+            referencedRelation: "venue_promotions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "venue_bookings_venue_id_fkey"
+            columns: ["venue_id"]
+            isOneToOne: false
+            referencedRelation: "venues"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       venue_claims: {
         Row: {
           created_at: string
@@ -875,6 +1080,164 @@ export type Database = {
           },
         ]
       }
+      venue_price_slots: {
+        Row: {
+          created_at: string
+          day_of_week: number
+          end_time: string
+          id: string
+          price_cop: number
+          sport: string
+          start_time: string
+          updated_at: string
+          venue_id: string
+        }
+        Insert: {
+          created_at?: string
+          day_of_week: number
+          end_time: string
+          id?: string
+          price_cop: number
+          sport: string
+          start_time: string
+          updated_at?: string
+          venue_id: string
+        }
+        Update: {
+          created_at?: string
+          day_of_week?: number
+          end_time?: string
+          id?: string
+          price_cop?: number
+          sport?: string
+          start_time?: string
+          updated_at?: string
+          venue_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "venue_price_slots_venue_id_fkey"
+            columns: ["venue_id"]
+            isOneToOne: false
+            referencedRelation: "venues"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      venue_pricing_default: {
+        Row: {
+          day_of_week: number
+          default_price_cop: number
+          sport: string
+          venue_id: string
+        }
+        Insert: {
+          day_of_week: number
+          default_price_cop: number
+          sport: string
+          venue_id: string
+        }
+        Update: {
+          day_of_week?: number
+          default_price_cop?: number
+          sport?: string
+          venue_id?: string
+        }
+        Relationships: []
+      }
+      venue_pricing_min: {
+        Row: {
+          min_minutes: number
+          sport: string
+          venue_id: string
+        }
+        Insert: {
+          min_minutes: number
+          sport: string
+          venue_id: string
+        }
+        Update: {
+          min_minutes?: number
+          sport?: string
+          venue_id?: string
+        }
+        Relationships: []
+      }
+      venue_promotions: {
+        Row: {
+          active: boolean
+          created_at: string
+          created_by: string
+          date_end: string | null
+          date_start: string | null
+          days_of_week: number[] | null
+          discount_pct: number | null
+          end_time: string | null
+          id: string
+          kind: string
+          lead_time_minutes: number
+          name: string
+          override_price_cop: number | null
+          sport: string
+          start_time: string | null
+          updated_at: string
+          venue_id: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          created_by: string
+          date_end?: string | null
+          date_start?: string | null
+          days_of_week?: number[] | null
+          discount_pct?: number | null
+          end_time?: string | null
+          id?: string
+          kind: string
+          lead_time_minutes?: number
+          name: string
+          override_price_cop?: number | null
+          sport: string
+          start_time?: string | null
+          updated_at?: string
+          venue_id: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          created_by?: string
+          date_end?: string | null
+          date_start?: string | null
+          days_of_week?: number[] | null
+          discount_pct?: number | null
+          end_time?: string | null
+          id?: string
+          kind?: string
+          lead_time_minutes?: number
+          name?: string
+          override_price_cop?: number | null
+          sport?: string
+          start_time?: string | null
+          updated_at?: string
+          venue_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "venue_promotions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "venue_promotions_venue_id_fkey"
+            columns: ["venue_id"]
+            isOneToOne: false
+            referencedRelation: "venues"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       venue_subscription_requests: {
         Row: {
           amount_cop: number
@@ -967,225 +1330,6 @@ export type Database = {
           },
         ]
       }
-      venue_price_slots: {
-        Row: {
-          created_at: string
-          day_of_week: number
-          end_time: string
-          id: string
-          price_cop: number
-          sport: string
-          start_time: string
-          updated_at: string
-          venue_id: string
-        }
-        Insert: {
-          created_at?: string
-          day_of_week: number
-          end_time: string
-          id?: string
-          price_cop: number
-          sport: string
-          start_time: string
-          updated_at?: string
-          venue_id: string
-        }
-        Update: {
-          created_at?: string
-          day_of_week?: number
-          end_time?: string
-          id?: string
-          price_cop?: number
-          sport?: string
-          start_time?: string
-          updated_at?: string
-          venue_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "venue_price_slots_venue_id_fkey"
-            columns: ["venue_id"]
-            isOneToOne: false
-            referencedRelation: "venues"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      venue_pricing_min: {
-        Row: {
-          min_minutes: number
-          sport: string
-          venue_id: string
-        }
-        Insert: {
-          min_minutes: number
-          sport: string
-          venue_id: string
-        }
-        Update: {
-          min_minutes?: number
-          sport?: string
-          venue_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "venue_pricing_min_venue_id_fkey"
-            columns: ["venue_id"]
-            isOneToOne: false
-            referencedRelation: "venues"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      venue_pricing_default: {
-        Row: {
-          day_of_week: number
-          default_price_cop: number
-          sport: string
-          venue_id: string
-        }
-        Insert: {
-          day_of_week: number
-          default_price_cop: number
-          sport: string
-          venue_id: string
-        }
-        Update: {
-          day_of_week?: number
-          default_price_cop?: number
-          sport?: string
-          venue_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "venue_pricing_default_venue_id_fkey"
-            columns: ["venue_id"]
-            isOneToOne: false
-            referencedRelation: "venues"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      venue_promotions: {
-        Row: {
-          active: boolean
-          created_at: string
-          created_by: string
-          date_end: string | null
-          date_start: string | null
-          days_of_week: number[] | null
-          discount_pct: number | null
-          end_time: string | null
-          id: string
-          kind: string
-          lead_time_minutes: number
-          name: string
-          override_price_cop: number | null
-          sport: string
-          start_time: string | null
-          updated_at: string
-          venue_id: string
-        }
-        Insert: {
-          active?: boolean
-          created_at?: string
-          created_by: string
-          date_end?: string | null
-          date_start?: string | null
-          days_of_week?: number[] | null
-          discount_pct?: number | null
-          end_time?: string | null
-          id?: string
-          kind: string
-          lead_time_minutes?: number
-          name: string
-          override_price_cop?: number | null
-          sport: string
-          start_time?: string | null
-          updated_at?: string
-          venue_id: string
-        }
-        Update: {
-          active?: boolean
-          created_at?: string
-          created_by?: string
-          date_end?: string | null
-          date_start?: string | null
-          days_of_week?: number[] | null
-          discount_pct?: number | null
-          end_time?: string | null
-          id?: string
-          kind?: string
-          lead_time_minutes?: number
-          name?: string
-          override_price_cop?: number | null
-          sport?: string
-          start_time?: string | null
-          updated_at?: string
-          venue_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "venue_promotions_venue_id_fkey"
-            columns: ["venue_id"]
-            isOneToOne: false
-            referencedRelation: "venues"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "venue_promotions_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      matches_pricing_snapshot: {
-        Row: {
-          base_cop: number
-          discount_cop: number
-          final_cop: number
-          match_id: string
-          overridden_by_owner: boolean
-          promo_id: string | null
-          snapshotted_at: string
-        }
-        Insert: {
-          base_cop: number
-          discount_cop?: number
-          final_cop: number
-          match_id: string
-          overridden_by_owner?: boolean
-          promo_id?: string | null
-          snapshotted_at?: string
-        }
-        Update: {
-          base_cop?: number
-          discount_cop?: number
-          final_cop?: number
-          match_id?: string
-          overridden_by_owner?: boolean
-          promo_id?: string | null
-          snapshotted_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "matches_pricing_snapshot_match_id_fkey"
-            columns: ["match_id"]
-            isOneToOne: true
-            referencedRelation: "matches"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "matches_pricing_snapshot_promo_id_fkey"
-            columns: ["promo_id"]
-            isOneToOne: false
-            referencedRelation: "venue_promotions"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       venue_subscriptions: {
         Row: {
           auto_renew: boolean
@@ -1236,6 +1380,7 @@ export type Database = {
       venues: {
         Row: {
           address: string | null
+          booking_enabled: boolean
           city_id: string
           contact_email: string | null
           contact_whatsapp: string | null
@@ -1260,6 +1405,7 @@ export type Database = {
         }
         Insert: {
           address?: string | null
+          booking_enabled?: boolean
           city_id: string
           contact_email?: string | null
           contact_whatsapp?: string | null
@@ -1284,6 +1430,7 @@ export type Database = {
         }
         Update: {
           address?: string | null
+          booking_enabled?: boolean
           city_id?: string
           contact_email?: string | null
           contact_whatsapp?: string | null
@@ -1332,6 +1479,14 @@ export type Database = {
         Args: { p_roles: string[]; p_uid?: string }
         Returns: boolean
       }
+      apply_match_pricing: {
+        Args: { p_match_id: string; p_overridden_price_cop?: number | null }
+        Returns: Json
+      }
+      approve_venue_booking: {
+        Args: { p_booking_id: string }
+        Returns: undefined
+      }
       approve_venue_claim: {
         Args: {
           p_claim_id: string
@@ -1344,6 +1499,10 @@ export type Database = {
       approve_venue_subscription_request: {
         Args: { p_duration_days?: number; p_request_id: string }
         Returns: string
+      }
+      cancel_venue_booking: {
+        Args: { p_booking_id: string }
+        Returns: undefined
       }
       claim_slot: {
         Args: {
@@ -1366,13 +1525,41 @@ export type Database = {
         Args: { p_run_date: string; p_template_id: string }
         Returns: string
       }
+      create_price_slot: {
+        Args: {
+          p_day_of_week: number
+          p_end_time: string
+          p_price_cop: number
+          p_sport: string
+          p_start_time: string
+          p_venue_id: string
+        }
+        Returns: string
+      }
+      create_promotion: {
+        Args: {
+          p_date_end?: string | null
+          p_date_start?: string | null
+          p_days_of_week?: number[] | null
+          p_discount_pct?: number | null
+          p_end_time?: string | null
+          p_kind: string
+          p_lead_time_minutes?: number
+          p_name: string
+          p_override_price_cop?: number | null
+          p_sport: string
+          p_start_time?: string | null
+          p_venue_id: string
+        }
+        Returns: string
+      }
       create_venue: {
         Args: {
           p_address?: string
           p_city_id: string
           p_covered?: boolean | null
-          p_lat?: number
-          p_lng?: number
+          p_lat?: number | null
+          p_lng?: number | null
           p_name: string
           p_neighborhood?: string
           p_notes?: string | null
@@ -1391,7 +1578,18 @@ export type Database = {
         }
         Returns: string
       }
+      deactivate_promotion: { Args: { p_promo_id: string }; Returns: undefined }
+      delete_price_default: {
+        Args: { p_day_of_week: number; p_sport: string; p_venue_id: string }
+        Returns: undefined
+      }
+      delete_price_min: {
+        Args: { p_sport: string; p_venue_id: string }
+        Returns: undefined
+      }
+      delete_price_slot: { Args: { p_slot_id: string }; Returns: undefined }
       delete_venue: { Args: { p_venue_id: string }; Returns: undefined }
+      expire_venue_booking_holds: { Args: never; Returns: number }
       expire_venue_subscriptions: { Args: never; Returns: number }
       get_active_subscription: {
         Args: { p_venue_id: string }
@@ -1436,6 +1634,7 @@ export type Database = {
         Args: {
           p_day_end: string
           p_day_start: string
+          p_exclude_booking_id?: string
           p_exclude_match_id?: string
           p_venue_id: string
         }
@@ -1443,6 +1642,7 @@ export type Database = {
           duration_min: number
           format: string
           has_side_b: boolean
+          kind: string
           match_id: string
           open_slot_count: number
           share_code: string
@@ -1453,6 +1653,7 @@ export type Database = {
       lookup_venue_occupancy: {
         Args: {
           p_duration_min: number
+          p_exclude_booking_id?: string
           p_exclude_match_id?: string
           p_starts_at: string
           p_venue_id: string
@@ -1463,6 +1664,7 @@ export type Database = {
           format: string
           has_side_b: boolean
           host_id: string
+          kind: string
           match_id: string
           open_slot_count: number
           share_code: string
@@ -1481,6 +1683,19 @@ export type Database = {
         }
         Returns: string
       }
+      preview_match_price: {
+        Args: {
+          p_duration_min: number
+          p_sport: string
+          p_starts_at: string
+          p_venue_id: string
+        }
+        Returns: Json
+      }
+      reject_venue_booking: {
+        Args: { p_booking_id: string; p_reason?: string }
+        Returns: undefined
+      }
       reject_venue_claim: {
         Args: { p_claim_id: string; p_reason?: string }
         Returns: undefined
@@ -1493,8 +1708,38 @@ export type Database = {
         Args: { p_claim_id: string; p_status: string }
         Returns: undefined
       }
+      set_price_default: {
+        Args: {
+          p_day_of_week: number
+          p_default_price_cop: number
+          p_sport: string
+          p_venue_id: string
+        }
+        Returns: undefined
+      }
+      set_price_min: {
+        Args: { p_min_minutes: number; p_sport: string; p_venue_id: string }
+        Returns: undefined
+      }
+      set_venue_booking_enabled: {
+        Args: { p_enabled: boolean; p_venue_id: string }
+        Returns: undefined
+      }
       submit_level_feedback: {
         Args: { p_claim_id: string; p_level_ok: boolean }
+        Returns: string
+      }
+      submit_venue_booking: {
+        Args: {
+          p_contact_whatsapp: string
+          p_duration_min: number
+          p_note?: string
+          p_payment_method: string
+          p_proof_path: string
+          p_sport: string
+          p_starts_at: string
+          p_venue_id: string
+        }
         Returns: string
       }
       submit_venue_subscription_request: {
@@ -1526,6 +1771,15 @@ export type Database = {
         }
         Returns: undefined
       }
+      update_price_slot: {
+        Args: {
+          p_end_time: string
+          p_price_cop: number
+          p_slot_id: string
+          p_start_time: string
+        }
+        Returns: undefined
+      }
       update_venue: {
         Args: {
           p_address?: string
@@ -1549,76 +1803,6 @@ export type Database = {
         Returns: boolean
       }
       withdraw_claim: { Args: { p_claim_id: string }; Returns: undefined }
-      create_price_slot: {
-        Args: {
-          p_day_of_week: number
-          p_end_time: string
-          p_price_cop: number
-          p_sport: string
-          p_start_time: string
-          p_venue_id: string
-        }
-        Returns: string
-      }
-      delete_price_slot: { Args: { p_slot_id: string }; Returns: undefined }
-      update_price_slot: {
-        Args: {
-          p_end_time: string
-          p_price_cop: number
-          p_slot_id: string
-          p_start_time: string
-        }
-        Returns: undefined
-      }
-      set_price_min: {
-        Args: { p_min_minutes: number; p_sport: string; p_venue_id: string }
-        Returns: undefined
-      }
-      delete_price_min: { Args: { p_sport: string; p_venue_id: string }; Returns: undefined }
-      set_price_default: {
-        Args: {
-          p_day_of_week: number
-          p_default_price_cop: number
-          p_sport: string
-          p_venue_id: string
-        }
-        Returns: undefined
-      }
-      delete_price_default: {
-        Args: { p_day_of_week: number; p_sport: string; p_venue_id: string }
-        Returns: undefined
-      }
-      create_promotion: {
-        Args: {
-          p_date_end?: string | null
-          p_date_start?: string | null
-          p_days_of_week?: number[] | null
-          p_discount_pct?: number | null
-          p_end_time?: string | null
-          p_kind: string
-          p_lead_time_minutes?: number
-          p_name: string
-          p_override_price_cop?: number | null
-          p_sport: string
-          p_start_time?: string | null
-          p_venue_id: string
-        }
-        Returns: string
-      }
-      deactivate_promotion: { Args: { p_promo_id: string }; Returns: undefined }
-      preview_match_price: {
-        Args: {
-          p_duration_min: number
-          p_sport: string
-          p_starts_at: string
-          p_venue_id: string
-        }
-        Returns: Json
-      }
-      apply_match_pricing: {
-        Args: { p_match_id: string; p_overridden_price_cop?: number | null }
-        Returns: undefined
-      }
     }
     Enums: {
       [_ in never]: never

@@ -6,7 +6,7 @@ import { createMatchAction, lookupVenueOccupancyAction, listVenueDayOccupancyAct
 import { OccupancyBanner } from "@/components/OccupancyBanner";
 import { FormationPicker, type PitchOpenSlot } from "@/components/FormationPicker";
 import { VenueDayTimeline } from "@/components/VenueDayTimeline";
-import { PricePreview } from "@/components/PricePreview";
+import { VenueRateHint } from "@/components/VenueRateHint";
 import { trackEvent } from "@/lib/analytics";
 import { VenueMapLazy } from "@/components/VenueMapLazy";
 import { VenuePicker } from "@/components/VenuePicker";
@@ -94,11 +94,19 @@ export function CreateMatchForm({
   venues,
   defaultVenueId,
   edit,
+  currentUserId = null,
+  isPlatformAdmin = false,
+  venueBookingFlagOn = false,
 }: {
   city: City;
   venues: Venue[];
   defaultVenueId?: string;
   edit?: MatchEditInitial;
+  /** Para override de tarifa (dueño) y CTA Pedir turno. */
+  currentUserId?: string | null;
+  isPlatformAdmin?: boolean;
+  /** Kill-switch FEATURE_VENUE_BOOKING / feature_flags. */
+  venueBookingFlagOn?: boolean;
 }) {
   const formId = useId();
   const isEdit = Boolean(edit);
@@ -122,8 +130,6 @@ export function CreateMatchForm({
   const [costPerPerson, setCostPerPerson] = useState<string>(
     edit?.costPerPerson != null ? String(edit.costPerPerson) : "",
   );
-  const [calculatedPrice, setCalculatedPrice] = useState<number | null>(null);
-  const [useCalculatedPrice, setUseCalculatedPrice] = useState(false);
   const [venueMissing, setVenueMissing] = useState(false);
   const [startsAt, setStartsAt] = useState(() =>
     edit ? edit.startsAtLocal : defaultStartsAtLocal(),
@@ -162,6 +168,15 @@ export function CreateMatchForm({
     (startsAt !== edit!.startsAtLocal || venueId !== edit!.venueId);
 
   const selectedVenue = sportVenues.find((venue) => venue.id === venueId) ?? null;
+  const canOverrideVenueRate = Boolean(
+    selectedVenue &&
+      (isPlatformAdmin || (currentUserId && selectedVenue.owner_id === currentUserId)),
+  );
+  const showBookingLink = Boolean(
+    venueBookingFlagOn && selectedVenue?.booking_enabled && selectedVenue?.owner_id,
+  );
+  const bookingHref = selectedVenue ? `/canchas/${selectedVenue.slug}/turno` : null;
+  const startsAtIso = datetimeLocalInZoneToDate(startsAt, city.timezone)?.toISOString() ?? "";
   const slotCount = isEdit ? editSlots.length : openCount;
   const costNumber = costPerPerson.trim() === "" ? Number.NaN : Number(costPerPerson);
   const priceLabel =
@@ -170,6 +185,8 @@ export function CreateMatchForm({
       : Number.isFinite(costNumber)
         ? formatMoney(costNumber)
         : formatMoney(null);
+  const huecoDisclaimer =
+    "Publicar un hueco no alquila la cancha; el horario lo gestionás vos con el dueño o vía Pedir turno si está activo.";
 
   const [state, action, pending] = useActionState(
     async (_prev: State, formData: FormData) => {
@@ -500,6 +517,9 @@ export function CreateMatchForm({
                   />
                 </div>
               ) : null}
+              <p className="match-compose-disclaimer" role="note">
+                {huecoDisclaimer}
+              </p>
             </fieldset>
 
             <div className="match-compose-actions match-compose-actions-inline">
@@ -572,6 +592,10 @@ export function CreateMatchForm({
                 </div>
               ) : null}
             </fieldset>
+
+            <p className="match-compose-disclaimer" role="note">
+              {huecoDisclaimer}
+            </p>
 
             {isEdit ? (
               <fieldset className="match-compose-group">
@@ -709,10 +733,13 @@ export function CreateMatchForm({
             )}
 
             <fieldset className="match-compose-group">
-              <legend className="match-compose-legend">Precio</legend>
-              <p className="field-help">Lo que paga cada uno. Dejalo vacío si se arregla en la cancha.</p>
+              <legend className="match-compose-legend">Aporte / persona</legend>
+              <p className="field-help">
+                Lo que aporta cada jugador al grupo. No es el alquiler de la cancha. Dejalo vacío si se
+                arregla en el partido.
+              </p>
               <label htmlFor={costId}>
-                Precio / persona (COP)
+                Aporte / persona (COP)
                 <input
                   id={costId}
                   type="number"
@@ -735,23 +762,23 @@ export function CreateMatchForm({
                   Gratis
                 </button>
               </div>
+            </fieldset>
 
-              {venueId && sport && startsAt && durationMin && !isEdit && (
-                <PricePreview
+            {venueId && sport && startsAtIso && durationMin && !isEdit ? (
+              <fieldset className="match-compose-group">
+                <legend className="match-compose-legend">Tarifa de la cancha</legend>
+                <VenueRateHint
+                  key={`${venueId}-${sport}-${startsAtIso}-${durationMin}`}
                   venueId={venueId}
                   sport={sport}
-                  startsAt={datetimeLocalInZoneToDate(startsAt, city.timezone)?.toISOString() ?? ""}
+                  startsAt={startsAtIso}
                   durationMin={durationMin}
-                  currentPrice={calculatedPrice}
-                  onPriceChange={(price) => {
-                    setCalculatedPrice(price);
-                    if (useCalculatedPrice && price !== null) {
-                      setCostPerPerson(String(price));
-                    }
-                  }}
+                  canOverride={canOverrideVenueRate}
+                  showBookingLink={showBookingLink}
+                  bookingHref={bookingHref}
                 />
-              )}
-            </fieldset>
+              </fieldset>
+            ) : null}
 
             <fieldset className="match-compose-group">
               <legend className="match-compose-legend">Quién entra</legend>
@@ -855,7 +882,7 @@ export function CreateMatchForm({
               </dd>
             </div>
             <div>
-              <dt>Por persona</dt>
+              <dt>Aporte</dt>
               <dd>{priceLabel}</dd>
             </div>
           </dl>

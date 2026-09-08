@@ -13,12 +13,15 @@ export function trackEvent(name: string, params?: Record<string, string | number
   window.gtag("event", name, params);
 }
 
-/** Funnel monetización B2B (A5). Nombres estables para GA4. */
+/** Funnel monetización B2B (A5) + Pedir turno. Nombres estables para GA4. */
 export const FUNNEL_EVENTS = {
   venue_claim_submit: "venue_claim_submit",
   premium_paywall_view: "premium_paywall_view",
   nequi_proof_submit: "nequi_proof_submit",
   sub_activated: "sub_activated",
+  turno_start: "turno_start",
+  turno_proof_submit: "turno_proof_submit",
+  turno_approved: "turno_approved",
 } as const;
 
 export type FunnelEventName = (typeof FUNNEL_EVENTS)[keyof typeof FUNNEL_EVENTS];
@@ -62,4 +65,31 @@ export function trackSubActivated(params: {
   payment_method?: string;
 }) {
   trackEvent(FUNNEL_EVENTS.sub_activated, params);
+}
+
+/** Jugador abre /turno (inicio del funnel). */
+export function trackTurnoStart(params: {
+  venue_id: string;
+  venue_slug?: string;
+}) {
+  trackEvent(FUNNEL_EVENTS.turno_start, params);
+}
+
+/** Jugador envía pedido con comprobante (submit_venue_booking ok). */
+export function trackTurnoProofSubmit(params: {
+  venue_id: string;
+  venue_slug?: string;
+  sport?: string;
+  duration_min?: number;
+}) {
+  trackEvent(FUNNEL_EVENTS.turno_proof_submit, params);
+}
+
+/** Dueño aprueba el turno. */
+export function trackTurnoApproved(params: {
+  venue_id: string;
+  venue_slug?: string;
+  booking_id?: string;
+}) {
+  trackEvent(FUNNEL_EVENTS.turno_approved, params);
 }

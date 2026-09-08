@@ -1,6 +1,7 @@
 import { cache } from "react";
 import { cookies } from "next/headers";
 import { CITY_COOKIE, DEFAULT_CITY_SLUG } from "@/lib/constants";
+import { mapDayOccupancyRpcRow } from "@/lib/occupancy";
 import { createClient } from "@/lib/supabase/server";
 import type { MatchDetail, ProfileWithContact, VenueWithPremium } from "@/lib/types";
 import { venueHasActivePremium } from "@/lib/venue-premium";
@@ -282,16 +283,7 @@ export const getVenueDayOccupancy = cache(
     if (error) {
       throw error;
     }
-    return (data ?? []).map((row) => ({
-      match_id: row.match_id,
-      share_code: row.share_code,
-      starts_at: row.starts_at,
-      duration_min: row.duration_min,
-      sport: row.sport,
-      format: row.format,
-      open_slot_count: row.open_slot_count,
-      has_side_b: row.has_side_b,
-    }));
+    return (data ?? []).map((row) => mapDayOccupancyRpcRow(row));
   },
 );
 

@@ -6,11 +6,13 @@ import type { ReactNode } from "react";
 import { JsonLd, venueJsonLd } from "@/components/JsonLd";
 import { CopyAddressButton, VenueStickyCta } from "@/components/VenueDetailActions";
 import { MatchRow } from "@/components/MatchRow";
+import { VenueBookingCta } from "@/components/VenueBookingCta";
 import { VenueDayTimeline } from "@/components/VenueDayTimeline";
 import { VenueMapLazy } from "@/components/VenueMapLazy";
 import { VenueOwnerBlock } from "@/components/VenueOwnerBlock";
 import { VenuePricingSection } from "@/components/VenuePricingSection";
 import { VenueVerifiedBadge } from "@/components/VenueVerifiedBadge";
+import { venueHasUsableBookingPricing } from "@/lib/booking";
 import type { Sport } from "@/lib/constants";
 import {
   getActiveCity,
@@ -23,6 +25,7 @@ import {
   getVenuePublicPricing,
 } from "@/lib/data";
 import { cityDayBoundsFromLocal, zonedDateParts } from "@/lib/datetime";
+import { isFeatureEnabled } from "@/lib/feature-flags";
 import { sportLabel, surfaceLabel, venueKindLabel } from "@/lib/labels";
 import { safeHttpUrl } from "@/lib/safe-http-url";
 import { venuePhotoPublicUrl } from "@/lib/venue-photos";
@@ -119,14 +122,20 @@ export default async function CanchaPage({ params }: Props) {
     notFound();
   }
 
-  const [claimState, publicPricing] = await Promise.all([
+  const [claimState, publicPricing, bookingFlagOn] = await Promise.all([
     getVenueClaimState(venue.id, userId),
     getVenuePublicPricing(venue.id),
+    isFeatureEnabled("venue_booking"),
   ]);
   // Estado de reclamos: solo se puede reclamar si no hay dueño ni reclamo pendiente.
   const isVenueOwner = Boolean(userId) && venue.owner_id === userId;
   const canClaim = !venue.owner_id && !claimState.hasPendingClaim;
   const claimPendingForOthers = !isVenueOwner && claimState.hasPendingClaim;
+  const showBookingCta =
+    bookingFlagOn &&
+    Boolean(venue.owner_id) &&
+    Boolean(venue.booking_enabled) &&
+    venueHasUsableBookingPricing(publicPricing, venue.sports ?? undefined);
 
   const todayBounds = cityDayBoundsFromLocal(new Date().toISOString(), city.timezone);
   const tomorrowBounds = todayBounds
@@ -268,6 +277,7 @@ export default async function CanchaPage({ params }: Props) {
             <Link className="btn-flood" href={publishHref}>
               Publicar hueco aquí
             </Link>
+            {showBookingCta ? <VenueBookingCta venueSlug={venue.slug} /> : null}
             <a className="btn-ghost" href={directionsHref} target="_blank" rel="noopener noreferrer">
               Cómo llegar
             </a>
@@ -356,6 +366,11 @@ export default async function CanchaPage({ params }: Props) {
         pricing={publicPricing}
         todayYmd={todayYmd}
       />
+      {showBookingCta ? (
+        <div className="venue-pricing-booking-cta">
+          <VenueBookingCta venueSlug={venue.slug} variant="section" />
+        </div>
+      ) : null}
 
       {description ? (
         <section className="venue-notes-section" aria-labelledby="venue-notes-heading">

@@ -106,6 +106,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
           userId={userId}
           pendingCount={pendingCount}
           pendingInboxHref={pendingInbox.href}
+          isAdmin={isAdmin}
         />
       </body>
     </html>

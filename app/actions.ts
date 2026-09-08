@@ -36,12 +36,13 @@ import {
   resolveFormationIdInput,
 } from "@/lib/match-write";
 import {
-  occupancyReason,
   humanizeSideBError,
+  mapDayOccupancyRpcRow,
+  mapLookupOccupancyRpcRow,
+  occupancyReason,
   occupancyUserMessage,
   parseOccupancyShareCode,
   type OccupancyConflict,
-  type OccupancyHit,
   type VenueDayOccupancy,
 } from "@/lib/occupancy";
 import { createClient } from "@/lib/supabase/server";
@@ -66,36 +67,6 @@ export type MatchContactState = {
 
 type ServerClient = Awaited<ReturnType<typeof createClient>>;
 
-function mapOccupancyHit(row: {
-  match_id: string;
-  share_code: string;
-  host_id: string;
-  starts_at: string;
-  duration_min: number;
-  venue_id: string;
-  venue_name: string;
-  away_opened_by: string | null;
-  open_slot_count: number;
-  has_side_b: boolean;
-  sport?: string | null;
-  format?: string | null;
-}): OccupancyHit {
-  return {
-    match_id: row.match_id,
-    share_code: row.share_code,
-    host_id: row.host_id,
-    starts_at: row.starts_at,
-    duration_min: row.duration_min,
-    venue_id: row.venue_id,
-    venue_name: row.venue_name,
-    away_opened_by: row.away_opened_by ?? null,
-    open_slot_count: row.open_slot_count,
-    has_side_b: row.has_side_b,
-    sport: row.sport ?? "futbol",
-    format: row.format ?? null,
-  };
-}
-
 async function findVenueOccupancy(
   supabase: ServerClient,
   userId: string | null,
@@ -119,7 +90,7 @@ async function findVenueOccupancy(
   if (!row) {
     return null;
   }
-  const hit = mapOccupancyHit(row);
+  const hit = mapLookupOccupancyRpcRow(row);
   return { ...hit, reason: occupancyReason(userId, hit) };
 }
 
@@ -301,19 +272,28 @@ export async function createMatchAction(formData: FormData): Promise<MatchCompos
     return { error: "El partido se armó mal. Inténtalo de nuevo." };
   }
 
-  // Aplicar pricing (calcula según franjas + promos, o usa override si el dueño lo puso)
+  // Pricing best-effort: sin tarifa el hueco vive; override fallido sí hace rollback
   const overridePriceRaw = String(formData.get("override_price_cop") ?? "").trim();
   const overridePrice = overridePriceRaw ? Number(overridePriceRaw) : null;
+  const hasOverride = overridePrice !== null && Number.isFinite(overridePrice);
 
-  const { error: pricingError } = await supabase.rpc("apply_match_pricing", {
+  const { data: pricingResult, error: pricingError } = await supabase.rpc("apply_match_pricing", {
     p_match_id: match.id,
-    p_overridden_price_cop: overridePrice,
+    p_overridden_price_cop: hasOverride ? overridePrice : null,
   });
 
-  if (pricingError) {
+  const pricingApplied =
+    pricingResult !== null &&
+    typeof pricingResult === "object" &&
+    !Array.isArray(pricingResult) &&
+    pricingResult.applied === true;
+
+  if (hasOverride && (pricingError || !pricingApplied)) {
     await supabase.from("match_slots").delete().eq("match_id", match.id);
     await supabase.from("matches").delete().eq("id", match.id);
-    return { error: pricingError.message };
+    return {
+      error: pricingError?.message ?? "No se pudo aplicar el precio de la cancha.",
+    };
   }
 
   revalidatePath("/partidos");
@@ -376,16 +356,7 @@ export async function listVenueDayOccupancyAction(input: {
     return { items: [], error: error.message };
   }
 
-  const items: VenueDayOccupancy[] = (data ?? []).map((row) => ({
-    match_id: row.match_id,
-    share_code: row.share_code,
-    starts_at: row.starts_at,
-    duration_min: row.duration_min,
-    sport: row.sport,
-    format: row.format,
-    open_slot_count: row.open_slot_count,
-    has_side_b: row.has_side_b,
-  }));
+  const items: VenueDayOccupancy[] = (data ?? []).map((row) => mapDayOccupancyRpcRow(row));
 
   return { items };
 }

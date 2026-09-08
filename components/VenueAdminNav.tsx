@@ -7,6 +7,7 @@ export type VenueAdminNavCounts = {
   photos?: number;
   pendingPremium?: number;
   promotions?: number;
+  pendingTurnos?: number;
 };
 
 type Segment = {
@@ -71,6 +72,13 @@ export function VenueAdminNav({
       label: "Promos",
       count: counts.promotions ?? null,
       match: (path, t) => path.startsWith(`${base}/precios`) && t === "promos",
+    },
+    {
+      href: `${base}/turnos`,
+      label: "Turnos",
+      count: counts.pendingTurnos ?? null,
+      urgent: (n) => n > 0,
+      match: (path) => path.startsWith(`${base}/turnos`),
     },
     {
       href: `${base}/ingresos`,

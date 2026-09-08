@@ -13,11 +13,14 @@ export const PRIVACY_TITLE = "Política de privacidad";
 export const PRIVACY_DESCRIPTION =
   "Tratamiento de datos personales en BaFut conforme a la Ley 1581 de 2012 (habeas data) en Colombia: cuentas, reclamos de canchas y comprobantes de pago.";
 
-export type LegalAcceptVariant = "claim" | "premium";
+export type LegalAcceptVariant = "claim" | "premium" | "booking";
 
 export function legalAcceptErrorMessage(variant: LegalAcceptVariant = "claim"): string {
   if (variant === "premium") {
     return "Para enviar la solicitud premium tenés que aceptar los términos y la política de privacidad.";
+  }
+  if (variant === "booking") {
+    return "Para pedir el turno tenés que aceptar los términos y la política de privacidad.";
   }
   return "Para enviar el reclamo tenés que aceptar los términos y la política de privacidad.";
 }

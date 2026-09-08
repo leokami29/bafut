@@ -2,23 +2,33 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { RevenueDashboard } from "@/components/RevenueDashboard";
+import {
+  VenueBookingInbox,
+  type VenueBookingInboxRow,
+} from "@/components/VenueBookingInbox";
 import { VenueAdminNav } from "@/components/VenueAdminNav";
+import { withQueueAges } from "@/lib/admin-queues";
 import { requireUserId } from "@/lib/auth";
 import { getActiveCity, getVenueBySlug } from "@/lib/data";
 import { createClient } from "@/lib/supabase/server";
 import { robotsNoIndex } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: "Ingresos estimados",
+  title: "Turnos de la cancha",
   robots: robotsNoIndex,
 };
 
 type Props = { params: Promise<{ slug: string }> };
 
-export default async function VenueRevenuePage({ params }: Props) {
+const BOOKING_SELECT = `
+  id, venue_id, status, sport, starts_at, duration_min, final_cop,
+  payment_method, contact_whatsapp, proof_path, note, hold_expires_at,
+  reject_reason, created_at, decided_at
+`;
+
+export default async function VenueTurnosAdminPage({ params }: Props) {
   const { slug } = await params;
-  const { userId } = await requireUserId(`/canchas/${slug}/admin/ingresos`);
+  const { userId } = await requireUserId(`/canchas/${slug}/admin/turnos`);
   const city = await getActiveCity();
 
   if (!city) {
@@ -45,7 +55,7 @@ export default async function VenueRevenuePage({ params }: Props) {
       <main className="page page-narrow" id="main">
         <header className="page-head">
           <h1>Acceso denegado</h1>
-          <p>No tenés permisos para ver los ingresos de esta cancha.</p>
+          <p>No tenés permisos para revisar los turnos de esta cancha.</p>
         </header>
         <p className="foot-link">
           <Link href={`/canchas/${slug}`}>← Volver a la cancha</Link>
@@ -54,29 +64,14 @@ export default async function VenueRevenuePage({ params }: Props) {
     );
   }
 
-  // Cargar partidos del mes actual con pricing
-  const now = new Date();
-  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
-  const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59).toISOString();
-
-  const [{ data: matches }, { data: photos }, { count: promoCount }, { data: pendingReq }, { count: pendingTurnosCount }] =
+  const [{ data: bookings }, { data: photos }, { count: promoCount }, { data: pendingReq }] =
     await Promise.all([
       supabase
-        .from("matches")
-        .select(
-          `
-      id,
-      starts_at,
-      duration_min,
-      status,
-      match_slots (id),
-      matches_pricing_snapshot (final_cop, base_cop, discount_cop, promo_id)
-    `,
-        )
+        .from("venue_bookings")
+        .select(BOOKING_SELECT)
         .eq("venue_id", venue.id)
-        .gte("starts_at", startOfMonth)
-        .lte("starts_at", endOfMonth)
-        .order("starts_at", { ascending: true }),
+        .order("created_at", { ascending: false })
+        .limit(80),
       supabase.from("venue_photos").select("id").eq("venue_id", venue.id),
       supabase
         .from("venue_promotions")
@@ -90,12 +85,11 @@ export default async function VenueRevenuePage({ params }: Props) {
         .eq("status", "pending")
         .limit(1)
         .maybeSingle(),
-      supabase
-        .from("venue_bookings")
-        .select("id", { count: "exact", head: true })
-        .eq("venue_id", venue.id)
-        .eq("status", "pending"),
     ]);
+
+  const rows = (bookings ?? []) as VenueBookingInboxRow[];
+  const pendingRows = withQueueAges(rows.filter((b) => b.status === "pending"));
+  const historyRows = withQueueAges(rows.filter((b) => b.status !== "pending"));
 
   return (
     <main className="page page-venue-admin" id="main">
@@ -104,9 +98,9 @@ export default async function VenueRevenuePage({ params }: Props) {
       </p>
       <header className="page-head page-head-compact">
         <p className="eyebrow">Administración · {city.name}</p>
-        <h1>Ingresos · {venue.name}</h1>
+        <h1>Turnos · {venue.name}</h1>
         <p className="lede">
-          Partidos del mes con precios estimados según el snapshot al crear cada partido.
+          Revisá comprobantes, confirmá o rechazá pedidos. El hold de un pendiente es de 4 horas.
         </p>
       </header>
 
@@ -117,17 +111,25 @@ export default async function VenueRevenuePage({ params }: Props) {
             photos: photos?.length ?? 0,
             pendingPremium: pendingReq ? 1 : 0,
             promotions: promoCount ?? 0,
-            pendingTurnos: pendingTurnosCount ?? 0,
+            pendingTurnos: pendingRows.length,
           }}
         />
       </Suspense>
 
-      <RevenueDashboard
+      {!venue.booking_enabled ? (
+        <p className="field-help venue-booking-flag-hint">
+          Esta cancha todavía no acepta pedidos de turno. Activalo en{" "}
+          <Link href={`/canchas/${slug}/admin`}>Mesa</Link>.
+        </p>
+      ) : null}
+
+      <VenueBookingInbox
+        slug={slug}
         venueId={venue.id}
         venueName={venue.name}
-        matches={matches ?? []}
-        month={now.getMonth()}
-        year={now.getFullYear()}
+        timezone={city.timezone}
+        pending={pendingRows}
+        history={historyRows}
       />
     </main>
   );

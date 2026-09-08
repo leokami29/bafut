@@ -1,0 +1,229 @@
+/* Pedir turno — jugador (ficha CTA + stepper + mis turnos) */
+
+.page-venue-booking {
+  width: 100%;
+  max-width: 72rem;
+  margin-inline: auto;
+  padding-bottom: calc(5.5rem + env(safe-area-inset-bottom));
+}
+
+.venue-booking-cta-section {
+  display: grid;
+  gap: 0.45rem;
+  margin-top: 1rem;
+  justify-items: start;
+}
+
+.venue-booking-cta-hint {
+  margin: 0;
+  font-size: 0.85rem;
+  color: color-mix(in oklab, var(--ink) 58%, transparent);
+}
+
+.venue-detail-actions-primary .venue-booking-cta {
+  min-height: 2.75rem;
+}
+
+.venue-pricing-booking-cta {
+  margin-top: 0.85rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid color-mix(in oklab, var(--ink) 10%, transparent);
+}
+
+.venue-booking-step-label {
+  margin: 0.35rem 0 0;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--turf);
+}
+
+.venue-booking-rules {
+  margin-top: -0.35rem;
+}
+
+.venue-booking-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.venue-booking-days,
+.venue-booking-slots {
+  max-height: 14rem;
+  overflow-y: auto;
+  padding-bottom: 0.15rem;
+}
+
+.venue-booking-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-top: 1rem;
+}
+
+.venue-booking-empty {
+  margin: 0.5rem 0 0;
+  padding: 0.85rem 0.95rem;
+  background: color-mix(in oklab, var(--flood) 10%, var(--paper));
+  border-left: 3px solid color-mix(in oklab, var(--flood) 55%, transparent);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.venue-booking-pay-instructions {
+  display: grid;
+  gap: 0.75rem;
+  padding: 0.9rem 1rem;
+  background: color-mix(in oklab, var(--turf) 7%, var(--paper));
+  border-left: 3px solid var(--turf);
+}
+
+.venue-booking-pay-label {
+  display: block;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--turf);
+  margin-bottom: 0.2rem;
+}
+
+.venue-booking-pay-value {
+  font-weight: 650;
+  word-break: break-word;
+}
+
+.venue-booking-form .req-mark {
+  color: var(--bib);
+  font-weight: 700;
+}
+
+.venue-booking-form .field-optional {
+  font-weight: 400;
+  font-size: 0.85em;
+  color: color-mix(in oklab, var(--ink) 55%, transparent);
+}
+
+.venue-booking-success {
+  display: grid;
+  gap: 0.85rem;
+  margin-top: 1rem;
+  padding: 1.25rem 1.3rem;
+  background: color-mix(in oklab, var(--flood) 14%, var(--paper));
+  border-left: 3px solid var(--flood);
+}
+
+.venue-booking-success .subhead {
+  margin: 0;
+}
+
+.venue-booking-success-actions {
+  margin-top: 0.35rem;
+}
+
+.booking-price-preview {
+  margin-top: 0.5rem;
+}
+
+/* Mis turnos */
+.venue-booking-list {
+  margin-top: 0.5rem;
+}
+
+.venue-booking-card {
+  display: grid;
+  gap: 0.45rem;
+  padding: 0.95rem 1rem;
+  background: color-mix(in oklab, var(--paper) 94%, white);
+  border: 1px solid color-mix(in oklab, var(--ink) 12%, transparent);
+  border-left: 3px solid color-mix(in oklab, var(--ink) 28%, transparent);
+}
+
+.venue-booking-card.is-pending {
+  border-left-color: var(--flood);
+  background: color-mix(in oklab, var(--flood) 8%, var(--paper));
+}
+
+.venue-booking-card.is-confirmed {
+  border-left-color: var(--turf);
+}
+
+.venue-booking-card.is-rejected,
+.venue-booking-card.is-cancelled,
+.venue-booking-card.is-expired {
+  opacity: 0.88;
+}
+
+.venue-booking-card-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.45rem;
+}
+
+.venue-booking-card-venue {
+  font-weight: 650;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.venue-booking-card-venue:hover {
+  color: var(--turf);
+}
+
+.venue-booking-status {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--ink) 62%, transparent);
+}
+
+.venue-booking-status.is-pending {
+  color: var(--flood);
+}
+
+.venue-booking-status.is-confirmed {
+  color: var(--turf);
+}
+
+.venue-booking-card-when,
+.venue-booking-card-meta {
+  margin: 0;
+  font-size: 0.92rem;
+  color: color-mix(in oklab, var(--ink) 72%, transparent);
+}
+
+.venue-booking-card-reject {
+  margin: 0;
+  font-size: 0.88rem;
+  color: color-mix(in oklab, var(--bib) 85%, var(--ink));
+}
+
+.venue-booking-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  align-items: center;
+  margin-top: 0.25rem;
+}
+
+.venue-booking-cancel-form {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+@media (min-width: 720px) {
+  .venue-booking-days,
+  .venue-booking-slots {
+    max-height: none;
+  }
+
+  .venue-booking-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

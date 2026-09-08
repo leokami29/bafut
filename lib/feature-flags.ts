@@ -4,6 +4,7 @@ export const FEATURE_FLAG_KEYS = [
   "premium_paywall",
   "push_alerts",
   "directory_premium_boost",
+  "venue_booking",
 ] as const;
 
 export type FeatureFlagKey = (typeof FEATURE_FLAG_KEYS)[number];
@@ -12,7 +13,24 @@ const ENV_BY_KEY: Record<FeatureFlagKey, string> = {
   premium_paywall: "FEATURE_PREMIUM_PAYWALL",
   push_alerts: "FEATURE_PUSH_ALERTS",
   directory_premium_boost: "FEATURE_DIRECTORY_PREMIUM_BOOST",
+  venue_booking: "FEATURE_VENUE_BOOKING",
 };
+
+/**
+ * Default si no hay env ni fila DB.
+ * Excepción: `venue_booking` arranca OFF (kill-switch; además requiere venues.booking_enabled).
+ */
+const DEFAULT_BY_KEY: Record<FeatureFlagKey, boolean> = {
+  premium_paywall: true,
+  push_alerts: true,
+  directory_premium_boost: true,
+  venue_booking: false,
+};
+
+/** Default efectivo si no hay env ni fila DB (tests / docs). */
+export function featureFlagDefault(key: FeatureFlagKey): boolean {
+  return DEFAULT_BY_KEY[key];
+}
 
 /** Parsea FEATURE_* env: 0/false/off/no → false; 1/true/on/yes → true; vacío → null. */
 export function parseFeatureEnv(raw: string | undefined): boolean | null {
@@ -28,7 +46,7 @@ export function parseFeatureEnv(raw: string | undefined): boolean | null {
  * Kill-switch:
  * 1) Env FEATURE_* si está seteado (fuerza on/off; requiere restart).
  * 2) Fila DB `feature_flags` (toggle sin redeploy).
- * 3) Default true.
+ * 3) Default por key (casi siempre true; venue_booking false).
  */
 export async function isFeatureEnabled(key: FeatureFlagKey): Promise<boolean> {
   const fromEnv = parseFeatureEnv(process.env[ENV_BY_KEY[key]]);
@@ -45,7 +63,7 @@ export async function isFeatureEnabled(key: FeatureFlagKey): Promise<boolean> {
   } catch {
     // Si la tabla aún no existe o falla la query, no tumbar la app.
   }
-  return true;
+  return DEFAULT_BY_KEY[key];
 }
 
 export async function getFeatureFlags(

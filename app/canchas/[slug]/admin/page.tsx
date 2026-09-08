@@ -88,10 +88,17 @@ export default async function VenueAdminPage({ params, searchParams }: Props) {
     .eq("venue_id", venue.id)
     .eq("active", true);
 
+  const { count: pendingTurnosCount } = await supabase
+    .from("venue_bookings")
+    .select("id", { count: "exact", head: true })
+    .eq("venue_id", venue.id)
+    .eq("status", "pending");
+
   const pendingRequest =
     recentRequests?.find((r) => r.status === "pending") ?? null;
   const latestRequest = recentRequests?.[0] ?? null;
   const premiumPaywallEnabled = await isFeatureEnabled("premium_paywall");
+  const venueBookingFeatureEnabled = await isFeatureEnabled("venue_booking");
 
   if (!isOwner && !isAdmin) {
     return (
@@ -135,6 +142,7 @@ export default async function VenueAdminPage({ params, searchParams }: Props) {
             photos: photos?.length ?? 0,
             pendingPremium: pendingRequest ? 1 : 0,
             promotions: promoCount ?? 0,
+            pendingTurnos: pendingTurnosCount ?? 0,
           }}
         />
       </Suspense>
@@ -149,6 +157,8 @@ export default async function VenueAdminPage({ params, searchParams }: Props) {
         pendingRequest={pendingRequest}
         latestRequest={latestRequest}
         premiumPaywallEnabled={premiumPaywallEnabled}
+        venueBookingFeatureEnabled={venueBookingFeatureEnabled}
+        pendingTurnosCount={pendingTurnosCount ?? 0}
         cityCenter={{ lat: city.lat, lng: city.lng }}
         tab={tab}
       />

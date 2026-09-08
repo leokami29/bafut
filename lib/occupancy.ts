@@ -1,9 +1,11 @@
 export type OccupancyReason = "join" | "open_b" | "blocked" | "own";
 
+export type OccupancyBlockKind = "match" | "booking";
+
 export type OccupancyHit = {
-  match_id: string;
-  share_code: string;
-  host_id: string;
+  match_id: string | null;
+  share_code: string | null;
+  host_id: string | null;
   starts_at: string;
   duration_min: number;
   venue_id: string;
@@ -13,22 +15,96 @@ export type OccupancyHit = {
   has_side_b: boolean;
   sport: string;
   format: string | null;
+  block_kind: OccupancyBlockKind;
+  booking_id: string | null;
 };
+
+/** RPC `lookup_venue_occupancy` / `list_venue_day_occupancy` usan `kind` y ponen el id de booking en `match_id`. */
+export function occupancyBlockKindFromRpc(
+  kind: string | null | undefined,
+): OccupancyBlockKind {
+  return kind === "booking" ? "booking" : "match";
+}
+
+export function mapLookupOccupancyRpcRow(row: {
+  kind?: string | null;
+  match_id: string | null;
+  share_code: string | null;
+  host_id: string | null;
+  starts_at: string;
+  duration_min: number;
+  venue_id: string;
+  venue_name: string;
+  away_opened_by: string | null;
+  open_slot_count: number;
+  has_side_b: boolean;
+  sport?: string | null;
+  format?: string | null;
+}): OccupancyHit {
+  const block_kind = occupancyBlockKindFromRpc(row.kind);
+  const id = row.match_id ?? null;
+  return {
+    match_id: block_kind === "booking" ? null : id,
+    share_code: row.share_code ?? null,
+    host_id: row.host_id ?? null,
+    starts_at: row.starts_at,
+    duration_min: row.duration_min,
+    venue_id: row.venue_id,
+    venue_name: row.venue_name,
+    away_opened_by: row.away_opened_by ?? null,
+    open_slot_count: row.open_slot_count,
+    has_side_b: row.has_side_b,
+    sport: row.sport ?? "futbol",
+    format: row.format ?? null,
+    block_kind,
+    booking_id: block_kind === "booking" ? id : null,
+  };
+}
+
+export function mapDayOccupancyRpcRow(row: {
+  kind?: string | null;
+  match_id: string | null;
+  share_code: string | null;
+  starts_at: string;
+  duration_min: number;
+  sport?: string | null;
+  format?: string | null;
+  open_slot_count: number;
+  has_side_b: boolean;
+}): VenueDayOccupancy {
+  const block_kind = occupancyBlockKindFromRpc(row.kind);
+  const id = row.match_id ?? null;
+  return {
+    match_id: block_kind === "booking" ? null : id,
+    share_code: row.share_code ?? null,
+    starts_at: row.starts_at,
+    duration_min: row.duration_min,
+    sport: row.sport ?? "futbol",
+    format: row.format ?? null,
+    open_slot_count: row.open_slot_count,
+    has_side_b: row.has_side_b,
+    block_kind,
+    booking_id: block_kind === "booking" ? id : null,
+  };
+}
 
 export type OccupancyConflict = OccupancyHit & { reason: OccupancyReason };
 
 export type VenueDayOccupancy = {
-  match_id: string;
-  share_code: string;
+  match_id: string | null;
+  share_code: string | null;
   starts_at: string;
   duration_min: number;
   sport: string;
   format: string | null;
   open_slot_count: number;
   has_side_b: boolean;
+  block_kind: OccupancyBlockKind;
+  booking_id: string | null;
 };
 
 export function occupancyReason(userId: string | null | undefined, hit: OccupancyHit): OccupancyReason {
+  if (hit.block_kind === "booking") return "blocked";
   if (userId && hit.host_id === userId) return "own";
   if (hit.open_slot_count > 0) return "join";
   if (!hit.has_side_b) return "open_b";
@@ -37,6 +113,9 @@ export function occupancyReason(userId: string | null | undefined, hit: Occupanc
 
 export function occupancyUserMessage(conflict: OccupancyConflict) {
   const venue = conflict.venue_name || "esa cancha";
+  if (conflict.block_kind === "booking") {
+    return `Hay un turno en ${venue} a esa hora. Elegí otra franja.`;
+  }
   switch (conflict.reason) {
     case "own":
       return `Ya publicaste a esa hora en ${venue}. Editá o compartí el link; no lo publiques de nuevo.`;

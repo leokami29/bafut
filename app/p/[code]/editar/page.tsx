@@ -3,8 +3,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CreateMatchForm } from "@/components/CreateMatchForm";
 import { requireUserId } from "@/lib/auth";
-import { getMatchByCode, getVenuesByCity } from "@/lib/data";
+import { getIsAdmin, getMatchByCode, getVenuesByCity } from "@/lib/data";
 import { isoToDatetimeLocalInZone } from "@/lib/datetime";
+import { isFeatureEnabled } from "@/lib/feature-flags";
 import { isSport } from "@/lib/sport-rules";
 import { matchCanBeHostEdited, slotIsOpen } from "@/lib/types";
 import { robotsNoIndex } from "@/lib/seo";
@@ -26,7 +27,11 @@ export default async function EditarPartidoPage({ params }: Props) {
   }
 
   const canEdit = matchCanBeHostEdited(match, userId);
-  const venues = await getVenuesByCity(match.city_id);
+  const [venues, isPlatformAdmin, venueBookingFlagOn] = await Promise.all([
+    getVenuesByCity(match.city_id),
+    getIsAdmin(userId),
+    isFeatureEnabled("venue_booking"),
+  ]);
   const sport = isSport(match.sport) ? match.sport : "futbol";
 
   return (
@@ -55,6 +60,9 @@ export default async function EditarPartidoPage({ params }: Props) {
           city={match.cities}
           venues={venues}
           defaultVenueId={match.venue_id}
+          currentUserId={userId}
+          isPlatformAdmin={isPlatformAdmin}
+          venueBookingFlagOn={venueBookingFlagOn}
           edit={{
             matchId: match.id,
             shareCode: match.share_code,

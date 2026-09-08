@@ -129,7 +129,7 @@ export function RevenueDashboard({
                         )}
                       </>
                     ) : (
-                      <span className="revenue-match-no-price">Sin precio</span>
+                      <span className="revenue-match-no-price">Sin tarifa (solo hueco)</span>
                     )}
                   </div>
                 </li>

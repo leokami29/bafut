@@ -3,14 +3,14 @@
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
 
-Partidos abiertos y “falta un jugador” en Barranquilla. El organizador publica un hueco (cancha, hora, posición); alguien pide el cupo; el host confirma. BaFut no reserva canchas ni reemplaza WhatsApp: concentra la demanda y el link se comparte por donde ya se organizan.
+Partidos abiertos y “falta un jugador” en Barranquilla. El organizador publica un hueco (cancha, hora, posición); alguien pide el cupo; el host confirma. BaFut no reemplaza WhatsApp: concentra la demanda y el link se comparte por donde ya se organizan. Opcionalmente (flag off por defecto), el dueño puede activar **Pedir turno** para alquilar horario con comprobante — BaFut lista el pedido; el dueño confirma el pago.
 
 **Demo:** [bafut.macuttech.com](https://bafut.macuttech.com)
 
 ## Qué hace
 
 - Feed de partidos abiertos del día / ciudad
-- Publicar un partido con cancha, deporte, formato y cupos faltantes
+- Publicar un partido (hueco) con cancha, deporte, formato y cupos faltantes — **no requiere tarifas de cancha**; el aporte entre jugadores es opcional y distinto del alquiler
 - Pedir cupo y confirmación del host
 - Link compartible `/p/{codigo}` (pensado para WhatsApp)
 - Directorio de canchas (`/canchas`) con detalle y mapa
@@ -18,8 +18,9 @@ Partidos abiertos y “falta un jugador” en Barranquilla. El organizador publi
 - Selector de ciudad (cookie `bafut_city`; Barranquilla es la primera)
 - Auth por correo + clave (Supabase); email solo para recuperar clave / confirmar cuenta
 - Página de apoyo / donaciones opcionales (`/apoyar`)
+- **Pedir turno** (piloto, off por defecto): alquiler de horario con comprobante al dueño — **sí exige** precios del deporte, dueño y flags (`/canchas/[slug]/turno`, `/perfil/turnos`, Mesa → Turnos)
 
-**Fuera de alcance (por ahora):** pagos, chat in-app, reserva real con la cancha, app nativa.
+**Fuera de alcance (por ahora):** cobro entre jugadores del partido, chat in-app, app nativa, pasarela de pago automatizada.
 
 ## Stack
 
@@ -62,7 +63,7 @@ Requisitos: Node.js 20+ y un proyecto Supabase.
    | `SUPABASE_SERVICE_ROLE_KEY` | Prod (cron push/renewals) | Solo server; nunca `NEXT_PUBLIC_` |
    | `NEXT_PUBLIC_VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` | No* | Web Push (fase C); *obligatorias si `push_alerts` está on |
    | `VAPID_SUBJECT` | No | `mailto:` o `https:` del emisor |
-   | `FEATURE_*` | No | Pisa DB (`PREMIUM_PAYWALL`, `PUSH_ALERTS`, `DIRECTORY_PREMIUM_BOOST`) |
+   | `FEATURE_*` | No | Pisa DB (`PREMIUM_PAYWALL`, `PUSH_ALERTS`, `DIRECTORY_PREMIUM_BOOST`, `VENUE_BOOKING`) |
    | `RESEND_API_KEY` | No | Email renovaciones; sin esto → cola WhatsApp/admin |
 
 3. Aplica las migraciones en `supabase/migrations/` (orden de nombre de archivo) y, si hace falta datos base, `supabase/seed.sql`.
@@ -167,10 +168,11 @@ Authorization: Bearer <CRON_SECRET>
 Hoy:
 - `GET /api/cron/weekly-matches` — templates → partidos del día
 - `GET /api/cron/expire-subscriptions` — `venue_subscriptions` `active` → `expired` si `expires_at < now()`
+- `GET /api/cron/expire-booking-holds` — `venue_bookings` `pending` con hold vencido → `expired` (no-op si `venue_booking` está off)
 
 Helper: `lib/cron-auth.ts` (`requireCronSecret`). La respuesta solo incluye ids/conteos y mensajes de error de RPC (sin PII).
 
-En Railway/Vercel: variable `CRON_SECRET` + crons diarios que peguen ese header.
+En Railway/Vercel: variable `CRON_SECRET` + crons diarios (y periódico para holds de turno, p. ej. cada 15–30 min) que peguen ese header.
 
 ### Soft-delete de canchas
 
@@ -211,7 +213,39 @@ values ('<uuid-del-perfil>', 'super');
 6. Kill-switch: `update feature_flags set enabled=false where key='push_alerts';` (sin redeploy) o `FEATURE_PUSH_ALERTS=0`.
 7. iOS / WhatsApp: ver [docs/ios-pwa-push.md](./docs/ios-pwa-push.md).
 
-Flags DB: `premium_paywall`, `push_alerts`, `directory_premium_boost`.
+Flags DB: `premium_paywall`, `push_alerts`, `directory_premium_boost`, `venue_booking` (**default off**).
+
+### Pedir turno (`venue_booking`)
+
+Publicar un hueco (`/partidos/nuevo`) **no** requiere precios de cancha: el partido se publica igual; el snapshot de tarifa es best-effort. **Pedir turno** sí exige tarifas del deporte + dueño + flags.
+
+Kill-switch global + opt-in por cancha. CTA y flujos solo si **ambos** están on, la cancha tiene `owner_id` y pricing usable para el deporte.
+
+| Pieza | Detalle |
+| --- | --- |
+| Flag DB | `feature_flags.key = 'venue_booking'` (seed `enabled=false`) |
+| Env | `FEATURE_VENUE_BOOKING=1` / `0` (pisa DB; requiere restart) |
+| Opt-in cancha | `venues.booking_enabled` (toggle en Mesa del dueño) |
+| Jugador | `/canchas/[slug]/turno`, `/perfil/turnos` |
+| Dueño | Mesa → Turnos (`/canchas/[slug]/admin/turnos`) |
+| Cron | `GET /api/cron/expire-booking-holds` (Bearer `CRON_SECRET`) |
+| Hold | pedido `pending` bloquea franja **4h**; luego `expired` |
+
+**Activar piloto (ej. Padel Park):**
+
+```sql
+-- 1) Kill-switch global (staging primero)
+update public.feature_flags set enabled = true where key = 'venue_booking';
+
+-- 2) Opt-in de la cancha piloto
+update public.venues
+set booking_enabled = true
+where slug = 'padel-park' and deleted_at is null;
+```
+
+O forzá el flag con `FEATURE_VENUE_BOOKING=1` en el entorno y el mismo `UPDATE` de `booking_enabled`. Dejá prod en off hasta validar staging.
+
+**Smoke rápido:** sin flag o sin `booking_enabled` → sin CTA; con ambos on + precios del deporte → pedir turno con comprobante; pending bloquea partido/otro turno en la misma franja; approve/reject en inbox; cron expira holds vencidos.
 
 ### Rate limits / caps (DB)
 
@@ -219,6 +253,8 @@ Flags DB: `premium_paywall`, `push_alerts`, `directory_premium_boost`.
 | --- | --- |
 | Reclamar cancha | 5 / hora / usuario |
 | Subir foto | 20 / hora / usuario; máx. 12 fotos por cancha; 5 MB JPG/PNG/WEBP |
+| Pedir turno (submit) | 5 / hora / usuario |
+| Aprobar/rechazar turno (dueño) | 30 / hora / usuario |
 | Crear suscripción (admin) | 30 / hora |
 | Subscribe dueño (A2) | usar scope `venue_subscribe` en el RPC de solicitud |
 
@@ -265,7 +301,7 @@ Inserta una fila en `cities` y sus `venues`. No hace falta ramificar código. El
 
 ## Contribuir
 
-Issues y PRs son bienvenidos. Mantén el alcance acotado: el producto junta huecos y demanda; no es un booking engine.
+Issues y PRs son bienvenidos. Mantén el alcance acotado: el producto junta huecos y demanda; Pedir turno es opt-in del dueño, no el core.
 
 1. Fork y branch desde `main`
 2. `npm install` → `npm run lint` → `npm run build` si tocaste rutas o datos

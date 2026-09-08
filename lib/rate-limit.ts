@@ -12,6 +12,10 @@ export const RATE_LIMIT_SCOPES = {
   venueSubscribe: "venue_subscribe",
   /** Admin crea suscripción (create_venue_subscription). */
   venueSubscribeAdmin: "venue_subscribe_admin",
+  /** Jugador solicita reserva de cancha. */
+  venueBookingSubmit: "venue_booking_submit",
+  /** Dueño/admin aprueba o rechaza reserva. */
+  venueBookingDecide: "venue_booking_decide",
 } as const;
 
 export function isRateLimitError(message: string | null | undefined): boolean {
