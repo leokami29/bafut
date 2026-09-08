@@ -4,7 +4,7 @@ import { isFeatureEnabled } from "@/lib/feature-flags";
 import { createServiceClient } from "@/lib/supabase/admin";
 
 /**
- * Cron: venue_bookings pending con hold_expires_at < now() → expired.
+ * Cron: venue_bookings hold|pending con hold_expires_at < now() → expired.
  *
  * Protegido con CRON_SECRET (Bearer). Respuesta sin PII (solo conteo).
  * No-op si feature flag venue_booking está off.

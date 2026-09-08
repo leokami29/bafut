@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { requireUserId } from "@/lib/auth";
+import { isUuid } from "@/lib/ids";
 import { createClient } from "@/lib/supabase/server";
 
 export type RenewalActionState = { error?: string; ok?: boolean } | null;
@@ -21,7 +22,7 @@ export async function markRenewalSentAction(
   if (!admin) return { error: "Sin permiso." };
 
   const id = String(formData.get("reminder_id") ?? "").trim();
-  if (!id) return { error: "Recordatorio inválido." };
+  if (!isUuid(id)) return { error: "Recordatorio inválido." };
 
   const { error } = await supabase
     .from("subscription_renewal_reminders")
@@ -52,7 +53,7 @@ export async function skipRenewalAction(
   if (!admin) return { error: "Sin permiso." };
 
   const id = String(formData.get("reminder_id") ?? "").trim();
-  if (!id) return { error: "Recordatorio inválido." };
+  if (!isUuid(id)) return { error: "Recordatorio inválido." };
 
   const { error } = await supabase
     .from("subscription_renewal_reminders")

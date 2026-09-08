@@ -13,6 +13,9 @@ import {
   canPlayerCancelBooking,
   isBookingDuration,
   isBookingPaymentMethod,
+  isBookingDepositPct,
+  computeBookingDeposit,
+  normalizeBookingDepositPct,
   isWithinLeadTime,
   isWithinMaxDaysAhead,
   listBookingStartTimesLocal,
@@ -78,6 +81,49 @@ describe("isBookingDuration / payment", () => {
     expect(isBookingPaymentMethod("nequi")).toBe(true);
     expect(isBookingPaymentMethod("bank_transfer")).toBe(true);
     expect(isBookingPaymentMethod("cash")).toBe(false);
+  });
+});
+
+describe("computeBookingDeposit", () => {
+  it("acepta solo 30/50/70/100", () => {
+    expect(isBookingDepositPct(30)).toBe(true);
+    expect(isBookingDepositPct(50)).toBe(true);
+    expect(isBookingDepositPct(70)).toBe(true);
+    expect(isBookingDepositPct(100)).toBe(true);
+    expect(isBookingDepositPct(40)).toBe(false);
+    expect(normalizeBookingDepositPct(undefined)).toBe(100);
+    expect(normalizeBookingDepositPct(70)).toBe(70);
+  });
+
+  it("redondea como el RPC: round(final * pct / 100)", () => {
+    expect(computeBookingDeposit(100_000, 100)).toEqual({
+      depositCop: 100_000,
+      remainderCop: 0,
+    });
+    expect(computeBookingDeposit(100_000, 50)).toEqual({
+      depositCop: 50_000,
+      remainderCop: 50_000,
+    });
+    expect(computeBookingDeposit(100_000, 30)).toEqual({
+      depositCop: 30_000,
+      remainderCop: 70_000,
+    });
+    expect(computeBookingDeposit(100_000, 70)).toEqual({
+      depositCop: 70_000,
+      remainderCop: 30_000,
+    });
+    // 33333 * 0.3 = 9999.9 → 10000
+    expect(computeBookingDeposit(33_333, 30)).toEqual({
+      depositCop: 10_000,
+      remainderCop: 23_333,
+    });
+  });
+
+  it("pct inválido cae a 100%", () => {
+    expect(computeBookingDeposit(80_000, 40)).toEqual({
+      depositCop: 80_000,
+      remainderCop: 0,
+    });
   });
 });
 
@@ -227,6 +273,25 @@ describe("whatsapp + owner notify", () => {
     expect(msg).toContain("573001234567");
     const href = bookingOwnerNotifyHref("3009876543", msg);
     expect(href).toMatch(/^https:\/\/wa\.me\/573009876543\?text=/);
+  });
+});
+
+describe("booking price changed guard", () => {
+  it("parsea BOOKING_PRICE_CHANGED:final:deposit", async () => {
+    const {
+      parseBookingPriceChanged,
+      isBookingPriceChangedError,
+      bookingPriceChangedUserMessage,
+    } = await import("@/lib/booking");
+    expect(parseBookingPriceChanged("BOOKING_PRICE_CHANGED:56000:28000")).toEqual({
+      finalCop: 56000,
+      depositCop: 28000,
+    });
+    expect(isBookingPriceChangedError("BOOKING_PRICE_CHANGED:56000:28000")).toBe(true);
+    expect(isBookingPriceChangedError("Cancha no encontrada.")).toBe(false);
+    expect(bookingPriceChangedUserMessage({ finalCop: 56000, depositCop: 28000 })).toContain(
+      "28.000",
+    );
   });
 });
 

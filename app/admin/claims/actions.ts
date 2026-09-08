@@ -2,14 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 import { requireUserId } from "@/lib/auth";
-import { createClient } from "@/lib/supabase/server";
+import { isUuid } from "@/lib/ids";
 import { validateClaimProofChecklist } from "@/lib/venue-claims";
 
 export type ClaimReviewState = { ok?: true; error?: string };
-
-function isUuid(value: string) {
-  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
-}
 
 function formFlag(formData: FormData, key: string): boolean {
   const raw = String(formData.get(key) ?? "").toLowerCase();
@@ -52,7 +48,7 @@ export async function rejectVenueClaimAction(
   const reason = String(formData.get("reason") ?? "").trim().slice(0, 300);
   if (!isUuid(claimId)) return { error: "Reclamo no válido." };
 
-  const supabase = await createClient();
+  const { supabase } = await requireUserId("/admin/claims");
   const { error } = await supabase.rpc("reject_venue_claim", {
     p_claim_id: claimId,
     p_reason: reason || undefined,

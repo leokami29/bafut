@@ -8,6 +8,8 @@ import { formatMoney, formatWhen } from "@/lib/format";
 import { normalizeWhatsapp, whatsappChatHref } from "@/lib/whatsapp-contact";
 
 export const BOOKING_HOLD_HOURS = 4;
+/** Soft hold al entrar al pago (espejo SQL start_venue_booking_hold). */
+export const BOOKING_SOFT_HOLD_MINUTES = 8;
 export const BOOKING_MIN_LEAD_HOURS = 2;
 export const BOOKING_MAX_HORIZON_DAYS = 14;
 export const BOOKING_CANCEL_CONFIRMED_LEAD_HOURS = 12;
@@ -21,6 +23,7 @@ export const BOOKING_DURATIONS = [30, 60, 90] as const;
 export type BookingDurationMin = (typeof BOOKING_DURATIONS)[number];
 
 export const BOOKING_STATUSES = [
+  "hold",
   "pending",
   "confirmed",
   "rejected",
@@ -29,8 +32,32 @@ export const BOOKING_STATUSES = [
 ] as const;
 export type BookingStatus = (typeof BOOKING_STATUSES)[number];
 
+/** Código cuando el soft hold venció o no coincide con la franja. */
+export const BOOKING_HOLD_EXPIRED_CODE = "BOOKING_HOLD_EXPIRED";
+
+export function isBookingHoldExpiredError(msg: string | undefined | null): boolean {
+  const raw = (msg ?? "").trim();
+  if (!raw) return false;
+  if (raw === BOOKING_HOLD_EXPIRED_CODE) return true;
+  const lower = raw.toLowerCase();
+  return (
+    lower.includes("apartamento venció") ||
+    lower.includes("apartamento vencio") ||
+    lower.includes("tiempo para pagar") ||
+    lower.includes("hold expired")
+  );
+}
+
+export function bookingHoldExpiredUserMessage(): string {
+  return "Se acabó el tiempo para pagar (8 min). Elegí de nuevo el horario.";
+}
+
 export const BOOKING_PAYMENT_METHODS = ["nequi", "bank_transfer"] as const;
 export type BookingPaymentMethod = (typeof BOOKING_PAYMENT_METHODS)[number];
+
+/** Abono al reservar (% del alquiler). 100 = pago completo (comportamiento histórico). */
+export const BOOKING_DEPOSIT_PCTS = [30, 50, 70, 100] as const;
+export type BookingDepositPct = (typeof BOOKING_DEPOSIT_PCTS)[number];
 
 /** WhatsApp CO móvil: 573XXXXXXXXX */
 export const BOOKING_WHATSAPP_RE = /^573[0-9]{9}$/;
@@ -64,6 +91,30 @@ export function isBookingDuration(value: number): value is BookingDurationMin {
 
 export function isBookingPaymentMethod(value: string): value is BookingPaymentMethod {
   return (BOOKING_PAYMENT_METHODS as readonly string[]).includes(value);
+}
+
+export function isBookingDepositPct(value: number): value is BookingDepositPct {
+  return (BOOKING_DEPOSIT_PCTS as readonly number[]).includes(value);
+}
+
+/**
+ * Abono desde el % del venue. Mismo redondeo que el RPC:
+ * `round(final_cop * deposit_pct / 100)`.
+ */
+export function computeBookingDeposit(
+  finalCop: number,
+  depositPct: number,
+): { depositCop: number; remainderCop: number } {
+  const pct = isBookingDepositPct(depositPct) ? depositPct : 100;
+  const depositCop = Math.round((finalCop * pct) / 100);
+  return { depositCop, remainderCop: finalCop - depositCop };
+}
+
+export function normalizeBookingDepositPct(
+  value: number | null | undefined,
+): BookingDepositPct {
+  if (value != null && isBookingDepositPct(value)) return value;
+  return 100;
 }
 
 export function occupyEndMs(interval: OccupyInterval): number {
@@ -314,15 +365,23 @@ export type BookingOwnerNotifyInput = {
   whenLabel: string;
   durationMin: number;
   finalCop: number;
+  depositCop?: number;
+  depositPct?: number;
   playerWhatsapp: string;
 };
 
 /** Texto prearmado para avisar al dueño tras submit (CTA WhatsApp). */
 export function bookingOwnerNotifyMessage(input: BookingOwnerNotifyInput): string {
-  const amount = formatBookingMoney(input.finalCop);
+  const total = formatBookingMoney(input.finalCop);
+  const depositPct = input.depositPct ?? 100;
+  const depositCop = input.depositCop ?? input.finalCop;
+  const moneyBit =
+    depositPct < 100
+      ? `abono ${depositPct}% ${formatBookingMoney(depositCop)} (total ${total})`
+      : total;
   return (
     `Hola! Pedí una reserva en ${input.venueName} (${input.sportLabel}) ` +
-    `${input.whenLabel} · ${input.durationMin} min · ${amount}. ` +
+    `${input.whenLabel} · ${input.durationMin} min · ${moneyBit}. ` +
     `Ya subí el comprobante en BaFut. Mi WhatsApp: ${input.playerWhatsapp}.`
   );
 }
@@ -336,13 +395,63 @@ export function bookingOwnerNotifyHref(
   return whatsappChatHref(digits, message);
 }
 
+/** Código estable del RPC cuando tarifa/promo/% abono cambió entre preview y submit. */
+export const BOOKING_PRICE_CHANGED_PREFIX = "BOOKING_PRICE_CHANGED:";
+
+export type BookingPriceChangedAmounts = {
+  finalCop: number;
+  depositCop: number;
+};
+
+/** Parsea `BOOKING_PRICE_CHANGED:final:deposit` del RPC. */
+export function parseBookingPriceChanged(
+  msg: string | undefined | null,
+): BookingPriceChangedAmounts | null {
+  const raw = (msg ?? "").trim();
+  if (!raw.startsWith(BOOKING_PRICE_CHANGED_PREFIX)) return null;
+  const rest = raw.slice(BOOKING_PRICE_CHANGED_PREFIX.length);
+  const [finalRaw, depositRaw] = rest.split(":");
+  const finalCop = Number(finalRaw);
+  const depositCop = Number(depositRaw);
+  if (!Number.isFinite(finalCop) || !Number.isFinite(depositCop)) return null;
+  if (finalCop < 0 || depositCop < 0) return null;
+  return { finalCop, depositCop };
+}
+
+export function isBookingPriceChangedError(msg: string | undefined | null): boolean {
+  if (parseBookingPriceChanged(msg)) return true;
+  const lower = (msg ?? "").toLowerCase();
+  return (
+    lower.includes("precio cambió") ||
+    lower.includes("precio cambio") ||
+    lower.includes("monto cambió") ||
+    lower.includes("monto cambio")
+  );
+}
+
+export function bookingPriceChangedUserMessage(
+  amounts?: BookingPriceChangedAmounts | null,
+): string {
+  if (amounts) {
+    return (
+      `El precio cambió mientras pagabas. ` +
+      `Ahora el abono es ${formatBookingMoney(amounts.depositCop)} ` +
+      `(total ${formatBookingMoney(amounts.finalCop)}). ` +
+      `Revisá el monto antes de enviar el comprobante.`
+    );
+  }
+  return (
+    "El precio cambió mientras pagabas. Revisá el nuevo monto antes de enviar el comprobante."
+  );
+}
+
 /** Cancel jugador: pending siempre; confirmed solo si ≥12h antes del inicio. */
 export function canPlayerCancelBooking(
   status: string,
   startsAtIso: string,
   nowMs: number = Date.now(),
 ): boolean {
-  if (status === "pending") return true;
+  if (status === "hold" || status === "pending") return true;
   if (status === "confirmed") {
     const startsAtMs = Date.parse(startsAtIso);
     if (Number.isNaN(startsAtMs)) return false;

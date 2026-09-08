@@ -2,17 +2,19 @@
 
 import { revalidatePath } from "next/cache";
 import { requireUserId } from "@/lib/auth";
+import { isBookingDepositPct } from "@/lib/booking";
 import { BOOKING_PROOFS_BUCKET } from "@/lib/booking-proofs";
 import { isFeatureEnabled } from "@/lib/feature-flags";
-import { createClient } from "@/lib/supabase/server";
+import { isUuid } from "@/lib/ids";
 
 export type VenueBookingReviewState = { ok?: true; error?: string };
 export type SetBookingEnabledState = { ok?: true; enabled?: boolean; error?: string };
+export type SetBookingDepositPctState = {
+  ok?: true;
+  depositPct?: number;
+  error?: string;
+};
 export type BookingProofUrlState = { url?: string; error?: string };
-
-function isUuid(value: string) {
-  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
-}
 
 function formFlag(formData: FormData, key: string): boolean {
   const raw = String(formData.get(key) ?? "").toLowerCase();
@@ -89,6 +91,35 @@ export async function setVenueBookingEnabledAction(
 
   await revalidateTurnos(slug);
   return { ok: true, enabled };
+}
+
+/** Dueño/admin: set_venue_booking_deposit_pct */
+export async function setVenueBookingDepositPctAction(
+  slug: string,
+  _prev: SetBookingDepositPctState | undefined,
+  formData: FormData,
+): Promise<SetBookingDepositPctState> {
+  const venueId = String(formData.get("venue_id") ?? "").trim();
+  if (!isUuid(venueId)) return { error: "Cancha no válida." };
+
+  if (!(await isFeatureEnabled("venue_booking"))) {
+    return { error: "Las reservas no están disponibles ahora (flag global)." };
+  }
+
+  const depositPct = Number(formData.get("booking_deposit_pct") ?? NaN);
+  if (!isBookingDepositPct(depositPct)) {
+    return { error: "El abono debe ser 30%, 50%, 70% o 100%." };
+  }
+
+  const { supabase } = await requireUserId(`/canchas/${slug}/admin`);
+  const { error } = await supabase.rpc("set_venue_booking_deposit_pct", {
+    p_venue_id: venueId,
+    p_deposit_pct: depositPct,
+  });
+  if (error) return { error: error.message };
+
+  await revalidateTurnos(slug);
+  return { ok: true, depositPct };
 }
 
 /**

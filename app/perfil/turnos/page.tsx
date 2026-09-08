@@ -23,6 +23,8 @@ function mapRow(row: {
   starts_at: string;
   duration_min: number;
   final_cop: number | null;
+  deposit_pct: number | null;
+  deposit_cop: number | null;
   payment_method: string;
   hold_expires_at: string | null;
   reject_reason: string | null;
@@ -38,6 +40,8 @@ function mapRow(row: {
     starts_at: row.starts_at,
     duration_min: row.duration_min,
     final_cop: row.final_cop,
+    deposit_pct: row.deposit_pct,
+    deposit_cop: row.deposit_cop,
     payment_method: row.payment_method,
     hold_expires_at: row.hold_expires_at,
     reject_reason: row.reject_reason,
@@ -56,7 +60,7 @@ export default async function MisTurnosPage() {
   const { data, error } = await supabase
     .from("venue_bookings")
     .select(
-      "id, status, sport, starts_at, duration_min, final_cop, payment_method, hold_expires_at, reject_reason, venues ( name, slug, cities ( timezone ) )",
+      "id, status, sport, starts_at, duration_min, final_cop, deposit_pct, deposit_cop, payment_method, hold_expires_at, reject_reason, venues ( name, slug, cities ( timezone ) )",
     )
     .eq("player_id", userId)
     .order("starts_at", { ascending: false })
@@ -68,7 +72,8 @@ export default async function MisTurnosPage() {
 
   const bookings = (data ?? [])
     .map((row) => mapRow(row as Parameters<typeof mapRow>[0]))
-    .filter((row): row is PlayerBookingRow => Boolean(row));
+    .filter((row): row is PlayerBookingRow => Boolean(row))
+    .filter((row) => row.status !== "hold");
 
   return (
     <main className="page page-my-matches my-matches-page page-venue-bookings" id="main">

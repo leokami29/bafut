@@ -1,4 +1,6 @@
 import { supabaseUrl } from "@/lib/env";
+import { isUuid } from "@/lib/ids";
+import { cleanStorageObjectPath } from "@/lib/storage-path";
 
 export const VENUE_PHOTOS_BUCKET = "venue-photos";
 
@@ -18,9 +20,22 @@ export function venuePhotoObjectPath(venueId: string, fileName: string): string 
   return `${venueId}/${rand}.${ext === "jpeg" ? "jpg" : ext}`;
 }
 
+export function isVenuePhotoPathForVenue(path: string, venueId: string): boolean {
+  if (!isUuid(venueId)) return false;
+  const clean = cleanStorageObjectPath(path);
+  if (!clean) return false;
+  const prefix = `${venueId}/`;
+  if (!clean.startsWith(prefix)) return false;
+  const rest = clean.slice(prefix.length);
+  return rest.length > 0 && !rest.includes("/") && /\.(jpe?g|png|webp)$/i.test(rest);
+}
+
 /** URL pública del bucket público venue-photos (sin depender de crear links firmados). */
 export function venuePhotoPublicUrl(path: string): string {
-  const clean = path.replace(/^\/+/, "");
+  const clean = cleanStorageObjectPath(path);
+  if (!clean) {
+    return `${supabaseUrl().replace(/\/+$/, "")}/storage/v1/object/public/${VENUE_PHOTOS_BUCKET}/invalid`;
+  }
   return `${supabaseUrl().replace(/\/+$/, "")}/storage/v1/object/public/${VENUE_PHOTOS_BUCKET}/${clean}`;
 }
 

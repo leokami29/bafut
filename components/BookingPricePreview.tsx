@@ -1,7 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { formatBookingMoney } from "@/lib/booking";
+import {
+  computeBookingDeposit,
+  formatBookingMoney,
+  normalizeBookingDepositPct,
+  type BookingDepositPct,
+} from "@/lib/booking";
 import { createClient } from "@/lib/supabase/client";
 
 type BookingPricePreviewProps = {
@@ -10,8 +15,14 @@ type BookingPricePreviewProps = {
   /** ISO instant del inicio. */
   startsAtIso: string;
   durationMin: number;
+  /** % de abono inicial (página); se refresca en vivo desde venues. */
+  depositPct?: number;
+  /** Fuerza un recálculo (p. ej. tras BOOKING_PRICE_CHANGED). */
+  refreshKey?: number;
   onPreviewChange?: (preview: {
     finalCop: number | null;
+    depositCop: number | null;
+    depositPct: BookingDepositPct;
     errors: string[];
     minMinutes: number | null;
   }) => void;
@@ -26,14 +37,19 @@ type PreviewResult = {
   errors: string[];
 };
 
-/** Precio del alquiler (sin override): mismo RPC que partidos. */
+/** Precio del alquiler (sin override): mismo RPC que partidos + abono vivo del venue. */
 export function BookingPricePreview({
   venueId,
   sport,
   startsAtIso,
   durationMin,
+  depositPct: depositPctProp = 100,
+  refreshKey = 0,
   onPreviewChange,
 }: BookingPricePreviewProps) {
+  const [depositPct, setDepositPct] = useState<BookingDepositPct>(
+    normalizeBookingDepositPct(depositPctProp),
+  );
   const [preview, setPreview] = useState<PreviewResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -41,11 +57,21 @@ export function BookingPricePreview({
   onChangeRef.current = onPreviewChange;
 
   useEffect(() => {
+    setDepositPct(normalizeBookingDepositPct(depositPctProp));
+  }, [depositPctProp]);
+
+  useEffect(() => {
     if (!venueId || !sport || !startsAtIso || durationMin <= 0) {
       setPreview(null);
       setLoading(false);
       setError(null);
-      onChangeRef.current?.({ finalCop: null, errors: [], minMinutes: null });
+      onChangeRef.current?.({
+        finalCop: null,
+        depositCop: null,
+        depositPct,
+        errors: [],
+        minMinutes: null,
+      });
       return;
     }
 
@@ -54,39 +80,64 @@ export function BookingPricePreview({
     setError(null);
     setPreview(null);
     // Bloquear submit mientras recalcula (finalCop null / sin tarifa usable).
-    onChangeRef.current?.({ finalCop: null, errors: [], minMinutes: null });
+    onChangeRef.current?.({
+      finalCop: null,
+      depositCop: null,
+      depositPct,
+      errors: [],
+      minMinutes: null,
+    });
 
     const supabase = createClient();
     void (async () => {
-      const { data, error: rpcError } = await supabase.rpc("preview_match_price", {
-        p_venue_id: venueId,
-        p_sport: sport,
-        p_starts_at: startsAtIso,
-        p_duration_min: durationMin,
-      });
+      const [priceRes, venueRes] = await Promise.all([
+        supabase.rpc("preview_match_price", {
+          p_venue_id: venueId,
+          p_sport: sport,
+          p_starts_at: startsAtIso,
+          p_duration_min: durationMin,
+        }),
+        supabase
+          .from("venues")
+          .select("booking_deposit_pct")
+          .eq("id", venueId)
+          .maybeSingle(),
+      ]);
       if (cancelled) return;
       setLoading(false);
-      if (rpcError) {
-        setError(rpcError.message);
+
+      const livePct = normalizeBookingDepositPct(
+        venueRes.data?.booking_deposit_pct ?? depositPctProp,
+      );
+      setDepositPct(livePct);
+
+      if (priceRes.error) {
+        setError(priceRes.error.message);
         setPreview(null);
         onChangeRef.current?.({
           finalCop: null,
-          errors: [rpcError.message],
+          depositCop: null,
+          depositPct: livePct,
+          errors: [priceRes.error.message],
           minMinutes: null,
         });
         return;
       }
-      const typed = data as PreviewResult;
+      const typed = priceRes.data as PreviewResult;
       const errors = typed.errors ?? [];
       const hasErrors = errors.length > 0;
       const finalCop =
         hasErrors || typed.final_cop == null || typed.final_cop <= 0
           ? null
           : typed.final_cop;
+      const depositCop =
+        finalCop == null ? null : computeBookingDeposit(finalCop, livePct).depositCop;
       setPreview(typed);
       setError(null);
       onChangeRef.current?.({
         finalCop,
+        depositCop,
+        depositPct: livePct,
         errors,
         minMinutes: typed.min_minutes ?? null,
       });
@@ -95,7 +146,12 @@ export function BookingPricePreview({
     return () => {
       cancelled = true;
     };
-  }, [venueId, sport, startsAtIso, durationMin]);
+  }, [venueId, sport, startsAtIso, durationMin, depositPctProp, refreshKey]);
+
+  const depositBreakdown =
+    preview && preview.final_cop > 0
+      ? computeBookingDeposit(preview.final_cop, depositPct)
+      : null;
 
   return (
     <div className="booking-price-preview price-preview">
@@ -122,10 +178,28 @@ export function BookingPricePreview({
               <strong>−{formatBookingMoney(preview.discount_cop)}</strong>
             </div>
           ) : null}
-          <div className="price-preview-row price-preview-final">
-            <span>Total a pagar</span>
+          <div className="price-preview-row">
+            <span>Total franja</span>
             <strong>{formatBookingMoney(preview.final_cop)}</strong>
           </div>
+          {depositBreakdown ? (
+            <>
+              <div className="price-preview-row price-preview-final">
+                <span>
+                  {depositPct < 100
+                    ? `Abono ${depositPct}% a pagar ahora`
+                    : "A pagar ahora"}
+                </span>
+                <strong>{formatBookingMoney(depositBreakdown.depositCop)}</strong>
+              </div>
+              {depositPct < 100 ? (
+                <div className="price-preview-row">
+                  <span>Resto en la cancha</span>
+                  <strong>{formatBookingMoney(depositBreakdown.remainderCop)}</strong>
+                </div>
+              ) : null}
+            </>
+          ) : null}
           {(preview.errors?.length ?? 0) > 0 ? (
             <p className="form-error" role="alert">
               Esta cancha no tiene tarifa para ese horario. Probá otro día/hora o

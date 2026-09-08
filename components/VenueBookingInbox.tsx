@@ -28,6 +28,9 @@ export type VenueBookingInboxRow = {
   starts_at: string;
   duration_min: number;
   final_cop: number;
+  deposit_pct: number;
+  deposit_cop: number;
+  amount_cop: number;
   payment_method: string;
   contact_whatsapp: string;
   proof_path: string;
@@ -144,6 +147,12 @@ function BookingRow({
   const pending = booking.status === "pending";
   const wa = playerContactHref(booking, venueName, timezone);
   const error = approveState?.error ?? rejectState?.error;
+  const depositPct = booking.deposit_pct ?? 100;
+  const depositCop = booking.deposit_cop ?? booking.amount_cop ?? booking.final_cop;
+  const moneyLabel =
+    depositPct < 100
+      ? `Abono ${formatBookingMoney(depositCop)} · Total ${formatBookingMoney(booking.final_cop)}`
+      : formatBookingMoney(booking.final_cop);
 
   useEffect(() => {
     if (!approveState?.ok) return;
@@ -173,11 +182,11 @@ function BookingRow({
           </h3>
           <p className="planilla-sub">
             {booking.duration_min} min · {bookingPaymentMethodLabel(booking.payment_method)} ·{" "}
-            {formatBookingMoney(booking.final_cop)}
+            {moneyLabel}
           </p>
         </div>
         <div className="planilla-tags">
-          <span className="planilla-price">{formatBookingMoney(booking.final_cop)}</span>
+          <span className="planilla-price">{moneyLabel}</span>
           {pending ? (
             <span className={`planilla-age planilla-age-${booking.urgency}`}>
               en cola {booking.ageLabel}
@@ -202,6 +211,22 @@ function BookingRow({
 
         <div className="planilla-content">
           <dl className="planilla-facts">
+            <div>
+              <dt>Total franja</dt>
+              <dd>{formatBookingMoney(booking.final_cop)}</dd>
+            </div>
+            <div>
+              <dt>
+                {depositPct < 100 ? `Abono ${depositPct}% (comprobante)` : "Monto comprobante"}
+              </dt>
+              <dd>{formatBookingMoney(depositCop)}</dd>
+            </div>
+            {depositPct < 100 ? (
+              <div>
+                <dt>Resto en cancha</dt>
+                <dd>{formatBookingMoney(booking.final_cop - depositCop)}</dd>
+              </div>
+            ) : null}
             <div>
               <dt>WhatsApp jugador</dt>
               <dd>

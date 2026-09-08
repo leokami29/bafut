@@ -1,4 +1,6 @@
 import { supabaseUrl } from "@/lib/env";
+import { isUuid } from "@/lib/ids";
+import { cleanStorageObjectPath, isSafeStorageObjectPath } from "@/lib/storage-path";
 
 export const BOOKING_PROOFS_BUCKET = "venue-booking-proofs";
 
@@ -26,6 +28,24 @@ export function bookingProofObjectPath(
   return `${venueId}/${userId}/${rand}.${normalized}`;
 }
 
+/**
+ * Espejo del check RPC: path bajo venueId/userId/, sin `..`.
+ * Acepta paths ya subidos por el mismo jugador (reuso de comprobante).
+ */
+export function isBookingProofPathOwned(
+  path: string,
+  venueId: string,
+  userId: string,
+): boolean {
+  if (!isUuid(venueId) || !isUuid(userId)) return false;
+  const clean = cleanStorageObjectPath(path);
+  if (!clean) return false;
+  const prefix = `${venueId}/${userId}/`;
+  if (!clean.startsWith(prefix)) return false;
+  const rest = clean.slice(prefix.length);
+  return rest.length > 0 && !rest.includes("/") && /\.(jpe?g|png|webp|pdf)$/i.test(rest);
+}
+
 export function validateBookingProofFile(
   file: File,
 ): { error: string } | { ok: true } {
@@ -40,6 +60,9 @@ export function validateBookingProofFile(
 
 /** Path interno del API de Storage (bucket privado). */
 export function bookingProofStorageApiPath(path: string): string {
-  const clean = path.replace(/^\/+/, "");
+  const clean = cleanStorageObjectPath(path);
+  if (!clean || !isSafeStorageObjectPath(clean)) {
+    throw new Error("Ruta de comprobante no válida.");
+  }
   return `${supabaseUrl().replace(/\/+$/, "")}/storage/v1/object/${BOOKING_PROOFS_BUCKET}/${clean}`;
 }

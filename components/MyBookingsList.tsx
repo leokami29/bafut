@@ -23,6 +23,8 @@ export type PlayerBookingRow = {
   starts_at: string;
   duration_min: number;
   final_cop: number | null;
+  deposit_pct: number | null;
+  deposit_cop: number | null;
   payment_method: string;
   hold_expires_at: string | null;
   reject_reason: string | null;
@@ -100,7 +102,13 @@ export function MyBookingsList({ bookings }: Props) {
               {sportLabel[b.sport as Sport] ?? b.sport}
             </p>
             <p className="venue-booking-card-meta">
-              {formatBookingMoney(b.final_cop)} · {bookingPaymentMethodLabel(b.payment_method)}
+              {b.deposit_pct != null &&
+              b.deposit_cop != null &&
+              b.final_cop != null &&
+              b.deposit_pct < 100
+                ? `Abono ${formatBookingMoney(b.deposit_cop)} · Total ${formatBookingMoney(b.final_cop)}`
+                : formatBookingMoney(b.final_cop)}{" "}
+              · {bookingPaymentMethodLabel(b.payment_method)}
               {b.status === "pending" && b.hold_expires_at
                 ? ` · hold hasta ${formatBookingWhen(b.hold_expires_at, b.venue.timezone)}`
                 : null}

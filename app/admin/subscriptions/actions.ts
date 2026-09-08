@@ -2,13 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { requireUserId } from "@/lib/auth";
-import { createClient } from "@/lib/supabase/server";
+import { isUuid } from "@/lib/ids";
 
 export type SubscriptionReviewState = { ok?: true; error?: string; subscriptionId?: string };
-
-function isUuid(value: string) {
-  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
-}
 
 export async function approveSubscriptionRequestAction(
   _prev: SubscriptionReviewState | undefined,
@@ -49,7 +45,7 @@ export async function rejectSubscriptionRequestAction(
   const reason = String(formData.get("reason") ?? "").trim().slice(0, 300);
   if (!isUuid(requestId)) return { error: "Solicitud no válida." };
 
-  const supabase = await createClient();
+  const { supabase } = await requireUserId("/admin/subscriptions");
   const { error } = await supabase.rpc("reject_venue_subscription_request", {
     p_request_id: requestId,
     p_reason: reason || undefined,

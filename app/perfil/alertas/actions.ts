@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { requireUserId } from "@/lib/auth";
 import { isFeatureEnabled } from "@/lib/feature-flags";
+import { isUuid } from "@/lib/ids";
 import {
   parseAlertFormat,
   parseAlertLevel,
@@ -25,7 +26,7 @@ export async function createMatchAlertAction(
   const supabase = await createClient();
 
   const cityId = String(formData.get("city_id") ?? "").trim();
-  if (!cityId) return { error: "Elegí una ciudad." };
+  if (!isUuid(cityId)) return { error: "Elegí una ciudad." };
 
   const sport = parseAlertSport(formData.get("sport"));
   const format = parseAlertFormat(formData.get("format"));
@@ -61,7 +62,7 @@ export async function toggleMatchAlertAction(
   const supabase = await createClient();
   const id = String(formData.get("alert_id") ?? "").trim();
   const enabled = formData.get("enabled") === "true";
-  if (!id) return { error: "Alerta inválida." };
+  if (!isUuid(id)) return { error: "Alerta inválida." };
 
   const { error } = await supabase
     .from("match_alerts")
@@ -81,7 +82,7 @@ export async function deleteMatchAlertAction(
   const { userId } = await requireUserId("/perfil/alertas");
   const supabase = await createClient();
   const id = String(formData.get("alert_id") ?? "").trim();
-  if (!id) return { error: "Alerta inválida." };
+  if (!isUuid(id)) return { error: "Alerta inválida." };
 
   const { error } = await supabase
     .from("match_alerts")

@@ -159,3 +159,37 @@ export function parseOccupancyShareCode(message: string | undefined) {
   const match = /^OCCUPANCY:([a-f0-9]{8})$/i.exec(message?.trim() ?? "");
   return match?.[1]?.toLowerCase() ?? null;
 }
+
+/** Mensaje único cuando dos usuarios pelean la misma franja (EXCLUDE / assert). */
+export const OCCUPANCY_RACE_USER_MESSAGE =
+  "Alguien se adelantó a esa franja. Elegí otra hora.";
+
+export function occupancyRaceUserMessage() {
+  return OCCUPANCY_RACE_USER_MESSAGE;
+}
+
+/**
+ * Detecta errores de carrera/solape de franja desde RPC, assert o EXCLUDE (23P01).
+ * No cubre mensajes amigables de join / open_b del lookup previo.
+ */
+export function isOccupancyRaceError(msg: string | undefined | null): boolean {
+  const raw = (msg ?? "").trim();
+  if (!raw) return false;
+  if (raw === OCCUPANCY_RACE_USER_MESSAGE) return true;
+  if (raw === "OCCUPANCY" || parseOccupancyShareCode(raw)) return true;
+
+  const lower = raw.toLowerCase();
+  if (lower.includes("23p01")) return true;
+  if (lower.includes("exclusion") || lower.includes("occupy")) return true;
+  if (lower.includes("conflicting key value") && lower.includes("exclusion")) return true;
+  if (lower.includes("franja ya tiene") || lower.includes("turno pedido o confirmado")) {
+    return true;
+  }
+  if (lower.includes("ya está ocupada") || lower.includes("ya esta ocupada")) return true;
+  return false;
+}
+
+/** join / open_b / own: el banner de ocupación sigue siendo útil. Hard block → mensaje de carrera. */
+export function isJoinableOccupancyReason(reason: OccupancyReason): boolean {
+  return reason === "join" || reason === "open_b" || reason === "own";
+}

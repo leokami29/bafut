@@ -1,13 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useCallback, useEffect, useMemo, useState } from "react";
+import { useActionState, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { BookingPricePreview } from "@/components/BookingPricePreview";
 import {
   LegalAcceptCheckbox,
   useLegalAcceptance,
 } from "@/components/LegalAcceptCheckbox";
 import {
+  releaseVenueBookingHoldAction,
+  startVenueBookingHoldAction,
   submitVenueBookingAction,
   type SubmitVenueBookingState,
 } from "@/app/canchas/[slug]/turno/actions";
@@ -17,13 +19,20 @@ import {
   BOOKING_MAX_HORIZON_DAYS,
   BOOKING_MIN_LEAD_HOURS,
   BOOKING_PAYMENT_METHODS,
+  BOOKING_SOFT_HOLD_MINUTES,
   bookingDurationsForMin,
+  bookingHoldExpiredUserMessage,
   bookingPaymentMethodLabel,
   bookingSlotStatusLabel,
+  computeBookingDeposit,
   formatBookingMoney,
+  isBookingHoldExpiredError,
+  isBookingPriceChangedError,
   listBookingDayKeys,
   listBookingSlotsWithStatus,
+  normalizeBookingDepositPct,
   occupyEndMs,
+  type BookingDepositPct,
   type BookingDurationMin,
   type BookingPaymentMethod,
   type BookingSlotOption,
@@ -38,7 +47,7 @@ import { cityDayBoundsFromLocal, datetimeLocalInZoneToDate, zonedDateParts } fro
 import type { Sport } from "@/lib/constants";
 import { formatMoney } from "@/lib/format";
 import { sportLabel } from "@/lib/labels";
-import { mapDayOccupancyRpcRow } from "@/lib/occupancy";
+import { mapDayOccupancyRpcRow, isOccupancyRaceError, occupancyRaceUserMessage } from "@/lib/occupancy";
 import { calculateBasePrice, type PricingConfig } from "@/lib/pricing";
 import { createClient } from "@/lib/supabase/client";
 import {
@@ -60,6 +69,8 @@ export type VenueBookingFormProps = {
   todayYmd: string;
   /** WhatsApp público de la cancha (pago al dueño, no a BaFut). */
   ownerWhatsapp?: string | null;
+  /** % de abono configurado por el dueño (no editable por el jugador). */
+  bookingDepositPct?: number;
 };
 
 type Step = 1 | 2;
@@ -173,7 +184,9 @@ export function VenueBookingForm({
   pricingDefaults,
   todayYmd,
   ownerWhatsapp,
+  bookingDepositPct: bookingDepositPctProp = 100,
 }: VenueBookingFormProps) {
+  const depositPct = normalizeBookingDepositPct(bookingDepositPctProp);
   const legal = useLegalAcceptance("booking");
   const ownerWaDigits = ownerWhatsapp ? normalizeWhatsapp(ownerWhatsapp) : null;
   const ownerWaHref = ownerWaDigits ? whatsappChatHref(ownerWaDigits) : null;
@@ -187,13 +200,49 @@ export function VenueBookingForm({
   const [occupied, setOccupied] = useState<OccupyInterval[]>([]);
   const [occupancyLoading, setOccupancyLoading] = useState(false);
   const [occupancyError, setOccupancyError] = useState<string | null>(null);
+  const [occupancyRefreshKey, setOccupancyRefreshKey] = useState(0);
   const [paymentMethod, setPaymentMethod] = useState<BookingPaymentMethod>("nequi");
   const [whatsapp, setWhatsapp] = useState("");
   const [note, setNote] = useState("");
   const [priceOk, setPriceOk] = useState(false);
   const [finalCop, setFinalCop] = useState<number | null>(null);
+  const [depositCop, setDepositCop] = useState<number | null>(null);
+  const [liveDepositPct, setLiveDepositPct] = useState<BookingDepositPct>(depositPct);
   const [priceReady, setPriceReady] = useState(false);
   const [priceErrors, setPriceErrors] = useState<string[]>([]);
+  const [priceRefreshKey, setPriceRefreshKey] = useState(0);
+  /** Montos al entrar al paso de pago (avisar si cambian en vivo). */
+  const [quotedAtPay, setQuotedAtPay] = useState<{
+    finalCop: number;
+    depositCop: number;
+  } | null>(null);
+  const [holdId, setHoldId] = useState<string | null>(null);
+  const [holdExpiresAt, setHoldExpiresAt] = useState<string | null>(null);
+  const [holdSecondsLeft, setHoldSecondsLeft] = useState<number | null>(null);
+  const [holdBusy, setHoldBusy] = useState(false);
+  const [holdError, setHoldError] = useState<string | null>(null);
+  const holdIdRef = useRef<string | null>(null);
+  holdIdRef.current = holdId;
+
+  const clearHoldLocal = useCallback(() => {
+    setHoldId(null);
+    setHoldExpiresAt(null);
+    setHoldSecondsLeft(null);
+    holdIdRef.current = null;
+  }, []);
+
+  const releaseHold = useCallback(
+    async (id: string | null | undefined) => {
+      if (!id) return;
+      try {
+        await releaseVenueBookingHoldAction(venueSlug, id);
+      } catch {
+        // Best-effort: el cron también expira.
+      }
+      if (holdIdRef.current === id) clearHoldLocal();
+    },
+    [clearHoldLocal, venueSlug],
+  );
 
   const boundAction = useMemo(
     () => submitVenueBookingAction.bind(null, venueSlug),
@@ -283,7 +332,72 @@ export function VenueBookingForm({
     return () => {
       cancelled = true;
     };
-  }, [dayKey, timeZone, venueId]);
+  }, [dayKey, timeZone, venueId, occupancyRefreshKey]);
+
+  useEffect(() => {
+    if (!state?.error || state.ok) return;
+    if (!state.occupancyRace && !isOccupancyRaceError(state.error)) return;
+    void releaseHold(holdIdRef.current);
+    setStep(1);
+    setStartsAtLocal("");
+    setOccupancyRefreshKey((key) => key + 1);
+  }, [state, releaseHold]);
+
+  useEffect(() => {
+    if (!state?.error || state.ok) return;
+    if (!state.holdExpired && !isBookingHoldExpiredError(state.error)) return;
+    clearHoldLocal();
+    setStep(1);
+    setHoldError(bookingHoldExpiredUserMessage());
+    setOccupancyRefreshKey((key) => key + 1);
+  }, [state, clearHoldLocal]);
+
+  useEffect(() => {
+    if (!state?.error || state.ok) return;
+    if (!state.priceChanged && !isBookingPriceChangedError(state.error)) return;
+    setStep(2);
+    setPriceRefreshKey((key) => key + 1);
+    if (state.currentFinalCop != null && state.currentDepositCop != null) {
+      setFinalCop(state.currentFinalCop);
+      setDepositCop(state.currentDepositCop);
+      setQuotedAtPay({
+        finalCop: state.currentFinalCop,
+        depositCop: state.currentDepositCop,
+      });
+    }
+  }, [state]);
+
+  useEffect(() => {
+    if (!holdExpiresAt) {
+      setHoldSecondsLeft(null);
+      return;
+    }
+    const tick = () => {
+      const left = Math.max(
+        0,
+        Math.floor((new Date(holdExpiresAt).getTime() - Date.now()) / 1000),
+      );
+      setHoldSecondsLeft(left);
+      if (left <= 0) {
+        const id = holdIdRef.current;
+        clearHoldLocal();
+        setStep(1);
+        setHoldError(bookingHoldExpiredUserMessage());
+        setOccupancyRefreshKey((key) => key + 1);
+        if (id) void releaseHold(id);
+      }
+    };
+    tick();
+    const timer = window.setInterval(tick, 1000);
+    return () => window.clearInterval(timer);
+  }, [holdExpiresAt, clearHoldLocal, releaseHold]);
+
+  useEffect(() => {
+    return () => {
+      const id = holdIdRef.current;
+      if (id) void releaseVenueBookingHoldAction(venueSlug, id);
+    };
+  }, [venueSlug]);
 
   const slotOptions = useMemo(() => {
     if (!dayKey) return [] as BookingSlotOption[];
@@ -346,8 +460,16 @@ export function VenueBookingForm({
   }, [startsAtLocal, timeZone]);
 
   const onPreviewChange = useCallback(
-    (preview: { finalCop: number | null; errors: string[]; minMinutes: number | null }) => {
+    (preview: {
+      finalCop: number | null;
+      depositCop: number | null;
+      depositPct: BookingDepositPct;
+      errors: string[];
+      minMinutes: number | null;
+    }) => {
       setFinalCop(preview.finalCop);
+      setDepositCop(preview.depositCop);
+      setLiveDepositPct(preview.depositPct);
       setPriceErrors(preview.errors);
       const ok =
         preview.finalCop != null && preview.finalCop > 0 && preview.errors.length === 0;
@@ -362,7 +484,10 @@ export function VenueBookingForm({
     setPriceReady(false);
     setPriceOk(false);
     setFinalCop(null);
+    setDepositCop(null);
     setPriceErrors([]);
+    setQuotedAtPay(null);
+    setHoldError(null);
   }, [startsAtLocal, durationMin, sport]);
 
   useEffect(() => {
@@ -377,14 +502,27 @@ export function VenueBookingForm({
   }, [state?.ok, venueId, venueSlug, sport, durationMin]);
 
   if (state?.ok) {
+    const successDeposit =
+      depositCop ??
+      (finalCop != null ? computeBookingDeposit(finalCop, liveDepositPct).depositCop : null);
     return (
       <div className="venue-booking-success" role="status">
         <h2 className="subhead">Pedido enviado</h2>
         <p>
           Tu reserva en <strong>{venueName}</strong> quedó en hold {BOOKING_HOLD_HOURS} h
           mientras el dueño revisa el comprobante
-          {finalCop != null ? ` · ${formatBookingMoney(finalCop)}` : ""}.
+          {successDeposit != null && finalCop != null
+            ? liveDepositPct < 100
+              ? ` · abono ${formatBookingMoney(successDeposit)} (total ${formatBookingMoney(finalCop)})`
+              : ` · ${formatBookingMoney(finalCop)}`
+            : ""}
+          .
         </p>
+        {liveDepositPct < 100 && successDeposit != null && finalCop != null ? (
+          <p className="field-help">
+            El resto ({formatBookingMoney(finalCop - successDeposit)}) se paga en la cancha.
+          </p>
+        ) : null}
         <div className="empty-home-actions venue-booking-success-actions">
           {state.ownerWhatsappHref ? (
             <a
@@ -415,8 +553,16 @@ export function VenueBookingForm({
   const canSubmit =
     canGoPay &&
     finalCop != null &&
+    depositCop != null &&
     legal.accepted &&
     Boolean(whatsapp.trim());
+
+  const priceShiftedOnPay =
+    step === 2 &&
+    quotedAtPay != null &&
+    finalCop != null &&
+    depositCop != null &&
+    (quotedAtPay.finalCop !== finalCop || quotedAtPay.depositCop !== depositCop);
 
   const dayChip = dayKey ? formatDayChip(dayKey, timeZone) : null;
   const selectionSummary = (
@@ -440,6 +586,13 @@ export function VenueBookingForm({
       <input type="hidden" name="starts_at" value={startsAtLocal} />
       <input type="hidden" name="duration_min" value={durationMin} />
       <input type="hidden" name="payment_method" value={paymentMethod} />
+      {depositCop != null ? (
+        <input type="hidden" name="expected_deposit_cop" value={depositCop} />
+      ) : null}
+      {finalCop != null ? (
+        <input type="hidden" name="expected_final_cop" value={finalCop} />
+      ) : null}
+      {holdId ? <input type="hidden" name="hold_id" value={holdId} /> : null}
 
       <div className="match-compose-progress" aria-label={`Paso ${step} de 2`}>
         <div className="match-compose-progress-track" aria-hidden="true">
@@ -671,6 +824,8 @@ export function VenueBookingForm({
                   sport={sport}
                   startsAtIso={startsAtIso}
                   durationMin={durationMin}
+                  depositPct={depositPct}
+                  refreshKey={priceRefreshKey}
                   onPreviewChange={onPreviewChange}
                 />
               ) : null}
@@ -684,16 +839,66 @@ export function VenueBookingForm({
             </p>
           ) : null}
 
+          {state?.error &&
+          (state.occupancyRace || isOccupancyRaceError(state.error)) ? (
+            <p className="form-error" role="alert">
+              {state.error}
+            </p>
+          ) : null}
+          {holdError ? (
+            <p className="form-error" role="alert">
+              {holdError}
+            </p>
+          ) : null}
+
           <div className="venue-booking-nav">
             <button
               type="button"
               className="btn-flood"
-              disabled={!canGoPay}
-              onClick={() => setStep(2)}
+              disabled={!canGoPay || depositCop == null || finalCop == null || holdBusy}
+              aria-busy={holdBusy}
+              onClick={() => {
+                if (depositCop == null || finalCop == null || holdBusy) return;
+                setHoldBusy(true);
+                setHoldError(null);
+                const fd = new FormData();
+                fd.set("venue_id", venueId);
+                fd.set("sport", sport);
+                fd.set("starts_at", startsAtLocal);
+                fd.set("duration_min", String(durationMin));
+                void (async () => {
+                  const result = await startVenueBookingHoldAction(venueSlug, fd);
+                  setHoldBusy(false);
+                  if (result.occupancyRace || (result.error && isOccupancyRaceError(result.error))) {
+                    setHoldError(result.error ?? occupancyRaceUserMessage());
+                    setStartsAtLocal("");
+                    setOccupancyRefreshKey((key) => key + 1);
+                    return;
+                  }
+                  if (!result.ok || !result.holdId || !result.holdExpiresAt) {
+                    setHoldError(result.error ?? "No se pudo apartar el horario.");
+                    return;
+                  }
+                  setHoldId(result.holdId);
+                  setHoldExpiresAt(result.holdExpiresAt);
+                  setQuotedAtPay({ finalCop, depositCop });
+                  if (result.finalCop != null) setFinalCop(result.finalCop);
+                  if (result.depositCop != null) setDepositCop(result.depositCop);
+                  if (result.depositPct != null) {
+                    setLiveDepositPct(normalizeBookingDepositPct(result.depositPct));
+                  }
+                  setStep(2);
+                  setPriceRefreshKey((key) => key + 1);
+                })();
+              }}
             >
-              {finalCop != null
-                ? `Seguir al pago · ${formatBookingMoney(finalCop)}`
-                : "Seguir al pago"}
+              {holdBusy
+                ? "Apartando horario…"
+                : depositCop != null
+                  ? liveDepositPct < 100
+                    ? `Seguir al pago · abono ${formatBookingMoney(depositCop)}`
+                    : `Seguir al pago · ${formatBookingMoney(depositCop)}`
+                  : "Seguir al pago"}
             </button>
           </div>
         </div>
@@ -709,14 +914,33 @@ export function VenueBookingForm({
               sport={sport}
               startsAtIso={startsAtIso}
               durationMin={durationMin}
+              depositPct={depositPct}
+              refreshKey={priceRefreshKey}
               onPreviewChange={onPreviewChange}
             />
           ) : null}
+          {(state?.priceChanged || priceShiftedOnPay) && depositCop != null && finalCop != null ? (
+            <p className="form-error" role="alert">
+              {state?.priceChanged && state.error
+                ? state.error
+                : `El precio se actualizó. El abono ahora es ${formatBookingMoney(depositCop)} (total ${formatBookingMoney(finalCop)}). Si ya transferiste otro monto, coordiná con el dueño o ajustá el pago antes de enviar.`}
+            </p>
+          ) : null}
+          {holdSecondsLeft != null ? (
+            <p className="field-help venue-booking-hold-timer" role="status">
+              Horario apartado por {BOOKING_SOFT_HOLD_MINUTES} min · te quedan{" "}
+              <strong>
+                {Math.floor(holdSecondsLeft / 60)}:
+                {String(holdSecondsLeft % 60).padStart(2, "0")}
+              </strong>
+            </p>
+          ) : null}
           <p className="field-help">
-            El pago va al dueño de la cancha (no a BaFut). Transferí o pagá por Nequi como
-            acuerden
-            {finalCop != null ? ` · monto ${formatBookingMoney(finalCop)}` : ""} y subí el
-            comprobante. El dueño confirma la reserva.
+            {liveDepositPct < 100
+              ? "Pagá el abono al dueño de la cancha (no a BaFut) por Nequi o transferencia, subí el comprobante y el resto lo liquidás en la cancha. El dueño confirma la reserva."
+              : "El pago va al dueño de la cancha (no a BaFut). Transferí o pagá por Nequi como acuerden" +
+                (depositCop != null ? ` · monto ${formatBookingMoney(depositCop)}` : "") +
+                " y subí el comprobante. El dueño confirma la reserva."}
           </p>
 
           <div className="venue-booking-pay-instructions">
@@ -739,11 +963,21 @@ export function VenueBookingForm({
                 </span>
               </div>
             )}
-            {finalCop != null ? (
+            {depositCop != null ? (
               <div>
-                <span className="venue-booking-pay-label">Monto</span>
+                <span className="venue-booking-pay-label">
+                  {liveDepositPct < 100 ? `Abono ${liveDepositPct}% ahora` : "Monto"}
+                </span>
                 <span className="venue-booking-pay-value">
-                  {formatBookingMoney(finalCop)}
+                  {formatBookingMoney(depositCop)}
+                </span>
+              </div>
+            ) : null}
+            {liveDepositPct < 100 && finalCop != null && depositCop != null ? (
+              <div>
+                <span className="venue-booking-pay-label">Resto en la cancha</span>
+                <span className="venue-booking-pay-value">
+                  {formatBookingMoney(finalCop - depositCop)}
                 </span>
               </div>
             ) : null}
@@ -811,20 +1045,32 @@ export function VenueBookingForm({
             disabled={pending}
           />
 
-          {state?.error ? (
+          {state?.error && !state.priceChanged ? (
             <p className="form-error" role="alert">
               {state.error}
             </p>
           ) : null}
 
           <div className="venue-booking-nav">
-            <button type="button" className="btn-ghost" onClick={() => setStep(1)} disabled={pending}>
+            <button
+              type="button"
+              className="btn-ghost"
+              disabled={pending || holdBusy}
+              onClick={() => {
+                const id = holdId;
+                clearHoldLocal();
+                setStep(1);
+                setHoldError(null);
+                setOccupancyRefreshKey((key) => key + 1);
+                void releaseHold(id);
+              }}
+            >
               Atrás
             </button>
             <button
               type="submit"
               className="btn-flood"
-              disabled={!canSubmit || pending}
+              disabled={!canSubmit || pending || !holdId}
               aria-busy={pending}
             >
               {pending ? "Enviando…" : "Enviar reserva"}

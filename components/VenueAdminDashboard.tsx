@@ -5,9 +5,16 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
+  setVenueBookingDepositPctAction,
   setVenueBookingEnabledAction,
+  type SetBookingDepositPctState,
   type SetBookingEnabledState,
 } from "@/app/canchas/[slug]/admin/turnos/actions";
+import {
+  BOOKING_DEPOSIT_PCTS,
+  normalizeBookingDepositPct,
+  type BookingDepositPct,
+} from "@/lib/booking";
 import { createClient } from "@/lib/supabase/client";
 import { sportLabel } from "@/lib/labels";
 import { SPORTS, type Sport } from "@/lib/sport-rules";
@@ -151,11 +158,46 @@ export function VenueAdminDashboard({
     setBookingEnabledBound,
     undefined as SetBookingEnabledState | undefined,
   );
+  const setDepositPctBound = setVenueBookingDepositPctAction.bind(null, venue.slug);
+  const [depositPctState, depositPctAction, depositPctPending] = useActionState(
+    setDepositPctBound,
+    undefined as SetBookingDepositPctState | undefined,
+  );
+  // Estado local: el abono y el interruptor se ven al instante (sin esperar router.refresh).
+  const [bookingEnabled, setBookingEnabled] = useState(Boolean(venue.booking_enabled));
+  const [depositPct, setDepositPct] = useState<BookingDepositPct>(
+    normalizeBookingDepositPct(venue.booking_deposit_pct),
+  );
 
   useEffect(() => {
-    if (!bookingEnabledState?.ok) return;
-    router.refresh();
-  }, [bookingEnabledState?.ok, router]);
+    setBookingEnabled(Boolean(venue.booking_enabled));
+  }, [venue.booking_enabled]);
+
+  useEffect(() => {
+    setDepositPct(normalizeBookingDepositPct(venue.booking_deposit_pct));
+  }, [venue.booking_deposit_pct]);
+
+  useEffect(() => {
+    if (bookingEnabledState?.ok) {
+      setBookingEnabled(Boolean(bookingEnabledState.enabled));
+      router.refresh();
+      return;
+    }
+    if (bookingEnabledState?.error) {
+      setBookingEnabled(Boolean(venue.booking_enabled));
+    }
+  }, [bookingEnabledState, router, venue.booking_enabled]);
+
+  useEffect(() => {
+    if (depositPctState?.ok) {
+      setDepositPct(normalizeBookingDepositPct(depositPctState.depositPct));
+      router.refresh();
+      return;
+    }
+    if (depositPctState?.error) {
+      setDepositPct(normalizeBookingDepositPct(venue.booking_deposit_pct));
+    }
+  }, [depositPctState, router, venue.booking_deposit_pct]);
 
   useEffect(() => {
     let cancelled = false;
@@ -372,11 +414,10 @@ export function VenueAdminDashboard({
                   Tener franjas en{" "}
                   <Link href={`${base}/precios`}>Precios</Link> no publica &quot;Reservar&quot;:
                   hace falta activar el interruptor de abajo. Con eso activo, los jugadores pagan
-                  al dueño (Nequi/transferencia como acuerden), suben comprobante y vos confirmás
-                  o rechazás en Reservas. El cobro no es a BaFut.
+                  el abono al dueño (Nequi/transferencia), suben comprobante y vos confirmás o
+                  rechazás en Reservas. El cobro no es a BaFut.
                 </p>
                 <form
-                  key={String(venue.booking_enabled)}
                   action={bookingEnabledAction}
                   className="venue-booking-toggle"
                 >
@@ -386,9 +427,12 @@ export function VenueAdminDashboard({
                       type="checkbox"
                       name="booking_enabled"
                       value="1"
-                      defaultChecked={Boolean(venue.booking_enabled)}
+                      checked={bookingEnabled}
                       disabled={bookingEnabledPending}
-                      onChange={(e) => e.currentTarget.form?.requestSubmit()}
+                      onChange={(e) => {
+                        setBookingEnabled(e.currentTarget.checked);
+                        e.currentTarget.form?.requestSubmit();
+                      }}
                     />
                     <span>Aceptar reservas</span>
                   </label>
@@ -402,6 +446,52 @@ export function VenueAdminDashboard({
                       ? "Ya aceptás reservas."
                       : "Reservas desactivadas."}
                   </p>
+                ) : null}
+
+                {bookingEnabled ? (
+                  <fieldset className="venue-booking-deposit-fieldset">
+                    <legend className="venue-booking-deposit-legend">
+                      Abono al reservar
+                    </legend>
+                    <p className="field-help">
+                      Porcentaje del alquiler (ya con promoción, si aplica) que el jugador abona
+                      ahora con comprobante. El resto lo paga en la cancha.
+                    </p>
+                    <form
+                      action={depositPctAction}
+                      className="venue-booking-deposit-form"
+                    >
+                      <input type="hidden" name="venue_id" value={venue.id} />
+                      <div
+                        className="filter-chips venue-booking-chips"
+                        role="group"
+                        aria-label="Abono al reservar"
+                      >
+                        {BOOKING_DEPOSIT_PCTS.map((pct) => (
+                          <button
+                            key={pct}
+                            type="submit"
+                            name="booking_deposit_pct"
+                            value={pct}
+                            className={depositPct === pct ? "is-on" : undefined}
+                            aria-pressed={depositPct === pct}
+                            disabled={depositPctPending || pct === depositPct}
+                            onClick={() => setDepositPct(pct)}
+                          >
+                            {pct}%
+                          </button>
+                        ))}
+                      </div>
+                    </form>
+                    {depositPctState?.error ? (
+                      <p className="form-error">{depositPctState.error}</p>
+                    ) : null}
+                    {depositPctState?.ok ? (
+                      <p className="form-ok">
+                        Abono guardado: {depositPctState.depositPct as BookingDepositPct}%.
+                      </p>
+                    ) : null}
+                  </fieldset>
                 ) : null}
               </>
             )}

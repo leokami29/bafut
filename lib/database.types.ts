@@ -849,23 +849,26 @@ export type Database = {
         Row: {
           base_cop: number
           billed_min: number
-          contact_whatsapp: string
+          contact_whatsapp: string | null
           created_at: string
           currency: string
           decided_at: string | null
           decided_by: string | null
+          deposit_cop: number
+          deposit_pct: number
           discount_cop: number
           duration_min: number
           final_cop: number
           hold_expires_at: string | null
           id: string
-          legal_accepted_at: string
+          legal_accepted_at: string | null
           note: string | null
           occupy_range: unknown
-          payment_method: string
+          amount_cop: number
+          payment_method: string | null
           player_id: string
           promo_id: string | null
-          proof_path: string
+          proof_path: string | null
           reject_reason: string | null
           sport: string
           starts_at: string
@@ -874,6 +877,7 @@ export type Database = {
           venue_id: string
         }
         Insert: {
+          amount_cop: number
           base_cop: number
           billed_min: number
           contact_whatsapp: string
@@ -881,6 +885,8 @@ export type Database = {
           currency?: string
           decided_at?: string | null
           decided_by?: string | null
+          deposit_cop: number
+          deposit_pct?: number
           discount_cop?: number
           duration_min: number
           final_cop: number
@@ -902,6 +908,7 @@ export type Database = {
           venue_id: string
         }
         Update: {
+          amount_cop?: number
           base_cop?: number
           billed_min?: number
           contact_whatsapp?: string
@@ -909,6 +916,8 @@ export type Database = {
           currency?: string
           decided_at?: string | null
           decided_by?: string | null
+          deposit_cop?: number
+          deposit_pct?: number
           discount_cop?: number
           duration_min?: number
           final_cop?: number
@@ -1380,6 +1389,7 @@ export type Database = {
       venues: {
         Row: {
           address: string | null
+          booking_deposit_pct: number
           booking_enabled: boolean
           city_id: string
           contact_email: string | null
@@ -1405,6 +1415,7 @@ export type Database = {
         }
         Insert: {
           address?: string | null
+          booking_deposit_pct?: number
           booking_enabled?: boolean
           city_id: string
           contact_email?: string | null
@@ -1430,6 +1441,7 @@ export type Database = {
         }
         Update: {
           address?: string | null
+          booking_deposit_pct?: number
           booking_enabled?: boolean
           city_id?: string
           contact_email?: string | null
@@ -1725,6 +1737,10 @@ export type Database = {
         Args: { p_enabled: boolean; p_venue_id: string }
         Returns: undefined
       }
+      set_venue_booking_deposit_pct: {
+        Args: { p_deposit_pct: number; p_venue_id: string }
+        Returns: undefined
+      }
       submit_level_feedback: {
         Args: { p_claim_id: string; p_level_ok: boolean }
         Returns: string
@@ -1733,6 +1749,9 @@ export type Database = {
         Args: {
           p_contact_whatsapp: string
           p_duration_min: number
+          p_expected_deposit_cop: number
+          p_expected_final_cop: number
+          p_hold_id?: string
           p_note?: string
           p_payment_method: string
           p_proof_path: string
@@ -1741,6 +1760,19 @@ export type Database = {
           p_venue_id: string
         }
         Returns: string
+      }
+      start_venue_booking_hold: {
+        Args: {
+          p_duration_min: number
+          p_sport: string
+          p_starts_at: string
+          p_venue_id: string
+        }
+        Returns: Json
+      }
+      release_venue_booking_hold: {
+        Args: { p_hold_id: string }
+        Returns: undefined
       }
       submit_venue_subscription_request: {
         Args: {

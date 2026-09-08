@@ -22,6 +22,7 @@ type Props = { params: Promise<{ slug: string }> };
 
 const BOOKING_SELECT = `
   id, venue_id, status, sport, starts_at, duration_min, final_cop,
+  deposit_pct, deposit_cop, amount_cop,
   payment_method, contact_whatsapp, proof_path, note, hold_expires_at,
   reject_reason, created_at, decided_at
 `;
@@ -89,7 +90,9 @@ export default async function VenueTurnosAdminPage({ params }: Props) {
 
   const rows = (bookings ?? []) as VenueBookingInboxRow[];
   const pendingRows = withQueueAges(rows.filter((b) => b.status === "pending"));
-  const historyRows = withQueueAges(rows.filter((b) => b.status !== "pending"));
+  const historyRows = withQueueAges(
+    rows.filter((b) => b.status !== "pending" && b.status !== "hold"),
+  );
 
   return (
     <main className="page page-venue-admin" id="main">

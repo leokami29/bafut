@@ -111,6 +111,7 @@ export default async function VenueBookingPage({ params }: Props) {
         pricingDefaults={pricing.defaults}
         todayYmd={todayYmd}
         ownerWhatsapp={venue.contact_whatsapp}
+        bookingDepositPct={venue.booking_deposit_pct}
       />
       <div className="venue-booking-alt">
         <p className="venue-booking-alt-copy">¿Preferís juntar gente?</p>

@@ -37,16 +37,21 @@ import {
 } from "@/lib/match-write";
 import {
   humanizeSideBError,
+  isJoinableOccupancyReason,
+  isOccupancyRaceError,
   mapDayOccupancyRpcRow,
   mapLookupOccupancyRpcRow,
+  occupancyRaceUserMessage,
   occupancyReason,
   occupancyUserMessage,
-  parseOccupancyShareCode,
   type OccupancyConflict,
   type VenueDayOccupancy,
 } from "@/lib/occupancy";
 import { createClient } from "@/lib/supabase/server";
+import { isShareCode, isUuid } from "@/lib/ids";
 import { normalizeWhatsapp } from "@/lib/whatsapp-contact";
+
+const MAX_OVERRIDE_PRICE_COP = 50_000_000;
 
 export type OccupancyActionState = { error?: string; occupancy?: OccupancyConflict };
 export type VenueDayOccupancyState = { items?: VenueDayOccupancy[]; error?: string };
@@ -249,13 +254,18 @@ export async function createMatchAction(formData: FormData): Promise<MatchCompos
 
   if (error || !match) {
     const rateLimited = /demasiados partidos/i.test(error?.message ?? "");
-    if (error?.code === "23P01" || /occupy|exclusion/i.test(error?.message ?? "")) {
+    const raceHit =
+      error?.code === "23P01" || isOccupancyRaceError(error?.message ?? "");
+    if (raceHit) {
       const raced = await findVenueOccupancy(supabase, userId, {
         venueId,
         startsAt,
         durationMin,
       });
-      if (raced) return occupancyState(raced);
+      if (raced && isJoinableOccupancyReason(raced.reason)) {
+        return occupancyState(raced);
+      }
+      return { error: occupancyRaceUserMessage() };
     }
     return {
       error: rateLimited
@@ -273,9 +283,24 @@ export async function createMatchAction(formData: FormData): Promise<MatchCompos
   }
 
   // Pricing best-effort: sin tarifa el hueco vive; override fallido sí hace rollback
+  // Override solo aplica si el RPC confirma owner/admin; acá solo saneamos el número.
   const overridePriceRaw = String(formData.get("override_price_cop") ?? "").trim();
-  const overridePrice = overridePriceRaw ? Number(overridePriceRaw) : null;
-  const hasOverride = overridePrice !== null && Number.isFinite(overridePrice);
+  let overridePrice: number | null = null;
+  if (overridePriceRaw) {
+    const parsed = Number(overridePriceRaw);
+    if (
+      !Number.isFinite(parsed) ||
+      !Number.isInteger(parsed) ||
+      parsed < 0 ||
+      parsed > MAX_OVERRIDE_PRICE_COP
+    ) {
+      await supabase.from("match_slots").delete().eq("match_id", match.id);
+      await supabase.from("matches").delete().eq("id", match.id);
+      return { error: "El precio fijado no es válido." };
+    }
+    overridePrice = parsed;
+  }
+  const hasOverride = overridePrice !== null;
 
   const { data: pricingResult, error: pricingError } = await supabase.rpc("apply_match_pricing", {
     p_match_id: match.id,
@@ -323,7 +348,7 @@ export async function lookupVenueOccupancyAction(input: {
     venueId: input.venueId,
     startsAt,
     durationMin: input.durationMin,
-    excludeMatchId: input.excludeMatchId && isUuidParam(input.excludeMatchId) ? input.excludeMatchId : undefined,
+    excludeMatchId: input.excludeMatchId && isUuid(input.excludeMatchId) ? input.excludeMatchId : undefined,
   });
   return occupancy ? occupancyState(occupancy) : {};
 }
@@ -335,7 +360,7 @@ export async function listVenueDayOccupancyAction(input: {
   excludeMatchId?: string;
 }): Promise<VenueDayOccupancyState> {
   const city = await getCityBySlug(input.citySlug || DEFAULT_CITY_SLUG);
-  if (!city || !input.venueId || !isUuidParam(input.venueId)) {
+  if (!city || !input.venueId || !isUuid(input.venueId)) {
     return { items: [] };
   }
   const bounds = cityDayBoundsFromLocal(input.dayLocal, city.timezone);
@@ -349,7 +374,7 @@ export async function listVenueDayOccupancyAction(input: {
     p_day_start: bounds.dayStart.toISOString(),
     p_day_end: bounds.dayEnd.toISOString(),
     p_exclude_match_id:
-      input.excludeMatchId && isUuidParam(input.excludeMatchId) ? input.excludeMatchId : undefined,
+      input.excludeMatchId && isUuid(input.excludeMatchId) ? input.excludeMatchId : undefined,
   });
 
   if (error) {
@@ -365,11 +390,12 @@ export async function openMatchSideBAction(
   formData: FormData,
 ): Promise<OccupancyActionState> {
   const matchId = String(formData.get("match_id") ?? "").trim();
-  const shareCode = String(formData.get("share_code") ?? "").trim();
-  const nextPath = shareCode && isShareCode(shareCode) ? `/p/${shareCode}` : "/partidos";
+  const shareCodeRaw = String(formData.get("share_code") ?? "").trim();
+  const shareCode = isShareCode(shareCodeRaw) ? shareCodeRaw : "";
+  const nextPath = shareCode ? `/p/${shareCode}` : "/partidos";
   const { supabase } = await requireUserId(nextPath);
 
-  if (!isUuidParam(matchId)) {
+  if (!isUuid(matchId)) {
     return { error: "Partido no válido." };
   }
 
@@ -404,7 +430,7 @@ export async function openMatchSideBAction(
 export async function updateMatchAction(formData: FormData): Promise<MatchComposeActionState> {
   const matchId = String(formData.get("match_id") ?? "").trim();
   const shareCode = String(formData.get("share_code") ?? "").trim();
-  if (!isUuidParam(matchId) || !isShareCode(shareCode)) {
+  if (!isUuid(matchId) || !isShareCode(shareCode)) {
     return { error: "Partido no válido." };
   }
 
@@ -427,7 +453,7 @@ export async function updateMatchAction(formData: FormData): Promise<MatchCompos
   const venueId = String(formData.get("venue_id") ?? "");
   const startsRaw = String(formData.get("starts_at") ?? "");
   const startsAt = datetimeLocalInZoneToDate(startsRaw, cityRow?.timezone ?? "America/Bogota");
-  if (!venueId || !isUuidParam(venueId) || !startsAt || startsAt.getTime() <= Date.now()) {
+  if (!venueId || !isUuid(venueId) || !startsAt || startsAt.getTime() <= Date.now()) {
     return { error: "Elige cancha y una hora que todavía no haya pasado." };
   }
 
@@ -505,16 +531,17 @@ export async function updateMatchAction(formData: FormData): Promise<MatchCompos
   });
 
   if (error) {
-    const occupiedCode = parseOccupancyShareCode(error.message);
-    if (occupiedCode || error.message === "OCCUPANCY") {
+    if (isOccupancyRaceError(error.message)) {
       const raced = await findVenueOccupancy(supabase, userId, {
         venueId,
         startsAt,
         durationMin,
         excludeMatchId: matchId,
       });
-      if (raced) return occupancyState(raced);
-      return { error: "Esa cancha ya está ocupada a esa hora." };
+      if (raced && isJoinableOccupancyReason(raced.reason)) {
+        return occupancyState(raced);
+      }
+      return { error: occupancyRaceUserMessage() };
     }
     const rateLimited = /espera un momento|demasiados/i.test(error.message ?? "");
     return {
@@ -531,17 +558,13 @@ export async function updateMatchAction(formData: FormData): Promise<MatchCompos
   redirect(`/p/${shareCode}`);
 }
 
-function isUuidParam(value: string) {
-  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
-}
-
-function isShareCode(value: string) {
-  return /^[a-f0-9]{8}$/.test(value);
-}
-
 export async function claimSlotAction(formData: FormData): Promise<MutationActionState> {
-  const slotId = String(formData.get("slot_id") ?? "");
-  const shareCode = String(formData.get("share_code") ?? "");
+  const slotId = String(formData.get("slot_id") ?? "").trim();
+  const shareCodeRaw = String(formData.get("share_code") ?? "").trim();
+  const shareCode = isShareCode(shareCodeRaw) ? shareCodeRaw : "";
+  if (!isUuid(slotId)) {
+    return { error: "Cupo no válido." };
+  }
   const declaredRaw = String(formData.get("declared_level") ?? "");
   const declaredLevel = isDeclaredLevel(declaredRaw) ? declaredRaw : "mid";
   const levelAck = formData.get("level_ack") === "on" || formData.get("level_ack") === "true";
@@ -588,9 +611,12 @@ export async function claimSlotAction(formData: FormData): Promise<MutationActio
 }
 
 export async function submitLevelFeedbackAction(formData: FormData): Promise<MutationActionState> {
-  const claimId = String(formData.get("claim_id") ?? "");
+  const claimId = String(formData.get("claim_id") ?? "").trim();
   const levelOkRaw = String(formData.get("level_ok") ?? "");
   const levelOk = levelOkRaw === "true" || levelOkRaw === "1";
+  if (!isUuid(claimId)) {
+    return { error: "Pedido no válido." };
+  }
   if (levelOkRaw !== "true" && levelOkRaw !== "false" && levelOkRaw !== "1" && levelOkRaw !== "0") {
     return { error: "Respuesta no válida." };
   }
@@ -609,9 +635,13 @@ export async function submitLevelFeedbackAction(formData: FormData): Promise<Mut
 }
 
 export async function respondClaimAction(formData: FormData): Promise<MutationActionState> {
-  const claimId = String(formData.get("claim_id") ?? "");
-  const shareCode = String(formData.get("share_code") ?? "");
+  const claimId = String(formData.get("claim_id") ?? "").trim();
+  const shareCodeRaw = String(formData.get("share_code") ?? "").trim();
+  const shareCode = isShareCode(shareCodeRaw) ? shareCodeRaw : "";
   const status = String(formData.get("status") ?? "");
+  if (!isUuid(claimId)) {
+    return { error: "Pedido no válido." };
+  }
   const { supabase } = await requireUserId(shareCode ? `/p/${shareCode}` : "/partidos");
 
   if (status !== "accepted" && status !== "rejected") {
@@ -633,8 +663,12 @@ export async function respondClaimAction(formData: FormData): Promise<MutationAc
 }
 
 export async function withdrawClaimAction(formData: FormData): Promise<MutationActionState> {
-  const claimId = String(formData.get("claim_id") ?? "");
-  const shareCode = String(formData.get("share_code") ?? "");
+  const claimId = String(formData.get("claim_id") ?? "").trim();
+  const shareCodeRaw = String(formData.get("share_code") ?? "").trim();
+  const shareCode = isShareCode(shareCodeRaw) ? shareCodeRaw : "";
+  if (!isUuid(claimId)) {
+    return { error: "Pedido no válido." };
+  }
   const { supabase } = await requireUserId(shareCode ? `/p/${shareCode}` : "/perfil/partidos");
 
   const { error } = await supabase.rpc("withdraw_claim", { p_claim_id: claimId });
@@ -649,8 +683,12 @@ export async function withdrawClaimAction(formData: FormData): Promise<MutationA
 }
 
 export async function cancelMatchAction(formData: FormData): Promise<void> {
-  const matchId = String(formData.get("match_id") ?? "");
-  const shareCode = String(formData.get("share_code") ?? "");
+  const matchId = String(formData.get("match_id") ?? "").trim();
+  const shareCodeRaw = String(formData.get("share_code") ?? "").trim();
+  const shareCode = isShareCode(shareCodeRaw) ? shareCodeRaw : "";
+  if (!isUuid(matchId)) {
+    return;
+  }
   const { supabase, userId } = await requireUserId(shareCode ? `/p/${shareCode}` : "/perfil/partidos");
 
   const { data: match } = await supabase
@@ -674,6 +712,9 @@ export async function cancelMatchAction(formData: FormData): Promise<void> {
 }
 
 export async function getMatchContactAction(claimId: string): Promise<MatchContactState> {
+  if (!isUuid(claimId)) {
+    return { error: "Pedido no válido." };
+  }
   const { supabase } = await requireUserId();
   const { data, error } = await supabase.rpc("get_match_contact", { p_claim_id: claimId });
   if (error) {

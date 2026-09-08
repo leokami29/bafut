@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import {
   LegalAcceptCheckbox,
   useLegalAcceptance,
 } from "@/components/LegalAcceptCheckbox";
+import { submitVenuePremiumRequestAction } from "@/app/canchas/[slug]/admin/actions";
 import {
   trackNequiProofSubmit,
   trackPremiumPaywallView,
@@ -15,12 +16,7 @@ import {
   getPremiumPaymentInstructions,
   type PremiumPaymentMethod,
 } from "@/lib/premium-payment";
-import { createClient } from "@/lib/supabase/client";
-import {
-  SUBSCRIPTION_PROOFS_BUCKET,
-  subscriptionProofObjectPath,
-  validateSubscriptionProofFile,
-} from "@/lib/subscription-proofs";
+import { validateSubscriptionProofFile } from "@/lib/subscription-proofs";
 
 export type VenueSubRequestSummary = {
   id: string;
@@ -66,9 +62,9 @@ export function VenuePremiumPaywall({
   );
   const [reference, setReference] = useState("");
   const [file, setFile] = useState<File | null>(null);
-  const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [okMessage, setOkMessage] = useState<string | null>(null);
+  const [pending, startTransition] = useTransition();
 
   useEffect(() => {
     if (!isOwner) return;
@@ -85,7 +81,7 @@ export function VenuePremiumPaywall({
   const isPremiumActive =
     activeSubscription?.status === "active" && activeSubscription.plan === "premium";
 
-  async function submitRequest() {
+  function submitRequest() {
     setError(null);
     setOkMessage(null);
 
@@ -108,49 +104,30 @@ export function VenuePremiumPaywall({
       return;
     }
 
-    setSubmitting(true);
-    const supabase = createClient();
-    const path = subscriptionProofObjectPath(venueId, file.name);
+    const fd = new FormData();
+    fd.set("venue_id", venueId);
+    fd.set("payment_method", method);
+    fd.set("payment_reference", reference.trim().slice(0, 80));
+    fd.set("legal_accepted", "1");
+    fd.set("proof", file);
 
-    const { error: uploadError } = await supabase.storage
-      .from(SUBSCRIPTION_PROOFS_BUCKET)
-      .upload(path, file, { contentType: file.type, upsert: false });
-
-    if (uploadError) {
-      setError(`No se pudo subir el comprobante: ${uploadError.message}`);
-      setSubmitting(false);
-      return;
-    }
-
-    const { error: rpcError } = await supabase.rpc("submit_venue_subscription_request", {
-      p_venue_id: venueId,
-      p_payment_method: method,
-      p_amount_cop: instructions.priceCop,
-      p_proof_path: path,
-      p_payment_reference: reference.trim() || undefined,
-      p_plan: "premium",
-      p_duration_days: instructions.durationDays,
+    startTransition(async () => {
+      const result = await submitVenuePremiumRequestAction(venueSlug, undefined, fd);
+      if (result.error) {
+        setError(result.error);
+        return;
+      }
+      trackNequiProofSubmit({
+        venue_id: venueId,
+        venue_slug: venueSlug,
+        plan: "premium",
+      });
+      setOkMessage("Solicitud enviada. Te avisamos cuando la revisemos.");
+      setFile(null);
+      setReference("");
+      legal.setAccepted(false);
+      router.refresh();
     });
-
-    if (rpcError) {
-      // Intentar limpiar el objeto huérfano
-      await supabase.storage.from(SUBSCRIPTION_PROOFS_BUCKET).remove([path]);
-      setError(rpcError.message);
-      setSubmitting(false);
-      return;
-    }
-
-    trackNequiProofSubmit({
-      venue_id: venueId,
-      venue_slug: venueSlug,
-      plan: "premium",
-    });
-    setOkMessage("Solicitud enviada. Te avisamos cuando la revisemos.");
-    setFile(null);
-    setReference("");
-    legal.setAccepted(false);
-    setSubmitting(false);
-    router.refresh();
   }
 
   return (
@@ -240,7 +217,7 @@ export function VenuePremiumPaywall({
                 type="radio"
                 name="premium_method"
                 checked={method === "nequi"}
-                disabled={!instructions.nequi || submitting}
+                disabled={!instructions.nequi || pending}
                 onChange={() => setMethod("nequi")}
               />
               Nequi
@@ -251,7 +228,7 @@ export function VenuePremiumPaywall({
                 name="premium_method"
                 checked={method === "bank_transfer"}
                 disabled={
-                  !(instructions.bankName && instructions.bankAccount) || submitting
+                  !(instructions.bankName && instructions.bankAccount) || pending
                 }
                 onChange={() => setMethod("bank_transfer")}
               />
@@ -265,7 +242,7 @@ export function VenuePremiumPaywall({
               value={reference}
               onChange={(e) => setReference(e.target.value)}
               maxLength={80}
-              disabled={submitting}
+              disabled={pending}
               placeholder="Ej. 123456789"
             />
           </label>
@@ -275,7 +252,7 @@ export function VenuePremiumPaywall({
             <input
               type="file"
               accept="image/jpeg,image/png,image/webp,application/pdf"
-              disabled={submitting}
+              disabled={pending}
               onChange={(e) => setFile(e.target.files?.[0] ?? null)}
             />
           </label>
@@ -283,7 +260,7 @@ export function VenuePremiumPaywall({
           <LegalAcceptCheckbox
             {...legal.checkboxProps}
             id="premium-legal-accept"
-            disabled={submitting}
+            disabled={pending}
           />
 
           {error ? <p className="form-error">{error}</p> : null}
@@ -293,10 +270,10 @@ export function VenuePremiumPaywall({
             <button
               type="button"
               className="btn-flood"
-              disabled={submitting || !instructions.hasPaymentChannel}
+              disabled={pending || !instructions.hasPaymentChannel}
               onClick={() => void submitRequest()}
             >
-              {submitting ? "Enviando…" : "Enviar solicitud Premium"}
+              {pending ? "Enviando…" : "Enviar solicitud Premium"}
             </button>
           </div>
         </>

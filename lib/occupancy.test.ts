@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
   humanizeSideBError,
+  isJoinableOccupancyReason,
+  isOccupancyRaceError,
+  occupancyRaceUserMessage,
   occupancyReason,
   occupancyUserMessage,
   parseOccupancyShareCode,
@@ -134,5 +137,43 @@ describe("parseOccupancyShareCode", () => {
     expect(parseOccupancyShareCode("OCCUPANCY:abc123456")).toBe(null);
     expect(parseOccupancyShareCode("")).toBe(null);
     expect(parseOccupancyShareCode(undefined)).toBe(null);
+  });
+});
+
+describe("isOccupancyRaceError / occupancyRaceUserMessage", () => {
+  it("mensaje unificado fijo", () => {
+    expect(occupancyRaceUserMessage()).toBe(
+      "Alguien se adelantó a esa franja. Elegí otra hora.",
+    );
+  });
+
+  it("detecta OCCUPANCY y OCCUPANCY:code", () => {
+    expect(isOccupancyRaceError("OCCUPANCY")).toBe(true);
+    expect(isOccupancyRaceError("OCCUPANCY:abc12345")).toBe(true);
+  });
+
+  it("detecta assert de booking y EXCLUDE", () => {
+    expect(
+      isOccupancyRaceError("Esa franja ya tiene un turno pedido o confirmado. Elegí otra hora."),
+    ).toBe(true);
+    expect(isOccupancyRaceError("matches_venue_occupy_excl")).toBe(true);
+    expect(isOccupancyRaceError("exclusion_violation")).toBe(true);
+  });
+
+  it("detecta el propio mensaje de carrera", () => {
+    expect(isOccupancyRaceError(occupancyRaceUserMessage())).toBe(true);
+  });
+
+  it("no marca errores ajenos", () => {
+    expect(isOccupancyRaceError("Cancha no encontrada.")).toBe(false);
+    expect(isOccupancyRaceError("")).toBe(false);
+    expect(isOccupancyRaceError(null)).toBe(false);
+  });
+
+  it("isJoinableOccupancyReason cubre join/open_b/own", () => {
+    expect(isJoinableOccupancyReason("join")).toBe(true);
+    expect(isJoinableOccupancyReason("open_b")).toBe(true);
+    expect(isJoinableOccupancyReason("own")).toBe(true);
+    expect(isJoinableOccupancyReason("blocked")).toBe(false);
   });
 });
