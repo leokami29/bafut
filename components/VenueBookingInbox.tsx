@@ -59,7 +59,7 @@ function playerContactHref(
   const when = formatBookingWhen(booking.starts_at, timezone);
   return whatsappChatHref(
     digits,
-    `Hola! Te escribo de ${venueName} por tu pedido de turno (${when}).`,
+    `Hola! Te escribo de ${venueName} por tu pedido de reserva (${when}).`,
   );
 }
 
@@ -193,7 +193,7 @@ function BookingRow({
       <details className="planilla-body" open={open}>
         <summary className="planilla-summary">
           <span className="planilla-summary-label">
-            {pending ? "Revisar pedido" : "Detalle del turno"}
+            {pending ? "Revisar pedido" : "Detalle de la reserva"}
           </span>
           <span className="planilla-summary-hint" aria-hidden="true">
             desplegar
@@ -248,7 +248,7 @@ function BookingRow({
                   <form action={approveAction}>
                     <input type="hidden" name="booking_id" value={booking.id} />
                     <button type="submit" className="btn-flood" disabled={busy}>
-                      {approvePending ? "Confirmando…" : "Aprobar turno"}
+                      {approvePending ? "Confirmando…" : "Aprobar reserva"}
                     </button>
                   </form>
                   <details className="planilla-reject">
@@ -274,7 +274,7 @@ function BookingRow({
               ) : null}
             </div>
             {error ? <p className="form-error">{error}</p> : null}
-            {approveState?.ok ? <p className="form-ok">Turno confirmado.</p> : null}
+            {approveState?.ok ? <p className="form-ok">Reserva confirmada.</p> : null}
             {rejectState?.ok ? <p className="form-ok">Pedido rechazado.</p> : null}
           </div>
         </div>
@@ -298,7 +298,7 @@ export function VenueBookingInbox({
           Pendientes{pending.length > 0 ? ` (${pending.length})` : ""}
         </h2>
         {pending.length === 0 ? (
-          <p className="field-help">No hay pedidos de turno esperando revisión.</p>
+          <p className="field-help">No hay reservas esperando revisión.</p>
         ) : (
           <ul className="planilla-list">
             {pending.map((booking) => (
@@ -319,7 +319,7 @@ export function VenueBookingInbox({
       <section className="venue-admin-section">
         <h2 className="subhead">Historial</h2>
         {history.length === 0 ? (
-          <p className="field-help">Todavía no hay turnos resueltos en esta cancha.</p>
+          <p className="field-help">Todavía no hay reservas resueltas en esta cancha.</p>
         ) : (
           <ul className="planilla-list">
             {history.map((booking) => (

@@ -61,7 +61,7 @@ export default function PrivacidadPage() {
         </li>
         <li>
           <strong>Uso del producto:</strong> partidos publicados, pedidos de cupo,
-          pedidos de turno (franja, deporte, estado), confirmaciones, mensajes técnicos de
+          reservas de horario (franja, deporte, estado), confirmaciones, mensajes técnicos de
           la app.
         </li>
         <li>
@@ -70,11 +70,11 @@ export default function PrivacidadPage() {
         </li>
         <li>
           <strong>Panel de cancha:</strong> datos de contacto y ficha que el dueño edita
-          (teléfono, web, fotos, etc.), incluido si acepta pedidos de turno.
+          (teléfono, web, fotos, etc.), incluido si acepta reservas.
         </li>
         <li>
-          <strong>Comprobantes de turno:</strong> imagen o PDF que subís al pedir un
-          turno, WhatsApp de contacto del pedido y decisión del dueño (aprobar /
+          <strong>Comprobantes de reserva:</strong> imagen o PDF que subís al reservar un
+          horario, WhatsApp de contacto del pedido y decisión del dueño (aprobar /
           rechazar). Esos archivos no se publican en el directorio; solo el jugador del
           pedido, el dueño de la cancha y operadores autorizados pueden acceder vía
           controles de la app (p. ej. URL firmada).
@@ -99,17 +99,17 @@ export default function PrivacidadPage() {
 
       <h2>3. Finalidades</h2>
       <ul>
-        <li>Prestar y mejorar el servicio de partidos, cupos, turnos y directorio de canchas.</li>
+        <li>Prestar y mejorar el servicio de partidos, cupos, reservas y directorio de canchas.</li>
         <li>
           Autenticar usuarios, prevenir abuso, fraude en reclamos y uso indebido de
-          comprobantes (premium o turnos).
+          comprobantes (premium o reservas).
         </li>
         <li>
           Verificar titularidad o autorización sobre una ficha de cancha y gestionar el
           panel del dueño.
         </li>
         <li>
-          Facilitar que el dueño revise pedidos de turno y comprobantes asociados (BaFut no
+          Facilitar que el dueño revise reservas y comprobantes asociados (BaFut no
           custodia el pago del alquiler).
         </li>
         <li>
@@ -118,7 +118,7 @@ export default function PrivacidadPage() {
         </li>
         <li>
           Contactarte por los canales que nos diste (correo, WhatsApp) sobre el estado de
-          reclamos, turnos, suscripciones o soporte.
+          reclamos, reservas, suscripciones o soporte.
         </li>
         <li>Cumplir obligaciones legales y atender requerimientos de autoridad.</li>
       </ul>
@@ -127,9 +127,9 @@ export default function PrivacidadPage() {
       <p>
         Tratamos datos con base en la ejecución del servicio que solicitás, el
         consentimiento cuando marcás la aceptación en formularios (reclamar cancha,
-        solicitud premium, pedir turno u otros), el interés legítimo de seguridad/moderación y las
+        solicitud premium, reservar u otros), el interés legítimo de seguridad/moderación y las
         obligaciones legales. Podés negar o retirar el consentimiento cuando la ley lo
-        permita; en ese caso es posible que no podamos completar el reclamo, el turno o la
+        permita; en ese caso es posible que no podamos completar el reclamo, la reserva o la
         solicitud premium.
       </p>
 
@@ -145,7 +145,7 @@ export default function PrivacidadPage() {
       <h2>6. Conservación</h2>
       <p>
         Conservamos los datos mientras la cuenta esté activa y el tiempo adicional
-        necesario para reclamos, auditoría de pagos/comprobantes (premium y turnos), defensa
+        necesario para reclamos, auditoría de pagos/comprobantes (premium y reservas), defensa
         legal y retención mínima exigida por ley. Los comprobantes se retienen el plazo
         razonable para conciliación y prevención de fraude; después pueden eliminarse o
         anonimizarse. Si una cancha se retira del directorio activo, los historiales

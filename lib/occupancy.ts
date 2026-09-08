@@ -114,7 +114,7 @@ export function occupancyReason(userId: string | null | undefined, hit: Occupanc
 export function occupancyUserMessage(conflict: OccupancyConflict) {
   const venue = conflict.venue_name || "esa cancha";
   if (conflict.block_kind === "booking") {
-    return `Hay un turno en ${venue} a esa hora. Elegí otra franja.`;
+    return `Hay una reserva en ${venue} a esa hora. Elegí otra franja.`;
   }
   switch (conflict.reason) {
     case "own":

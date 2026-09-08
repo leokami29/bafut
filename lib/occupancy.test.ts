@@ -76,13 +76,13 @@ describe("occupancyUserMessage", () => {
     expect(msg).toContain("otra hora");
   });
 
-  it("mensaje booking habla de turno, no de reserva", () => {
+  it("mensaje booking habla de reserva, no de turno", () => {
     const msg = occupancyUserMessage({
       ...hit({ block_kind: "booking", booking_id: "b1", match_id: null, share_code: null }),
       reason: "blocked",
     });
-    expect(msg).toContain("turno");
-    expect(msg).not.toContain("reserva");
+    expect(msg).toContain("reserva");
+    expect(msg).not.toMatch(/turno/i);
   });
 
   it("sin venue_name usa fallback genérico", () => {

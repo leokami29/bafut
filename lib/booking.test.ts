@@ -16,8 +16,11 @@ import {
   isWithinLeadTime,
   isWithinMaxDaysAhead,
   listBookingStartTimesLocal,
+  listBookingSlotsWithStatus,
   listFreeBookingSlots,
   normalizeBookingWhatsapp,
+  occupyContainsStart,
+  occupyEndMs,
   occupyRangesOverlap,
   venueHasUsableBookingPricing,
 } from "@/lib/booking";
@@ -53,6 +56,15 @@ describe("occupyRangesOverlap", () => {
         durationMin: 60,
       }),
     ).toBe(false);
+  });
+
+  it("occupyContainsStart solo dentro de [start, end)", () => {
+    const start = base.startsAtMs;
+    const end = occupyEndMs(base);
+    expect(occupyContainsStart(base, start)).toBe(true);
+    expect(occupyContainsStart(base, start + 30 * 60_000)).toBe(true);
+    expect(occupyContainsStart(base, end)).toBe(false);
+    expect(occupyContainsStart(base, start - 30 * 60_000)).toBe(false);
   });
 });
 
@@ -117,6 +129,83 @@ describe("slot grid", () => {
     // lead 2h desde 10:00 → no 11:00
     expect(free).not.toContain("2026-09-10T11:00");
   });
+
+  it("listBookingSlotsWithStatus distingue ocupado vs no cabe y lead", () => {
+    const nowMs = Date.parse("2026-09-10T15:00:00.000Z"); // 10:00 Bogotá
+    const slots = listBookingSlotsWithStatus({
+      dayKey: "2026-09-10",
+      durationMin: 60,
+      timeZone: BOGOTA,
+      nowMs,
+      occupied: [
+        {
+          startsAtMs: Date.parse("2026-09-10T20:00:00.000Z"), // 15:00
+          durationMin: 60,
+          kind: "match",
+        },
+        {
+          startsAtMs: Date.parse("2026-09-10T21:00:00.000Z"), // 16:00
+          durationMin: 60,
+          kind: "booking",
+        },
+      ],
+      hasTariff: (local) => local !== "2026-09-10T17:00",
+    });
+    expect(slots.find((s) => s.hm === "11:00")?.status).toBe("too_soon");
+    // 14:30 cruzaría el partido 15:00–16:00 con duración 60
+    expect(slots.find((s) => s.hm === "14:30")?.status).toBe("no_fit");
+    expect(slots.find((s) => s.hm === "15:00")?.status).toBe("occupied_match");
+    expect(slots.find((s) => s.hm === "15:30")?.status).toBe("occupied_match");
+    expect(slots.find((s) => s.hm === "16:00")?.status).toBe("occupied_booking");
+    expect(slots.find((s) => s.hm === "16:30")?.status).toBe("occupied_booking");
+    expect(slots.find((s) => s.hm === "17:00")?.status).toBe("no_tariff");
+    expect(slots.find((s) => s.hm === "18:00")?.status).toBe("available");
+  });
+
+  it("reserva 20:00–21:00: 19:30 es no_fit (60 min), no ocupado", () => {
+    const nowMs = Date.parse("2026-09-10T15:00:00.000Z"); // 10:00 Bogotá
+    const slots = listBookingSlotsWithStatus({
+      dayKey: "2026-09-10",
+      durationMin: 60,
+      timeZone: BOGOTA,
+      nowMs,
+      occupied: [
+        {
+          // 20:00 Bogotá = 01:00Z del día siguiente… wait, Bogotá is UTC-5
+          // 20:00 Bogotá = 2026-09-11T01:00:00.000Z if day is Sep 10... 
+          // Actually Sep 10 20:00 Bogotá = Sep 11 01:00 UTC
+          startsAtMs: Date.parse("2026-09-11T01:00:00.000Z"),
+          durationMin: 60,
+          kind: "booking",
+        },
+      ],
+    });
+    expect(slots.find((s) => s.hm === "19:30")?.status).toBe("no_fit");
+    expect(slots.find((s) => s.hm === "20:00")?.status).toBe("occupied_booking");
+    expect(slots.find((s) => s.hm === "20:30")?.status).toBe("occupied_booking");
+    // 19:00 con 60 min termina en 20:00 → pegado, libre
+    expect(slots.find((s) => s.hm === "19:00")?.status).toBe("available");
+  });
+
+  it("con duración 30, 19:30 queda libre si la reserva es 20:00–21:00", () => {
+    const nowMs = Date.parse("2026-09-10T15:00:00.000Z");
+    const slots = listBookingSlotsWithStatus({
+      dayKey: "2026-09-10",
+      durationMin: 30,
+      timeZone: BOGOTA,
+      nowMs,
+      occupied: [
+        {
+          startsAtMs: Date.parse("2026-09-11T01:00:00.000Z"), // 20:00 Bogotá
+          durationMin: 60,
+          kind: "booking",
+        },
+      ],
+    });
+    expect(slots.find((s) => s.hm === "19:30")?.status).toBe("available");
+    expect(slots.find((s) => s.hm === "20:00")?.status).toBe("occupied_booking");
+    expect(slots.find((s) => s.hm === "20:30")?.status).toBe("occupied_booking");
+  });
 });
 
 describe("whatsapp + owner notify", () => {
@@ -170,7 +259,7 @@ describe("feature flag venue_booking", () => {
 
 describe("legal booking variant", () => {
   it("mensaje específico", () => {
-    expect(legalAcceptErrorMessage("booking")).toMatch(/turno/i);
+    expect(legalAcceptErrorMessage("booking")).toMatch(/reservar/i);
   });
 });
 

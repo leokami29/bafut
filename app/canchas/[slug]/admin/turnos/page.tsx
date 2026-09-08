@@ -14,7 +14,7 @@ import { createClient } from "@/lib/supabase/server";
 import { robotsNoIndex } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: "Turnos de la cancha",
+  title: "Reservas de la cancha",
   robots: robotsNoIndex,
 };
 
@@ -55,7 +55,7 @@ export default async function VenueTurnosAdminPage({ params }: Props) {
       <main className="page page-narrow" id="main">
         <header className="page-head">
           <h1>Acceso denegado</h1>
-          <p>No tenés permisos para revisar los turnos de esta cancha.</p>
+          <p>No tenés permisos para revisar las reservas de esta cancha.</p>
         </header>
         <p className="foot-link">
           <Link href={`/canchas/${slug}`}>← Volver a la cancha</Link>
@@ -98,7 +98,7 @@ export default async function VenueTurnosAdminPage({ params }: Props) {
       </p>
       <header className="page-head page-head-compact">
         <p className="eyebrow">Administración · {city.name}</p>
-        <h1>Turnos · {venue.name}</h1>
+        <h1>Reservas · {venue.name}</h1>
         <p className="lede">
           Revisá comprobantes, confirmá o rechazá pedidos. El hold de un pendiente es de 4 horas.
         </p>
@@ -118,7 +118,7 @@ export default async function VenueTurnosAdminPage({ params }: Props) {
 
       {!venue.booking_enabled ? (
         <p className="field-help venue-booking-flag-hint">
-          Esta cancha todavía no acepta pedidos de turno. Activalo en{" "}
+          Esta cancha todavía no acepta reservas. Activalo en{" "}
           <Link href={`/canchas/${slug}/admin`}>Mesa</Link>.
         </p>
       ) : null}

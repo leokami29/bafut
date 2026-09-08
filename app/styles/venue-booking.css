@@ -1,10 +1,34 @@
-/* Pedir turno — jugador (ficha CTA + stepper + mis turnos) */
+/* Reservar — jugador (ficha CTA + flujo + mis reservas) */
 
 .page-venue-booking {
   width: 100%;
-  max-width: 72rem;
+  max-width: 42rem;
   margin-inline: auto;
   padding-bottom: calc(5.5rem + env(safe-area-inset-bottom));
+}
+
+.venue-booking-head {
+  margin-bottom: 1.15rem;
+}
+
+.venue-booking-head h1 {
+  margin-bottom: 0.2rem;
+}
+
+.venue-booking-product {
+  margin: 0 0 0.55rem;
+  font-family: var(--font-display), "Barlow Condensed", sans-serif;
+  font-size: clamp(1.35rem, 3.5vw, 1.75rem);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  line-height: 1.05;
+  text-transform: uppercase;
+  color: var(--turf);
+}
+
+.venue-booking-head .lede {
+  max-width: 38ch;
+  margin-bottom: 0.45rem;
 }
 
 .venue-booking-cta-section {
@@ -30,17 +54,31 @@
   border-top: 1px solid color-mix(in oklab, var(--ink) 10%, transparent);
 }
 
-.venue-booking-step-label {
-  margin: 0.35rem 0 0;
+.venue-booking-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem 1rem;
+  list-style: none;
+  margin: 0.45rem 0 0;
+  padding: 0;
   font-family: var(--font-mono), ui-monospace, monospace;
   font-size: 0.72rem;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
+  color: color-mix(in oklab, var(--ink) 45%, transparent);
+}
+
+.venue-booking-steps .is-current {
   color: var(--turf);
+  font-weight: 650;
+}
+
+.venue-booking-steps .is-done {
+  color: color-mix(in oklab, var(--ink) 62%, transparent);
 }
 
 .venue-booking-rules {
-  margin-top: -0.35rem;
+  margin: 0;
 }
 
 .venue-booking-chips {
@@ -49,11 +87,264 @@
   gap: 0.4rem;
 }
 
-.venue-booking-days,
+.venue-booking-sport-solo {
+  margin: 0 0 0.85rem;
+  font-size: 0.95rem;
+}
+
+.venue-booking-meta-label {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--turf);
+  margin-right: 0.35rem;
+}
+
+.venue-booking-promos {
+  margin: 0 0 1.1rem;
+  padding: 0.85rem 0 0.15rem;
+  border-top: 1px solid color-mix(in oklab, var(--ink) 10%, transparent);
+}
+
+.venue-booking-promos-title {
+  margin: 0 0 0.55rem;
+  font-family: var(--font-display), "Barlow Condensed", sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.venue-booking-promos-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.venue-booking-promo {
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.7rem 0.85rem;
+  background: color-mix(in oklab, var(--flood) 12%, var(--paper));
+  border-left: 3px solid var(--flood);
+}
+
+.venue-booking-promo-main {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.35rem 0.75rem;
+}
+
+.venue-booking-promo-name {
+  font-family: var(--font-display), "Barlow Condensed", sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.1;
+}
+
+.venue-booking-promo-value {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.78rem;
+  font-weight: 650;
+  color: var(--turf-deep);
+}
+
+.venue-booking-promo-cond,
+.venue-booking-promo-soon {
+  margin: 0;
+  font-size: 0.82rem;
+  color: color-mix(in oklab, var(--ink) 55%, transparent);
+}
+
+.venue-booking-promo-soon {
+  color: var(--turf);
+  font-weight: 600;
+}
+
+.venue-booking-days {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(4.6rem, 1fr));
+  gap: 0.4rem;
+  max-height: 12.5rem;
+  overflow-y: auto;
+  padding-bottom: 0.1rem;
+  scrollbar-color: color-mix(in oklab, var(--turf) 45%, transparent) transparent;
+}
+
+.venue-booking-day {
+  display: grid;
+  gap: 0.15rem;
+  justify-items: center;
+  min-height: 2.85rem;
+  padding: 0.45rem 0.35rem;
+  border: 1px solid color-mix(in oklab, var(--ink) 22%, transparent);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+  transition: background 160ms ease-out, border-color 160ms ease-out, color 160ms ease-out;
+}
+
+.venue-booking-day:hover {
+  border-color: var(--turf);
+}
+
+.venue-booking-day.is-on {
+  background: var(--turf);
+  border-color: var(--turf);
+  color: var(--chalk);
+}
+
+.venue-booking-day-weekday {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.venue-booking-day-date {
+  font-size: 0.82rem;
+  font-weight: 650;
+  line-height: 1.1;
+}
+
+.venue-booking-slot-legend {
+  margin-top: -0.15rem;
+}
+
+.venue-booking-occupied-bands {
+  list-style: none;
+  margin: 0 0 0.65rem;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.venue-booking-occupied-band {
+  margin: 0;
+  padding: 0.35rem 0.55rem;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  background: color-mix(in oklab, var(--ink) 8%, var(--paper));
+  border-left: 3px solid color-mix(in oklab, var(--ink) 35%, transparent);
+  color: color-mix(in oklab, var(--ink) 78%, transparent);
+}
+
+.venue-booking-occupied-band.is-booking {
+  border-left-color: var(--flood);
+  background: color-mix(in oklab, var(--flood) 10%, var(--paper));
+}
+
+.venue-booking-occupied-band.is-match {
+  border-left-color: var(--turf);
+  background: color-mix(in oklab, var(--turf) 8%, var(--paper));
+}
+
 .venue-booking-slots {
-  max-height: 14rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(5.1rem, 1fr));
+  gap: 0.4rem;
+  max-height: 16rem;
   overflow-y: auto;
   padding-bottom: 0.15rem;
+  scrollbar-color: color-mix(in oklab, var(--turf) 45%, transparent) transparent;
+}
+
+.venue-booking-slot {
+  display: grid;
+  gap: 0.12rem;
+  justify-items: center;
+  min-height: 2.75rem;
+  padding: 0.4rem 0.3rem;
+  border: 1px solid color-mix(in oklab, var(--ink) 20%, transparent);
+  background: color-mix(in oklab, var(--paper) 92%, white);
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+  transition: background 160ms ease-out, border-color 160ms ease-out, opacity 160ms ease-out;
+}
+
+.venue-booking-slot:hover:not(:disabled) {
+  border-color: var(--turf);
+}
+
+.venue-booking-slot.is-on {
+  background: var(--turf);
+  border-color: var(--turf);
+  color: var(--chalk);
+}
+
+.venue-booking-slot:disabled {
+  cursor: not-allowed;
+  opacity: 0.72;
+}
+
+.venue-booking-slot.is-occupied_match,
+.venue-booking-slot.is-occupied_booking {
+  background: color-mix(in oklab, var(--ink) 10%, var(--paper));
+  border-style: solid;
+  border-color: color-mix(in oklab, var(--ink) 28%, transparent);
+}
+
+.venue-booking-slot.is-no_fit {
+  background: color-mix(in oklab, var(--paper) 88%, white);
+  border-style: dashed;
+  opacity: 0.78;
+}
+
+.venue-booking-slot.is-too_soon {
+  opacity: 0.45;
+}
+
+.venue-booking-slot.is-no_tariff {
+  background: color-mix(in oklab, var(--flood) 8%, var(--paper));
+  border-style: dashed;
+}
+
+.venue-booking-slot-time {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.88rem;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.venue-booking-slot-tag {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--ink) 55%, transparent);
+}
+
+.venue-booking-slot.is-on .venue-booking-slot-tag {
+  color: color-mix(in oklab, var(--chalk) 80%, transparent);
+}
+
+.venue-booking-live-price {
+  margin-top: 0.85rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid color-mix(in oklab, var(--ink) 10%, transparent);
+  animation: venue-booking-rise 280ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.venue-booking-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.45rem;
+  margin: 0 0 0.65rem;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  color: color-mix(in oklab, var(--ink) 72%, transparent);
 }
 
 .venue-booking-nav {
@@ -63,6 +354,11 @@
   margin-top: 1rem;
 }
 
+.venue-booking-nav .btn-flood {
+  flex: 1 1 12rem;
+  min-height: 2.8rem;
+}
+
 .venue-booking-empty {
   margin: 0.5rem 0 0;
   padding: 0.85rem 0.95rem;
@@ -70,6 +366,26 @@
   border-left: 3px solid color-mix(in oklab, var(--flood) 55%, transparent);
   font-size: 0.92rem;
   line-height: 1.45;
+}
+
+.venue-booking-empty p {
+  margin: 0;
+}
+
+.venue-booking-alt {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem 0.85rem;
+  margin-top: 1.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid color-mix(in oklab, var(--ink) 10%, transparent);
+}
+
+.venue-booking-alt-copy {
+  margin: 0;
+  font-size: 0.9rem;
+  color: color-mix(in oklab, var(--ink) 62%, transparent);
 }
 
 .venue-booking-pay-instructions {
@@ -113,6 +429,7 @@
   padding: 1.25rem 1.3rem;
   background: color-mix(in oklab, var(--flood) 14%, var(--paper));
   border-left: 3px solid var(--flood);
+  animation: venue-booking-rise 320ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .venue-booking-success .subhead {
@@ -127,7 +444,28 @@
   margin-top: 0.5rem;
 }
 
-/* Mis turnos */
+@keyframes venue-booking-rise {
+  from {
+    opacity: 0;
+    transform: translateY(0.4rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .venue-booking-live-price,
+  .venue-booking-success,
+  .venue-booking-day,
+  .venue-booking-slot {
+    animation: none;
+    transition: none;
+  }
+}
+
+/* Mis reservas */
 .venue-booking-list {
   margin-top: 0.5rem;
 }
@@ -183,7 +521,7 @@
 }
 
 .venue-booking-status.is-pending {
-  color: var(--flood);
+  color: color-mix(in oklab, var(--flood) 55%, var(--ink));
 }
 
 .venue-booking-status.is-confirmed {

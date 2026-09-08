@@ -97,7 +97,7 @@ export function SlotModal({
           </div>
           <div className="slot-modal-field">
             <label>
-              <span>Precio del bloque (COP)</span>
+              <span>Precio por hora (COP)</span>
               <input
                 type="number"
                 min={0}

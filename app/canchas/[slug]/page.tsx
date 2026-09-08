@@ -267,6 +267,17 @@ export default async function CanchaPage({ params }: Props) {
           <p className="venue-claim-note" role="note">
             Sos el dueño registrado de esta cancha ·{" "}
             <Link href={`/canchas/${venue.slug}/admin`}>Ir al panel</Link>
+            {!showBookingCta &&
+            venueHasUsableBookingPricing(publicPricing, venue.sports ?? undefined) &&
+            bookingFlagOn &&
+            !venue.booking_enabled ? (
+              <>
+                {" "}
+                · Tenés precios, pero &quot;Reservar&quot; está apagado — activá{" "}
+                <Link href={`/canchas/${venue.slug}/admin`}>Aceptar reservas</Link> en
+                Mesa
+              </>
+            ) : null}
           </p>
         ) : null}
       </header>

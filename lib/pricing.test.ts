@@ -58,6 +58,7 @@ describe('applyDurationMinimum', () => {
 });
 
 describe('calculateBasePrice', () => {
+  // price_cop = COP/hora (no precio del bloque de la franja).
   const config = {
     slots: [
       { id: '1', day_of_week: 1, start_time: '13:00', end_time: '18:00', price_cop: 60000 },
@@ -67,23 +68,35 @@ describe('calculateBasePrice', () => {
     defaults: { 1: 100000 },
   };
 
-  it('calcula precio en una sola franja', () => {
+  it('calcula precio en una sola franja (COP/hora × minutos/60)', () => {
     const result = calculateBasePrice(config, 1, 13 * 60, 60);
-    expect(result.base_cop).toBe(12000); // 60min * (60000/300) = 12000
+    expect(result.base_cop).toBe(60000); // 60min * (60000/60)
     expect(result.errors).toHaveLength(0);
+  });
+
+  it('130000/h × 60 min = 130000', () => {
+    const padel = {
+      ...config,
+      slots: [
+        { id: '1', day_of_week: 5, start_time: '06:00', end_time: '22:00', price_cop: 130000 },
+      ],
+      defaults: {},
+    };
+    const result = calculateBasePrice(padel, 5, 6 * 60, 60);
+    expect(result.base_cop).toBe(130000);
   });
 
   it('calcula precio cruzando dos franjas', () => {
     const result = calculateBasePrice(config, 1, 17 * 60 + 30, 90);
-    // 30min en A (200/min) + 60min en B (333.33/min) = 6000 + 20000 = 26000
-    expect(result.base_cop).toBeCloseTo(26000, -2);
+    // 30min en A (1000/min) + 60min en B (1333.33/min) = 30000 + 80000 = 110000
+    expect(result.base_cop).toBe(110000);
     expect(result.errors).toHaveLength(0);
   });
 
-  it('usa fallback cuando no hay slot', () => {
+  it('usa fallback COP/hora cuando no hay slot', () => {
     const result = calculateBasePrice(config, 1, 8 * 60, 60);
-    // 60min * (100000/1440) = 4166.67
-    expect(result.base_cop).toBeCloseTo(4167, -1);
+    // 60min * (100000/60) = 100000
+    expect(result.base_cop).toBe(100000);
     expect(result.errors).toHaveLength(0);
   });
 
@@ -128,9 +141,9 @@ describe('calculateMatchPrice', () => {
 
   it('calcula precio completo sin promo', () => {
     const result = calculateMatchPrice(config, 1, 13 * 60, 60);
-    expect(result.base_cop).toBe(12000);
+    expect(result.base_cop).toBe(60000);
     expect(result.discount_cop).toBe(0);
-    expect(result.final_cop).toBe(12000);
+    expect(result.final_cop).toBe(60000);
     expect(result.billed_min).toBe(60);
     expect(result.errors).toHaveLength(0);
   });
@@ -143,8 +156,8 @@ describe('calculateMatchPrice', () => {
 
   it('aplica descuento', () => {
     const result = calculateMatchPrice(config, 1, 13 * 60, 60, { kind: 'discount_pct', value: 20 });
-    expect(result.discount_cop).toBe(2400); // 20% de 12000
-    expect(result.final_cop).toBe(9600);
+    expect(result.discount_cop).toBe(12000); // 20% de 60000
+    expect(result.final_cop).toBe(48000);
   });
 
   it('aplica override', () => {

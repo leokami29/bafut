@@ -132,16 +132,16 @@ function DayRow({
                 <span className="venue-pricing-slot-time">
                   {formatClock(slot.start_time)}–{formatClock(slot.end_time)}
                 </span>
-                <span className="venue-pricing-slot-price">{formatMoney(slot.price_cop)}</span>
+                <span className="venue-pricing-slot-price">{formatMoney(slot.price_cop)}/h</span>
               </li>
             ))}
           </ul>
         ) : (
-          <span className="venue-pricing-day-empty">Sin franjas · usa día completo</span>
+          <span className="venue-pricing-day-empty">Sin franjas · usa precio/hora fallback</span>
         )}
         {hasFallback ? (
           <p className="venue-pricing-fallback">
-            Día completo <strong>{formatMoney(fallback.default_price_cop)}</strong>
+            Precio/hora (sin franja) <strong>{formatMoney(fallback.default_price_cop)}/h</strong>
           </p>
         ) : null}
       </div>

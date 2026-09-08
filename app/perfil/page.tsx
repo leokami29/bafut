@@ -75,7 +75,7 @@ export default async function PerfilPage({
           </span>
         </Link>
         <Link href="/perfil/turnos" className="profile-nav-card">
-          <span className="profile-nav-title">Mis turnos</span>
+          <span className="profile-nav-title">Mis reservas</span>
           <span className="profile-nav-desc">Alquiler de horario que pediste en canchas</span>
         </Link>
         <Link href="/perfil/canchas" className="profile-nav-card">

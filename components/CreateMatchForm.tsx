@@ -102,7 +102,7 @@ export function CreateMatchForm({
   venues: Venue[];
   defaultVenueId?: string;
   edit?: MatchEditInitial;
-  /** Para override de tarifa (dueño) y CTA Pedir turno. */
+  /** Para override de tarifa (dueño) y CTA Reservar. */
   currentUserId?: string | null;
   isPlatformAdmin?: boolean;
   /** Kill-switch FEATURE_VENUE_BOOKING / feature_flags. */
@@ -185,8 +185,7 @@ export function CreateMatchForm({
       : Number.isFinite(costNumber)
         ? formatMoney(costNumber)
         : formatMoney(null);
-  const huecoDisclaimer =
-    "Publicar un hueco no alquila la cancha; el horario lo gestionás vos con el dueño o vía Pedir turno si está activo.";
+  const huecoDisclaimer = "Publicar hueco ≠ alquilar la cancha.";
 
   const [state, action, pending] = useActionState(
     async (_prev: State, formData: FormData) => {
@@ -732,11 +731,10 @@ export function CreateMatchForm({
               </fieldset>
             )}
 
-            <fieldset className="match-compose-group">
-              <legend className="match-compose-legend">Aporte / persona</legend>
+            <fieldset className="match-compose-group match-compose-aporte">
+              <legend className="match-compose-legend">Aporte entre jugadores</legend>
               <p className="field-help">
-                Lo que aporta cada jugador al grupo. No es el alquiler de la cancha. Dejalo vacío si se
-                arregla en el partido.
+                Lo que pone cada uno al grupo. Vacío = se arregla en el partido.
               </p>
               <label htmlFor={costId}>
                 Aporte / persona (COP)
@@ -765,8 +763,8 @@ export function CreateMatchForm({
             </fieldset>
 
             {venueId && sport && startsAtIso && durationMin && !isEdit ? (
-              <fieldset className="match-compose-group">
-                <legend className="match-compose-legend">Tarifa de la cancha</legend>
+              <div className="match-compose-ref" aria-label="Referencia de alquiler de la cancha">
+                <p className="match-compose-ref-kicker">Referencia · alquiler de franja</p>
                 <VenueRateHint
                   key={`${venueId}-${sport}-${startsAtIso}-${durationMin}`}
                   venueId={venueId}
@@ -774,10 +772,8 @@ export function CreateMatchForm({
                   startsAt={startsAtIso}
                   durationMin={durationMin}
                   canOverride={canOverrideVenueRate}
-                  showBookingLink={showBookingLink}
-                  bookingHref={bookingHref}
                 />
-              </fieldset>
+              </div>
             ) : null}
 
             <fieldset className="match-compose-group">
@@ -852,13 +848,21 @@ export function CreateMatchForm({
               </label>
             </fieldset>
 
-            <div className="form-actions-row match-compose-actions match-compose-actions-inline" aria-live="polite">
-              <button className="btn-ghost" type="button" onClick={() => setStep(1)}>
-                Atrás
-              </button>
-              <button className="btn-flood" type="submit" disabled={pending || sportVenues.length === 0 || occupancyBlocksSubmit}>
-                {pending ? pendingLabel : submitLabel}
-              </button>
+            <div className="match-compose-submit" aria-live="polite">
+              <div className="form-actions-row match-compose-actions match-compose-actions-inline">
+                <button className="btn-ghost" type="button" onClick={() => setStep(1)}>
+                  Atrás
+                </button>
+                <button className="btn-flood" type="submit" disabled={pending || sportVenues.length === 0 || occupancyBlocksSubmit}>
+                  {pending ? pendingLabel : submitLabel}
+                </button>
+              </div>
+              {!isEdit && showBookingLink && bookingHref ? (
+                <p className="match-compose-booking-alt">
+                  ¿Necesitás alquilar el horario?{" "}
+                  <Link href={bookingHref}>Reservar</Link>
+                </p>
+              ) : null}
             </div>
           </div>
         </div>
@@ -940,13 +944,21 @@ export function CreateMatchForm({
             Siguiente: hora y cupos
           </button>
         ) : (
-          <div className="match-compose-sticky-row">
-            <button className="btn-ghost" type="button" onClick={() => setStep(1)}>
-              Atrás
-            </button>
-            <button className="btn-flood" type="submit" disabled={pending || sportVenues.length === 0 || occupancyBlocksSubmit}>
-              {pending ? pendingLabel : submitLabel}
-            </button>
+          <div className="match-compose-sticky-stack">
+            <div className="match-compose-sticky-row">
+              <button className="btn-ghost" type="button" onClick={() => setStep(1)}>
+                Atrás
+              </button>
+              <button className="btn-flood" type="submit" disabled={pending || sportVenues.length === 0 || occupancyBlocksSubmit}>
+                {pending ? pendingLabel : submitLabel}
+              </button>
+            </div>
+            {!isEdit && showBookingLink && bookingHref ? (
+              <p className="match-compose-booking-alt match-compose-booking-alt-sticky">
+                ¿Necesitás alquilar el horario?{" "}
+                <Link href={bookingHref}>Reservar</Link>
+              </p>
+            ) : null}
           </div>
         )}
       </div>

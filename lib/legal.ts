@@ -20,7 +20,7 @@ export function legalAcceptErrorMessage(variant: LegalAcceptVariant = "claim"): 
     return "Para enviar la solicitud premium tenés que aceptar los términos y la política de privacidad.";
   }
   if (variant === "booking") {
-    return "Para pedir el turno tenés que aceptar los términos y la política de privacidad.";
+    return "Para reservar tenés que aceptar los términos y la política de privacidad.";
   }
   return "Para enviar el reclamo tenés que aceptar los términos y la política de privacidad.";
 }

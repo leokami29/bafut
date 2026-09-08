@@ -19,13 +19,13 @@ Jugadores y organizadores de pateadas en Barranquilla (y, más adelante, otras c
 
 BaFut es el radar de huecos y pateadas abiertas: el organizador publica un hueco (cancha, hora, deporte/formato, cupos o posiciones); alguien pide el cupo; el host confirma. El link `/p/{codigo}` se comparte por donde ya se organiza (sobre todo WhatsApp).
 
-Éxito principal = encontrar o completar gente para jugar, rápido y con poca fricción. Como herramienta opt-in del dueño (no del core de cupos), también puede listar **Pedir turno** (alquiler de horario con comprobante al dueño). BaFut no custodia el pago ni media el cobro entre jugadores del partido.
+Éxito principal = encontrar o completar gente para jugar, rápido y con poca fricción. Como herramienta opt-in del dueño (no del core de cupos), también puede listar **Reservar** (alquiler de horario con comprobante al dueño). BaFut no custodia el pago ni media el cobro entre jugadores del partido.
 
 [Confirmado: README “Qué hace” / “Fuera de alcance”; flag `venue_booking`.]
 
 ## Positioning
 
-Junta demanda y oferta de cupos en la ciudad; **no** es chat in-app ni reemplazo de WhatsApp. El núcleo sigue siendo “falta un jugador / hay hueco hoy”. **Pedir turno** es un canal aparte (opt-in por cancha + kill-switch global): el jugador pide franja y sube comprobante; el dueño confirma — BaFut intermedia el listado, no la custodia del dinero.
+Junta demanda y oferta de cupos en la ciudad; **no** es chat in-app ni reemplazo de WhatsApp. El núcleo sigue siendo “falta un jugador / hay hueco hoy”. **Reservar** es un canal aparte (opt-in por cancha + kill-switch global): el jugador pide franja y sube comprobante; el dueño confirma — BaFut intermedia el listado, no la custodia del dinero.
 
 [Confirmado: README y claim de producto en `lib/seo.ts`.]
 
@@ -38,20 +38,20 @@ Junta demanda y oferta de cupos en la ciudad; **no** es chat in-app ni reemplazo
 - Multideporte: fútbol, fútbol sala, básquet, voleibol, pádel.
 - Auth correo + clave (Supabase); email para recuperar clave / confirmar cuenta según config.
 - Apoyo opcional / donaciones en `/apoyar`.
-- Pedir turno (cuando flag + opt-in cancha): `/canchas/[slug]/turno`, `/perfil/turnos`, Mesa → Turnos.
+- Reservar (cuando flag + opt-in cancha): `/canchas/[slug]/turno`, `/perfil/turnos`, Mesa → Reservas.
 - PWA instalable (`manifest`, service worker, iconos).
 
 [Confirmado: README, `app/manifest.ts`, `public/sw.js`, rutas App Router.]
 
 ## Capabilities and Constraints
 
-**Incluye (hoy):** feed de partidos abiertos; publicar partido/hueco (sin exigir tarifas de cancha); pedir cupo y confirmación del host; link compartible; directorio de canchas; selector de ciudad; auth; página de apoyo; **Pedir turno** (alquiler de horario con comprobante al dueño; sí exige tarifas + flag `venue_booking` + `venues.booking_enabled`, ambos off por defecto).
+**Incluye (hoy):** feed de partidos abiertos; publicar partido/hueco (sin exigir tarifas de cancha); pedir cupo y confirmación del host; link compartible; directorio de canchas; selector de ciudad; auth; página de apoyo; **Reservar** (alquiler de horario con comprobante al dueño; sí exige tarifas + flag `venue_booking` + `venues.booking_enabled`, ambos off por defecto).
 
 **Fuera de alcance (por ahora):** cobro / seña entre jugadores del partido; chat in-app; app nativa; pasarela de pago automatizada.
 
 **Stack (código existente — no greenfield):** Next.js 16 (App Router) + React 19, Supabase (Auth + Postgres), MapLibre GL, Tailwind CSS 4, TypeScript, PWA. Demo: https://bafut.macuttech.com. Dev local: `npm run dev` en puerto **3005**.
 
-**Terminología del producto:** hueco, pateada, cupo, host, cancha, claim/pedido de cupo, turno / Pedir turno.
+**Terminología del producto:** hueco, pateada, cupo, host, cancha, claim/pedido de cupo, reserva / Reservar.
 
 **Abierto / no inventar:** métricas de adopción, pricing comercial, SLA, testimonios formales, roadmap de ciudades más allá del modelo de datos.
 
@@ -72,12 +72,12 @@ Junta demanda y oferta de cupos en la ciudad; **no** es chat in-app ni reemplazo
 - Assets: `/icon.svg`, `/icon-192.png`, `/icon-512.png`, manifest PWA.
 - **No hay** testimonios de clientes ni benchmarks publicados para citar en marketing; no inventarlos.
 
-## Hueco vs Pedir turno
+## Hueco vs Reservar
 
-**Principio:** hueco ≠ alquiler. Publicar un partido completa gente; no alquila la cancha ni exige tarifas del dueño. Pedir turno es el único flujo de alquiler (tarifas + comprobante + dueño + flags). Misma ocupación de franja, dos productos.
+**Principio:** hueco ≠ alquiler. Publicar un partido completa gente; no alquila la cancha ni exige tarifas del dueño. Reservar es el único flujo de alquiler (tarifas + comprobante + dueño + flags). Misma ocupación de franja, dos productos.
 
-| | Publicar hueco | Pedir turno |
-|--|----------------|-------------|
+| | Publicar hueco | Reservar |
+|--|----------------|----------|
 | Entrada | `/partidos/nuevo` | `/canchas/[slug]/turno` |
 | Objetivo | Completar gente | Alquilar franja al dueño |
 | Dinero | `cost_per_person` (entre jugadores, opcional) | `final_cop` + comprobante |
@@ -89,8 +89,8 @@ Junta demanda y oferta de cupos en la ciudad; **no** es chat in-app ni reemplazo
 
 ## Product Principles
 
-1. **Junta gente; la cancha es herramienta del dueño** — el valor principal es el hueco y la demanda (cupos). Pedir turno no reemplaza ese radar: es opt-in del dueño para alquilar horario con comprobante, sin que BaFut custodie el pago.
-2. **Hueco ≠ alquiler** — publicar un partido nunca depende de tarifas de cancha; el aporte entre jugadores (`cost_per_person`) no es el alquiler. Alquilar franja es solo Pedir turno.
+1. **Junta gente; la cancha es herramienta del dueño** — el valor principal es el hueco y la demanda (cupos). Reservar no reemplaza ese radar: es opt-in del dueño para alquilar horario con comprobante, sin que BaFut custodie el pago.
+2. **Hueco ≠ alquiler** — publicar un partido nunca depende de tarifas de cancha; el aporte entre jugadores (`cost_per_person`) no es el alquiler. Alquilar franja es solo Reservar.
 3. **WhatsApp-compatible** — el link compartible es el puente; no pelear con el chat del grupo.
 4. **Radar de hoy** — priorizar claridad de “qué hay abierto ahora / cerca” sobre dashboard enterprise.
 5. **Ciudad primero** — Barranquilla es la prueba; el modelo admite más ciudades sin ramificar producto.

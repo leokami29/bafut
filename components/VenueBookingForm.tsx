@@ -16,24 +16,36 @@ import {
   BOOKING_HOLD_HOURS,
   BOOKING_MAX_HORIZON_DAYS,
   BOOKING_MIN_LEAD_HOURS,
+  BOOKING_PAYMENT_METHODS,
   bookingDurationsForMin,
   bookingPaymentMethodLabel,
+  bookingSlotStatusLabel,
   formatBookingMoney,
   listBookingDayKeys,
-  listFreeBookingSlots,
+  listBookingSlotsWithStatus,
+  occupyEndMs,
   type BookingDurationMin,
   type BookingPaymentMethod,
+  type BookingSlotOption,
   type OccupyInterval,
 } from "@/lib/booking";
-import { cityDayBoundsFromLocal, datetimeLocalInZoneToDate } from "@/lib/datetime";
+import type {
+  VenuePublicPriceSlot,
+  VenuePublicPricingDefault,
+  VenuePublicPromotion,
+} from "@/lib/data";
+import { cityDayBoundsFromLocal, datetimeLocalInZoneToDate, zonedDateParts } from "@/lib/datetime";
 import type { Sport } from "@/lib/constants";
+import { formatMoney } from "@/lib/format";
 import { sportLabel } from "@/lib/labels";
 import { mapDayOccupancyRpcRow } from "@/lib/occupancy";
-import {
-  formatCop,
-  getPremiumPaymentInstructions,
-} from "@/lib/premium-payment";
+import { calculateBasePrice, type PricingConfig } from "@/lib/pricing";
 import { createClient } from "@/lib/supabase/client";
+import {
+  formatWhatsappDisplay,
+  normalizeWhatsapp,
+  whatsappChatHref,
+} from "@/lib/whatsapp-contact";
 
 export type VenueBookingFormProps = {
   venueId: string;
@@ -42,24 +54,111 @@ export type VenueBookingFormProps = {
   timeZone: string;
   sports: string[];
   minBySport: Record<string, number>;
+  promotions: VenuePublicPromotion[];
+  pricingSlots: VenuePublicPriceSlot[];
+  pricingDefaults: VenuePublicPricingDefault[];
+  todayYmd: string;
+  /** WhatsApp público de la cancha (pago al dueño, no a BaFut). */
+  ownerWhatsapp?: string | null;
 };
 
-type Step = 1 | 2 | 3 | 4 | 5;
+type Step = 1 | 2;
 
-function formatDayChip(dayKey: string, timeZone: string): string {
+const DAY_SHORT = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"] as const;
+
+function formatDayChip(dayKey: string, timeZone: string): { weekday: string; date: string } {
   const date = datetimeLocalInZoneToDate(`${dayKey}T12:00`, timeZone);
-  if (!date) return dayKey;
-  return new Intl.DateTimeFormat("es-CO", {
+  if (!date) return { weekday: dayKey, date: "" };
+  const weekday = new Intl.DateTimeFormat("es-CO", {
     weekday: "short",
+    timeZone,
+  }).format(date);
+  const day = new Intl.DateTimeFormat("es-CO", {
     day: "numeric",
     month: "short",
     timeZone,
   }).format(date);
+  return { weekday, date: day };
+}
+
+function formatHmParts(hour: number, minute: number): string {
+  return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
 }
 
 function formatSlotLabel(local: string): string {
   const hm = local.split("T")[1] ?? local;
   return hm;
+}
+
+function occupiedBandLabel(block: OccupyInterval, timeZone: string): string {
+  const start = zonedDateParts(new Date(block.startsAtMs), timeZone);
+  const end = zonedDateParts(new Date(occupyEndMs(block)), timeZone);
+  const range = `${formatHmParts(start.hour, start.minute)}–${formatHmParts(end.hour, end.minute)}`;
+  const kind = block.kind === "booking" ? "Reserva" : "Partido";
+  return `${range} · ${kind}`;
+}
+
+function promoValueLabel(promo: VenuePublicPromotion): string {
+  if (promo.kind === "override_slot") {
+    return `Precio cerrado ${formatMoney(promo.override_price_cop)}`;
+  }
+  return `−${promo.discount_pct}%`;
+}
+
+function promoConditions(promo: VenuePublicPromotion): string {
+  const bits: string[] = [];
+  if (promo.days_of_week?.length) {
+    bits.push(promo.days_of_week.map((d) => DAY_SHORT[d] ?? String(d)).join(" · "));
+  }
+  const start = promo.start_time?.slice(0, 5);
+  const end = promo.end_time?.slice(0, 5);
+  if (start || end) bits.push(`${start ?? "00:00"}–${end ?? "24:00"}`);
+  if (promo.lead_time_minutes > 0) {
+    bits.push(`${promo.lead_time_minutes} min de anticipación`);
+  }
+  return bits.join(" · ") || "Todo el día · todos los días";
+}
+
+function buildPricingConfig(
+  sport: string,
+  slots: VenuePublicPriceSlot[],
+  defaults: VenuePublicPricingDefault[],
+  minMinutes: number,
+): PricingConfig {
+  const sportSlots = slots
+    .filter((s) => s.sport === sport)
+    .map((s) => ({
+      id: s.id,
+      day_of_week: s.day_of_week,
+      start_time: s.start_time.slice(0, 5),
+      end_time: s.end_time.slice(0, 5),
+      price_cop: s.price_cop,
+    }));
+  const defaultsMap: Record<number, number> = {};
+  for (const d of defaults) {
+    if (d.sport === sport) defaultsMap[d.day_of_week] = d.default_price_cop;
+  }
+  return {
+    slots: sportSlots,
+    defaults: defaultsMap,
+    min_minutes: Math.max(1, minMinutes || 30),
+  };
+}
+
+function slotHasTariff(
+  local: string,
+  timeZone: string,
+  durationMin: number,
+  config: PricingConfig,
+): boolean {
+  const startsAt = datetimeLocalInZoneToDate(local, timeZone);
+  if (!startsAt) return false;
+  const parts = zonedDateParts(startsAt, timeZone);
+  const startMin = parts.hour * 60 + parts.minute;
+  const billed = Math.floor(durationMin / config.min_minutes) * config.min_minutes;
+  if (billed <= 0) return false;
+  const { errors } = calculateBasePrice(config, parts.weekday, startMin, billed);
+  return errors.length === 0;
 }
 
 export function VenueBookingForm({
@@ -69,9 +168,16 @@ export function VenueBookingForm({
   timeZone,
   sports,
   minBySport,
+  promotions,
+  pricingSlots,
+  pricingDefaults,
+  todayYmd,
+  ownerWhatsapp,
 }: VenueBookingFormProps) {
-  const instructions = getPremiumPaymentInstructions();
   const legal = useLegalAcceptance("booking");
+  const ownerWaDigits = ownerWhatsapp ? normalizeWhatsapp(ownerWhatsapp) : null;
+  const ownerWaHref = ownerWaDigits ? whatsappChatHref(ownerWaDigits) : null;
+  const ownerWaDisplay = ownerWaDigits ? formatWhatsappDisplay(ownerWaDigits) : null;
 
   const [step, setStep] = useState<Step>(1);
   const [sport, setSport] = useState<string>(sports[0] ?? "futbol");
@@ -81,13 +187,13 @@ export function VenueBookingForm({
   const [occupied, setOccupied] = useState<OccupyInterval[]>([]);
   const [occupancyLoading, setOccupancyLoading] = useState(false);
   const [occupancyError, setOccupancyError] = useState<string | null>(null);
-  const [paymentMethod, setPaymentMethod] = useState<BookingPaymentMethod>(
-    instructions.nequi ? "nequi" : "bank_transfer",
-  );
+  const [paymentMethod, setPaymentMethod] = useState<BookingPaymentMethod>("nequi");
   const [whatsapp, setWhatsapp] = useState("");
   const [note, setNote] = useState("");
   const [priceOk, setPriceOk] = useState(false);
   const [finalCop, setFinalCop] = useState<number | null>(null);
+  const [priceReady, setPriceReady] = useState(false);
+  const [priceErrors, setPriceErrors] = useState<string[]>([]);
 
   const boundAction = useMemo(
     () => submitVenueBookingAction.bind(null, venueSlug),
@@ -102,6 +208,27 @@ export function VenueBookingForm({
   const durations = useMemo(
     () => bookingDurationsForMin(minBySport[sport]),
     [minBySport, sport],
+  );
+
+  const sportPromos = useMemo(
+    () =>
+      promotions.filter((p) => {
+        if (p.sport !== sport) return false;
+        if (p.date_end && p.date_end < todayYmd) return false;
+        return true;
+      }),
+    [promotions, sport, todayYmd],
+  );
+
+  const pricingConfig = useMemo(
+    () =>
+      buildPricingConfig(
+        sport,
+        pricingSlots,
+        pricingDefaults,
+        minBySport[sport] ?? 30,
+      ),
+    [sport, pricingSlots, pricingDefaults, minBySport],
   );
 
   useEffect(() => {
@@ -148,6 +275,7 @@ export function VenueBookingForm({
         return {
           startsAtMs: new Date(mapped.starts_at).getTime(),
           durationMin: mapped.duration_min,
+          kind: mapped.block_kind,
         };
       });
       setOccupied(intervals);
@@ -157,22 +285,60 @@ export function VenueBookingForm({
     };
   }, [dayKey, timeZone, venueId]);
 
-  const freeSlots = useMemo(() => {
-    if (!dayKey) return [];
-    return listFreeBookingSlots({
+  const slotOptions = useMemo(() => {
+    if (!dayKey) return [] as BookingSlotOption[];
+    return listBookingSlotsWithStatus({
       dayKey,
       durationMin,
       timeZone,
       occupied,
       minMinutes: minBySport[sport],
+      hasTariff: (local) => slotHasTariff(local, timeZone, durationMin, pricingConfig),
     });
-  }, [dayKey, durationMin, timeZone, occupied, minBySport, sport]);
+  }, [dayKey, durationMin, timeZone, occupied, minBySport, sport, pricingConfig]);
+
+  const availableSlots = useMemo(
+    () => slotOptions.filter((s) => s.status === "available"),
+    [slotOptions],
+  );
+
+  const occupiedBands = useMemo(() => {
+    return [...occupied]
+      .sort((a, b) => a.startsAtMs - b.startsAtMs)
+      .map((block) => ({
+        key: `${block.startsAtMs}-${block.durationMin}-${block.kind ?? "match"}`,
+        label: occupiedBandLabel(block, timeZone),
+        kind: block.kind === "booking" ? "booking" : "match",
+      }));
+  }, [occupied, timeZone]);
+
+  const dayFullyBusy =
+    !occupancyLoading &&
+    !occupancyError &&
+    slotOptions.length > 0 &&
+    availableSlots.length === 0 &&
+    slotOptions.some(
+      (s) =>
+        s.status === "occupied_match" ||
+        s.status === "occupied_booking" ||
+        s.status === "no_fit",
+    );
+
+  const dayNoTariff =
+    !occupancyLoading &&
+    !occupancyError &&
+    slotOptions.length > 0 &&
+    availableSlots.length === 0 &&
+    slotOptions.every(
+      (s) => s.status === "no_tariff" || s.status === "too_soon",
+    ) &&
+    slotOptions.some((s) => s.status === "no_tariff");
 
   useEffect(() => {
-    if (startsAtLocal && !freeSlots.includes(startsAtLocal)) {
+    if (startsAtLocal && !availableSlots.some((s) => s.local === startsAtLocal)) {
       setStartsAtLocal("");
     }
-  }, [freeSlots, startsAtLocal]);
+  }, [availableSlots, startsAtLocal]);
 
   const startsAtIso = useMemo(() => {
     if (!startsAtLocal) return "";
@@ -182,10 +348,22 @@ export function VenueBookingForm({
   const onPreviewChange = useCallback(
     (preview: { finalCop: number | null; errors: string[]; minMinutes: number | null }) => {
       setFinalCop(preview.finalCop);
-      setPriceOk(preview.finalCop != null && preview.finalCop > 0 && preview.errors.length === 0);
+      setPriceErrors(preview.errors);
+      const ok =
+        preview.finalCop != null && preview.finalCop > 0 && preview.errors.length === 0;
+      setPriceOk(ok);
+      // Mientras recalcula, BookingPricePreview manda finalCop null sin errors.
+      setPriceReady(preview.finalCop != null || preview.errors.length > 0);
     },
     [],
   );
+
+  useEffect(() => {
+    setPriceReady(false);
+    setPriceOk(false);
+    setFinalCop(null);
+    setPriceErrors([]);
+  }, [startsAtLocal, durationMin, sport]);
 
   useEffect(() => {
     if (state?.ok) {
@@ -203,7 +381,7 @@ export function VenueBookingForm({
       <div className="venue-booking-success" role="status">
         <h2 className="subhead">Pedido enviado</h2>
         <p>
-          Tu turno en <strong>{venueName}</strong> quedó en hold {BOOKING_HOLD_HOURS} h
+          Tu reserva en <strong>{venueName}</strong> quedó en hold {BOOKING_HOLD_HOURS} h
           mientras el dueño revisa el comprobante
           {finalCop != null ? ` · ${formatBookingMoney(finalCop)}` : ""}.
         </p>
@@ -223,27 +401,37 @@ export function VenueBookingForm({
             </p>
           )}
           <Link href="/perfil/turnos" className="btn-ghost">
-            Ver mis turnos
+            Ver mis reservas
           </Link>
           <Link href={`/canchas/${venueSlug}`} className="btn-ghost empty-home-ghost">
-            Volver a la cancha
+            Volver a la ficha
           </Link>
         </div>
       </div>
     );
   }
 
-  const canGoStep2 = Boolean(sport);
-  const canGoStep3 = Boolean(dayKey);
-  const canGoStep4 = Boolean(durationMin) && freeSlots.length > 0 && Boolean(startsAtLocal);
-  const canGoStep5 = canGoStep4 && priceOk;
+  const canGoPay = Boolean(sport && dayKey && durationMin && startsAtLocal && priceOk);
   const canSubmit =
-    canGoStep5 &&
-    priceOk &&
+    canGoPay &&
     finalCop != null &&
     legal.accepted &&
-    instructions.hasPaymentChannel &&
     Boolean(whatsapp.trim());
+
+  const dayChip = dayKey ? formatDayChip(dayKey, timeZone) : null;
+  const selectionSummary = (
+    <p className="venue-booking-summary">
+      <span>{sportLabel[sport as Sport] ?? sport}</span>
+      <span aria-hidden="true">·</span>
+      <span>
+        {dayChip ? `${dayChip.weekday} ${dayChip.date}` : "—"}
+      </span>
+      <span aria-hidden="true">·</span>
+      <span>{startsAtLocal ? formatSlotLabel(startsAtLocal) : "—"}</span>
+      <span aria-hidden="true">·</span>
+      <span>{durationMin} min</span>
+    </p>
+  );
 
   return (
     <form action={formAction} className="venue-booking-form stack-form match-compose">
@@ -253,161 +441,268 @@ export function VenueBookingForm({
       <input type="hidden" name="duration_min" value={durationMin} />
       <input type="hidden" name="payment_method" value={paymentMethod} />
 
-      <div className="match-compose-progress" aria-label={`Paso ${step} de 5`}>
+      <div className="match-compose-progress" aria-label={`Paso ${step} de 2`}>
         <div className="match-compose-progress-track" aria-hidden="true">
           <span className={step >= 1 ? "is-on" : undefined} />
           <span className={step >= 2 ? "is-on" : undefined} />
-          <span className={step >= 3 ? "is-on" : undefined} />
-          <span className={step >= 4 ? "is-on" : undefined} />
-          <span className={step >= 5 ? "is-on" : undefined} />
         </div>
-        <p className="venue-booking-step-label">
-          {step === 1 && "Deporte"}
-          {step === 2 && "Día"}
-          {step === 3 && "Duración y hora"}
-          {step === 4 && "Precio"}
-          {step === 5 && "Pago y comprobante"}
-        </p>
+        <ol className="venue-booking-steps">
+          <li className={step === 1 ? "is-current" : "is-done"}>Horario y precio</li>
+          <li className={step === 2 ? "is-current" : undefined}>Pago</li>
+        </ol>
       </div>
 
-      <p className="field-help venue-booking-rules">
-        Lead mínimo {BOOKING_MIN_LEAD_HOURS} h · hasta {BOOKING_MAX_HORIZON_DAYS} días · hold{" "}
-        {BOOKING_HOLD_HOURS} h hasta que el dueño confirme
-      </p>
-
       {step === 1 ? (
-        <fieldset className="match-compose-group">
-          <legend className="match-compose-legend">Deporte</legend>
-          <div className="filter-chips venue-booking-chips">
-            {sports.map((s) => (
-              <button
-                key={s}
-                type="button"
-                className={sport === s ? "is-on" : undefined}
-                aria-pressed={sport === s}
-                onClick={() => {
-                  setSport(s);
-                  setStartsAtLocal("");
-                }}
-              >
-                {sportLabel[s as Sport] ?? s}
-              </button>
-            ))}
-          </div>
-          <button
-            type="button"
-            className="btn-flood create-step-next"
-            disabled={!canGoStep2}
-            onClick={() => setStep(2)}
-          >
-            Seguir
-          </button>
-        </fieldset>
-      ) : null}
-
-      {step === 2 ? (
-        <fieldset className="match-compose-group">
-          <legend className="match-compose-legend">Día</legend>
-          <div className="filter-chips venue-booking-chips venue-booking-days">
-            {dayKeys.map((key) => (
-              <button
-                key={key}
-                type="button"
-                className={dayKey === key ? "is-on" : undefined}
-                aria-pressed={dayKey === key}
-                onClick={() => {
-                  setDayKey(key);
-                  setStartsAtLocal("");
-                }}
-              >
-                {formatDayChip(key, timeZone)}
-              </button>
-            ))}
-          </div>
-          <div className="venue-booking-nav">
-            <button type="button" className="btn-ghost" onClick={() => setStep(1)}>
-              Atrás
-            </button>
-            <button
-              type="button"
-              className="btn-flood"
-              disabled={!canGoStep3}
-              onClick={() => setStep(3)}
-            >
-              Seguir
-            </button>
-          </div>
-        </fieldset>
-      ) : null}
-
-      {step === 3 ? (
-        <fieldset className="match-compose-group">
-          <legend className="match-compose-legend">Duración y hora libre</legend>
-          <div className="filter-chips venue-booking-chips">
-            {durations.map((d) => (
-              <button
-                key={d}
-                type="button"
-                className={durationMin === d ? "is-on" : undefined}
-                aria-pressed={durationMin === d}
-                onClick={() => {
-                  setDurationMin(d);
-                  setStartsAtLocal("");
-                }}
-              >
-                {d} min
-              </button>
-            ))}
-          </div>
-          {occupancyLoading ? (
-            <p className="field-help">Cargando ocupación…</p>
-          ) : occupancyError ? (
-            <p className="form-error" role="alert">
-              {occupancyError}
-            </p>
-          ) : freeSlots.length === 0 ? (
-            <p className="venue-booking-empty" role="status">
-              No hay franjas libres ese día con {durationMin} min (ocupado, fuera de 06–23 o
-              dentro del lead de {BOOKING_MIN_LEAD_HOURS} h). Probá otro día o duración.
-            </p>
+        <div className="venue-booking-step venue-booking-step-schedule">
+          {sports.length > 1 ? (
+            <fieldset className="match-compose-group">
+              <legend className="match-compose-legend">Deporte</legend>
+              <div className="filter-chips venue-booking-chips" role="group" aria-label="Deporte">
+                {sports.map((s) => (
+                  <button
+                    key={s}
+                    type="button"
+                    className={sport === s ? "is-on" : undefined}
+                    aria-pressed={sport === s}
+                    onClick={() => {
+                      setSport(s);
+                      setStartsAtLocal("");
+                    }}
+                  >
+                    {sportLabel[s as Sport] ?? s}
+                  </button>
+                ))}
+              </div>
+            </fieldset>
           ) : (
-            <div className="filter-chips venue-booking-chips venue-booking-slots">
-              {freeSlots.map((slot) => (
+            <p className="venue-booking-sport-solo">
+              <span className="venue-booking-meta-label">Deporte</span>{" "}
+              {sportLabel[sport as Sport] ?? sport}
+            </p>
+          )}
+
+          {sportPromos.length > 0 ? (
+            <section className="venue-booking-promos" aria-labelledby="venue-booking-promos-title">
+              <h2 className="venue-booking-promos-title" id="venue-booking-promos-title">
+                Promos activas
+              </h2>
+              <ul className="venue-booking-promos-list">
+                {sportPromos.map((promo) => (
+                  <li key={promo.id} className="venue-booking-promo">
+                    <div className="venue-booking-promo-main">
+                      <strong className="venue-booking-promo-name">{promo.name}</strong>
+                      <span className="venue-booking-promo-value">{promoValueLabel(promo)}</span>
+                    </div>
+                    <p className="venue-booking-promo-cond">{promoConditions(promo)}</p>
+                    {promo.date_start && promo.date_start > todayYmd ? (
+                      <p className="venue-booking-promo-soon">
+                        Vigente desde {promo.date_start}
+                      </p>
+                    ) : null}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ) : null}
+
+          <fieldset className="match-compose-group">
+            <legend className="match-compose-legend">Día</legend>
+            <div
+              className="venue-booking-days"
+              role="group"
+              aria-label={`Días (hasta ${BOOKING_MAX_HORIZON_DAYS} adelante)`}
+            >
+              {dayKeys.map((key) => {
+                const chip = formatDayChip(key, timeZone);
+                const isToday = key === todayYmd;
+                return (
+                  <button
+                    key={key}
+                    type="button"
+                    className={`venue-booking-day${dayKey === key ? " is-on" : ""}`}
+                    aria-pressed={dayKey === key}
+                    onClick={() => {
+                      setDayKey(key);
+                      setStartsAtLocal("");
+                    }}
+                  >
+                    <span className="venue-booking-day-weekday">
+                      {isToday ? "Hoy" : chip.weekday}
+                    </span>
+                    <span className="venue-booking-day-date">{chip.date}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </fieldset>
+
+          <fieldset className="match-compose-group">
+            <legend className="match-compose-legend">Duración</legend>
+            <div className="filter-chips venue-booking-chips" role="group" aria-label="Duración">
+              {durations.map((d) => (
                 <button
-                  key={slot}
+                  key={d}
                   type="button"
-                  className={startsAtLocal === slot ? "is-on" : undefined}
-                  aria-pressed={startsAtLocal === slot}
-                  onClick={() => setStartsAtLocal(slot)}
+                  className={durationMin === d ? "is-on" : undefined}
+                  aria-pressed={durationMin === d}
+                  onClick={() => {
+                    setDurationMin(d);
+                    setStartsAtLocal("");
+                  }}
                 >
-                  {formatSlotLabel(slot)}
+                  {d} min
                 </button>
               ))}
             </div>
-          )}
+            {minBySport[sport] != null && minBySport[sport]! > 30 ? (
+              <p className="field-help">
+                Mínimo de esta cancha: {minBySport[sport]} min
+              </p>
+            ) : null}
+          </fieldset>
+
+          <fieldset className="match-compose-group">
+            <legend className="match-compose-legend">Hora de inicio</legend>
+            <p className="field-help venue-booking-slot-legend">
+              Libre · Ocupado / Partido = ya hay reserva o partido en esa media hora · No cabe =
+              no podés empezar aquí con la duración elegida · sin tarifa · lead{" "}
+              {BOOKING_MIN_LEAD_HOURS} h
+            </p>
+            {occupancyLoading ? (
+              <p className="field-help" aria-live="polite">
+                Cargando ocupación…
+              </p>
+            ) : occupancyError ? (
+              <p className="form-error" role="alert">
+                No se pudo cargar la ocupación: {occupancyError}
+              </p>
+            ) : (
+              <>
+                {occupiedBands.length > 0 ? (
+                  <ul
+                    className="venue-booking-occupied-bands"
+                    aria-label="Franjas ya ocupadas"
+                  >
+                    {occupiedBands.map((band) => (
+                      <li
+                        key={band.key}
+                        className={`venue-booking-occupied-band is-${band.kind}`}
+                      >
+                        {band.label}
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
+                {dayNoTariff ? (
+                  <div className="venue-booking-empty" role="status">
+                    <p>
+                      No hay tarifa para las franjas de este día con {durationMin} min. Probá
+                      otro día o pedile al dueño que complete precios.
+                    </p>
+                  </div>
+                ) : null}
+                {dayFullyBusy ? (
+                  <div className="venue-booking-empty" role="status">
+                    <p>
+                      Ese día no tiene inicio libre con {durationMin} min (hay reservas o
+                      partidos). Probá otra fecha o otra duración.
+                    </p>
+                  </div>
+                ) : null}
+                {!dayNoTariff &&
+                !dayFullyBusy &&
+                availableSlots.length === 0 &&
+                slotOptions.length > 0 &&
+                slotOptions.every((s) => s.status === "too_soon") ? (
+                  <div className="venue-booking-empty" role="status">
+                    <p>
+                      Ya no hay horarios con lead de {BOOKING_MIN_LEAD_HOURS} h para hoy.
+                      Elegí otro día.
+                    </p>
+                  </div>
+                ) : null}
+                {slotOptions.length > 0 ? (
+                  <div
+                    className="venue-booking-slots"
+                    role="group"
+                    aria-label="Horarios de inicio"
+                  >
+                    {slotOptions.map((slot) => {
+                      const selectable = slot.status === "available";
+                      const selected = startsAtLocal === slot.local;
+                      return (
+                        <button
+                          key={slot.local}
+                          type="button"
+                          className={`venue-booking-slot is-${slot.status}${selected ? " is-on" : ""}`}
+                          disabled={!selectable}
+                          aria-pressed={selectable ? selected : undefined}
+                          aria-label={`${slot.hm} · ${bookingSlotStatusLabel(slot.status)}`}
+                          title={bookingSlotStatusLabel(slot.status)}
+                          onClick={() => {
+                            if (selectable) setStartsAtLocal(slot.local);
+                          }}
+                        >
+                          <span className="venue-booking-slot-time">{slot.hm}</span>
+                          {slot.status !== "available" ? (
+                            <span className="venue-booking-slot-tag">
+                              {bookingSlotStatusLabel(slot.status)}
+                            </span>
+                          ) : null}
+                        </button>
+                      );
+                    })}
+                  </div>
+                ) : !occupancyLoading ? (
+                  <div className="venue-booking-empty" role="status">
+                    <p>No hay franjas para esa duración en el día elegido.</p>
+                  </div>
+                ) : null}
+              </>
+            )}
+          </fieldset>
+
+          {startsAtLocal ? (
+            <div className="venue-booking-live-price">
+              {selectionSummary}
+              {startsAtIso ? (
+                <BookingPricePreview
+                  venueId={venueId}
+                  sport={sport}
+                  startsAtIso={startsAtIso}
+                  durationMin={durationMin}
+                  onPreviewChange={onPreviewChange}
+                />
+              ) : null}
+            </div>
+          ) : null}
+
+          {startsAtLocal && priceReady && !priceOk ? (
+            <p className="form-error" role="alert">
+              {priceErrors[0] ??
+                "Esta franja no tiene tarifa usable. Elegí otra hora o día."}
+            </p>
+          ) : null}
+
           <div className="venue-booking-nav">
-            <button type="button" className="btn-ghost" onClick={() => setStep(2)}>
-              Atrás
-            </button>
             <button
               type="button"
               className="btn-flood"
-              disabled={!canGoStep4}
-              onClick={() => setStep(4)}
+              disabled={!canGoPay}
+              onClick={() => setStep(2)}
             >
-              Seguir
+              {finalCop != null
+                ? `Seguir al pago · ${formatBookingMoney(finalCop)}`
+                : "Seguir al pago"}
             </button>
           </div>
-        </fieldset>
+        </div>
       ) : null}
 
-      {step === 4 ? (
-        <fieldset className="match-compose-group">
-          <legend className="match-compose-legend">Precio</legend>
-          <p className="field-help">
-            {sportLabel[sport as Sport] ?? sport} · {formatDayChip(dayKey, timeZone)} ·{" "}
-            {formatSlotLabel(startsAtLocal)} · {durationMin} min
-          </p>
+      {step === 2 ? (
+        <fieldset className="match-compose-group venue-booking-step">
+          <legend className="match-compose-legend">Pago y comprobante</legend>
+          {selectionSummary}
           {startsAtIso ? (
             <BookingPricePreview
               venueId={venueId}
@@ -417,76 +712,45 @@ export function VenueBookingForm({
               onPreviewChange={onPreviewChange}
             />
           ) : null}
-          {!priceOk ? (
-            <p className="form-error" role="alert">
-              Esta cancha no tiene tarifa para ese horario. Probá otro día/hora o pedile
-              al dueño que configure precios.
-            </p>
-          ) : null}
-          <div className="venue-booking-nav">
-            <button type="button" className="btn-ghost" onClick={() => setStep(3)}>
-              Atrás
-            </button>
-            <button
-              type="button"
-              className="btn-flood"
-              disabled={!canGoStep5}
-              onClick={() => setStep(5)}
-            >
-              Seguir al pago
-            </button>
-          </div>
-        </fieldset>
-      ) : null}
-
-      {step === 5 ? (
-        <fieldset className="match-compose-group">
-          <legend className="match-compose-legend">Pago y comprobante</legend>
           <p className="field-help">
-            Pagá el monto completo
-            {finalCop != null ? ` (${formatBookingMoney(finalCop)})` : ""} y subí el
-            comprobante. El dueño confirma; después avisale por WhatsApp.
+            El pago va al dueño de la cancha (no a BaFut). Transferí o pagá por Nequi como
+            acuerden
+            {finalCop != null ? ` · monto ${formatBookingMoney(finalCop)}` : ""} y subí el
+            comprobante. El dueño confirma la reserva.
           </p>
 
-          {!instructions.hasPaymentChannel ? (
-            <p className="form-error">
-              Faltan datos de pago en BaFut. No se puede enviar el pedido ahora.
-            </p>
-          ) : (
-            <div className="venue-booking-pay-instructions">
-              {instructions.nequi ? (
-                <div>
-                  <span className="venue-booking-pay-label">Nequi</span>
-                  <span className="venue-booking-pay-value">{instructions.nequi}</span>
-                </div>
-              ) : null}
-              {instructions.bankName && instructions.bankAccount ? (
-                <div>
-                  <span className="venue-booking-pay-label">Transferencia</span>
-                  <span className="venue-booking-pay-value">
-                    {instructions.bankName}
-                    {instructions.bankHolder ? ` · ${instructions.bankHolder}` : ""}
-                    <br />
-                    {instructions.bankAccount}
-                  </span>
-                </div>
-              ) : null}
-              {finalCop != null ? (
-                <div>
-                  <span className="venue-booking-pay-label">Monto</span>
-                  <span className="venue-booking-pay-value">{formatCop(finalCop)}</span>
-                </div>
-              ) : null}
-            </div>
-          )}
+          <div className="venue-booking-pay-instructions">
+            {ownerWaHref && ownerWaDisplay ? (
+              <div>
+                <span className="venue-booking-pay-label">Pago al dueño</span>
+                <span className="venue-booking-pay-value">
+                  Pedí Nequi / transferencia por WhatsApp
+                  <br />
+                  <a href={ownerWaHref} target="_blank" rel="noopener noreferrer">
+                    {ownerWaDisplay}
+                  </a>
+                </span>
+              </div>
+            ) : (
+              <div>
+                <span className="venue-booking-pay-label">Pago al dueño</span>
+                <span className="venue-booking-pay-value">
+                  Coordiná Nequi o transferencia con el dueño y subí el comprobante acá.
+                </span>
+              </div>
+            )}
+            {finalCop != null ? (
+              <div>
+                <span className="venue-booking-pay-label">Monto</span>
+                <span className="venue-booking-pay-value">
+                  {formatBookingMoney(finalCop)}
+                </span>
+              </div>
+            ) : null}
+          </div>
 
-          <div className="filter-chips venue-booking-chips">
-            {(
-              [
-                instructions.nequi ? "nequi" : null,
-                instructions.bankName && instructions.bankAccount ? "bank_transfer" : null,
-              ].filter(Boolean) as BookingPaymentMethod[]
-            ).map((method) => (
+          <div className="filter-chips venue-booking-chips" role="group" aria-label="Método de pago">
+            {BOOKING_PAYMENT_METHODS.map((method) => (
               <button
                 key={method}
                 type="button"
@@ -498,6 +762,7 @@ export function VenueBookingForm({
               </button>
             ))}
           </div>
+          <p className="field-help">Indicá cómo le pagaste al dueño.</p>
 
           <label>
             Tu WhatsApp <span className="req-mark">*</span>
@@ -553,7 +818,7 @@ export function VenueBookingForm({
           ) : null}
 
           <div className="venue-booking-nav">
-            <button type="button" className="btn-ghost" onClick={() => setStep(4)} disabled={pending}>
+            <button type="button" className="btn-ghost" onClick={() => setStep(1)} disabled={pending}>
               Atrás
             </button>
             <button
@@ -562,7 +827,7 @@ export function VenueBookingForm({
               disabled={!canSubmit || pending}
               aria-busy={pending}
             >
-              {pending ? "Enviando…" : "Enviar pedido de turno"}
+              {pending ? "Enviando…" : "Enviar reserva"}
             </button>
           </div>
         </fieldset>

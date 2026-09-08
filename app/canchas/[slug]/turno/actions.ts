@@ -53,7 +53,7 @@ export async function submitVenueBookingAction(
 ): Promise<SubmitVenueBookingState> {
   const nextPath = `/canchas/${slug}/turno`;
   if (!(await isFeatureEnabled("venue_booking"))) {
-    return { error: "Los pedidos de turno no están disponibles ahora." };
+    return { error: "Las reservas no están disponibles ahora." };
   }
 
   const { supabase, userId } = await requireUserId(nextPath);
@@ -189,7 +189,7 @@ export async function cancelVenueBookingAction(
   formData: FormData,
 ): Promise<CancelVenueBookingState> {
   const bookingId = String(formData.get("booking_id") ?? "").trim();
-  if (!isUuid(bookingId)) return { error: "Turno no válido." };
+  if (!isUuid(bookingId)) return { error: "Reserva no válida." };
 
   const nextPath = slug ? `/canchas/${slug}/turno` : "/perfil/turnos";
   const { supabase } = await requireUserId(nextPath);

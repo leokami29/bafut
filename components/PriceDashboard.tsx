@@ -291,7 +291,7 @@ export function PriceDashboard({
       setDefaults((prev) =>
         prev.filter((d) => !(d.sport === selectedSport && d.day_of_week === day)),
       );
-      flash(`Sin precio de día completo para ${DAY_FULL[day]}.`);
+      flash(`Sin precio/hora fallback para ${DAY_FULL[day]}.`);
     } else {
       const { error: rpcError } = await supabase.rpc("set_price_default", {
         p_venue_id: venueId,
@@ -308,7 +308,7 @@ export function PriceDashboard({
         ...prev.filter((d) => !(d.sport === selectedSport && d.day_of_week === day)),
         { venue_id: venueId, sport: selectedSport, day_of_week: day, default_price_cop: price },
       ]);
-      flash(`Día completo ${DAY_FULL[day]}: ${formatCop(price)}.`);
+      flash(`Fallback $/hora ${DAY_FULL[day]}: ${formatCop(price)}/h.`);
     }
     setSaving(false);
   }
@@ -451,8 +451,14 @@ export function PriceDashboard({
                 Semana de precios
               </h2>
               <p className="field-help">
-                Franjas por día y precio de día completo como fallback. Cada franja se puede editar
-                o borrar.
+                Cada franja tiene precio por hora (COP/h). El fallback $/hora aplica solo si no hay
+                franja que cubra el horario. Editá o borrá franjas cuando haga falta.
+              </p>
+              <p className="field-help venue-booking-flag-hint">
+                Configurar precios no activa &quot;Reservar&quot; en la ficha pública. Para eso,
+                en{" "}
+                <Link href={`/canchas/${venueSlug}/admin`}>Mesa</Link> activá{" "}
+                <strong>Aceptar reservas</strong>.
               </p>
             </div>
             <button type="button" className="btn-ghost" onClick={() => openNewSlot(1, "18:00")}>
@@ -489,7 +495,7 @@ export function PriceDashboard({
                             <strong>
                               {slot.start_time}–{slot.end_time}
                             </strong>
-                            <span>{formatCop(slot.price_cop)}</span>
+                            <span>{formatCop(slot.price_cop)}/h</span>
                           </button>
                           <button
                             type="button"
@@ -513,12 +519,12 @@ export function PriceDashboard({
                     </button>
                   </div>
                   <label className="price-week-fallback">
-                    <span className="sr-only">Precio día completo de {day}</span>
+                    <span className="sr-only">Precio/hora (sin franja) de {day}</span>
                     <input
                       type="number"
                       min={0}
                       step={1000}
-                      placeholder="Día completo"
+                      placeholder="Precio/hora (sin franja)"
                       defaultValue={fallback?.default_price_cop ?? ""}
                       disabled={saving}
                       onBlur={(e) => {

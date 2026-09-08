@@ -107,7 +107,7 @@ export default async function VenuePricingPage({ params, searchParams }: Props) 
       ? "Creá descuentos o precios cerrados para horarios valle. Se aplican al publicar un partido."
       : initialTab === "minimo"
         ? "Definí el bloque mínimo con el que se factura cada partido."
-        : "Franjas por día, duración mínima y promociones. El arriendo se arregla en la cancha.";
+        : "Franjas por día, duración mínima y promociones. Configurar precios no activa Reservar: eso se hace en Mesa.";
 
   return (
     <main className="page page-venue-admin" id="main">

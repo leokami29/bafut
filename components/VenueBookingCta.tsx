@@ -18,7 +18,7 @@ export function VenueBookingCta({
     return (
       <div className={`venue-booking-cta-section${className ? ` ${className}` : ""}`}>
         <Link href={href} className="btn-flood venue-booking-cta">
-          Pedir turno
+          Reservar
         </Link>
         <p className="venue-booking-cta-hint">Alquilá un horario · el dueño confirma el pago</p>
       </div>
@@ -29,7 +29,7 @@ export function VenueBookingCta({
       href={href}
       className={`btn-ghost venue-booking-cta${className ? ` ${className}` : ""}`}
     >
-      Pedir turno
+      Reservar
     </Link>
   );
 }

@@ -193,11 +193,11 @@
 
 .match-compose-disclaimer {
   margin: 0.75rem 0 0;
-  padding: 0.65rem 0.85rem;
+  padding: 0.5rem 0.75rem;
   border-left: 3px solid var(--flood);
   background: color-mix(in oklab, var(--flood) 10%, var(--paper));
-  font-size: 0.9rem;
-  line-height: 1.45;
+  font-size: 0.88rem;
+  line-height: 1.4;
 }
 
 .match-compose-banner-error {
@@ -349,4 +349,175 @@
   font-size: 0.92rem;
   color: color-mix(in oklab, var(--ink) 72%, transparent);
   line-height: 1.35;
+}
+
+/* Aporte (decisión del grupo) vs referencia de alquiler */
+.match-compose-aporte {
+  border-left-color: var(--turf-deep);
+  background: color-mix(in oklab, var(--turf) 9%, var(--paper));
+}
+
+.match-compose-ref {
+  padding: 0.75rem 0.85rem;
+  border-left: 2px dashed color-mix(in oklab, var(--ink) 28%, transparent);
+  background: color-mix(in oklab, var(--ink) 3%, var(--paper));
+  display: grid;
+  gap: 0.55rem;
+}
+
+.match-compose-ref-kicker {
+  margin: 0;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--ink) 55%, transparent);
+}
+
+.venue-rate-hint {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.venue-rate-hint-loading,
+.venue-rate-hint-empty,
+.venue-rate-hint-meta {
+  margin: 0;
+  font-size: 0.88rem;
+  color: color-mix(in oklab, var(--ink) 62%, transparent);
+  line-height: 1.4;
+}
+
+.venue-rate-hint-details {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.venue-rate-hint-total {
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.75rem;
+  font-size: 0.92rem;
+}
+
+.venue-rate-hint-total strong {
+  font-weight: 650;
+  color: color-mix(in oklab, var(--ink) 88%, transparent);
+  white-space: nowrap;
+}
+
+.venue-rate-owner {
+  margin-top: 0.15rem;
+  border-top: 1px dashed color-mix(in oklab, var(--ink) 18%, transparent);
+  padding-top: 0.45rem;
+}
+
+.venue-rate-owner summary {
+  cursor: pointer;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--ink) 58%, transparent);
+  list-style: none;
+}
+
+.venue-rate-owner summary::-webkit-details-marker {
+  display: none;
+}
+
+.venue-rate-owner summary::before {
+  content: "+ ";
+  color: var(--turf);
+}
+
+.venue-rate-owner[open] summary::before {
+  content: "– ";
+}
+
+.venue-rate-owner-body {
+  display: grid;
+  gap: 0.65rem;
+  margin-top: 0.55rem;
+}
+
+.venue-rate-owner-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.88rem;
+  line-height: 1.35;
+  cursor: pointer;
+}
+
+.venue-rate-owner-check input {
+  margin-top: 0.15rem;
+  accent-color: var(--turf);
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+}
+
+.venue-rate-owner-input {
+  display: grid;
+  gap: 0.3rem;
+  font-size: 0.92rem;
+}
+
+.venue-rate-owner-input > span {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--ink) 62%, transparent);
+}
+
+.venue-rate-owner-input input {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid color-mix(in oklab, var(--ink) 20%, transparent);
+  border-bottom-width: 2px;
+  background: color-mix(in oklab, var(--paper) 70%, white);
+  color: var(--ink);
+  font: inherit;
+  border-radius: 0;
+}
+
+.venue-rate-owner-input input:focus-visible {
+  outline: 2px solid var(--flood);
+  outline-offset: 1px;
+  border-color: var(--turf);
+}
+
+.match-compose-submit {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.match-compose-booking-alt {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.4;
+  color: color-mix(in oklab, var(--ink) 70%, transparent);
+  text-align: center;
+}
+
+.match-compose-booking-alt a {
+  color: var(--turf-deep);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 0.12em;
+}
+
+.match-compose-sticky-stack {
+  display: grid;
+  gap: 0.4rem;
+  width: 100%;
+}
+
+.match-compose-booking-alt-sticky {
+  font-size: 0.82rem;
 }

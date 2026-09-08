@@ -3,7 +3,7 @@
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
 
-Partidos abiertos y “falta un jugador” en Barranquilla. El organizador publica un hueco (cancha, hora, posición); alguien pide el cupo; el host confirma. BaFut no reemplaza WhatsApp: concentra la demanda y el link se comparte por donde ya se organizan. Opcionalmente (flag off por defecto), el dueño puede activar **Pedir turno** para alquilar horario con comprobante — BaFut lista el pedido; el dueño confirma el pago.
+Partidos abiertos y “falta un jugador” en Barranquilla. El organizador publica un hueco (cancha, hora, posición); alguien pide el cupo; el host confirma. BaFut no reemplaza WhatsApp: concentra la demanda y el link se comparte por donde ya se organizan. Opcionalmente (flag off por defecto), el dueño puede activar **Reservar** para alquilar horario con comprobante — BaFut lista el pedido; el dueño confirma el pago.
 
 **Demo:** [bafut.macuttech.com](https://bafut.macuttech.com)
 
@@ -18,7 +18,7 @@ Partidos abiertos y “falta un jugador” en Barranquilla. El organizador publi
 - Selector de ciudad (cookie `bafut_city`; Barranquilla es la primera)
 - Auth por correo + clave (Supabase); email solo para recuperar clave / confirmar cuenta
 - Página de apoyo / donaciones opcionales (`/apoyar`)
-- **Pedir turno** (piloto, off por defecto): alquiler de horario con comprobante al dueño — **sí exige** precios del deporte, dueño y flags (`/canchas/[slug]/turno`, `/perfil/turnos`, Mesa → Turnos)
+- **Reservar** (piloto, off por defecto): alquiler de horario con comprobante al dueño — **sí exige** precios del deporte, dueño y flags (`/canchas/[slug]/turno`, `/perfil/turnos`, Mesa → Reservas)
 
 **Fuera de alcance (por ahora):** cobro entre jugadores del partido, chat in-app, app nativa, pasarela de pago automatizada.
 
@@ -56,7 +56,7 @@ Requisitos: Node.js 20+ y un proyecto Supabase.
    | `NEXT_PUBLIC_SITE_URL` | Sí | Local: `http://localhost:3005` |
    | `STAGING_SUPABASE_*` / `STAGING_SITE_URL` | No | Plantilla del proyecto staging; la app no las lee en runtime (ver [docs/staging.md](./docs/staging.md)) |
    | `NEXT_PUBLIC_DONATE_*` | No | Ko-fi / GitHub Sponsors / Nequi (donaciones) |
-   | `NEXT_PUBLIC_PREMIUM_*` | No | Precio, días, Nequi/banco para pago premium dueños |
+   | `NEXT_PUBLIC_PREMIUM_*` | No | Precio, días, Nequi/banco para pago Premium del listado (no Reservar) |
    | `NEXT_PUBLIC_VENUE_OWNER_*` | No | WhatsApp / email para dueños de cancha |
    | `NEXT_PUBLIC_GA4_MEASUREMENT_ID` | No | Google Analytics 4 |
    | `CRON_SECRET` | Prod (cron) | Bearer para `/api/cron/*` (`openssl rand -hex 32`; distinto staging vs prod) |
@@ -215,9 +215,9 @@ values ('<uuid-del-perfil>', 'super');
 
 Flags DB: `premium_paywall`, `push_alerts`, `directory_premium_boost`, `venue_booking` (**default off**).
 
-### Pedir turno (`venue_booking`)
+### Reservar (`venue_booking`)
 
-Publicar un hueco (`/partidos/nuevo`) **no** requiere precios de cancha: el partido se publica igual; el snapshot de tarifa es best-effort. **Pedir turno** sí exige tarifas del deporte + dueño + flags.
+Publicar un hueco (`/partidos/nuevo`) **no** requiere precios de cancha: el partido se publica igual; el snapshot de tarifa es best-effort. **Reservar** sí exige tarifas del deporte + dueño + flags. El pago de la reserva va al **dueño de la cancha** (comprobante + WhatsApp); no uses `NEXT_PUBLIC_PREMIUM_*` para eso — esas variables son solo del listado Premium de BaFut.
 
 Kill-switch global + opt-in por cancha. CTA y flujos solo si **ambos** están on, la cancha tiene `owner_id` y pricing usable para el deporte.
 
@@ -253,7 +253,7 @@ O forzá el flag con `FEATURE_VENUE_BOOKING=1` en el entorno y el mismo `UPDATE`
 | --- | --- |
 | Reclamar cancha | 5 / hora / usuario |
 | Subir foto | 20 / hora / usuario; máx. 12 fotos por cancha; 5 MB JPG/PNG/WEBP |
-| Pedir turno (submit) | 5 / hora / usuario |
+| Reservar (submit) | 5 / hora / usuario |
 | Aprobar/rechazar turno (dueño) | 30 / hora / usuario |
 | Crear suscripción (admin) | 30 / hora |
 | Subscribe dueño (A2) | usar scope `venue_subscribe` en el RPC de solicitud |
@@ -301,7 +301,7 @@ Inserta una fila en `cities` y sus `venues`. No hace falta ramificar código. El
 
 ## Contribuir
 
-Issues y PRs son bienvenidos. Mantén el alcance acotado: el producto junta huecos y demanda; Pedir turno es opt-in del dueño, no el core.
+Issues y PRs son bienvenidos. Mantén el alcance acotado: el producto junta huecos y demanda; Reservar es opt-in del dueño, no el core.
 
 1. Fork y branch desde `main`
 2. `npm install` → `npm run lint` → `npm run build` si tocaste rutas o datos

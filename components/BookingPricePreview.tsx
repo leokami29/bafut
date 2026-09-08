@@ -99,7 +99,7 @@ export function BookingPricePreview({
 
   return (
     <div className="booking-price-preview price-preview">
-      <h3 className="price-preview-title">Precio del turno</h3>
+      <h3 className="price-preview-title">Precio de la reserva</h3>
       {loading ? <p className="price-preview-loading">Calculando…</p> : null}
       {error ? (
         <p className="form-error" role="alert">

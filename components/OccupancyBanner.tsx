@@ -41,9 +41,9 @@ export function OccupancyBanner({
       <div className="occupancy-banner" role="status">
         <div className="occupancy-banner-copy">
           <p className="occupancy-banner-kicker">Misma cancha · misma hora</p>
-          <p className="occupancy-banner-title">Horario con turno</p>
+          <p className="occupancy-banner-title">Horario con reserva</p>
           <p>
-            Hay un horario alquilado a las {when} en {occupancy.venue_name}. Elegí otra franja para
+            Hay una reserva a las {when} en {occupancy.venue_name}. Elegí otra franja para
             publicar.
           </p>
         </div>

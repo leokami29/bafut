@@ -13,13 +13,15 @@ export type PriceSlot = {
   day_of_week: number;
   start_time: string;
   end_time: string;
+  /** COP por hora (no por el bloque completo de la franja). */
   price_cop: number;
 };
 
 export type PricingConfig = {
   slots: PriceSlot[];
   min_minutes: number;
-  defaults: Record<number, number>; // day_of_week -> price_cop
+  /** day_of_week -> COP/hora (fallback cuando no hay franja). */
+  defaults: Record<number, number>;
 };
 
 export type PricingResult = {
@@ -100,8 +102,9 @@ export function findSlotAt(
 }
 
 /**
- * Calcula el precio base sumando proporcionalmente por franjas.
- * Si no hay slot, usa el fallback del día.
+ * Calcula el precio base por minutos facturados.
+ * Semántica: `price_cop` (franja y fallback) = COP por hora → pricePerMin = price_cop / 60.
+ * Si el booking cruza franjas, se suma por segmento.
  */
 export function calculateBasePrice(
   config: PricingConfig,
@@ -118,22 +121,20 @@ export function calculateBasePrice(
     const slot = findSlotAt(config.slots, day_of_week, current_min);
 
     if (slot) {
-      const slotStart = parseTime(slot.start_time);
       const slotEnd = parseTime(slot.end_time);
-      const slotDuration = slotEnd - slotStart;
-      const pricePerMin = slot.price_cop / slotDuration;
+      const pricePerMin = slot.price_cop / 60;
       const minutesInSlot = Math.min(remaining_min, slotEnd - current_min);
       base_cop += minutesInSlot * pricePerMin;
       current_min += minutesInSlot;
       remaining_min -= minutesInSlot;
     } else {
-      // Fallback del día
+      // Fallback del día: también COP/hora (misma fórmula que franjas).
       const fallbackPrice = config.defaults[day_of_week];
       if (fallbackPrice === undefined) {
         errors.push(`No hay franja ni fallback para el día ${day_of_week} a las ${formatTime(current_min)}`);
         break;
       }
-      const pricePerMin = fallbackPrice / (24 * 60); // fallback es precio por día completo
+      const pricePerMin = fallbackPrice / 60;
       base_cop += remaining_min * pricePerMin;
       remaining_min = 0;
     }

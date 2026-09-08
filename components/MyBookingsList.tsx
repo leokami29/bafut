@@ -48,7 +48,7 @@ function CancelForm({ bookingId, venueSlug }: { bookingId: string; venueSlug: st
     <form action={action} className="venue-booking-cancel-form">
       <input type="hidden" name="booking_id" value={bookingId} />
       <button type="submit" className="btn-ghost btn-small" disabled={pending} aria-busy={pending}>
-        {pending ? "Cancelando…" : "Cancelar turno"}
+        {pending ? "Cancelando…" : "Cancelar reserva"}
       </button>
       {state?.error ? (
         <p className="form-error" role="alert">
@@ -57,7 +57,7 @@ function CancelForm({ bookingId, venueSlug }: { bookingId: string; venueSlug: st
       ) : null}
       {state?.ok ? (
         <p className="form-ok" role="status">
-          Turno cancelado.
+          Reserva cancelada.
         </p>
       ) : null}
     </form>
@@ -68,7 +68,7 @@ export function MyBookingsList({ bookings }: Props) {
   if (bookings.length === 0) {
     return (
       <div className="empty my-matches-empty">
-        <p>Todavía no pediste ningún turno.</p>
+        <p>Todavía no pediste ninguna reserva.</p>
         <div className="empty-home-actions">
           <Link href="/canchas" className="btn-flood">
             Ver canchas

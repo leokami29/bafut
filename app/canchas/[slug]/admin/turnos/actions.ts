@@ -33,7 +33,7 @@ export async function approveVenueBookingAction(
   formData: FormData,
 ): Promise<VenueBookingReviewState> {
   const bookingId = String(formData.get("booking_id") ?? "").trim();
-  if (!isUuid(bookingId)) return { error: "Turno no válido." };
+  if (!isUuid(bookingId)) return { error: "Reserva no válida." };
 
   const { supabase } = await requireUserId(`/canchas/${slug}/admin/turnos`);
   const { error } = await supabase.rpc("approve_venue_booking", {
@@ -53,7 +53,7 @@ export async function rejectVenueBookingAction(
 ): Promise<VenueBookingReviewState> {
   const bookingId = String(formData.get("booking_id") ?? "").trim();
   const reason = String(formData.get("reason") ?? "").trim().slice(0, 300);
-  if (!isUuid(bookingId)) return { error: "Turno no válido." };
+  if (!isUuid(bookingId)) return { error: "Reserva no válida." };
 
   const { supabase } = await requireUserId(`/canchas/${slug}/admin/turnos`);
   const { error } = await supabase.rpc("reject_venue_booking", {
@@ -76,7 +76,7 @@ export async function setVenueBookingEnabledAction(
   if (!isUuid(venueId)) return { error: "Cancha no válida." };
 
   if (!(await isFeatureEnabled("venue_booking"))) {
-    return { error: "Los pedidos de turno no están disponibles ahora (flag global)." };
+    return { error: "Las reservas no están disponibles ahora (flag global)." };
   }
 
   const enabled = formFlag(formData, "booking_enabled");
@@ -101,7 +101,7 @@ export async function getBookingProofSignedUrlAction(
   formData: FormData,
 ): Promise<BookingProofUrlState> {
   const bookingId = String(formData.get("booking_id") ?? "").trim();
-  if (!isUuid(bookingId)) return { error: "Turno no válido." };
+  if (!isUuid(bookingId)) return { error: "Reserva no válida." };
 
   const { supabase, userId } = await requireUserId(`/canchas/${slug}/admin/turnos`);
 
@@ -112,7 +112,7 @@ export async function getBookingProofSignedUrlAction(
     .maybeSingle();
 
   if (bookingError || !booking) {
-    return { error: "Turno no encontrado." };
+    return { error: "Reserva no encontrada." };
   }
 
   const venueJoin = booking.venues as
@@ -121,7 +121,7 @@ export async function getBookingProofSignedUrlAction(
     | null;
   const venue = Array.isArray(venueJoin) ? venueJoin[0] : venueJoin;
   if (!venue || venue.slug !== slug) {
-    return { error: "Turno no corresponde a esta cancha." };
+    return { error: "La reserva no corresponde a esta cancha." };
   }
 
   const isPlayer = booking.player_id === userId;

@@ -57,7 +57,7 @@ type VenueAdminDashboardProps = {
   premiumPaywallEnabled?: boolean;
   /** Feature flag global venue_booking (kill-switch). */
   venueBookingFeatureEnabled?: boolean;
-  /** Pedidos de turno pendientes (badge / atajo Mesa). */
+  /** Pedidos de reserva pendientes (badge / atajo Mesa). */
   pendingTurnosCount?: number;
   /** Centro de la ciudad activa para el picker de ubicación (fallback: coords actuales). */
   cityCenter?: { lat: number; lng: number };
@@ -358,18 +358,22 @@ export function VenueAdminDashboard({
 
           <section className="venue-booking-mesa" aria-labelledby="venue-booking-mesa-title">
             <h3 id="venue-booking-mesa-title" className="subhead">
-              Pedidos de turno
+              Reservas
             </h3>
             {!venueBookingFeatureEnabled ? (
               <p className="field-help">
-                Los pedidos de turno no están disponibles ahora (flag global). Cuando se active,
-                vas a poder aceptar alquileres de horario acá.
+                Las reservas no están disponibles ahora (flag global). Cuando se active, vas a
+                poder aceptar alquileres de horario acá. Tener precios cargados no alcanza por sí
+                solo.
               </p>
             ) : (
               <>
                 <p className="field-help">
-                  Si está activo, los jugadores pueden pedir un turno con comprobante. Vos
-                  confirmás o rechazás en la cola de Turnos.
+                  Tener franjas en{" "}
+                  <Link href={`${base}/precios`}>Precios</Link> no publica &quot;Reservar&quot;:
+                  hace falta activar el interruptor de abajo. Con eso activo, los jugadores pagan
+                  al dueño (Nequi/transferencia como acuerden), suben comprobante y vos confirmás
+                  o rechazás en Reservas. El cobro no es a BaFut.
                 </p>
                 <form
                   key={String(venue.booking_enabled)}
@@ -386,7 +390,7 @@ export function VenueAdminDashboard({
                       disabled={bookingEnabledPending}
                       onChange={(e) => e.currentTarget.form?.requestSubmit()}
                     />
-                    <span>Aceptar pedidos de turno</span>
+                    <span>Aceptar reservas</span>
                   </label>
                 </form>
                 {bookingEnabledState?.error ? (
@@ -395,8 +399,8 @@ export function VenueAdminDashboard({
                 {bookingEnabledState?.ok ? (
                   <p className="form-ok">
                     {bookingEnabledState.enabled
-                      ? "Ya aceptás pedidos de turno."
-                      : "Pedidos de turno desactivados."}
+                      ? "Ya aceptás reservas."
+                      : "Reservas desactivadas."}
                   </p>
                 ) : null}
               </>
@@ -452,7 +456,7 @@ export function VenueAdminDashboard({
                 href={`${base}/turnos`}
                 className={`venue-admin-shortcut${pendingTurnosCount > 0 ? " is-hot" : ""}`}
               >
-                <span className="venue-admin-shortcut-label">Turnos</span>
+                <span className="venue-admin-shortcut-label">Reservas</span>
                 <span className="venue-admin-shortcut-hint">
                   {pendingTurnosCount > 0
                     ? `${pendingTurnosCount} pendiente${pendingTurnosCount === 1 ? "" : "s"}`

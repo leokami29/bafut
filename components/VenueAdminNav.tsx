@@ -75,7 +75,7 @@ export function VenueAdminNav({
     },
     {
       href: `${base}/turnos`,
-      label: "Turnos",
+      label: "Reservas",
       count: counts.pendingTurnos ?? null,
       urgent: (n) => n > 0,
       match: (path) => path.startsWith(`${base}/turnos`),

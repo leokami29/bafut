@@ -6,7 +6,7 @@ import { isFeatureEnabled } from "@/lib/feature-flags";
 import { robotsNoIndex } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: "Mis turnos",
+  title: "Mis reservas",
   robots: robotsNoIndex,
 };
 
@@ -74,7 +74,7 @@ export default async function MisTurnosPage() {
     <main className="page page-my-matches my-matches-page page-venue-bookings" id="main">
       <header className="page-head my-matches-head">
         <p className="my-matches-kicker">Perfil</p>
-        <h1>Mis turnos</h1>
+        <h1>Mis reservas</h1>
         <p className="lede">
           Pedidos de alquiler de horario. Cancelá mientras esté pendiente, o un confirmado si
           faltan ≥12 h para el inicio.
@@ -91,14 +91,14 @@ export default async function MisTurnosPage() {
 
       {!flagOn ? (
         <p className="field-help" role="note">
-          Los pedidos de turno están desactivados en BaFut por ahora. Si ya tenías turnos, igual
-          los ves acá.
+          Las reservas están desactivadas en BaFut por ahora. Si ya tenías pedidos, igual los
+          ves acá.
         </p>
       ) : null}
 
-      <section className="my-matches-section" aria-labelledby="mis-turnos-heading">
+      <section className="my-matches-section" aria-labelledby="mis-reservas-heading">
         <div className="my-matches-section-head">
-          <h2 className="subhead" id="mis-turnos-heading">
+          <h2 className="subhead" id="mis-reservas-heading">
             Historial
           </h2>
         </div>

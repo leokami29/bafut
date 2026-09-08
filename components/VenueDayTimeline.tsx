@@ -63,7 +63,7 @@ export function VenueDayTimeline({
                 >
                   <span className="venue-day-chip-time">{formatTimeOfDay(item.starts_at, timeZone)}</span>
                   <span className="venue-day-chip-meta">
-                    {item.duration_min} min · {sport} · Turno
+                    {item.duration_min} min · {sport} · Reserva
                   </span>
                   <span className="venue-day-chip-slots">ocupado</span>
                 </div>

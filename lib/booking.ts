@@ -1,5 +1,5 @@
 /**
- * Constantes, tipos y helpers de Pedir turno (alquiler de horario).
+ * Constantes, tipos y helpers de reserva de cancha (alquiler de horario).
  * Reglas espejo del RPC submit/cancel (hold 4h, lead 2h, horizonte 14d, cancel confirmed 12h).
  */
 
@@ -38,6 +38,24 @@ export const BOOKING_WHATSAPP_RE = /^573[0-9]{9}$/;
 export type OccupyInterval = {
   startsAtMs: number;
   durationMin: number;
+  /** Origen del bloqueo cuando viene de `list_venue_day_occupancy`. */
+  kind?: "match" | "booking";
+};
+
+export type BookingSlotStatus =
+  | "available"
+  | "occupied_match"
+  | "occupied_booking"
+  /** Inicio libre, pero la duración elegida cruzaría una ocupación. */
+  | "no_fit"
+  | "too_soon"
+  | "no_tariff";
+
+export type BookingSlotOption = {
+  /** datetime-local `YYYY-MM-DDTHH:mm` en TZ de la ciudad. */
+  local: string;
+  hm: string;
+  status: BookingSlotStatus;
 };
 
 export function isBookingDuration(value: number): value is BookingDurationMin {
@@ -57,6 +75,11 @@ export function occupyRangesOverlap(a: OccupyInterval, b: OccupyInterval): boole
   const aEnd = occupyEndMs(a);
   const bEnd = occupyEndMs(b);
   return a.startsAtMs < bEnd && aEnd > b.startsAtMs;
+}
+
+/** El instante de inicio cae dentro del intervalo ocupado [start, end). */
+export function occupyContainsStart(interval: OccupyInterval, startMs: number): boolean {
+  return startMs >= interval.startsAtMs && startMs < occupyEndMs(interval);
 }
 
 export function isWithinLeadTime(
@@ -196,6 +219,95 @@ export function listFreeBookingSlots(input: FreeSlotInput): string[] {
   return free;
 }
 
+export type SlotGridInput = FreeSlotInput & {
+  /**
+   * Si se provee y retorna false, el slot libre se marca `no_tariff`
+   * (no bookable hasta que el dueño configure precio).
+   */
+  hasTariff?: (local: string) => boolean;
+};
+
+/**
+ * Grilla completa del día (06–23) con estado: libre, ocupado (partido/reserva),
+ * no cabe (duración cruzaría ocupación), lead insuficiente o sin tarifa.
+ * Respeta horizonte y duración mínima.
+ *
+ * Un inicio se marca `occupied_*` solo si cae dentro de [start, end) de la ocupación.
+ * Si el inicio está libre pero la duración elegida solapa, se marca `no_fit`.
+ */
+export function listBookingSlotsWithStatus(input: SlotGridInput): BookingSlotOption[] {
+  const nowMs = input.nowMs ?? Date.now();
+  const todayKey = localDayKey(new Date(nowMs), input.timeZone);
+  if (!isWithinMaxDaysAhead(input.dayKey, todayKey)) return [];
+
+  if (input.minMinutes != null && input.durationMin < input.minMinutes) {
+    return [];
+  }
+
+  const times = listBookingStartTimesLocal(input.durationMin);
+  const out: BookingSlotOption[] = [];
+
+  for (const hm of times) {
+    const local = `${input.dayKey}T${hm}`;
+    const startsAt = datetimeLocalInZoneToDate(local, input.timeZone);
+    if (!startsAt) continue;
+    const startsAtMs = startsAt.getTime();
+
+    if (!isWithinLeadTime(startsAtMs, nowMs)) {
+      out.push({ local, hm, status: "too_soon" });
+      continue;
+    }
+
+    const containing = input.occupied.find((b) => occupyContainsStart(b, startsAtMs));
+    if (containing) {
+      out.push({
+        local,
+        hm,
+        status: containing.kind === "booking" ? "occupied_booking" : "occupied_match",
+      });
+      continue;
+    }
+
+    const candidate: OccupyInterval = {
+      startsAtMs,
+      durationMin: input.durationMin,
+    };
+    const crosses = input.occupied.some((b) => occupyRangesOverlap(candidate, b));
+    if (crosses) {
+      out.push({ local, hm, status: "no_fit" });
+      continue;
+    }
+
+    if (input.hasTariff && !input.hasTariff(local)) {
+      out.push({ local, hm, status: "no_tariff" });
+      continue;
+    }
+
+    out.push({ local, hm, status: "available" });
+  }
+
+  return out;
+}
+
+export function bookingSlotStatusLabel(status: BookingSlotStatus): string {
+  switch (status) {
+    case "available":
+      return "Libre";
+    case "occupied_match":
+      return "Partido";
+    case "occupied_booking":
+      return "Ocupado";
+    case "no_fit":
+      return "No cabe";
+    case "too_soon":
+      return "Lead";
+    case "no_tariff":
+      return "Sin tarifa";
+    default:
+      return status;
+  }
+}
+
 export type BookingOwnerNotifyInput = {
   venueName: string;
   sportLabel: string;
@@ -209,7 +321,7 @@ export type BookingOwnerNotifyInput = {
 export function bookingOwnerNotifyMessage(input: BookingOwnerNotifyInput): string {
   const amount = formatBookingMoney(input.finalCop);
   return (
-    `Hola! Pedí un turno en ${input.venueName} (${input.sportLabel}) ` +
+    `Hola! Pedí una reserva en ${input.venueName} (${input.sportLabel}) ` +
     `${input.whenLabel} · ${input.durationMin} min · ${amount}. ` +
     `Ya subí el comprobante en BaFut. Mi WhatsApp: ${input.playerWhatsapp}.`
   );

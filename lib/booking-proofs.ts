@@ -10,7 +10,7 @@ const ALLOWED_TYPES = new Set([
   "application/pdf",
 ]);
 
-/** Ruta: <venue_id>/<user_id>/<uuid>.<ext> (policies storage usan folder[2] = auth.uid). */
+/** Ruta: <venue_id>/<user_id>/<uuid>.<ext> (RLS: folder[1]=venue_id, folder[2]=auth.uid). */
 export function bookingProofObjectPath(
   venueId: string,
   userId: string,

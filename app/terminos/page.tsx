@@ -40,7 +40,7 @@ export default function TerminosPage() {
     >
       <p>
         Estos términos regulan el uso de BaFut (el sitio y la aplicación web operados por
-        Macuttech). Al crear una cuenta, publicar un partido, pedir un cupo, pedir un turno,
+        Macuttech). Al crear una cuenta, publicar un partido, pedir un cupo, reservar un horario,
         reclamar una cancha o solicitar un plan premium, aceptás estas condiciones.
       </p>
 
@@ -49,13 +49,13 @@ export default function TerminosPage() {
         BaFut es un radar de huecos y pateadas abiertas: conecta organizadores (hosts) con
         jugadores que buscan cupo en canchas sintéticas y multideporte. Publicás un partido,
         compartís el enlace y alguien pide el cupo; el host confirma. Cuando el dueño de una
-        cancha lo activa, también podés <strong>pedir un turno</strong> (alquiler de horario)
+        cancha lo activa, también podés <strong>reservar un horario</strong> (alquiler)
         subiendo un comprobante para que el dueño lo revise.
       </p>
       <p>
         BaFut <strong>no</strong> cobra el partido entre jugadores, <strong>no</strong> actúa
         como pasarela ni custodia el dinero del alquiler, y <strong>no</strong> sustituye
-        WhatsApp u otros chats del grupo. Intermedia el listado del pedido de turno y la
+        WhatsApp u otros chats del grupo. Intermedia el listado del pedido de reserva y la
         confirmación del dueño en la plataforma; el pago (Nequi, transferencia u otro medio
         indicado) y la relación comercial son entre vos y el dueño de la cancha. Cualquier
         acuerdo de plata, hora o cancha entre personas es responsabilidad de quienes
@@ -80,13 +80,13 @@ export default function TerminosPage() {
       <p>
         Publicar un partido (hueco) <strong>no</strong> constituye alquiler de la cancha ni
         reserva frente al dueño: es un aviso para completar gente.{" "}
-        <strong>Pedir turno</strong>, cuando está habilitado, es un acuerdo entre el jugador
+        <strong>Reservar</strong>, cuando está habilitado, es un acuerdo entre el jugador
         y el dueño de la cancha; BaFut no custodia ese pago.
       </p>
 
-      <h2>4. Pedidos de turno y comprobantes al dueño</h2>
+      <h2>4. Reservas y comprobantes al dueño</h2>
       <p>
-        Si una cancha tiene habilitado Pedir turno, podés solicitar una franja, indicar
+        Si una cancha tiene habilitado Reservar, podés solicitar una franja, indicar
         método de pago, WhatsApp de contacto y subir un <strong>comprobante</strong> (imagen
         o PDF). El dueño de la cancha (no un admin de BaFut) aprueba o rechaza el pedido.
         Reglas útiles del producto (sujetas a cambio operativo): hold temporal mientras está
@@ -99,7 +99,7 @@ export default function TerminosPage() {
         </li>
         <li>
           Un comprobante falso, ilegible o ajeno al pedido puede ser rechazado y puede
-          restringir el uso de turnos.
+          restringir el uso de reservas.
         </li>
         <li>
           Disputas sobre el cobro, reembolsos o la disponibilidad de la cancha se resuelven

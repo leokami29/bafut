@@ -147,7 +147,7 @@ export default async function VenueRegisterPage() {
                 <h3>Cero comisión</h3>
                 <p>
                   BaFut no cobra el arriendo ni cobra intermediar partidos. Junta la
-                  demanda; la plata del turno sigue siendo tuya, en la taquilla o por
+                  demanda; la plata de la reserva sigue siendo tuya, en la taquilla o por
                   Nequi, como hasta hoy.
                 </p>
               </div>
