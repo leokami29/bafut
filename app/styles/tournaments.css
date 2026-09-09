@@ -16,33 +16,90 @@
   grid-template-columns: 1fr 1fr;
 }
 
+/* —— Admin list —— */
+.tournament-admin-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin-bottom: 0.35rem;
+}
+
+.tournament-admin-stat {
+  display: grid;
+  gap: 0.15rem;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid color-mix(in oklab, var(--ink) 14%, transparent);
+  background: color-mix(in oklab, var(--turf) 4%, var(--paper));
+}
+
+.tournament-admin-stat-value {
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: var(--turf-deep);
+  line-height: 1.1;
+}
+
+.tournament-admin-stat-label {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--ink) 55%, transparent);
+}
+
+.tournament-empty {
+  padding: 1.25rem 1rem;
+  border: 1px dashed color-mix(in oklab, var(--ink) 22%, transparent);
+  background: color-mix(in oklab, var(--turf) 3%, var(--paper));
+}
+
+.tournament-empty-title {
+  margin: 0 0 0.35rem;
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--turf-deep);
+}
+
 .tournament-list {
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 0;
-  border-top: 1px solid color-mix(in oklab, var(--ink) 16%, transparent);
+  gap: 0.65rem;
 }
 
 .tournament-list-item {
-  border-bottom: 1px solid color-mix(in oklab, var(--ink) 12%, transparent);
+  border: 1px solid color-mix(in oklab, var(--ink) 14%, transparent);
+  background: var(--paper);
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.tournament-list-item:hover {
+  border-color: color-mix(in oklab, var(--turf) 45%, transparent);
+  background: color-mix(in oklab, var(--turf) 5%, var(--paper));
 }
 
 .tournament-list-link {
   display: grid;
-  gap: 0.25rem;
-  padding: 0.85rem 0.15rem;
+  gap: 0.55rem;
+  padding: 0.95rem 1rem;
   text-decoration: none;
+  color: inherit;
 }
 
-.tournament-list-link:hover {
-  background: color-mix(in oklab, var(--turf) 6%, transparent);
+.tournament-list-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.45rem 0.75rem;
 }
 
 .tournament-list-name {
   font-family: var(--font-display), sans-serif;
-  font-size: 1.15rem;
+  font-size: 1.2rem;
   font-weight: 700;
   letter-spacing: 0.02em;
   color: var(--turf-deep);
@@ -52,6 +109,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.35rem 0.65rem;
+  align-items: center;
   font-family: var(--font-mono), ui-monospace, monospace;
   font-size: 0.72rem;
   letter-spacing: 0.04em;
@@ -59,26 +117,289 @@
   color: color-mix(in oklab, var(--ink) 55%, transparent);
 }
 
+.tournament-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.5rem;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border: 1px solid transparent;
+}
+
+.tournament-chip-status.is-draft {
+  background: color-mix(in oklab, var(--ink) 8%, transparent);
+  color: color-mix(in oklab, var(--ink) 75%, transparent);
+}
+
+.tournament-chip-status.is-registration {
+  background: color-mix(in oklab, var(--flood) 32%, var(--paper));
+  border-color: color-mix(in oklab, var(--flood) 55%, transparent);
+  color: var(--turf-deep);
+}
+
+.tournament-chip-status.is-active {
+  background: var(--turf);
+  color: var(--chalk);
+}
+
+.tournament-chip-status.is-completed {
+  background: color-mix(in oklab, var(--turf) 18%, var(--paper));
+  color: var(--turf-deep);
+}
+
+.tournament-chip-status.is-archived {
+  background: color-mix(in oklab, var(--ink) 6%, transparent);
+  color: color-mix(in oklab, var(--ink) 50%, transparent);
+}
+
+.tournament-chip-vis.is-published {
+  background: color-mix(in oklab, var(--turf) 12%, transparent);
+  color: var(--turf-deep);
+}
+
+.tournament-chip-vis.is-private {
+  background: color-mix(in oklab, var(--ink) 7%, transparent);
+  color: color-mix(in oklab, var(--ink) 65%, transparent);
+}
+
+.tournament-fill {
+  position: relative;
+  display: grid;
+  align-items: center;
+  min-height: 1.35rem;
+  padding: 0 0.45rem;
+  background: color-mix(in oklab, var(--ink) 6%, transparent);
+  overflow: hidden;
+}
+
+.tournament-fill-bar {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: color-mix(in oklab, var(--turf) 28%, transparent);
+  pointer-events: none;
+}
+
+.tournament-fill-label {
+  position: relative;
+  z-index: 1;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--ink) 65%, transparent);
+}
+
+.tournament-fill-inline {
+  min-width: 6.5rem;
+  margin-top: 0.2rem;
+}
+
+.tournament-create-panel {
+  margin-top: 0.5rem;
+  border: 1px solid color-mix(in oklab, var(--ink) 14%, transparent);
+  background: var(--paper);
+}
+
+.tournament-create-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.35rem 1rem;
+  padding: 0.85rem 1rem;
+  cursor: pointer;
+  list-style: none;
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--turf-deep);
+}
+
+.tournament-create-summary::-webkit-details-marker {
+  display: none;
+}
+
+.tournament-create-hint {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--ink) 50%, transparent);
+}
+
+.tournament-create-body {
+  padding: 0 1rem 1.1rem;
+  border-top: 1px solid color-mix(in oklab, var(--ink) 10%, transparent);
+}
+
+.tournament-foot {
+  margin-top: 0.5rem;
+}
+
+.tournament-callout {
+  margin: 0;
+  padding: 0.75rem 0.95rem;
+  border-left: 3px solid var(--turf);
+  background: color-mix(in oklab, var(--turf) 7%, var(--paper));
+  font-size: 0.92rem;
+}
+
+.tournament-callout-info {
+  border-left-color: color-mix(in oklab, var(--flood) 80%, var(--turf));
+  background: color-mix(in oklab, var(--flood) 12%, var(--paper));
+}
+
+.tournament-callout-ready {
+  border-left-color: var(--turf);
+  background: color-mix(in oklab, var(--turf) 10%, var(--paper));
+  font-weight: 600;
+}
+
+/* —— Admin detail —— */
+.tournament-detail-head {
+  display: grid;
+  gap: 0.75rem;
+  margin-bottom: 0.25rem;
+}
+
+.tournament-detail-title-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.65rem 1rem;
+}
+
+.tournament-detail-title-row h1 {
+  margin: 0;
+  flex: 1 1 12rem;
+}
+
+.tournament-detail-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.tournament-detail-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+  gap: 0.75rem;
+  padding: 0.9rem 1rem;
+  background: color-mix(in oklab, var(--turf) 5%, var(--paper));
+  border-left: 3px solid var(--turf);
+}
+
+.tournament-detail-meta strong {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.95rem;
+  font-weight: 650;
+}
+
+.tournament-detail-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 900px) {
+  .tournament-detail-grid {
+    grid-template-columns: 1.15fr 0.85fr;
+    align-items: start;
+  }
+}
+
+.tournament-panel {
+  display: grid;
+  gap: 0.85rem;
+  padding: 1rem 1.05rem;
+  border: 1px solid color-mix(in oklab, var(--ink) 14%, transparent);
+  background: var(--paper);
+}
+
+.tournament-panel-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.tournament-panel-head .subhead {
+  margin: 0;
+}
+
+.tournament-panel-count {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--ink) 50%, transparent);
+}
+
+.tournament-panel-sub {
+  margin: 0 0 0.55rem;
+  font-size: 0.88rem;
+  font-weight: 650;
+}
+
+.tournament-panel-form {
+  padding-top: 0.75rem;
+  border-top: 1px solid color-mix(in oklab, var(--ink) 10%, transparent);
+}
+
 .tournament-team-list {
   list-style: none;
-  margin: 0 0 1rem;
+  margin: 0;
   padding: 0;
   display: grid;
-  gap: 0.35rem;
+  gap: 0;
+  counter-reset: tournament-team;
 }
 
 .tournament-team-row {
-  display: flex;
-  justify-content: space-between;
-  gap: 0.75rem;
-  padding: 0.45rem 0;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 0.65rem;
+  align-items: baseline;
+  padding: 0.55rem 0;
   border-bottom: 1px solid color-mix(in oklab, var(--ink) 10%, transparent);
+  counter-increment: tournament-team;
+}
+
+.tournament-team-row::before {
+  content: counter(tournament-team);
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  color: color-mix(in oklab, var(--ink) 45%, transparent);
+  min-width: 1.25rem;
+}
+
+.tournament-team-name {
+  font-weight: 600;
+  min-width: 0;
+}
+
+.tournament-team-seed {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--ink) 50%, transparent);
 }
 
 .tournament-generate {
   display: grid;
   gap: 0.5rem;
-  margin-top: 0.75rem;
+}
+
+@media (max-width: 720px) {
+  .tournament-admin-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .tournament-fixture-list {

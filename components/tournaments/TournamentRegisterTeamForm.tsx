@@ -50,7 +50,8 @@ export function TournamentRegisterTeamForm({
             type="text"
             required
             maxLength={60}
-            placeholder="Los Tigres"
+            placeholder="Smash Duo"
+            autoComplete="off"
             disabled={busy}
           />
         </label>

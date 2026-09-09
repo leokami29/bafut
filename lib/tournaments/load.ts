@@ -35,6 +35,7 @@ export type TournamentListItem = {
   max_teams: number;
   starts_at: string | null;
   created_at: string;
+  team_count: number;
 };
 
 export type TournamentTeamRow = {
@@ -131,7 +132,7 @@ export async function listVenueTournaments(
   let q = supabase
     .from("tournaments")
     .select(
-      "id, name, sport, format, status, visibility, max_teams, starts_at, created_at",
+      "id, name, sport, format, status, visibility, max_teams, starts_at, created_at, tournament_teams(count)",
     )
     .eq("venue_id", venueId)
     .order("created_at", { ascending: false });
@@ -142,7 +143,26 @@ export async function listVenueTournaments(
 
   const { data, error } = await q;
   if (error) return [];
-  return (data ?? []) as TournamentListItem[];
+
+  return (data ?? []).map((row) => {
+    const nested = row.tournament_teams as
+      | Array<{ count: number | null }>
+      | null
+      | undefined;
+    const team_count = nested?.[0]?.count ?? 0;
+    return {
+      id: row.id as string,
+      name: row.name as string,
+      sport: row.sport as string,
+      format: row.format as string,
+      status: row.status as string,
+      visibility: row.visibility as string,
+      max_teams: row.max_teams as number,
+      starts_at: (row.starts_at as string | null) ?? null,
+      created_at: row.created_at as string,
+      team_count: typeof team_count === "number" ? team_count : 0,
+    };
+  });
 }
 
 export async function loadTournamentBracket(

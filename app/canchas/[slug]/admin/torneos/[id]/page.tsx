@@ -12,6 +12,7 @@ import {
 import { TournamentGroupStandings } from "@/components/tournaments/TournamentGroupStandings";
 import { TournamentRegisterTeamForm } from "@/components/tournaments/TournamentRegisterTeamForm";
 import { TournamentStatsPanel } from "@/components/tournaments/TournamentStatsPanel";
+import { TournamentStatusChip } from "@/components/tournaments/TournamentStatusChip";
 import { requireUserId } from "@/lib/auth";
 import { getActiveCity, getVenueBySlug } from "@/lib/data";
 import { isFeatureEnabled } from "@/lib/feature-flags";
@@ -47,6 +48,22 @@ export const metadata: Metadata = {
 };
 
 type Props = { params: Promise<{ slug: string; id: string }> };
+
+function formatStartsAt(iso: string | null): string {
+  if (!iso) return "Sin fecha";
+  try {
+    return new Intl.DateTimeFormat("es-CO", {
+      timeZone: "America/Bogota",
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(new Date(iso));
+  } catch {
+    return "Sin fecha";
+  }
+}
 
 export default async function VenueTournamentAdminDetailPage({ params }: Props) {
   const { slug, id } = await params;
@@ -169,7 +186,12 @@ export default async function VenueTournamentAdminDetailPage({ params }: Props) 
       : Promise.resolve([]),
   ]);
 
-  const teamList = teams ?? [];
+  const teamList = [...(teams ?? [])].sort((a, b) => {
+    if (a.seed == null && b.seed == null) return 0;
+    if (a.seed == null) return 1;
+    if (b.seed == null) return -1;
+    return a.seed - b.seed;
+  });
   const status = tournament.status as TournamentStatus;
   const vis = tournament.visibility === "published" ? "published" : "private";
   const canRegister =
@@ -180,25 +202,60 @@ export default async function VenueTournamentAdminDetailPage({ params }: Props) 
     (status === "draft" || status === "registration") &&
     formatSupportsStageGeneration(format);
   const canGenerateKnockout = canManage && bracket.canGenerateKnockout;
+  const minTeams = format === "groups_knockout" ? 4 : 2;
+  const fillPct =
+    tournament.max_teams > 0
+      ? Math.min(100, Math.round((teamList.length / tournament.max_teams) * 100))
+      : 0;
+  const readyToGenerate = canGenerate && teamList.length >= minTeams;
 
   return (
     <main className="page page-venue-admin" id="main">
       <p className="venue-back">
         <Link href={`${base}/torneos`}>← Torneos</Link>
       </p>
-      <header className="page-head page-head-compact">
+
+      <header className="tournament-detail-head">
         <p className="eyebrow">
           {tournamentSportLabel[sport] ?? tournament.sport} ·{" "}
           {tournamentFormatLabel[format] ?? tournament.format}
         </p>
-        <h1>{tournament.name}</h1>
-        <p className="tournament-list-meta">
-          <span>{tournamentStatusLabel[status] ?? tournament.status}</span>
-          <span>{tournamentVisibilityLabel[vis]}</span>
-          <span>
-            {teamList.length}/{tournament.max_teams} equipos
-          </span>
-        </p>
+        <div className="tournament-detail-title-row">
+          <h1>{tournament.name}</h1>
+          <div className="tournament-detail-chips">
+            <TournamentStatusChip status={status} />
+            <span className={`tournament-chip tournament-chip-vis is-${vis}`}>
+              {tournamentVisibilityLabel[vis]}
+            </span>
+          </div>
+        </div>
+
+        <div className="tournament-detail-meta" aria-label="Datos del torneo">
+          <div>
+            <span className="venue-admin-label">Equipos</span>
+            <strong>
+              {teamList.length}/{tournament.max_teams}
+            </strong>
+          </div>
+          <div>
+            <span className="venue-admin-label">Inicio</span>
+            <strong>{formatStartsAt(tournament.starts_at)}</strong>
+          </div>
+          <div>
+            <span className="venue-admin-label">Partidos</span>
+            <strong>{bracket.matches.length || "—"}</strong>
+          </div>
+          <div>
+            <span className="venue-admin-label">Cupo</span>
+            <div
+              className="tournament-fill tournament-fill-inline"
+              aria-hidden="true"
+            >
+              <div className="tournament-fill-bar" style={{ width: `${fillPct}%` }} />
+              <span className="tournament-fill-label">{fillPct}%</span>
+            </div>
+          </div>
+        </div>
       </header>
 
       <Suspense fallback={<div className="venue-admin-board admin-board" aria-hidden="true" />}>
@@ -213,50 +270,97 @@ export default async function VenueTournamentAdminDetailPage({ params }: Props) 
         />
       </Suspense>
 
-      <section className="venue-admin-section" aria-labelledby="teams-title">
-        <h2 id="teams-title" className="subhead">
-          Equipos
-        </h2>
-        {teamList.length === 0 ? (
-          <p className="field-help">Todavía no hay equipos inscritos.</p>
-        ) : (
-          <ul className="tournament-team-list">
-            {teamList.map((team, idx) => (
-              <li key={team.id} className="tournament-team-row">
-                <span>
-                  {idx + 1}. {team.name}
-                </span>
-                <span className="tournament-list-meta">
-                  {team.seed != null ? `Seed ${team.seed}` : "Sin seed"}
-                </span>
-              </li>
-            ))}
-          </ul>
-        )}
+      {readyToGenerate ? (
+        <p className="tournament-callout tournament-callout-ready">
+          Tenés {teamList.length} equipos listos. Generá la{" "}
+          {format === "round_robin" ? "liga" : "llave"} para pasar el torneo a «En
+          curso».
+        </p>
+      ) : canRegister && teamList.length < minTeams ? (
+        <p className="tournament-callout tournament-callout-info">
+          Inscribí al menos {minTeams} equipos para poder generar el fixture.
+        </p>
+      ) : null}
 
-        {canRegister ? (
-          <TournamentRegisterTeamForm slug={slug} tournamentId={id} />
-        ) : canManage ? (
-          <p className="field-help">
-            La inscripción está cerrada (torneo {tournamentStatusLabel[status]}).
-          </p>
-        ) : null}
+      <div className="tournament-detail-grid">
+        <section className="tournament-panel" aria-labelledby="teams-title">
+          <div className="tournament-panel-head">
+            <h2 id="teams-title" className="subhead">
+              Equipos
+            </h2>
+            <span className="tournament-panel-count">
+              {teamList.length}/{tournament.max_teams}
+            </span>
+          </div>
 
-        {canGenerate ? (
-          <TournamentGenerateStageButton
-            slug={slug}
-            tournamentId={id}
-            teamCount={teamList.length}
-            format={format}
-          />
-        ) : null}
-        {canGenerateKnockout ? (
-          <TournamentGenerateKnockoutButton slug={slug} tournamentId={id} />
-        ) : null}
-      </section>
+          {teamList.length === 0 ? (
+            <p className="field-help">Todavía no hay equipos inscritos.</p>
+          ) : (
+            <ol className="tournament-team-list">
+              {teamList.map((team) => (
+                <li key={team.id} className="tournament-team-row">
+                  <span className="tournament-team-name">{team.name}</span>
+                  <span className="tournament-team-seed">
+                    {team.seed != null ? `Seed ${team.seed}` : "Sin seed"}
+                  </span>
+                </li>
+              ))}
+            </ol>
+          )}
+
+          {canRegister ? (
+            <div className="tournament-panel-form">
+              <h3 className="tournament-panel-sub">Inscribir equipo</h3>
+              <TournamentRegisterTeamForm
+                slug={slug}
+                tournamentId={id}
+                disabled={teamList.length >= tournament.max_teams}
+              />
+              {teamList.length >= tournament.max_teams ? (
+                <p className="field-help">Cupo completo.</p>
+              ) : null}
+            </div>
+          ) : canManage ? (
+            <p className="field-help">
+              La inscripción está cerrada (torneo {tournamentStatusLabel[status]}).
+            </p>
+          ) : null}
+        </section>
+
+        <section className="tournament-panel" aria-labelledby="stage-title">
+          <div className="tournament-panel-head">
+            <h2 id="stage-title" className="subhead">
+              Fixture
+            </h2>
+          </div>
+
+          {canGenerate ? (
+            <TournamentGenerateStageButton
+              slug={slug}
+              tournamentId={id}
+              teamCount={teamList.length}
+              format={format}
+            />
+          ) : bracket.stageId ? (
+            <p className="field-help">
+              Stage generado
+              {bracket.stageName ? `: ${bracket.stageName}` : ""}. Los partidos
+              aparecen abajo.
+            </p>
+          ) : (
+            <p className="field-help">
+              Cuando haya equipos suficientes, vas a poder generar la llave aquí.
+            </p>
+          )}
+
+          {canGenerateKnockout ? (
+            <TournamentGenerateKnockoutButton slug={slug} tournamentId={id} />
+          ) : null}
+        </section>
+      </div>
 
       {showLeagueTable && bracket.stageId ? (
-        <section className="venue-admin-section" aria-labelledby="standings-title">
+        <section className="tournament-panel" aria-labelledby="standings-title">
           <h2 id="standings-title" className="subhead">
             {format === "groups_knockout" ? "Tablas de grupos" : "Tabla de posiciones"}
           </h2>
@@ -268,14 +372,21 @@ export default async function VenueTournamentAdminDetailPage({ params }: Props) 
         </section>
       ) : null}
 
-      <section className="venue-admin-section" aria-labelledby="bracket-title">
-        <h2 id="bracket-title" className="subhead">
-          {format === "round_robin"
-            ? "Fixtures"
-            : format === "groups_knockout"
-              ? "Grupos / llave"
-              : "Llave / fixtures"}
-        </h2>
+      <section className="tournament-panel" aria-labelledby="bracket-title">
+        <div className="tournament-panel-head">
+          <h2 id="bracket-title" className="subhead">
+            {format === "round_robin"
+              ? "Partidos"
+              : format === "groups_knockout"
+                ? "Grupos / llave"
+                : "Llave"}
+          </h2>
+          {bracket.matches.length > 0 ? (
+            <span className="tournament-panel-count">
+              {bracket.matches.length} partidos
+            </span>
+          ) : null}
+        </div>
         {bracket.stages.length > 1 ? (
           <p className="field-help">
             {bracket.stages.map((s) => s.name).join(" · ")}
@@ -302,11 +413,11 @@ export default async function VenueTournamentAdminDetailPage({ params }: Props) 
       <TournamentStatsPanel
         stats={stats}
         idPrefix="admin-stats"
-        className="venue-admin-section"
+        className="tournament-panel"
       />
 
       {vis === "published" ? (
-        <p className="foot-link">
+        <p className="foot-link tournament-foot">
           <Link href={`/canchas/${slug}/torneos/${id}`}>Ver vista pública →</Link>
         </p>
       ) : null}

@@ -8,9 +8,9 @@ import type { TournamentFormat, TournamentSport, TournamentStatus } from "@/lib/
 import {
   tournamentFormatLabel,
   tournamentSportLabel,
-  tournamentStatusLabel,
 } from "@/lib/tournaments/labels";
 import { listVenueTournaments } from "@/lib/tournaments/load";
+import { TournamentStatusChip } from "@/components/tournaments/TournamentStatusChip";
 import {
   absoluteUrl,
   defaultOg,
@@ -79,11 +79,16 @@ export default async function VenueTournamentsPublicPage({ params }: Props) {
                   href={`/canchas/${slug}/torneos/${t.id}`}
                   className="tournament-list-link"
                 >
-                  <span className="tournament-list-name">{t.name}</span>
+                  <div className="tournament-list-top">
+                    <span className="tournament-list-name">{t.name}</span>
+                    <TournamentStatusChip status={status} />
+                  </div>
                   <span className="tournament-list-meta">
                     <span>{tournamentSportLabel[sport] ?? t.sport}</span>
                     <span>{tournamentFormatLabel[format] ?? t.format}</span>
-                    <span>{tournamentStatusLabel[status] ?? t.status}</span>
+                    <span>
+                      {t.team_count}/{t.max_teams} equipos
+                    </span>
                   </span>
                 </Link>
               </li>

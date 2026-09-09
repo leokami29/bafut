@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { VenueAdminNav } from "@/components/VenueAdminNav";
 import { TournamentCreateForm } from "@/components/tournaments/TournamentCreateForm";
+import { TournamentStatusChip } from "@/components/tournaments/TournamentStatusChip";
 import { getAdminRole, isBillingAdmin } from "@/lib/admin-auth";
 import { requireUserId } from "@/lib/auth";
 import { getActiveCity, getVenueBySlug } from "@/lib/data";
@@ -23,7 +24,6 @@ import {
 import {
   tournamentFormatLabel,
   tournamentSportLabel,
-  tournamentStatusLabel,
   tournamentVisibilityLabel,
 } from "@/lib/tournaments/labels";
 import { listVenueTournaments } from "@/lib/tournaments/load";
@@ -34,6 +34,22 @@ export const metadata: Metadata = {
 };
 
 type Props = { params: Promise<{ slug: string }> };
+
+function formatStartsAt(iso: string | null): string | null {
+  if (!iso) return null;
+  try {
+    return new Intl.DateTimeFormat("es-CO", {
+      timeZone: "America/Bogota",
+      weekday: "short",
+      day: "numeric",
+      month: "short",
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(new Date(iso));
+  } catch {
+    return null;
+  }
+}
 
 export default async function VenueTournamentsAdminPage({ params }: Props) {
   const { slug } = await params;
@@ -128,6 +144,11 @@ export default async function VenueTournamentsAdminPage({ params }: Props) {
   const tournaments =
     gate === "ok" ? await listVenueTournaments(supabase, venue.id) : [];
 
+  const countBy = (status: TournamentStatus) =>
+    tournaments.filter((t) => t.status === status).length;
+  const concurrent =
+    countBy("registration") + countBy("active");
+
   return (
     <main className="page page-venue-admin" id="main">
       <p className="venue-back">
@@ -137,8 +158,8 @@ export default async function VenueTournamentsAdminPage({ params }: Props) {
         <p className="eyebrow">Administración · {city.name}</p>
         <h1>Torneos · {venue.name}</h1>
         <p className="lede">
-          Organizá campeonatos premium (fútbol, vóley, básquet, pádel) con llaves y
-          actas.
+          Inscribí equipos, generá la llave y cargá actas. Máximo 2 torneos en
+          inscripción o en curso a la vez.
         </p>
       </header>
 
@@ -168,13 +189,41 @@ export default async function VenueTournamentsAdminPage({ params }: Props) {
         ) : (
           <>
             {canScore && !canManage ? (
-              <p className="lede">
-                Acceso scorer: abrí un torneo activo para cargar el acta de cada partido.
+              <p className="tournament-callout tournament-callout-info">
+                Acceso scorer: abrí un torneo activo para cargar el acta de cada
+                partido.
               </p>
             ) : null}
 
+            {tournaments.length > 0 ? (
+              <div className="tournament-admin-stats" aria-label="Resumen de torneos">
+                <div className="tournament-admin-stat">
+                  <span className="tournament-admin-stat-value">{tournaments.length}</span>
+                  <span className="tournament-admin-stat-label">Total</span>
+                </div>
+                <div className="tournament-admin-stat">
+                  <span className="tournament-admin-stat-value">{countBy("registration")}</span>
+                  <span className="tournament-admin-stat-label">Inscripción</span>
+                </div>
+                <div className="tournament-admin-stat">
+                  <span className="tournament-admin-stat-value">{countBy("active")}</span>
+                  <span className="tournament-admin-stat-label">En curso</span>
+                </div>
+                <div className="tournament-admin-stat">
+                  <span className="tournament-admin-stat-value">{concurrent}/2</span>
+                  <span className="tournament-admin-stat-label">Cupos activos</span>
+                </div>
+              </div>
+            ) : null}
+
             {tournaments.length === 0 ? (
-              <p className="field-help">Todavía no hay torneos en esta cancha.</p>
+              <div className="tournament-empty">
+                <p className="tournament-empty-title">Todavía no hay torneos</p>
+                <p className="field-help">
+                  Creá el primero para inscribir parejas o equipos y armar la
+                  llave.
+                </p>
+              </div>
             ) : (
               <ul className="tournament-list">
                 {tournaments.map((t) => {
@@ -183,19 +232,40 @@ export default async function VenueTournamentsAdminPage({ params }: Props) {
                   const status = t.status as TournamentStatus;
                   const vis =
                     t.visibility === "published" ? "published" : "private";
+                  const starts = formatStartsAt(t.starts_at);
+                  const fill =
+                    t.max_teams > 0
+                      ? Math.min(100, Math.round((t.team_count / t.max_teams) * 100))
+                      : 0;
                   return (
                     <li key={t.id} className="tournament-list-item">
                       <Link
                         href={`${base}/torneos/${t.id}`}
                         className="tournament-list-link"
                       >
-                        <span className="tournament-list-name">{t.name}</span>
+                        <div className="tournament-list-top">
+                          <span className="tournament-list-name">{t.name}</span>
+                          <TournamentStatusChip status={status} />
+                        </div>
                         <span className="tournament-list-meta">
                           <span>{tournamentSportLabel[sport] ?? t.sport}</span>
                           <span>{tournamentFormatLabel[format] ?? t.format}</span>
-                          <span>{tournamentStatusLabel[status] ?? t.status}</span>
-                          <span>{tournamentVisibilityLabel[vis]}</span>
+                          <span
+                            className={`tournament-chip tournament-chip-vis is-${vis}`}
+                          >
+                            {tournamentVisibilityLabel[vis]}
+                          </span>
+                          {starts ? <span>Inicio {starts}</span> : null}
                         </span>
+                        <div
+                          className="tournament-fill"
+                          aria-label={`${t.team_count} de ${t.max_teams} equipos`}
+                        >
+                          <div className="tournament-fill-bar" style={{ width: `${fill}%` }} />
+                          <span className="tournament-fill-label">
+                            {t.team_count}/{t.max_teams} equipos
+                          </span>
+                        </div>
                       </Link>
                     </li>
                   );
@@ -204,13 +274,22 @@ export default async function VenueTournamentsAdminPage({ params }: Props) {
             )}
 
             {canManage ? (
-              <div style={{ marginTop: "1.5rem" }}>
-                <h3 className="subhead">Crear torneo</h3>
-                <TournamentCreateForm slug={slug} venueId={venue.id} />
-              </div>
+              <details className="tournament-create-panel" open={tournaments.length === 0}>
+                <summary className="tournament-create-summary">
+                  <span>Crear torneo</span>
+                  <span className="tournament-create-hint">
+                    {concurrent >= 2
+                      ? "Límite de cupos activos alcanzado — usá borrador"
+                      : "Inscripción o borrador"}
+                  </span>
+                </summary>
+                <div className="tournament-create-body">
+                  <TournamentCreateForm slug={slug} venueId={venue.id} />
+                </div>
+              </details>
             ) : null}
 
-            <p className="foot-link" style={{ marginTop: "1.25rem" }}>
+            <p className="foot-link tournament-foot">
               <Link href={`/canchas/${slug}/torneos`}>Ver página pública de torneos →</Link>
             </p>
           </>

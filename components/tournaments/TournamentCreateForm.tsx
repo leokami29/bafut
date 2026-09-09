@@ -71,7 +71,8 @@ export function TournamentCreateForm({ slug, venueId }: Props) {
           required
           minLength={2}
           maxLength={80}
-          placeholder="Copa BaFut 2026"
+          placeholder="Copa Pádel Park Open"
+          autoComplete="off"
           disabled={pending}
         />
       </label>
@@ -79,7 +80,7 @@ export function TournamentCreateForm({ slug, venueId }: Props) {
       <div className="form-split tournament-form-split">
         <label>
           Deporte
-          <select name="sport" defaultValue="futbol" disabled={pending}>
+          <select name="sport" defaultValue="padel" disabled={pending}>
             {TOURNAMENT_SPORTS.map((s) => (
               <option key={s} value={s}>
                 {tournamentSportLabel[s]}
