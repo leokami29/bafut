@@ -1,12 +1,17 @@
 import { describe, expect, it } from "vitest";
 import {
+  addCalendarDaysToDateInput,
   cityDayBoundsFromLocal,
   datetimeLocalInZoneToDate,
+  defaultExtendDateInput,
+  formatCivilDate,
   getMatchTimePeriod,
   isSameCityDay,
   isTonightMatch,
   isWithinNextHours,
   isoToDatetimeLocalInZone,
+  parseDateInputInZone,
+  toDateInputValueInZone,
   zonedDateParts,
 } from "@/lib/datetime";
 
@@ -141,5 +146,39 @@ describe("isWithinNextHours", () => {
 
   it("ISO inválido falso", () => {
     expect(isWithinNextHours("nonsense", 4, now)).toBe(false);
+  });
+});
+
+describe("toDateInputValueInZone / parseDateInputInZone", () => {
+  it("no salta de día por conversión UTC (fin de día Bogotá)", () => {
+    // 11 dic 2026 23:59:59 Bogotá = 12 dic 04:59:59Z
+    const iso = "2026-12-12T04:59:59.000Z";
+    expect(toDateInputValueInZone(iso, BOGOTA)).toBe("2026-12-11");
+    expect(formatCivilDate(iso, BOGOTA)).toBe("11/12/2026");
+  });
+
+  it("parse end es estrictamente posterior a parse start del mismo día", () => {
+    const start = parseDateInputInZone("2026-12-11", "start", BOGOTA);
+    const end = parseDateInputInZone("2026-12-11", "end", BOGOTA);
+    expect(start?.toISOString()).toBe("2026-12-11T05:00:00.000Z");
+    expect(end?.toISOString()).toBe("2026-12-12T04:59:59.000Z");
+    expect(end!.getTime()).toBeGreaterThan(start!.getTime());
+  });
+
+  it("extender +30 desde vencimiento EOD produce fecha posterior al expires actual", () => {
+    const expiresIso = "2026-12-12T04:59:59.000Z"; // 11/12/2026 23:59:59 Bogotá
+    const currentYmd = toDateInputValueInZone(expiresIso, BOGOTA);
+    const defaultNew = defaultExtendDateInput(expiresIso, 30, BOGOTA);
+    expect(currentYmd).toBe("2026-12-11");
+    expect(defaultNew).toBe("2027-01-10");
+    const newExpires = parseDateInputInZone(defaultNew, "end", BOGOTA)!;
+    expect(newExpires.getTime()).toBeGreaterThan(new Date(expiresIso).getTime());
+  });
+
+  it("mismo día civil que el vencimiento actual NO es posterior (bug original)", () => {
+    const expiresIso = "2026-12-12T04:59:59.000Z";
+    const sameDay = toDateInputValueInZone(expiresIso, BOGOTA);
+    const parsed = parseDateInputInZone(sameDay, "end", BOGOTA)!;
+    expect(parsed.getTime()).toBeLessThanOrEqual(new Date(expiresIso).getTime());
   });
 });

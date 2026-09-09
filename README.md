@@ -60,7 +60,7 @@ Requisitos: Node.js 20+ y un proyecto Supabase.
    | `NEXT_PUBLIC_VENUE_OWNER_*` | No | WhatsApp / email para dueños de cancha |
    | `NEXT_PUBLIC_GA4_MEASUREMENT_ID` | No | Google Analytics 4 |
    | `CRON_SECRET` | Prod (cron) | Bearer para `/api/cron/*` (`openssl rand -hex 32`; distinto staging vs prod) |
-   | `SUPABASE_SERVICE_ROLE_KEY` | Prod (cron push/renewals) | Solo server; nunca `NEXT_PUBLIC_` |
+   | `SUPABASE_SERVICE_ROLE_KEY` | Local (torneos) + prod (cron) | Solo server; brackets `bm_*` + cron. Nunca `NEXT_PUBLIC_`. En local: `.env.local` |
    | `NEXT_PUBLIC_VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` | No* | Web Push (fase C); *obligatorias si `push_alerts` está on |
    | `VAPID_SUBJECT` | No | `mailto:` o `https:` del emisor |
    | `FEATURE_*` | No | Pisa DB (`PREMIUM_PAYWALL`, `PUSH_ALERTS`, `DIRECTORY_PREMIUM_BOOST`, `VENUE_BOOKING`) |

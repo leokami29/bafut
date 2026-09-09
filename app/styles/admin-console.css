@@ -770,6 +770,22 @@
   margin: 0 0 1.5rem;
 }
 
+.admin-premium-section-head {
+  display: grid;
+  gap: 0.25rem;
+  margin-bottom: 0.15rem;
+}
+
+.admin-premium-section-title {
+  margin: 0;
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--turf-deep);
+}
+
 .admin-premium-form label,
 .admin-premium-inline-form label {
   display: grid;
@@ -781,6 +797,32 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
   gap: 0.75rem;
+}
+
+.admin-premium-calc {
+  margin: 0;
+  padding: 0.55rem 0.75rem;
+  font-size: 0.9rem;
+  background: color-mix(in oklab, var(--turf) 8%, var(--paper));
+  border-left: 3px solid var(--turf);
+}
+
+.admin-premium-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  margin-bottom: 0.35rem;
+}
+
+.admin-premium-search {
+  flex: 1 1 12rem;
+  min-width: 10rem;
+  max-width: 18rem;
+}
+
+.admin-premium-search input {
+  width: 100%;
 }
 
 .admin-premium-sub-list {
@@ -796,11 +838,41 @@
   gap: 0.55rem;
   padding: 0.85rem 1rem;
   border: 1px solid color-mix(in oklab, var(--ink) 18%, transparent);
+  background: var(--paper);
+}
+
+.admin-premium-sub-row.is-stale {
+  opacity: 0.88;
+  background: color-mix(in oklab, var(--ink) 3%, var(--paper));
 }
 
 .admin-premium-sub-main {
   display: grid;
   gap: 0.2rem;
+}
+
+.admin-premium-sub-title-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem 0.65rem;
+}
+
+.admin-premium-badge {
+  display: inline-block;
+  padding: 0.12rem 0.45rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--ink) 70%, transparent);
+  border: 1px solid color-mix(in oklab, var(--ink) 25%, transparent);
+}
+
+.admin-premium-badge.is-live {
+  color: var(--turf-deep);
+  border-color: color-mix(in oklab, var(--turf) 45%, transparent);
+  background: color-mix(in oklab, var(--turf) 10%, transparent);
 }
 
 .admin-premium-sub-meta {
@@ -813,6 +885,45 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.45rem;
+}
+
+.admin-premium-inline-form {
+  margin: 0.25rem 0 0;
+  padding: 0.85rem 0.9rem;
+  max-width: none;
+  background: color-mix(in oklab, var(--turf) 5%, var(--paper));
+  border: 1px dashed color-mix(in oklab, var(--ink) 22%, transparent);
+}
+
+.admin-premium-current-expiry {
+  margin: 0;
+  font-size: 0.92rem;
+}
+
+.admin-premium-current-expiry-hint {
+  color: color-mix(in oklab, var(--ink) 60%, transparent);
+  font-size: 0.86rem;
+}
+
+.admin-premium-confirm-check {
+  display: flex !important;
+  align-items: flex-start;
+  gap: 0.55rem;
+  font-weight: 600;
+}
+
+.admin-premium-confirm-check input {
+  margin-top: 0.2rem;
+  width: auto;
+}
+
+.admin-premium-cancel-form .admin-premium-danger:not(:disabled) {
+  background: color-mix(in oklab, #8b2e2e 88%, var(--ink));
+  border-color: transparent;
+}
+
+.admin-premium-cancel-trigger {
+  color: color-mix(in oklab, #8b2e2e 75%, var(--ink));
 }
 
 .tournament-access-actions {

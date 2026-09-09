@@ -4,7 +4,10 @@ import { revalidatePath } from "next/cache";
 import { requireUserId } from "@/lib/auth";
 import type { Json } from "@/lib/database.types";
 import { isUuid } from "@/lib/ids";
-import { createServiceClient } from "@/lib/supabase/admin";
+import {
+  SERVICE_ROLE_CONFIG_ERROR,
+  tryCreateServiceClient,
+} from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import {
   rpcCanManageVenueTournaments,
@@ -218,14 +221,9 @@ export async function generateStageAction(
     };
   }
 
-  let service;
-  try {
-    service = createServiceClient();
-  } catch {
-    return {
-      ok: false,
-      error: "Falta configuración de servicio (SUPABASE_SERVICE_ROLE_KEY).",
-    };
+  const service = tryCreateServiceClient();
+  if (!service) {
+    return { ok: false, error: SERVICE_ROLE_CONFIG_ERROR };
   }
 
   const result = await startStageForTournament(service, tournamentId, {
@@ -291,14 +289,9 @@ export async function generateKnockoutStageAction(
     };
   }
 
-  let service;
-  try {
-    service = createServiceClient();
-  } catch {
-    return {
-      ok: false,
-      error: "Falta configuración de servicio (SUPABASE_SERVICE_ROLE_KEY).",
-    };
+  const service = tryCreateServiceClient();
+  if (!service) {
+    return { ok: false, error: SERVICE_ROLE_CONFIG_ERROR };
   }
 
   const result = await startKnockoutStageFromGroups(service, tournamentId, {
@@ -459,14 +452,9 @@ export async function confirmMatchResultAction(
     };
   }
 
-  let service;
-  try {
-    service = createServiceClient();
-  } catch {
-    return {
-      ok: false,
-      error: "Falta configuración de servicio (SUPABASE_SERVICE_ROLE_KEY).",
-    };
+  const service = tryCreateServiceClient();
+  if (!service) {
+    return { ok: false, error: SERVICE_ROLE_CONFIG_ERROR };
   }
 
   const result = await confirmMatchResult(userClient, service, {

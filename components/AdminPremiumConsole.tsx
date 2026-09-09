@@ -10,6 +10,13 @@ import {
   updatePremiumPlanConfigAction,
   type AdminActionState,
 } from "@/app/admin/premium/actions";
+import {
+  ADMIN_CIVIL_TZ,
+  addCalendarDaysToDateInput,
+  defaultExtendDateInput,
+  formatCivilDate,
+  toDateInputValueInZone,
+} from "@/lib/datetime";
 import { formatCop } from "@/lib/premium-payment";
 import { suggestedAmountCop } from "@/lib/premium-config-client";
 
@@ -48,23 +55,22 @@ type Props = {
   preselectVenueId?: string | null;
 };
 
-function toDateInputValue(d: Date): string {
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${y}-${m}-${day}`;
+function statusLabel(status: string, isLive: boolean): string {
+  if (status === "cancelled") return "Cancelada";
+  if (status === "expired" || !isLive) return "Vencida";
+  if (status === "active") return "Activa";
+  return status;
 }
 
-function addDays(base: Date, days: number): Date {
-  const d = new Date(base);
-  d.setDate(d.getDate() + days);
-  return d;
-}
-
-function daysBetween(start: string, end: string): number {
-  const a = new Date(start);
-  const b = new Date(end);
-  return Math.max(1, Math.ceil((b.getTime() - a.getTime()) / 86_400_000));
+function calendarDaysBetween(startYmd: string, endYmd: string): number {
+  const a = startYmd.split("-").map(Number);
+  const b = endYmd.split("-").map(Number);
+  if (a.length !== 3 || b.length !== 3 || a.some((n) => Number.isNaN(n)) || b.some((n) => Number.isNaN(n))) {
+    return 1;
+  }
+  const start = Date.UTC(a[0], a[1] - 1, a[2]);
+  const end = Date.UTC(b[0], b[1] - 1, b[2]);
+  return Math.max(1, Math.round((end - start) / 86_400_000));
 }
 
 export function AdminPremiumConsole({
@@ -79,9 +85,12 @@ export function AdminPremiumConsole({
 
   if (!canEdit) {
     return (
-      <p className="form-error">
-        Solo billing/super pueden gestionar Premium desde esta consola.
-      </p>
+      <div className="admin-empty">
+        <p className="admin-empty-title">Sin permiso de edición</p>
+        <p className="admin-empty-copy">
+          Solo roles billing/super pueden gestionar Premium desde esta consola.
+        </p>
+      </div>
     );
   }
 
@@ -114,10 +123,13 @@ function ConfigTab({ config }: { config: AdminPremiumConfig }) {
 
   return (
     <form action={action} className="admin-premium-form">
-      <p className="field-help">
-        Fuente de verdad del precio mostrado al dueño
-        {config.fromDb ? " (DB)" : " (fallback env hasta migrar)"}.
-      </p>
+      <header className="admin-premium-section-head">
+        <h2 className="admin-premium-section-title">Precio y duración</h2>
+        <p className="field-help">
+          Fuente de verdad del precio mostrado al dueño
+          {config.fromDb ? " (base de datos)" : " (fallback de env hasta migrar)"}.
+        </p>
+      </header>
       <label>
         Precio por día (COP)
         <input
@@ -130,7 +142,7 @@ function ConfigTab({ config }: { config: AdminPremiumConfig }) {
         />
       </label>
       <label>
-        Duración default (días)
+        Duración por defecto (días)
         <input
           type="number"
           name="default_duration_days"
@@ -151,9 +163,9 @@ function ConfigTab({ config }: { config: AdminPremiumConfig }) {
         />
       </label>
       {state?.error ? <p className="form-error">{state.error}</p> : null}
-      {state?.ok ? <p className="form-ok">Config guardada.</p> : null}
+      {state?.ok ? <p className="form-ok">Configuración guardada.</p> : null}
       <button type="submit" className="btn-flood" disabled={pending}>
-        {pending ? "Guardando…" : "Guardar config"}
+        {pending ? "Guardando…" : "Guardar configuración"}
       </button>
     </form>
   );
@@ -170,14 +182,14 @@ function GrantTab({
   preselectVenueId?: string | null;
   onOk: () => void;
 }) {
-  const today = useMemo(() => new Date(), []);
+  const todayYmd = useMemo(() => toDateInputValueInZone(new Date(), ADMIN_CIVIL_TZ), []);
   const [venueId, setVenueId] = useState(preselectVenueId ?? venues[0]?.id ?? "");
-  const [started, setStarted] = useState(toDateInputValue(today));
+  const [started, setStarted] = useState(todayYmd);
   const [expires, setExpires] = useState(
-    toDateInputValue(addDays(today, config.defaultDurationDays)),
+    addCalendarDaysToDateInput(todayYmd, config.defaultDurationDays, ADMIN_CIVIL_TZ),
   );
   const [dailyRate, setDailyRate] = useState(config.dailyRateCop);
-  const days = daysBetween(started, expires);
+  const days = calendarDaysBetween(started, expires);
   const [amount, setAmount] = useState(suggestedAmountCop(config.dailyRateCop, days));
   const [state, action, pending] = useActionState<AdminActionState | undefined, FormData>(
     grantVenuePremiumAction,
@@ -193,8 +205,23 @@ function GrantTab({
     setAmount(suggestedAmountCop(dailyRate, days));
   }, [dailyRate, days]);
 
+  if (venues.length === 0) {
+    return (
+      <div className="admin-empty">
+        <p className="admin-empty-title">No hay canchas</p>
+        <p className="admin-empty-copy">Registrá una cancha antes de otorgar Premium.</p>
+      </div>
+    );
+  }
+
   return (
     <form action={action} className="admin-premium-form">
+      <header className="admin-premium-section-head">
+        <h2 className="admin-premium-section-title">Otorgar Premium</h2>
+        <p className="field-help">
+          Las fechas son día civil en Colombia (America/Bogota). El fin se guarda a las 23:59:59.
+        </p>
+      </header>
       <label>
         Cancha
         <select
@@ -213,7 +240,7 @@ function GrantTab({
       </label>
       <div className="admin-premium-grid">
         <label>
-          Inicio
+          Fecha de inicio
           <input
             type="date"
             name="started_at"
@@ -223,17 +250,21 @@ function GrantTab({
           />
         </label>
         <label>
-          Fin
+          Fecha de fin
           <input
             type="date"
             name="expires_at"
             value={expires}
+            min={addCalendarDaysToDateInput(started, 1, ADMIN_CIVIL_TZ)}
             onChange={(e) => setExpires(e.target.value)}
             required
           />
         </label>
       </div>
-      <p className="field-help">{days} día(s) de periodo.</p>
+      <p className="admin-premium-calc" aria-live="polite">
+        <strong>{days}</strong> día{days === 1 ? "" : "s"} de periodo · sugerido{" "}
+        <strong>{formatCop(suggestedAmountCop(dailyRate, days))}</strong>
+      </p>
       <div className="admin-premium-grid">
         <label>
           Precio / día (COP)
@@ -280,42 +311,89 @@ function SubsTab({
   onOk: () => void;
 }) {
   const [filter, setFilter] = useState<"active" | "expired" | "all">("active");
+  const [query, setQuery] = useState("");
   const now = Date.now();
 
   const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
     return subs.filter((s) => {
       const exp = new Date(s.expires_at).getTime();
-      if (filter === "active") return s.status === "active" && exp > now;
+      const isLive = s.status === "active" && exp > now;
+      if (filter === "active" && !isLive) return false;
       if (filter === "expired") {
-        return s.status === "expired" || (s.status === "active" && exp <= now) || s.status === "cancelled";
+        const expiredLike =
+          s.status === "expired" ||
+          s.status === "cancelled" ||
+          (s.status === "active" && exp <= now);
+        if (!expiredLike) return false;
       }
-      return true;
+      if (!q) return true;
+      const hay = `${s.venues?.name ?? ""} ${s.venues?.neighborhood ?? ""} ${s.venues?.slug ?? ""}`.toLowerCase();
+      return hay.includes(q);
     });
-  }, [subs, filter, now]);
+  }, [subs, filter, now, query]);
+
+  const counts = useMemo(() => {
+    let active = 0;
+    let expired = 0;
+    for (const s of subs) {
+      const exp = new Date(s.expires_at).getTime();
+      const isLive = s.status === "active" && exp > now;
+      if (isLive) active += 1;
+      else expired += 1;
+    }
+    return { active, expired, all: subs.length };
+  }, [subs, now]);
 
   return (
     <div className="admin-premium-subs">
-      <div className="filter-chips" role="group" aria-label="Filtrar suscripciones">
-        {(
-          [
-            ["active", "Activas"],
-            ["expired", "Vencidas / canceladas"],
-            ["all", "Todas"],
-          ] as const
-        ).map(([id, label]) => (
-          <button
-            key={id}
-            type="button"
-            className={filter === id ? "is-on" : undefined}
-            onClick={() => setFilter(id)}
-          >
-            {label}
-          </button>
-        ))}
+      <header className="admin-premium-section-head">
+        <h2 className="admin-premium-section-title">Suscripciones Premium</h2>
+        <p className="field-help">
+          Extendé o cancelá periodos activos. Fechas en zona Colombia.
+        </p>
+      </header>
+
+      <div className="admin-premium-toolbar">
+        <div className="filter-chips" role="group" aria-label="Filtrar suscripciones">
+          {(
+            [
+              ["active", `Activas (${counts.active})`],
+              ["expired", `Vencidas / canceladas (${counts.expired})`],
+              ["all", `Todas (${counts.all})`],
+            ] as const
+          ).map(([id, label]) => (
+            <button
+              key={id}
+              type="button"
+              className={filter === id ? "is-on" : undefined}
+              onClick={() => setFilter(id)}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        <label className="admin-premium-search">
+          <span className="sr-only">Buscar cancha</span>
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Buscar cancha…"
+            autoComplete="off"
+          />
+        </label>
       </div>
 
       {filtered.length === 0 ? (
-        <p className="field-help">No hay suscripciones en esta vista.</p>
+        <div className="admin-empty">
+          <p className="admin-empty-title">Sin resultados</p>
+          <p className="admin-empty-copy">
+            {subs.length === 0
+              ? "Todavía no hay suscripciones Premium. Otorgá una desde la pestaña Otorgar."
+              : "No hay suscripciones en este filtro. Probá “Todas” o limpiá la búsqueda."}
+          </p>
+        </div>
       ) : (
         <ul className="admin-premium-sub-list">
           {filtered.map((sub) => (
@@ -340,30 +418,51 @@ function SubRow({
   const venue = sub.venues;
   const isLive =
     sub.status === "active" && new Date(sub.expires_at).getTime() > Date.now();
+  const daysLeft = isLive
+    ? Math.max(
+        0,
+        Math.ceil((new Date(sub.expires_at).getTime() - Date.now()) / 86_400_000),
+      )
+    : 0;
 
   return (
-    <li className="admin-premium-sub-row">
+    <li className={`admin-premium-sub-row${isLive ? "" : " is-stale"}`}>
       <div className="admin-premium-sub-main">
-        <strong>{venue?.name ?? "Cancha"}</strong>
+        <div className="admin-premium-sub-title-row">
+          <strong>{venue?.name ?? "Cancha"}</strong>
+          <span className={`admin-premium-badge${isLive ? " is-live" : ""}`}>
+            {statusLabel(sub.status, isLive)}
+          </span>
+        </div>
         <span className="admin-premium-sub-meta">
-          {venue?.neighborhood ?? "—"} · {sub.status} ·{" "}
-          {new Date(sub.started_at).toLocaleDateString("es-CO")} →{" "}
-          {new Date(sub.expires_at).toLocaleDateString("es-CO")}
+          {venue?.neighborhood ?? "Sin barrio"} · {formatCivilDate(sub.started_at)} →{" "}
+          <strong title={sub.expires_at}>{formatCivilDate(sub.expires_at)}</strong>
+          {isLive ? ` · ${daysLeft} día${daysLeft === 1 ? "" : "s"} restantes` : ""}
           {sub.amount_cop != null ? ` · ${formatCop(sub.amount_cop)}` : ""}
         </span>
       </div>
       <div className="admin-premium-sub-actions">
         {venue?.slug ? (
           <Link href={`/canchas/${venue.slug}/admin`} className="btn-ghost">
-            Panel
+            Panel cancha
           </Link>
         ) : null}
         {isLive ? (
           <>
-            <button type="button" className="btn-ghost" onClick={() => setOpen("extend")}>
+            <button
+              type="button"
+              className="btn-ghost"
+              aria-expanded={open === "extend"}
+              onClick={() => setOpen(open === "extend" ? null : "extend")}
+            >
               Extender
             </button>
-            <button type="button" className="btn-ghost" onClick={() => setOpen("cancel")}>
+            <button
+              type="button"
+              className="btn-ghost admin-premium-cancel-trigger"
+              aria-expanded={open === "cancel"}
+              onClick={() => setOpen(open === "cancel" ? null : "cancel")}
+            >
               Cancelar
             </button>
           </>
@@ -405,9 +504,19 @@ function ExtendForm({
   onDone: () => void;
   onClose: () => void;
 }) {
-  const defaultNew = toDateInputValue(
-    addDays(new Date(sub.expires_at), config.defaultDurationDays),
+  const currentYmd = toDateInputValueInZone(sub.expires_at, ADMIN_CIVIL_TZ);
+  const minYmd = addCalendarDaysToDateInput(currentYmd, 1, ADMIN_CIVIL_TZ);
+  const [newExpires, setNewExpires] = useState(
+    defaultExtendDateInput(sub.expires_at, config.defaultDurationDays),
   );
+  const extendDays = calendarDaysBetween(currentYmd, newExpires);
+  const suggested = suggestedAmountCop(config.dailyRateCop, extendDays);
+  const [amount, setAmount] = useState(suggested);
+
+  useEffect(() => {
+    setAmount(suggestedAmountCop(config.dailyRateCop, extendDays));
+  }, [config.dailyRateCop, extendDays]);
+
   const [state, action, pending] = useActionState<AdminActionState | undefined, FormData>(
     extendVenuePremiumAction,
     undefined,
@@ -422,29 +531,48 @@ function ExtendForm({
     <form action={action} className="admin-premium-inline-form">
       <input type="hidden" name="subscription_id" value={sub.id} />
       <input type="hidden" name="venue_id" value={sub.venue_id} />
+      <p className="admin-premium-current-expiry">
+        Vence actualmente el <strong>{formatCivilDate(sub.expires_at)}</strong>
+        <span className="admin-premium-current-expiry-hint">
+          {" "}
+          (mínimo para extender: {minYmd})
+        </span>
+      </p>
       <label>
         Nueva fecha de fin
-        <input type="date" name="new_expires_at" defaultValue={defaultNew} required />
+        <input
+          type="date"
+          name="new_expires_at"
+          value={newExpires}
+          min={minYmd}
+          onChange={(e) => setNewExpires(e.target.value)}
+          required
+        />
       </label>
+      <p className="admin-premium-calc" aria-live="polite">
+        Extensión de <strong>{extendDays}</strong> día{extendDays === 1 ? "" : "s"} · sugerido{" "}
+        <strong>{formatCop(suggested)}</strong>
+      </p>
       <label>
         Monto del tramo (COP, opcional)
         <input
           type="number"
           name="amount_cop"
           min={0}
-          defaultValue={suggestedAmountCop(config.dailyRateCop, config.defaultDurationDays)}
+          value={amount}
+          onChange={(e) => setAmount(Number.parseInt(e.target.value, 10) || 0)}
         />
       </label>
       <label>
-        Nota
-        <input type="text" name="note" maxLength={300} />
+        Nota (opcional)
+        <input type="text" name="note" maxLength={300} placeholder="Motivo o referencia de pago" />
       </label>
       {state?.error ? <p className="form-error">{state.error}</p> : null}
       <div className="admin-premium-inline-actions">
         <button type="submit" className="btn-flood" disabled={pending}>
-          Confirmar extensión
+          {pending ? "Extendiendo…" : "Confirmar extensión"}
         </button>
-        <button type="button" className="btn-ghost" onClick={onClose}>
+        <button type="button" className="btn-ghost" onClick={onClose} disabled={pending}>
           Cerrar
         </button>
       </div>
@@ -461,6 +589,7 @@ function CancelForm({
   onDone: () => void;
   onClose: () => void;
 }) {
+  const [confirmed, setConfirmed] = useState(false);
   const [state, action, pending] = useActionState<AdminActionState | undefined, FormData>(
     cancelVenuePremiumAction,
     undefined,
@@ -472,20 +601,36 @@ function CancelForm({
   }, [state?.ok]);
 
   return (
-    <form action={action} className="admin-premium-inline-form">
+    <form action={action} className="admin-premium-inline-form admin-premium-cancel-form">
       <input type="hidden" name="subscription_id" value={sub.id} />
       <input type="hidden" name="venue_id" value={sub.venue_id} />
-      <p className="field-help">Se marca la suscripción como cancelled. No borra historial.</p>
+      <input type="hidden" name="confirm_cancel" value={confirmed ? "1" : "0"} />
+      <p className="field-help">
+        Se marca la suscripción como <strong>cancelada</strong>. No borra el historial ni
+        pagos previos. Vence hoy: {formatCivilDate(sub.expires_at)}.
+      </p>
+      <label className="admin-premium-confirm-check">
+        <input
+          type="checkbox"
+          checked={confirmed}
+          onChange={(e) => setConfirmed(e.target.checked)}
+        />
+        Sí, cancelar Premium de {sub.venues?.name ?? "esta cancha"}
+      </label>
       <label>
-        Nota
-        <input type="text" name="note" maxLength={300} />
+        Nota (opcional)
+        <input type="text" name="note" maxLength={300} placeholder="Motivo de cancelación" />
       </label>
       {state?.error ? <p className="form-error">{state.error}</p> : null}
       <div className="admin-premium-inline-actions">
-        <button type="submit" className="btn-flood" disabled={pending}>
-          Confirmar cancelación
+        <button
+          type="submit"
+          className="btn-flood admin-premium-danger"
+          disabled={pending || !confirmed}
+        >
+          {pending ? "Cancelando…" : "Confirmar cancelación"}
         </button>
-        <button type="button" className="btn-ghost" onClick={onClose}>
+        <button type="button" className="btn-ghost" onClick={onClose} disabled={pending}>
           Cerrar
         </button>
       </div>

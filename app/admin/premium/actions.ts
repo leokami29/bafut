@@ -3,25 +3,18 @@
 import { revalidatePath } from "next/cache";
 import { requireBillingAdmin } from "@/lib/admin-auth";
 import { requireUserId } from "@/lib/auth";
+import {
+  ADMIN_CIVIL_TZ,
+  addCalendarDaysToDateInput,
+  formatCivilDate,
+  parseDateInputInZone,
+  toDateInputValueInZone,
+} from "@/lib/datetime";
 import { FEATURE_FLAG_KEYS, type FeatureFlagKey } from "@/lib/feature-flags";
 import { isUuid } from "@/lib/ids";
+import { friendlyPremiumAdminError } from "@/lib/premium-admin-copy";
 
 export type AdminActionState = { ok?: true; error?: string; id?: string };
-
-/** Fecha YYYY-MM-DD → mediodía / fin de día America/Bogota (-05). */
-function parseAdminDate(raw: string, kind: "start" | "end"): Date | null {
-  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(raw.trim());
-  if (m) {
-    const iso =
-      kind === "start"
-        ? `${m[1]}-${m[2]}-${m[3]}T00:00:00-05:00`
-        : `${m[1]}-${m[2]}-${m[3]}T23:59:59-05:00`;
-    const d = new Date(iso);
-    return Number.isNaN(d.getTime()) ? null : d;
-  }
-  const d = new Date(raw);
-  return Number.isNaN(d.getTime()) ? null : d;
-}
 
 function revalidatePremiumPaths(slug?: string | null) {
   revalidatePath("/admin");
@@ -68,7 +61,7 @@ export async function setFeatureFlagAction(
     p_key: key,
     p_enabled: enabled,
   });
-  if (error) return { error: error.message };
+  if (error) return { error: friendlyPremiumAdminError(error.message) };
 
   revalidatePremiumPaths();
   return { ok: true };
@@ -102,7 +95,7 @@ export async function updatePremiumPlanConfigAction(
     p_default_duration_days: days,
     p_list_price_cop: listPrice ?? undefined,
   });
-  if (error) return { error: error.message };
+  if (error) return { error: friendlyPremiumAdminError(error.message) };
 
   revalidatePremiumPaths();
   return { ok: true };
@@ -123,10 +116,10 @@ export async function grantVenuePremiumAction(
   const note = String(formData.get("note") ?? "").trim().slice(0, 300);
 
   if (!startedRaw || !expiresRaw) return { error: "Indicá inicio y fin." };
-  const startedAt = parseAdminDate(startedRaw, "start");
-  const expiresAt = parseAdminDate(expiresRaw, "end");
+  const startedAt = parseDateInputInZone(startedRaw, "start", ADMIN_CIVIL_TZ);
+  const expiresAt = parseDateInputInZone(expiresRaw, "end", ADMIN_CIVIL_TZ);
   if (!startedAt || !expiresAt) {
-    return { error: "Fechas no válidas." };
+    return { error: "Fechas no válidas (usá el selector de fecha)." };
   }
   if (expiresAt.getTime() <= startedAt.getTime()) {
     return { error: "La fecha de fin debe ser posterior al inicio." };
@@ -148,7 +141,7 @@ export async function grantVenuePremiumAction(
     p_note: note || undefined,
     p_payment_method: "manual",
   });
-  if (error) return { error: error.message };
+  if (error) return { error: friendlyPremiumAdminError(error.message) };
 
   const slug = await venueSlugById(supabase, venueId);
   revalidatePremiumPaths(slug);
@@ -169,8 +162,8 @@ export async function extendVenuePremiumAction(
   const venueId = String(formData.get("venue_id") ?? "").trim();
 
   if (!expiresRaw) return { error: "Indicá la nueva fecha de vencimiento." };
-  const newExpires = parseAdminDate(expiresRaw, "end");
-  if (!newExpires) return { error: "Fecha no válida." };
+  const newExpires = parseDateInputInZone(expiresRaw, "end", ADMIN_CIVIL_TZ);
+  if (!newExpires) return { error: "Fecha no válida (usá el selector de fecha)." };
   if (amount != null && (!Number.isFinite(amount) || amount < 0)) {
     return { error: "Monto no válido." };
   }
@@ -179,13 +172,39 @@ export async function extendVenuePremiumAction(
   const gate = await requireBillingAdmin(userId);
   if (!gate.ok) return { error: "Sin permiso (billing/super)." };
 
+  const { data: current, error: curErr } = await supabase
+    .from("venue_subscriptions")
+    .select("expires_at, status")
+    .eq("id", subscriptionId)
+    .maybeSingle();
+
+  if (curErr || !current) {
+    return { error: "No encontramos esa suscripción." };
+  }
+
+  const currentExpires = new Date(current.expires_at);
+  if (Number.isNaN(currentExpires.getTime())) {
+    return { error: "El vencimiento actual de la suscripción no es válido." };
+  }
+
+  if (newExpires.getTime() <= currentExpires.getTime()) {
+    const minDay = addCalendarDaysToDateInput(
+      toDateInputValueInZone(currentExpires, ADMIN_CIVIL_TZ),
+      1,
+      ADMIN_CIVIL_TZ,
+    );
+    return {
+      error: `La nueva fecha debe ser posterior al vencimiento actual (${formatCivilDate(currentExpires)}). Mínimo: ${minDay}.`,
+    };
+  }
+
   const { data, error } = await supabase.rpc("admin_extend_venue_premium", {
     p_subscription_id: subscriptionId,
     p_new_expires_at: newExpires.toISOString(),
     p_amount_cop: amount ?? undefined,
     p_note: note || undefined,
   });
-  if (error) return { error: error.message };
+  if (error) return { error: friendlyPremiumAdminError(error.message) };
 
   const slug = isUuid(venueId) ? await venueSlugById(supabase, venueId) : null;
   revalidatePremiumPaths(slug);
@@ -199,6 +218,11 @@ export async function cancelVenuePremiumAction(
   const subscriptionId = String(formData.get("subscription_id") ?? "").trim();
   if (!isUuid(subscriptionId)) return { error: "Suscripción no válida." };
 
+  const confirm = String(formData.get("confirm_cancel") ?? "").trim();
+  if (confirm !== "1") {
+    return { error: "Marcá la casilla para confirmar la cancelación." };
+  }
+
   const note = String(formData.get("note") ?? "").trim().slice(0, 300);
   const venueId = String(formData.get("venue_id") ?? "").trim();
 
@@ -210,7 +234,7 @@ export async function cancelVenuePremiumAction(
     p_subscription_id: subscriptionId,
     p_note: note || undefined,
   });
-  if (error) return { error: error.message };
+  if (error) return { error: friendlyPremiumAdminError(error.message) };
 
   const slug = isUuid(venueId) ? await venueSlugById(supabase, venueId) : null;
   revalidatePremiumPaths(slug);

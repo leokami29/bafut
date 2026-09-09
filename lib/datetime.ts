@@ -180,3 +180,91 @@ export function isWithinNextHours(iso: string, hours: number, now = new Date()):
   if (Number.isNaN(start) || hours <= 0) return false;
   return start >= t && start <= t + hours * 60 * 60 * 1000;
 }
+
+/** Zona civil de la consola admin / billing (Colombia). */
+export const ADMIN_CIVIL_TZ = "America/Bogota";
+
+const DATE_INPUT_RE = /^(\d{4})-(\d{2})-(\d{2})$/;
+
+/** `YYYY-MM-DD` del instante en un IANA timeZone (SSR y browser iguales). */
+export function toDateInputValueInZone(
+  dateOrIso: Date | string,
+  timeZone: string = ADMIN_CIVIL_TZ,
+): string {
+  const d = typeof dateOrIso === "string" ? new Date(dateOrIso) : dateOrIso;
+  if (Number.isNaN(d.getTime())) return "";
+  return cityCalendarDayKey(d, timeZone);
+}
+
+/**
+ * Suma días de calendario a un `YYYY-MM-DD` o ISO, devolviendo `YYYY-MM-DD`
+ * (aritmética UTC sobre Y-M-D; no depende del TZ del runtime).
+ */
+export function addCalendarDaysToDateInput(
+  dateInputOrIso: string,
+  days: number,
+  timeZone: string = ADMIN_CIVIL_TZ,
+): string {
+  const trimmed = dateInputOrIso.trim();
+  const ymd = DATE_INPUT_RE.test(trimmed)
+    ? trimmed
+    : toDateInputValueInZone(trimmed, timeZone);
+  const match = DATE_INPUT_RE.exec(ymd);
+  if (!match) return "";
+  const y = Number(match[1]);
+  const m = Number(match[2]);
+  const d = Number(match[3]);
+  const utc = new Date(Date.UTC(y, m - 1, d + days));
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${utc.getUTCFullYear()}-${pad(utc.getUTCMonth() + 1)}-${pad(utc.getUTCDate())}`;
+}
+
+/**
+ * Interpreta `YYYY-MM-DD` como inicio (00:00) o fin (23:59:59) civil en `timeZone`.
+ */
+export function parseDateInputInZone(
+  raw: string,
+  kind: "start" | "end",
+  timeZone: string = ADMIN_CIVIL_TZ,
+): Date | null {
+  const match = DATE_INPUT_RE.exec(raw.trim());
+  if (!match) return null;
+  const dayKey = `${match[1]}-${match[2]}-${match[3]}`;
+  if (kind === "start") {
+    return datetimeLocalInZoneToDate(`${dayKey}T00:00`, timeZone);
+  }
+  const nextKey = addCalendarDaysToDateInput(dayKey, 1, timeZone);
+  const nextStart = datetimeLocalInZoneToDate(`${nextKey}T00:00`, timeZone);
+  if (!nextStart) return null;
+  return new Date(nextStart.getTime() - 1000);
+}
+
+/** Fecha corta es-CO en zona civil (p. ej. vencimientos Premium). */
+export function formatCivilDate(
+  dateOrIso: Date | string,
+  timeZone: string = ADMIN_CIVIL_TZ,
+): string {
+  const d = typeof dateOrIso === "string" ? new Date(dateOrIso) : dateOrIso;
+  if (Number.isNaN(d.getTime())) return "—";
+  return new Intl.DateTimeFormat(APP_LOCALE, {
+    timeZone,
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  }).format(d);
+}
+
+/**
+ * Default de “nueva fecha de fin” al extender Premium:
+ * día civil del `expires_at` + N días (mínimo 1), en zona admin.
+ */
+export function defaultExtendDateInput(
+  expiresAtIso: string,
+  durationDays: number,
+  timeZone: string = ADMIN_CIVIL_TZ,
+): string {
+  const base = toDateInputValueInZone(expiresAtIso, timeZone);
+  const n = Number(durationDays);
+  const days = Math.max(1, Number.isFinite(n) ? n : 30);
+  return addCalendarDaysToDateInput(base, days, timeZone);
+}
