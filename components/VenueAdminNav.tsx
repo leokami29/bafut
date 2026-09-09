@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
+import { useEffect, useRef } from "react";
 
 export type VenueAdminNavCounts = {
   photos?: number;
@@ -34,6 +35,7 @@ export function VenueAdminNav({
   const searchParams = useSearchParams();
   const tab = searchParams.get("tab");
   const base = `/canchas/${venueSlug}/admin`;
+  const railRef = useRef<HTMLDivElement>(null);
 
   const segments: Segment[] = [
     {
@@ -94,8 +96,28 @@ export function VenueAdminNav({
     },
   ];
 
+  useEffect(() => {
+    const rail = railRef.current;
+    const active = rail?.querySelector<HTMLElement>(".admin-board-segment.is-active");
+    if (!rail || !active) return;
+
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const railRect = rail.getBoundingClientRect();
+    const activeRect = active.getBoundingClientRect();
+    const delta =
+      activeRect.left - railRect.left - (railRect.width - activeRect.width) / 2;
+
+    rail.scrollBy({
+      left: delta,
+      behavior: reduceMotion ? "auto" : "smooth",
+    });
+  }, [pathname, tab]);
+
   return (
-    <nav className="venue-admin-board admin-board" aria-label="Secciones de administración de cancha">
+    <nav
+      className="venue-admin-board admin-board"
+      aria-label="Secciones de administración de cancha"
+    >
       <svg
         className="admin-board-lines"
         viewBox="0 0 1200 64"
@@ -115,29 +137,37 @@ export function VenueAdminNav({
         <circle cx="600" cy="32" r="14" fill="none" stroke="currentColor" strokeWidth="1.5" />
       </svg>
 
-      <ul className="admin-board-segments venue-admin-board-segments">
-        {segments.map((segment) => {
-          const active = segment.match(pathname, tab);
-          const hot =
-            segment.count != null && segment.urgent?.(segment.count) ? " is-hot" : "";
-          return (
-            <li key={segment.href}>
-              <Link
-                href={segment.href}
-                className={`admin-board-segment${active ? " is-active" : ""}${hot}`}
-                aria-current={active ? "page" : undefined}
-              >
-                <span className="admin-board-label">{segment.label}</span>
-                {segment.count != null ? (
-                  <span className="admin-board-num" aria-label={`${segment.count}`}>
-                    {String(segment.count).padStart(2, "0")}
-                  </span>
-                ) : null}
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
+      <div
+        ref={railRef}
+        className="admin-board-rail"
+        role="region"
+        aria-label="Pestañas de administración"
+        tabIndex={0}
+      >
+        <ul className="admin-board-segments venue-admin-board-segments">
+          {segments.map((segment) => {
+            const active = segment.match(pathname, tab);
+            const hot =
+              segment.count != null && segment.urgent?.(segment.count) ? " is-hot" : "";
+            return (
+              <li key={segment.href}>
+                <Link
+                  href={segment.href}
+                  className={`admin-board-segment${active ? " is-active" : ""}${hot}`}
+                  aria-current={active ? "page" : undefined}
+                >
+                  <span className="admin-board-label">{segment.label}</span>
+                  {segment.count != null ? (
+                    <span className="admin-board-num" aria-label={`${segment.count}`}>
+                      {String(segment.count).padStart(2, "0")}
+                    </span>
+                  ) : null}
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
 
       {showPromoCta ? (
         <Link href={`${base}/precios?tab=promos&crear=1`} className="admin-board-new">

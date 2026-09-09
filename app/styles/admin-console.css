@@ -6,14 +6,14 @@
   margin-inline: auto;
 }
 
-/* ——— Marcador / navegación ——— */
+/* ——— Marcador / navegación ———
+   Desktop: fila única. ≤900px: chip rail con scroll-snap + CTA fija. */
 .admin-board {
   position: relative;
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
-  justify-content: space-between;
-  gap: 0.65rem 0.75rem;
+  gap: 0.5rem 0.65rem;
   margin: 0 0 1.75rem;
   padding: 0.7rem 0.9rem;
   background: var(--turf-deep);
@@ -30,31 +30,45 @@
   pointer-events: none;
 }
 
-.admin-board-segments {
+.admin-board-rail {
   position: relative;
   z-index: 1;
-  display: flex;
   flex: 1 1 auto;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.35rem 0.4rem;
   min-width: 0;
+}
+
+.admin-board-rail:focus-visible {
+  outline: 2px solid var(--chalk);
+  outline-offset: 2px;
+}
+
+.admin-board-segments {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0.3rem 0.35rem;
   margin: 0;
   padding: 0;
   list-style: none;
+  width: max-content;
+  max-width: none;
+}
+
+.admin-board-segments > li {
+  flex: 0 0 auto;
 }
 
 .admin-board-segment {
   display: inline-flex;
   align-items: center;
-  gap: 0.55rem;
-  /* ~44px touch target on phone/tablet */
+  gap: 0.5rem;
   min-height: 2.75rem;
   padding: 0.4rem 0.7rem;
   color: color-mix(in oklab, var(--chalk) 72%, transparent);
   text-decoration: none;
   border: 1px solid transparent;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .admin-board-segment:hover {
@@ -64,8 +78,9 @@
 
 .admin-board-segment.is-active {
   color: var(--chalk);
-  border-color: color-mix(in oklab, var(--chalk) 45%, transparent);
-  background: color-mix(in oklab, var(--chalk) 12%, transparent);
+  border-color: color-mix(in oklab, var(--chalk) 55%, transparent);
+  background: color-mix(in oklab, var(--chalk) 16%, transparent);
+  box-shadow: inset 0 -2px 0 var(--chalk);
 }
 
 .admin-board-label {
@@ -74,6 +89,7 @@
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .admin-board-num {
@@ -90,11 +106,11 @@
 
 .admin-board-new {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   flex: 0 0 auto;
-  margin-left: auto;
   min-height: 2.75rem;
   padding: 0.4rem 0.85rem;
   font-family: var(--font-mono), ui-monospace, monospace;
@@ -102,6 +118,7 @@
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  white-space: nowrap;
   color: var(--turf-deep);
   background: var(--chalk);
   text-decoration: none;
@@ -962,18 +979,99 @@
 }
 
 /* ——— Responsive ——— */
-/* Tablet: segments wrap into ~2 rows; CTA stays trailing / right-aligned */
-@media (max-width: 899px) {
+/* ≤900px: chip rail (scroll-snap) + sticky trailing CTA; hide pitch lines */
+@media (max-width: 900px) {
   .admin-board {
-    align-items: flex-start;
+    gap: 0.4rem;
+    padding: 0.45rem 0.5rem 0.45rem 0.4rem;
+  }
+
+  .admin-board-lines {
+    display: none;
+  }
+
+  .admin-board-rail {
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+    scroll-padding-inline: 0.35rem;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x;
+    scrollbar-width: none;
+    mask-image: linear-gradient(
+      90deg,
+      transparent 0,
+      #000 0.85rem,
+      #000 calc(100% - 0.85rem),
+      transparent 100%
+    );
+  }
+
+  .admin-board-rail::-webkit-scrollbar {
+    display: none;
   }
 
   .admin-board-segments {
-    flex: 1 1 calc(100% - 7.5rem);
+    gap: 0.2rem;
+    padding-inline: 0.2rem;
+  }
+
+  .admin-board-segments > li {
+    scroll-snap-align: start;
+  }
+
+  .admin-board-segment {
+    min-height: 2.75rem;
+    padding: 0.35rem 0.6rem;
+    gap: 0.35rem;
+  }
+
+  .admin-board-segment.is-active {
+    border-color: color-mix(in oklab, var(--chalk) 70%, transparent);
+    background: color-mix(in oklab, var(--chalk) 20%, transparent);
+  }
+
+  .admin-board-label {
+    letter-spacing: 0.06em;
+    font-size: 0.68rem;
+  }
+
+  .admin-board-num {
+    font-size: 1.05rem;
   }
 
   .admin-board-new {
-    align-self: stretch;
+    padding: 0.35rem 0.7rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
+    box-shadow: -0.55rem 0 0.65rem var(--turf-deep);
+  }
+}
+
+/* Tablet: same rail, roomier chips */
+@media (min-width: 641px) and (max-width: 900px) {
+  .admin-board {
+    padding: 0.55rem 0.65rem 0.55rem 0.5rem;
+    gap: 0.5rem;
+  }
+
+  .admin-board-segment {
+    padding: 0.4rem 0.75rem;
+    gap: 0.45rem;
+  }
+
+  .admin-board-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+  }
+
+  .admin-board-num {
+    font-size: 1.15rem;
+  }
+
+  .admin-board-new {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.74rem;
   }
 }
 
@@ -989,31 +1087,28 @@
     width: 100%;
     justify-content: flex-start;
   }
+}
 
-  /* Phone: wrap tabs; CTA on its own full-width row (no collision) */
+/* Desktop: restore full row + pitch decoration */
+@media (min-width: 901px) {
   .admin-board {
-    flex-direction: column;
-    align-items: stretch;
+    gap: 0.65rem 0.75rem;
+    padding: 0.7rem 0.9rem;
+  }
+
+  .admin-board-rail {
+    overflow-x: auto;
+    scrollbar-width: thin;
+    mask-image: none;
+    scroll-snap-type: none;
   }
 
   .admin-board-segments {
-    flex: 1 1 auto;
-    width: 100%;
+    flex-wrap: nowrap;
   }
 
   .admin-board-segment {
-    min-height: 2.75rem;
-    padding-inline: 0.55rem;
-  }
-
-  .admin-board-label {
-    letter-spacing: 0.06em;
-  }
-
-  .admin-board-new {
-    margin-left: 0;
-    width: 100%;
-    justify-content: center;
+    gap: 0.55rem;
   }
 }
 

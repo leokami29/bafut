@@ -1375,53 +1375,34 @@
 }
 
 /* —— Marcador sticky del admin de cancha (mismo lenguaje que /admin) ——
-   Prefer wrap over horizontal scroll so tabs stay tappable on phone/tablet.
-   Desktop stays single-row when width allows (flex-wrap only when needed). */
+   ≤900px: chip rail horizontal con scroll-snap; + Promo fija a la derecha.
+   ≥901px: fila única con decoración de cancha. */
 .page-venue-admin .venue-admin-board.admin-board {
   position: sticky;
   top: 3.6rem;
   z-index: 25;
   margin-bottom: 1.25rem;
-  flex-wrap: wrap;
-  gap: 0.55rem 0.65rem;
-  overflow: visible;
+  flex-wrap: nowrap;
   align-items: center;
+  overflow: hidden;
+}
+
+.page-venue-admin .venue-admin-board .admin-board-rail {
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .page-venue-admin .venue-admin-board-segments.admin-board-segments {
-  flex: 1 1 auto;
-  flex-wrap: wrap;
-  min-width: 0;
+  flex-wrap: nowrap;
 }
 
 .page-venue-admin .venue-admin-board .admin-board-new {
   flex: 0 0 auto;
-  margin-left: auto;
 }
 
-/* Tablet: balanced wrap (~2 rows); CTA stays on the trailing edge */
-@media (min-width: 641px) and (max-width: 899px) {
-  .page-venue-admin .venue-admin-board-segments.admin-board-segments {
-    flex: 1 1 calc(100% - 7.5rem);
-  }
-}
-
-/* Phone: tabs wrap; + Promo on secondary full-width row */
-@media (max-width: 640px) {
+@media (min-width: 901px) {
   .page-venue-admin .venue-admin-board.admin-board {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .page-venue-admin .venue-admin-board-segments.admin-board-segments {
-    flex: 1 1 auto;
-    width: 100%;
-  }
-
-  .page-venue-admin .venue-admin-board .admin-board-new {
-    margin-left: 0;
-    width: 100%;
-    justify-content: center;
+    overflow: visible;
   }
 }
 
