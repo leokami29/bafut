@@ -8,6 +8,7 @@
 - **Categoría:** Deportes / Fútbol / Canchas sintéticas
 - **Ubicación principal:** Barranquilla, Atlántico, Colombia
 - **Sitio web oficial:** https://bafut.macuttech.com
+- **Instagram oficial:** https://www.instagram.com/bafutmacutech/
 - **Desarrollador / Creador:** Macuttech (https://www.macuttech.com)
 - **Repositorio:** https://github.com/leokami29/bafut
 - **Modelo:** Gratuito, sin paywall, de uso abierto para jugadores y organizadores.

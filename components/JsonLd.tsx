@@ -32,6 +32,7 @@ export function homeJsonLd(cityName = "Barranquilla"): JsonLdNode[] {
       logo: absoluteUrl("/icon.svg"),
       description: DEFAULT_DESCRIPTION,
       sameAs: [
+        "https://www.instagram.com/bafutmacutech/",
         "https://www.macuttech.com/",
         "https://github.com/leokami29/bafut",
       ],

@@ -39,6 +39,14 @@ export function SiteFooter() {
           <Link href="/privacidad">Privacidad</Link>
           <span className="site-footer-sep" aria-hidden="true" />
           <a
+            href="https://www.instagram.com/bafutmacutech/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Instagram
+          </a>
+          <span className="site-footer-sep" aria-hidden="true" />
+          <a
             href="https://github.com/leokami29/bafut"
             target="_blank"
             rel="noopener noreferrer"
