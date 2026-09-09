@@ -28,12 +28,14 @@ export function VenueStickyCta({
   label,
   secondaryHref,
   secondaryLabel,
+  isPremium = false,
 }: {
   href: string;
   label: string;
   /** CTA secundaria (p. ej. Publicar hueco) cuando Reservar es primario */
   secondaryHref?: string;
   secondaryLabel?: string;
+  isPremium?: boolean;
 }) {
   const [show, setShow] = useState(false);
 
@@ -53,7 +55,11 @@ export function VenueStickyCta({
   const hasSecondary = Boolean(secondaryHref && secondaryLabel);
 
   return (
-    <div className="venue-sticky-cta" role="region" aria-label={label}>
+    <div
+      className={`venue-sticky-cta${isPremium ? " is-premium" : ""}`}
+      role="region"
+      aria-label={label}
+    >
       <div
         className={`venue-sticky-cta-row${hasSecondary ? " venue-sticky-cta-row--split" : ""}`}
       >

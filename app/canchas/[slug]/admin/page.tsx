@@ -11,8 +11,10 @@ import { requireUserId } from "@/lib/auth";
 import { getVenueBySlug } from "@/lib/data";
 import { getActiveCity } from "@/lib/data";
 import { isFeatureEnabled } from "@/lib/feature-flags";
+import { getPremiumPaymentInstructionsResolved } from "@/lib/premium-config";
 import { createClient } from "@/lib/supabase/server";
 import { robotsNoIndex } from "@/lib/seo";
+import { venueHasActivePremium } from "@/lib/venue-premium";
 
 export const metadata: Metadata = {
   title: "Administrar cancha",
@@ -66,12 +68,15 @@ export default async function VenueAdminPage({ params, searchParams }: Props) {
 
   const { data: activeSubs } = await supabase
     .from("venue_subscriptions")
-    .select("id, plan, expires_at, status")
+    .select("id, plan, started_at, expires_at, status")
     .eq("venue_id", venue.id)
     .eq("status", "active")
     .gt("expires_at", new Date().toISOString())
-    .order("expires_at", { ascending: false })
-    .limit(1);
+    .order("expires_at", { ascending: false });
+
+  const premiumSub =
+    activeSubs?.find((s) => s.plan === "premium") ?? null;
+  const activeSubscription = premiumSub ?? activeSubs?.[0] ?? null;
 
   const { data: recentRequests } = await supabase
     .from("venue_subscription_requests")
@@ -99,6 +104,9 @@ export default async function VenueAdminPage({ params, searchParams }: Props) {
   const latestRequest = recentRequests?.[0] ?? null;
   const premiumPaywallEnabled = await isFeatureEnabled("premium_paywall");
   const venueBookingFeatureEnabled = await isFeatureEnabled("venue_booking");
+  const tournamentsFeatureEnabled = await isFeatureEnabled("venue_tournaments");
+  const isPremiumActive = venueHasActivePremium(activeSubs ?? []);
+  const premiumPaymentInstructions = await getPremiumPaymentInstructionsResolved();
 
   if (!isOwner && !isAdmin) {
     return (
@@ -153,14 +161,17 @@ export default async function VenueAdminPage({ params, searchParams }: Props) {
         userId={userId}
         isAdmin={!!isAdmin}
         isOwner={isOwner}
-        activeSubscription={activeSubs?.[0] ?? null}
+        activeSubscription={activeSubscription}
         pendingRequest={pendingRequest}
         latestRequest={latestRequest}
         premiumPaywallEnabled={premiumPaywallEnabled}
+        tournamentsFeatureEnabled={tournamentsFeatureEnabled}
+        isPremiumActive={isPremiumActive}
         venueBookingFeatureEnabled={venueBookingFeatureEnabled}
         pendingTurnosCount={pendingTurnosCount ?? 0}
         cityCenter={{ lat: city.lat, lng: city.lng }}
         tab={tab}
+        premiumPaymentInstructions={premiumPaymentInstructions}
       />
     </main>
   );

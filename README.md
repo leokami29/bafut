@@ -213,7 +213,34 @@ values ('<uuid-del-perfil>', 'super');
 6. Kill-switch: `update feature_flags set enabled=false where key='push_alerts';` (sin redeploy) o `FEATURE_PUSH_ALERTS=0`.
 7. iOS / WhatsApp: ver [docs/ios-pwa-push.md](./docs/ios-pwa-push.md).
 
-Flags DB: `premium_paywall`, `push_alerts`, `directory_premium_boost`, `venue_booking` (**default off**).
+Flags DB: `premium_paywall`, `push_alerts`, `directory_premium_boost`, `venue_booking` (**default off**), `venue_tournaments` (**default off**).
+
+### Torneos premium (`venue_tournaments`)
+
+Kill-switch global + Premium activo por cancha. Crear/administrar exige **ambos**: flag ON y `venue_subscriptions` con `plan=premium`, `status=active`, `expires_at > now()`. Además owner, `venue_staff.manager` o admin de plataforma.
+
+| Pieza | Detalle |
+| --- | --- |
+| Flag DB | `feature_flags.key = 'venue_tournaments'` (seed `enabled=false`) |
+| Env | `FEATURE_VENUE_TOURNAMENTS=1` / `0` (pisa DB en app Next; requiere restart). Las RPCs SQL (`can_manage_venue_tournaments`) leen solo la fila DB — activá también el flag en DB para escrituras. |
+| Premium | Admin: `/admin/venues` → **+ Premium**, o aprobar en `/admin/subscriptions`. Dueño: tab Premium del panel. |
+| Dueño / staff | `/canchas/[slug]/admin/torneos` (paywall claro si falta flag o premium) |
+| Público | `/canchas/[slug]/torneos` (solo si el flag está on) |
+
+**Activar en una cancha (local / staging):**
+
+```bash
+# 1) Flag en app (opcional; pisa DB)
+# FEATURE_VENUE_TOURNAMENTS=1
+```
+
+```sql
+-- 2) Flag en DB (necesario para RPCs de create/score)
+update public.feature_flags set enabled = true where key = 'venue_tournaments';
+
+-- 3) Premium 30 días (como admin billing/super vía UI, o SQL de smoke):
+-- preferí la UI /admin/venues → "+ Premium" (RPC create_venue_subscription)
+```
 
 ### Reservar (`venue_booking`)
 

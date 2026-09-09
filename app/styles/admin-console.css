@@ -717,6 +717,109 @@
   font-size: 0.85rem;
 }
 
+/* ——— Feature flags ——— */
+.admin-flag-list {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0 0 1.5rem;
+  padding: 0;
+  list-style: none;
+}
+
+.admin-flag-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem 1.25rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid color-mix(in oklab, var(--ink) 18%, transparent);
+  background: color-mix(in oklab, var(--turf) 4%, var(--paper));
+}
+
+.admin-flag-main {
+  display: grid;
+  gap: 0.25rem;
+  min-width: min(100%, 18rem);
+  flex: 1;
+}
+
+.admin-flag-key {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.9rem;
+}
+
+.admin-flag-desc {
+  color: color-mix(in oklab, var(--ink) 70%, transparent);
+  font-size: 0.92rem;
+}
+
+.admin-flag-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* ——— Consola Premium ——— */
+.admin-premium-form,
+.admin-premium-inline-form {
+  display: grid;
+  gap: 0.85rem;
+  max-width: 36rem;
+  margin: 0 0 1.5rem;
+}
+
+.admin-premium-form label,
+.admin-premium-inline-form label {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+}
+
+.admin-premium-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: 0.75rem;
+}
+
+.admin-premium-sub-list {
+  display: grid;
+  gap: 0.65rem;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.admin-premium-sub-row {
+  display: grid;
+  gap: 0.55rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid color-mix(in oklab, var(--ink) 18%, transparent);
+}
+
+.admin-premium-sub-main {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.admin-premium-sub-meta {
+  font-size: 0.88rem;
+  color: color-mix(in oklab, var(--ink) 65%, transparent);
+}
+
+.admin-premium-sub-actions,
+.admin-premium-inline-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.tournament-access-actions {
+  display: grid;
+  gap: 0.5rem;
+}
+
 /* ——— Estados vacíos ——— */
 .admin-empty {
   display: grid;

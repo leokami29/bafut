@@ -103,20 +103,38 @@ export const getVenuesByCity = cache(async (cityId: string): Promise<VenueWithPr
   }));
 });
 
-export const getVenueBySlug = cache(async (cityId: string, slug: string) => {
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("venues")
-    .select("*")
-    .eq("city_id", cityId)
-    .eq("slug", slug)
-    .is("deleted_at", null)
-    .maybeSingle();
-  if (error) {
-    throw error;
-  }
-  return data;
-});
+export const getVenueBySlug = cache(
+  async (cityId: string, slug: string): Promise<VenueWithPremium | null> => {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("venues")
+      .select(
+        `
+      *,
+      venue_subscriptions (
+        status,
+        plan,
+        expires_at
+      )
+    `,
+      )
+      .eq("city_id", cityId)
+      .eq("slug", slug)
+      .is("deleted_at", null)
+      .maybeSingle();
+    if (error) {
+      throw error;
+    }
+    if (!data) {
+      return null;
+    }
+    const { venue_subscriptions, ...venue } = data;
+    return {
+      ...venue,
+      is_premium: venueHasActivePremium(venue_subscriptions),
+    };
+  },
+);
 
 export const getUpcomingMatches = cache(async (cityId: string) => {
   const supabase = await createClient();

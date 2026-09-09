@@ -14,9 +14,11 @@ import {
 import {
   formatCop,
   getPremiumPaymentInstructions,
+  type PremiumPaymentInstructions,
   type PremiumPaymentMethod,
 } from "@/lib/premium-payment";
 import { validateSubscriptionProofFile } from "@/lib/subscription-proofs";
+import { isActivePremiumSubscription } from "@/lib/venue-premium";
 
 export type VenueSubRequestSummary = {
   id: string;
@@ -33,6 +35,7 @@ export type VenueSubRequestSummary = {
 type ActiveSub = {
   id: string;
   plan: string;
+  started_at?: string | null;
   expires_at: string;
   status: string;
 } | null;
@@ -44,6 +47,8 @@ type VenuePremiumPaywallProps = {
   activeSubscription: ActiveSub;
   pendingRequest: VenueSubRequestSummary | null;
   latestRequest: VenueSubRequestSummary | null;
+  /** Precio/canales resueltos en server (DB + env). */
+  paymentInstructions?: PremiumPaymentInstructions;
 };
 
 export function VenuePremiumPaywall({
@@ -53,9 +58,10 @@ export function VenuePremiumPaywall({
   activeSubscription,
   pendingRequest,
   latestRequest,
+  paymentInstructions,
 }: VenuePremiumPaywallProps) {
   const router = useRouter();
-  const instructions = getPremiumPaymentInstructions();
+  const instructions = paymentInstructions ?? getPremiumPaymentInstructions();
   const legal = useLegalAcceptance("premium");
   const [method, setMethod] = useState<PremiumPaymentMethod>(
     instructions.nequi ? "nequi" : "bank_transfer",
@@ -68,18 +74,24 @@ export function VenuePremiumPaywall({
 
   useEffect(() => {
     if (!isOwner) return;
-    if (activeSubscription?.plan === "premium") return;
+    if (
+      activeSubscription &&
+      isActivePremiumSubscription(activeSubscription)
+    ) {
+      return;
+    }
     trackPremiumPaywallView({
       venue_id: venueId,
       venue_slug: venueSlug,
       plan: "premium",
     });
-  }, [isOwner, venueId, venueSlug, activeSubscription?.plan]);
+  }, [isOwner, venueId, venueSlug, activeSubscription]);
 
   if (!isOwner) return null;
 
-  const isPremiumActive =
-    activeSubscription?.status === "active" && activeSubscription.plan === "premium";
+  const isPremiumActive = Boolean(
+    activeSubscription && isActivePremiumSubscription(activeSubscription),
+  );
 
   function submitRequest() {
     setError(null);
@@ -137,11 +149,28 @@ export function VenuePremiumPaywall({
       {isPremiumActive ? (
         <div className="venue-premium-status is-active">
           <p>
-            Premium activo hasta{" "}
+            Premium activo
+            {activeSubscription?.started_at ? (
+              <>
+                {" "}
+                desde{" "}
+                <strong>
+                  {new Date(activeSubscription.started_at).toLocaleDateString("es-CO")}
+                </strong>
+              </>
+            ) : null}{" "}
+            hasta{" "}
             <strong>
               {new Date(activeSubscription!.expires_at).toLocaleDateString("es-CO")}
             </strong>
-            . Tu cancha aparece destacada en el directorio.
+            {(() => {
+              const ms =
+                new Date(activeSubscription!.expires_at).getTime() - Date.now();
+              const daysLeft = Math.max(0, Math.ceil(ms / 86_400_000));
+              return daysLeft > 0 ? ` (${daysLeft} día${daysLeft === 1 ? "" : "s"} restantes)` : "";
+            })()}
+            . Tu cancha aparece destacada en el directorio. Con el módulo de torneos
+            habilitado, también podés organizar campeonatos desde el panel.
           </p>
           {latestRequest?.invoice_number && latestRequest.status === "approved" ? (
             <p className="field-help">

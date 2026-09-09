@@ -23,6 +23,10 @@ export function oppositeSide(side: TeamSide): TeamSide {
   return side === "a" ? "b" : "a";
 }
 
+export function isTeamSide(v: string): v is TeamSide {
+  return v === "a" || v === "b";
+}
+
 /** Sets necesarios para ganar un best-of-N. */
 export function setsToWin(bestOf: 3 | 5): number {
   return Math.ceil(bestOf / 2);

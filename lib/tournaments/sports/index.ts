@@ -40,6 +40,8 @@ export function isSportId(value: string): value is SportId {
   return value in SPORT_CATALOGS;
 }
 
+export { isTeamSide } from "./helpers";
+
 export function getSportCatalog(sport: SportId | TournamentSport): SportCatalog {
   const catalog = SPORT_CATALOGS[sport];
   if (!catalog) {

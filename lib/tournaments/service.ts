@@ -73,6 +73,11 @@ export function isTournamentFormat(v: string): v is TournamentFormat {
   return (TOURNAMENT_FORMATS as readonly string[]).includes(v);
 }
 
+/** Comprueba que sport y format sean valores de torneo válidos. */
+export function assertSportFormat(sport: string, format: string) {
+  return isTournamentSport(sport) && isTournamentFormat(format);
+}
+
 /**
  * Mapea formato BaFut → tipo de stage brackets-manager (fase inicial).
  * `groups_knockout` arranca como round_robin multi-grupo; la llave es un 2º stage.

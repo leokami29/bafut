@@ -2,9 +2,11 @@
 
 import { useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { trackSubActivated } from "@/lib/analytics";
 import { createClient } from "@/lib/supabase/client";
 import type { Venue } from "@/lib/types";
+import { venueHasActivePremium } from "@/lib/venue-premium";
 
 type VenueWithSubscription = Venue & {
   venue_subscriptions: Array<{
@@ -39,17 +41,17 @@ function shortId(id: string | null) {
 }
 
 export function VenueAdminPanel({ venues }: VenueAdminPanelProps) {
+  const router = useRouter();
   const [filter, setFilter] = useState<Filters>("all");
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [actionOk, setActionOk] = useState<string | null>(null);
   const [preview, setPreview] = useState<{ venue: VenueWithSubscription; x: number; y: number } | null>(null);
   const hideTimer = useRef<number | undefined>(undefined);
 
   const premiumCount = useMemo(
-    () =>
-      venues.filter((v) =>
-        v.venue_subscriptions.some((s) => s.status === "active" && s.plan === "premium"),
-      ).length,
+    () => venues.filter((v) => venueHasActivePremium(v.venue_subscriptions)).length,
     [venues],
   );
 
@@ -58,10 +60,7 @@ export function VenueAdminPanel({ venues }: VenueAdminPanelProps) {
     return venues.filter((venue) => {
       if (filter === "verified" && !venue.is_verified) return false;
       if (filter === "unverified" && venue.is_verified) return false;
-      if (
-        filter === "premium" &&
-        !venue.venue_subscriptions.some((s) => s.status === "active" && s.plan === "premium")
-      ) {
+      if (filter === "premium" && !venueHasActivePremium(venue.venue_subscriptions)) {
         return false;
       }
       if (q) {
@@ -86,6 +85,8 @@ export function VenueAdminPanel({ venues }: VenueAdminPanelProps) {
 
   async function toggleVerification(venueId: string, currentStatus: boolean) {
     setLoading(venueId);
+    setActionError(null);
+    setActionOk(null);
     const supabase = createClient();
 
     const { error } = await supabase
@@ -94,31 +95,43 @@ export function VenueAdminPanel({ venues }: VenueAdminPanelProps) {
       .eq("id", venueId);
 
     if (error) {
-      alert(`Error: ${error.message}`);
+      setActionError(error.message);
+    } else {
+      router.refresh();
     }
 
     setLoading(null);
   }
 
-  async function createSubscription(venueId: string, plan: "basic" | "premium") {
+  /** Asigna Premium 30 días vía RPC grant (billing/super). Cancela activos previos. */
+  async function grantPremium(venueId: string, venueName: string) {
     setLoading(venueId);
+    setActionError(null);
+    setActionOk(null);
     const supabase = createClient();
 
-    const { error } = await supabase.rpc("create_venue_subscription", {
+    const started = new Date();
+    const expires = new Date(started.getTime() + 30 * 86_400_000);
+
+    const { error } = await supabase.rpc("admin_grant_venue_premium", {
       p_venue_id: venueId,
-      p_plan: plan,
-      p_duration_days: 30,
+      p_started_at: started.toISOString(),
+      p_expires_at: expires.toISOString(),
+      p_amount_cop: 0,
+      p_note: "Grant rápido desde /admin/venues",
       p_payment_method: "manual",
     });
 
     if (error) {
-      alert(`Error: ${error.message}`);
+      setActionError(error.message);
     } else {
       trackSubActivated({
         venue_id: venueId,
-        plan,
+        plan: "premium",
         payment_method: "manual",
       });
+      setActionOk(`Premium activado en ${venueName} (30 días).`);
+      router.refresh();
     }
 
     setLoading(null);
@@ -152,10 +165,22 @@ export function VenueAdminPanel({ venues }: VenueAdminPanelProps) {
         </p>
       </div>
 
+      {actionError ? <p className="form-error">{actionError}</p> : null}
+      {actionOk ? <p className="form-ok">{actionOk}</p> : null}
+      <p className="field-help">
+        <strong>+ Premium</strong> otorga 30 días vía{" "}
+        <code>admin_grant_venue_premium</code> (billing/super). Para fechas y monto custom usá{" "}
+        <Link href="/admin/premium?tab=otorgar">Consola Premium</Link>. Torneos también
+        requieren flag <code>venue_tournaments</code> ON en{" "}
+        <Link href="/admin/flags">Flags</Link>.
+      </p>
+
       <ul className="venue-admin-list">
         {filteredVenues.map((venue) => {
+          const isPremium = venueHasActivePremium(venue.venue_subscriptions);
           const activeSubscription = venue.venue_subscriptions.find(
-            (sub) => sub.status === "active",
+            (sub) =>
+              sub.status === "active" && new Date(sub.expires_at).getTime() > Date.now(),
           );
 
           return (
@@ -169,15 +194,20 @@ export function VenueAdminPanel({ venues }: VenueAdminPanelProps) {
                 <span className="venue-admin-row-name">{venue.name}</span>
                 <span className="venue-admin-row-badges">
                   {venue.is_verified && <span className="badge verified">✓ Verificada</span>}
-                  {activeSubscription && (
+                  {isPremium ? (
+                    <span className="badge premium">premium</span>
+                  ) : activeSubscription ? (
                     <span className={`badge ${activeSubscription.plan}`}>
                       {activeSubscription.plan}
                     </span>
-                  )}
+                  ) : null}
                 </span>
               </div>
               <span className="venue-admin-row-meta">
                 {venue.neighborhood ?? "Sin barrio"} · {venue.sports.join(", ")}
+                {isPremium && activeSubscription
+                  ? ` · vence ${new Date(activeSubscription.expires_at).toLocaleDateString("es-CO")}`
+                  : ""}
               </span>
               <div className="venue-admin-row-actions">
                 <button
@@ -192,18 +222,36 @@ export function VenueAdminPanel({ venues }: VenueAdminPanelProps) {
                       ? "Quitar ✓"
                       : "Verificar"}
                 </button>
-                {!activeSubscription && (
-                  <button
-                    type="button"
-                    onClick={() => createSubscription(venue.id, "premium")}
-                    disabled={loading === venue.id}
-                    className="btn-flood"
+                {!isPremium ? (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => void grantPremium(venue.id, venue.name)}
+                      disabled={loading === venue.id}
+                      className="btn-flood"
+                    >
+                      + Premium
+                    </button>
+                    <Link
+                      href={`/admin/premium?tab=otorgar&venue=${venue.id}`}
+                      className="btn-ghost"
+                    >
+                      Custom…
+                    </Link>
+                  </>
+                ) : (
+                  <Link
+                    href={`/admin/premium?tab=subs`}
+                    className="btn-ghost"
                   >
-                    + Premium
-                  </button>
+                    Gestionar sub
+                  </Link>
                 )}
                 <Link href={`/canchas/${venue.slug}/admin`} className="btn-ghost">
                   Panel
+                </Link>
+                <Link href={`/canchas/${venue.slug}/admin/torneos`} className="btn-ghost">
+                  Torneos
                 </Link>
               </div>
             </li>
@@ -243,18 +291,24 @@ export function VenueAdminPanel({ venues }: VenueAdminPanelProps) {
               <dt>Rating</dt>
               <dd>{preview.venue.rating ? `${preview.venue.rating} ★` : "Sin reseñas"}</dd>
             </div>
-            {(() => {
-              const sub = preview.venue.venue_subscriptions.find((s) => s.status === "active");
-              return sub ? (
-                <div>
-                  <dt>Suscripción</dt>
-                  <dd>
-                    {sub.plan} · vence{" "}
-                    {new Date(sub.expires_at).toLocaleDateString("es-CO")}
-                  </dd>
-                </div>
-              ) : null;
-            })()}
+            <div>
+              <dt>Premium</dt>
+              <dd>
+                {venueHasActivePremium(preview.venue.venue_subscriptions)
+                  ? (() => {
+                      const sub = preview.venue.venue_subscriptions.find(
+                        (s) =>
+                          s.status === "active" &&
+                          s.plan === "premium" &&
+                          new Date(s.expires_at).getTime() > Date.now(),
+                      );
+                      return sub
+                        ? `activo · vence ${new Date(sub.expires_at).toLocaleDateString("es-CO")}`
+                        : "activo";
+                    })()
+                  : "no"}
+              </dd>
+            </div>
           </dl>
         </div>
       )}

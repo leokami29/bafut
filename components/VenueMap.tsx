@@ -4,9 +4,9 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-import type { Venue } from "@/lib/types";
+import type { Venue, VenueWithPremium } from "@/lib/types";
 
-type FeatureProps = { id: string; slug: string; name: string };
+type FeatureProps = { id: string; slug: string; name: string; premium: 0 | 1 };
 
 export function VenueMap({
   venues,
@@ -14,7 +14,7 @@ export function VenueMap({
   focusId,
   navigateOnClick = true,
 }: {
-  venues: Venue[];
+  venues: Array<Venue | VenueWithPremium>;
   center: { lat: number; lng: number };
   focusId?: string;
   navigateOnClick?: boolean;
@@ -50,7 +50,12 @@ export function VenueMap({
       type: "FeatureCollection",
       features: venues.map((venue) => ({
         type: "Feature",
-        properties: { id: venue.id, slug: venue.slug, name: venue.name },
+        properties: {
+          id: venue.id,
+          slug: venue.slug,
+          name: venue.name,
+          premium: "is_premium" in venue && venue.is_premium ? 1 : 0,
+        },
         geometry: { type: "Point", coordinates: [venue.lng, venue.lat] },
       })),
     };
@@ -101,11 +106,30 @@ export function VenueMap({
             "case",
             ["==", ["get", "id"], focusId ?? ""],
             "#E8F56A",
+            ["==", ["get", "premium"], 1],
+            "#D9F2A5",
             "#F4F7F2",
           ],
-          "circle-radius": ["case", ["==", ["get", "id"], focusId ?? ""], 9, 7],
-          "circle-stroke-width": 2,
-          "circle-stroke-color": "#0C6B4C",
+          "circle-radius": [
+            "case",
+            ["==", ["get", "id"], focusId ?? ""],
+            9,
+            ["==", ["get", "premium"], 1],
+            8,
+            7,
+          ],
+          "circle-stroke-width": [
+            "case",
+            ["==", ["get", "premium"], 1],
+            2.5,
+            2,
+          ],
+          "circle-stroke-color": [
+            "case",
+            ["==", ["get", "premium"], 1],
+            "#FFD25A",
+            "#0C6B4C",
+          ],
         },
       });
 

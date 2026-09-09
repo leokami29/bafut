@@ -46,18 +46,26 @@ export default async function AdminHomePage() {
       action: counts.pendingClaims > 0 ? "Atender la cola" : "Ver resueltos (24 h)",
     },
     {
-      href: "/admin/subscriptions",
+      href: "/admin/premium",
       eyebrow: "Pagos",
-      title: "Solicitudes Premium",
+      title: "Consola Premium",
       count: counts.pendingSubRequests,
       detail:
         counts.pendingSubRequests === 0
-          ? "Ningún comprobante esperando revisión."
+          ? "Suscripciones, otorgar y comprobantes."
           : formatOldestDetail(
               counts.oldestSubRequest,
               "comprobantes Nequi/banco por validar.",
             ),
-      action: counts.pendingSubRequests > 0 ? "Revisar comprobantes" : "Ver histórico",
+      action: counts.pendingSubRequests > 0 ? "Revisar comprobantes" : "Abrir consola",
+    },
+    {
+      href: "/admin/flags",
+      eyebrow: "Plataforma",
+      title: "Feature flags",
+      count: 0,
+      detail: "Kill-switch de torneos, reservas y paywall.",
+      action: "Gestionar flags",
     },
     {
       href: "/admin/renewals",
@@ -112,6 +120,10 @@ export default async function AdminHomePage() {
         <Link href="/admin/venues">Gestión de canchas ({counts.totalVenues})</Link>
         {" · "}
         <Link href="/admin/venues/nuevo">Crear cancha</Link>
+        {" · "}
+        <Link href="/admin/premium">Premium</Link>
+        {" · "}
+        <Link href="/admin/flags">Flags</Link>
         {" · "}
         <Link href="/">Volver al sitio</Link>
       </p>

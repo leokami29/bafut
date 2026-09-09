@@ -5,9 +5,9 @@ import { requireUserId } from "@/lib/auth";
 import { isUuid } from "@/lib/ids";
 import { legalAcceptErrorMessage } from "@/lib/legal";
 import {
-  getPremiumPaymentInstructions,
   type PremiumPaymentMethod,
 } from "@/lib/premium-payment";
+import { getPremiumPaymentInstructionsResolved } from "@/lib/premium-config";
 import {
   SUBSCRIPTION_PROOFS_BUCKET,
   subscriptionProofObjectPath,
@@ -43,7 +43,7 @@ export async function submitVenuePremiumRequestAction(
     return { error: legalAcceptErrorMessage("premium") };
   }
 
-  const instructions = getPremiumPaymentInstructions();
+  const instructions = await getPremiumPaymentInstructionsResolved();
   if (!instructions.hasPaymentChannel) {
     return { error: "Todavía no configuramos los datos de pago. Escribinos por WhatsApp." };
   }

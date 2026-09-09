@@ -4,15 +4,17 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { VenueAdminNav } from "@/components/VenueAdminNav";
 import { TournamentCreateForm } from "@/components/tournaments/TournamentCreateForm";
+import { getAdminRole, isBillingAdmin } from "@/lib/admin-auth";
 import { requireUserId } from "@/lib/auth";
 import { getActiveCity, getVenueBySlug } from "@/lib/data";
 import { isFeatureEnabled } from "@/lib/feature-flags";
 import { robotsNoIndex } from "@/lib/seo";
 import { createClient } from "@/lib/supabase/server";
+import { TournamentAccessNotice } from "@/components/tournaments/TournamentAccessNotice";
 import {
-  canAccessVenueTournamentsAdmin,
   canManageVenueTournaments,
   canScoreTournament,
+  resolveVenueTournamentsGate,
   type TournamentFormat,
   type TournamentSport,
   type TournamentStatus,
@@ -25,7 +27,6 @@ import {
   tournamentVisibilityLabel,
 } from "@/lib/tournaments/labels";
 import { listVenueTournaments } from "@/lib/tournaments/load";
-import { venueHasActivePremium } from "@/lib/venue-premium";
 
 export const metadata: Metadata = {
   title: "Torneos de la cancha",
@@ -106,13 +107,12 @@ export default async function VenueTournamentsAdminPage({ params }: Props) {
     tournamentsFlagEnabled,
   };
 
-  if (!canAccessVenueTournamentsAdmin(authzCtx, userId)) {
+  const gate = resolveVenueTournamentsGate(authzCtx, userId);
+
+  if (gate === "forbidden") {
     return (
       <main className="page page-narrow" id="main">
-        <header className="page-head">
-          <h1>Acceso denegado</h1>
-          <p>No tenés permisos para administrar torneos de esta cancha.</p>
-        </header>
+        <TournamentAccessNotice reason="forbidden" />
         <p className="foot-link">
           <Link href={`/canchas/${slug}`}>← Volver a la cancha</Link>
         </p>
@@ -120,15 +120,13 @@ export default async function VenueTournamentsAdminPage({ params }: Props) {
     );
   }
 
-  const isPremium = venueHasActivePremium(activeSubs ?? []);
   const canManage = canManageVenueTournaments(authzCtx, userId);
   const canScore = canScoreTournament(authzCtx, userId);
   const base = `/canchas/${slug}/admin`;
+  const showFlagsLink = isBillingAdmin(await getAdminRole(userId));
 
   const tournaments =
-    tournamentsFlagEnabled && isPremium
-      ? await listVenueTournaments(supabase, venue.id)
-      : [];
+    gate === "ok" ? await listVenueTournaments(supabase, venue.id) : [];
 
   return (
     <main className="page page-venue-admin" id="main">
@@ -157,25 +155,16 @@ export default async function VenueTournamentsAdminPage({ params }: Props) {
       </Suspense>
 
       <section className="venue-admin-section" aria-labelledby="tournaments-gate-title">
-        <h2 id="tournaments-gate-title">Torneos</h2>
+        <h2 id="tournaments-gate-title" className="sr-only">
+          Torneos
+        </h2>
 
-        {!tournamentsFlagEnabled ? (
-          <p className="lede">
-            El módulo de torneos está desactivado por ahora. Cuando lo habilitemos a
-            nivel plataforma, vas a poder crear campeonatos desde acá.
-          </p>
-        ) : !isPremium ? (
-          <>
-            <p className="lede">
-              Los torneos son una función del plan Premium. Activá Premium para crear
-              llaves, inscribir equipos y cargar resultados.
-            </p>
-            <p>
-              <Link href={`${base}?tab=premium`} className="btn-flood">
-                Ver plan Premium
-              </Link>
-            </p>
-          </>
+        {gate !== "ok" ? (
+          <TournamentAccessNotice
+            reason={gate}
+            adminBase={base}
+            showFlagsLink={showFlagsLink}
+          />
         ) : (
           <>
             {canScore && !canManage ? (

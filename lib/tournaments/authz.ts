@@ -124,3 +124,56 @@ export function canAccessVenueTournamentsAdmin(
   );
   return role === "manager" || role === "scorer";
 }
+
+/**
+ * Motivo por el que el panel de torneos no deja operar (o `ok`).
+ * Orden: rol → flag → premium (para mensajes claros en UI).
+ */
+export type VenueTournamentsGateReason =
+  | "ok"
+  | "forbidden"
+  | "flag_off"
+  | "no_premium";
+
+export function resolveVenueTournamentsGate(
+  ctx: AuthzVenueContext,
+  userId: string | null | undefined,
+): VenueTournamentsGateReason {
+  if (!canAccessVenueTournamentsAdmin(ctx, userId)) return "forbidden";
+  if (!ctx.tournamentsFlagEnabled) return "flag_off";
+  if (!hasTournamentPremium(ctx)) return "no_premium";
+  return "ok";
+}
+
+/** Copy estable para paywall / bloqueos del admin de torneos. */
+export function venueTournamentsGateCopy(reason: VenueTournamentsGateReason): {
+  title: string;
+  body: string;
+  ctaPremium?: boolean;
+  ctaFlags?: boolean;
+} {
+  switch (reason) {
+    case "forbidden":
+      return {
+        title: "Acceso denegado",
+        body: "No tenés permisos para administrar torneos de esta cancha. Pedile acceso al dueño o a un manager.",
+      };
+    case "flag_off":
+      return {
+        title: "Torneos desactivados",
+        body: "El módulo de torneos está apagado a nivel plataforma (flag venue_tournaments). Un admin de BaFut (billing/super) puede activarlo en Mesa → Flags. Tener Premium solo no alcanza mientras el flag esté OFF.",
+        ctaFlags: true,
+      };
+    case "no_premium":
+      return {
+        title: "Se necesita Premium",
+        body: "Los torneos son una función del plan Premium activo. Activá o renová Premium para crear llaves, inscribir equipos y cargar resultados.",
+        ctaPremium: true,
+      };
+    case "ok":
+      return {
+        title: "Torneos",
+        body: "Organizá campeonatos premium con llaves y actas.",
+      };
+  }
+}

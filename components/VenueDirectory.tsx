@@ -54,7 +54,7 @@ function VenueListLink({
   const showPublishCta = demand && demand.matchCount > 0;
 
   return (
-    <div className="venue-list-row">
+    <div className={`venue-list-row${venue.is_premium ? " is-premium" : ""}`}>
       <Link
         href={`/canchas/${venue.slug}`}
         className="venue-list-link"

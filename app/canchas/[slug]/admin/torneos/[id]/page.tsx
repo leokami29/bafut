@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { VenueAdminNav } from "@/components/VenueAdminNav";
+import { TournamentAccessNotice } from "@/components/tournaments/TournamentAccessNotice";
 import { TournamentBracketTable } from "@/components/tournaments/TournamentBracketTable";
 import {
   TournamentGenerateKnockoutButton,
@@ -18,9 +19,9 @@ import { isUuid } from "@/lib/ids";
 import { robotsNoIndex } from "@/lib/seo";
 import { createClient } from "@/lib/supabase/server";
 import {
-  canAccessVenueTournamentsAdmin,
   canManageVenueTournaments,
   canScoreTournament,
+  resolveVenueTournamentsGate,
   type TournamentFormat,
   type TournamentSport,
   type TournamentStatus,
@@ -39,7 +40,6 @@ import {
 import { formatSupportsStageGeneration } from "@/lib/tournaments/service";
 import { loadTournamentStats } from "@/lib/tournaments/stats-load";
 import type { SportId } from "@/lib/tournaments/sports";
-import { venueHasActivePremium } from "@/lib/venue-premium";
 
 export const metadata: Metadata = {
   title: "Detalle de torneo",
@@ -128,16 +128,16 @@ export default async function VenueTournamentAdminDetailPage({ params }: Props) 
     tournamentsFlagEnabled,
   };
 
-  if (!canAccessVenueTournamentsAdmin(authzCtx, userId)) {
+  const gate = resolveVenueTournamentsGate(authzCtx, userId);
+  if (gate === "forbidden") {
     notFound();
   }
 
-  const isPremium = venueHasActivePremium(activeSubs ?? []);
   const canManage = canManageVenueTournaments(authzCtx, userId);
   const canScore = canScoreTournament(authzCtx, userId);
   const base = `/canchas/${slug}/admin`;
 
-  if (!tournamentsFlagEnabled || !isPremium) {
+  if (gate !== "ok") {
     return (
       <main className="page page-venue-admin" id="main">
         <p className="venue-back">
@@ -145,12 +145,8 @@ export default async function VenueTournamentAdminDetailPage({ params }: Props) 
         </p>
         <header className="page-head page-head-compact">
           <h1>{tournament.name}</h1>
-          <p className="lede">
-            {!tournamentsFlagEnabled
-              ? "El módulo de torneos está desactivado."
-              : "Se necesita Premium activo para operar este torneo."}
-          </p>
         </header>
+        <TournamentAccessNotice reason={gate} adminBase={base} />
       </main>
     );
   }

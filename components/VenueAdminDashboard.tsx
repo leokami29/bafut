@@ -45,6 +45,7 @@ type VenuePhotoRow = { id: string; url: string; caption: string | null; sort_ord
 type ActiveSubscription = {
   id: string;
   plan: string;
+  started_at?: string | null;
   expires_at: string;
   status: string;
 } | null;
@@ -62,6 +63,10 @@ type VenueAdminDashboardProps = {
   latestRequest?: VenueSubRequestSummary | null;
   /** Feature flag premium_paywall. */
   premiumPaywallEnabled?: boolean;
+  /** Feature flag venue_tournaments (kill-switch). */
+  tournamentsFeatureEnabled?: boolean;
+  /** Premium activo no vencido (misma regla que venueHasActivePremium). */
+  isPremiumActive?: boolean;
   /** Feature flag global venue_booking (kill-switch). */
   venueBookingFeatureEnabled?: boolean;
   /** Pedidos de reserva pendientes (badge / atajo Mesa). */
@@ -70,6 +75,8 @@ type VenueAdminDashboardProps = {
   cityCenter?: { lat: number; lng: number };
   /** Sección activa vía ?tab= (default mesa). */
   tab?: VenueAdminTab;
+  /** Instrucciones Premium (precio DB + canales env). */
+  premiumPaymentInstructions?: import("@/lib/premium-payment").PremiumPaymentInstructions;
 };
 
 type FormState = {
@@ -131,10 +138,13 @@ export function VenueAdminDashboard({
   pendingRequest = null,
   latestRequest = null,
   premiumPaywallEnabled = true,
+  tournamentsFeatureEnabled = false,
+  isPremiumActive = false,
   venueBookingFeatureEnabled = false,
   pendingTurnosCount = 0,
   cityCenter,
   tab = "mesa",
+  premiumPaymentInstructions,
 }: VenueAdminDashboardProps) {
   const router = useRouter();
   const original = useMemo(() => toFormState(venue), [venue]);
@@ -565,7 +575,13 @@ export function VenueAdminDashboard({
             <li>
               <Link href={`${base}/torneos`} className="venue-admin-shortcut">
                 <span className="venue-admin-shortcut-label">Torneos</span>
-                <span className="venue-admin-shortcut-hint">Campeonatos premium</span>
+                <span className="venue-admin-shortcut-hint">
+                  {!tournamentsFeatureEnabled
+                    ? "Módulo desactivado en la plataforma"
+                    : !isPremiumActive
+                      ? "Requiere Premium activo"
+                      : "Campeonatos, llaves y actas"}
+                </span>
               </Link>
             </li>
             {(isOwner || isAdmin) && venue.owner_id ? (
@@ -719,6 +735,7 @@ export function VenueAdminDashboard({
           activeSubscription={activeSubscription}
           pendingRequest={pendingRequest}
           latestRequest={latestRequest}
+          paymentInstructions={premiumPaymentInstructions}
         />
       ) : null}
 

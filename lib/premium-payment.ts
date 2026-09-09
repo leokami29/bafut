@@ -1,4 +1,4 @@
-/** Configuración de pago manual Premium (Nequi / transferencia). Todo vía env. */
+/** Configuración de pago manual Premium (Nequi / transferencia). Canales vía env; precio puede venir de DB. */
 
 export type PremiumPaymentMethod = "nequi" | "bank_transfer";
 
@@ -18,8 +18,8 @@ function positiveInt(raw: string | undefined, fallback: number): number {
   return Number.isFinite(n) && n > 0 ? n : fallback;
 }
 
-/** Instrucciones visibles al dueño. Defaults conservadores si faltan env. */
-export function getPremiumPaymentInstructions(): PremiumPaymentInstructions {
+/** Solo env (sync). Preferí `getPremiumPaymentInstructionsResolved` en server. */
+export function getPremiumPaymentInstructionsFromEnv(): PremiumPaymentInstructions {
   const nequi = process.env.NEXT_PUBLIC_PREMIUM_NEQUI?.trim() || null;
   const bankName = process.env.NEXT_PUBLIC_PREMIUM_BANK_NAME?.trim() || null;
   const bankAccount = process.env.NEXT_PUBLIC_PREMIUM_BANK_ACCOUNT?.trim() || null;
@@ -34,6 +34,14 @@ export function getPremiumPaymentInstructions(): PremiumPaymentInstructions {
     bankHolder,
     hasPaymentChannel: Boolean(nequi || (bankName && bankAccount)),
   };
+}
+
+/**
+ * @deprecated Preferí props desde server (`getPremiumPaymentInstructionsResolved`).
+ * Cliente: fallback env hasta que el padre pase instrucciones.
+ */
+export function getPremiumPaymentInstructions(): PremiumPaymentInstructions {
+  return getPremiumPaymentInstructionsFromEnv();
 }
 
 export function formatCop(amount: number): string {

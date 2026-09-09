@@ -505,6 +505,13 @@ details.venue-group[open] > summary.venue-group-title::before {
   gap: 0.5rem;
 }
 
+.venue-list-row.is-premium {
+  padding: 0.15rem 0.35rem 0.15rem 0.55rem;
+  margin-inline: -0.35rem;
+  border-left: 3px solid var(--flood);
+  background: color-mix(in oklab, var(--flood) 12%, transparent);
+}
+
 .venue-list-row .venue-list-link {
   flex: 1;
   min-width: 0;
@@ -683,6 +690,18 @@ details.venue-group[open] > summary.venue-group-title::before {
   object-fit: cover;
   background: color-mix(in oklab, var(--ink) 6%, var(--paper));
   border: 1px solid color-mix(in oklab, var(--ink) 12%, transparent);
+}
+
+.venue-photos-section.is-premium .venue-photo-grid > li.is-premium-lead {
+  grid-column: 1 / -1;
+}
+
+.venue-photos-section.is-premium .venue-photo-grid > li.is-premium-lead .venue-photo {
+  border: 2px solid color-mix(in oklab, var(--flood) 75%, var(--ink));
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--flood) 35%, transparent),
+    0 8px 22px color-mix(in oklab, var(--turf-deep) 12%, transparent);
+  aspect-ratio: 16 / 9;
 }
 
 .venue-review-list {

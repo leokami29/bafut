@@ -3,6 +3,8 @@ import {
   canAccessVenueTournamentsAdmin,
   canManageVenueTournaments,
   canScoreTournament,
+  resolveVenueTournamentsGate,
+  venueTournamentsGateCopy,
   type AuthzVenueContext,
 } from "@/lib/tournaments/authz";
 
@@ -95,5 +97,44 @@ describe("canAccessVenueTournamentsAdmin", () => {
         "owner-1",
       ),
     ).toBe(true);
+  });
+});
+
+describe("resolveVenueTournamentsGate", () => {
+  it("distingue forbidden, flag_off, no_premium y ok", () => {
+    expect(resolveVenueTournamentsGate(baseCtx(), "stranger")).toBe("forbidden");
+    expect(
+      resolveVenueTournamentsGate(baseCtx({ tournamentsFlagEnabled: false }), "owner-1"),
+    ).toBe("flag_off");
+    expect(
+      resolveVenueTournamentsGate(
+        baseCtx({
+          subscriptions: [{ status: "active", plan: "premium", expires_at: past }],
+        }),
+        "owner-1",
+      ),
+    ).toBe("no_premium");
+    expect(resolveVenueTournamentsGate(baseCtx(), "owner-1")).toBe("ok");
+  });
+
+  it("prioriza flag_off sobre no_premium cuando el rol alcanza", () => {
+    expect(
+      resolveVenueTournamentsGate(
+        baseCtx({
+          tournamentsFlagEnabled: false,
+          subscriptions: [],
+        }),
+        "owner-1",
+      ),
+    ).toBe("flag_off");
+  });
+});
+
+describe("venueTournamentsGateCopy", () => {
+  it("incluye CTA premium solo en no_premium y CTA flags en flag_off", () => {
+    expect(venueTournamentsGateCopy("no_premium").ctaPremium).toBe(true);
+    expect(venueTournamentsGateCopy("flag_off").ctaFlags).toBe(true);
+    expect(venueTournamentsGateCopy("flag_off").ctaPremium).toBeUndefined();
+    expect(venueTournamentsGateCopy("forbidden").ctaPremium).toBeUndefined();
   });
 });

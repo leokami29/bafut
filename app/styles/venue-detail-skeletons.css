@@ -39,6 +39,138 @@
   margin-bottom: 1.25rem;
 }
 
+/* Sideline flood + wash turf: acento Premium sin rediseñar la marca */
+.venue-hero.is-premium {
+  position: relative;
+  padding: 0.95rem 1rem 1.1rem 1.05rem;
+  border-left: 4px solid var(--flood);
+  background:
+    linear-gradient(
+      105deg,
+      color-mix(in oklab, var(--flood) 38%, transparent) 0,
+      color-mix(in oklab, var(--flood) 38%, transparent) 5px,
+      transparent 5px
+    ),
+    linear-gradient(
+      165deg,
+      color-mix(in oklab, var(--flood) 18%, var(--paper)) 0%,
+      color-mix(in oklab, var(--turf) 10%, var(--paper)) 42%,
+      color-mix(in oklab, var(--flood) 8%, var(--paper)) 100%
+    );
+  box-shadow:
+    inset 0 0 0 1px color-mix(in oklab, var(--flood) 28%, transparent),
+    0 10px 28px color-mix(in oklab, var(--turf-deep) 8%, transparent);
+}
+
+.venue-premium-signal {
+  margin: 0.35rem 0 0.55rem;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--turf-deep);
+}
+
+.page-venue-detail.is-premium .venue-detail-actions-primary {
+  padding-top: 0.15rem;
+}
+
+.venue-premium-cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+  margin-top: 1rem;
+  padding: 0.8rem 0.9rem;
+  background:
+    linear-gradient(
+      100deg,
+      color-mix(in oklab, var(--flood) 22%, var(--paper)) 0%,
+      color-mix(in oklab, var(--turf) 8%, var(--paper)) 100%
+    );
+  border: 1px solid color-mix(in oklab, var(--flood) 42%, transparent);
+  border-left: 3px solid var(--flood);
+}
+
+.venue-premium-cta-copy {
+  display: grid;
+  gap: 0.2rem;
+  min-width: 0;
+  flex: 1 1 12rem;
+}
+
+.venue-premium-cta-eyebrow {
+  margin: 0;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--turf-deep);
+}
+
+.venue-premium-cta-text {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: color-mix(in oklab, var(--ink) 78%, transparent);
+}
+
+.venue-premium-cta-link {
+  flex-shrink: 0;
+  min-height: 2.5rem;
+}
+
+@media (max-width: 719px) {
+  .venue-hero.is-premium {
+    padding: 0.8rem 0.75rem 0.95rem 0.85rem;
+  }
+
+  .venue-premium-cta {
+    align-items: stretch;
+  }
+
+  .venue-premium-cta-link {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .venue-hero.is-premium {
+    animation: venue-premium-wash-in 0.45s ease-out;
+  }
+
+  .venue-premium-badge {
+    animation: venue-premium-badge-glow 2.8s ease-in-out infinite;
+  }
+}
+
+@keyframes venue-premium-wash-in {
+  from {
+    opacity: 0.72;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes venue-premium-badge-glow {
+  0%,
+  100% {
+    box-shadow: 0 2px 4px color-mix(in oklab, var(--flood) 40%, transparent);
+  }
+  50% {
+    box-shadow:
+      0 2px 8px color-mix(in oklab, var(--flood) 55%, transparent),
+      0 0 0 1px color-mix(in oklab, var(--flood) 50%, transparent);
+  }
+}
+
 .venue-hero-top {
   display: flex;
   align-items: center;
@@ -1818,6 +1950,17 @@
   backdrop-filter: blur(8px);
 }
 
+.venue-sticky-cta.is-premium {
+  border-top: 2px solid var(--flood);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--flood) 14%, transparent) 0,
+      transparent 0.55rem
+    ),
+    color-mix(in oklab, var(--paper) 94%, transparent);
+}
+
 .venue-sticky-cta-row {
   display: flex;
   align-items: stretch;
@@ -1929,6 +2072,16 @@
 }
 
 .venue-verified-badge svg {
+  flex-shrink: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .venue-premium-badge {
+    animation: none;
+  }
+}
+
+.venue-premium-badge svg {
   flex-shrink: 0;
 }
 

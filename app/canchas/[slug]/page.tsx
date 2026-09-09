@@ -11,6 +11,7 @@ import { VenueDayTimeline } from "@/components/VenueDayTimeline";
 import { VenueMapLazy } from "@/components/VenueMapLazy";
 import { VenueOwnerBlock } from "@/components/VenueOwnerBlock";
 import { VenuePricingSection } from "@/components/VenuePricingSection";
+import { VenuePremiumBadge } from "@/components/VenuePremiumBadge";
 import { VenueVerifiedBadge } from "@/components/VenueVerifiedBadge";
 import { venueHasUsableBookingPricing } from "@/lib/booking";
 import type { Sport } from "@/lib/constants";
@@ -122,15 +123,19 @@ export default async function CanchaPage({ params }: Props) {
     notFound();
   }
 
-  const [claimState, publicPricing, bookingFlagOn] = await Promise.all([
-    getVenueClaimState(venue.id, userId),
-    getVenuePublicPricing(venue.id),
-    isFeatureEnabled("venue_booking"),
-  ]);
+  const [claimState, publicPricing, bookingFlagOn, tournamentsFlagOn] =
+    await Promise.all([
+      getVenueClaimState(venue.id, userId),
+      getVenuePublicPricing(venue.id),
+      isFeatureEnabled("venue_booking"),
+      isFeatureEnabled("venue_tournaments"),
+    ]);
   // Estado de reclamos: solo se puede reclamar si no hay dueño ni reclamo pendiente.
   const isVenueOwner = Boolean(userId) && venue.owner_id === userId;
   const canClaim = !venue.owner_id && !claimState.hasPendingClaim;
   const claimPendingForOthers = !isVenueOwner && claimState.hasPendingClaim;
+  const isPremium = venue.is_premium;
+  const showTournamentsCta = isPremium && tournamentsFlagOn;
   const showBookingCta =
     bookingFlagOn &&
     Boolean(venue.owner_id) &&
@@ -184,6 +189,26 @@ export default async function CanchaPage({ params }: Props) {
   );
   const kind = venueKindLabel[venue.venue_kind] ?? venue.venue_kind;
   const surface = surfaceLabel[venue.surface] ?? venue.surface;
+  const sportsList = (venue.sports ?? []) as Sport[];
+  const primarySport = sportsList[0];
+  const primarySportLabel = primarySport
+    ? (sportLabel[primarySport] ?? primarySport)
+    : null;
+  const placeBit = venue.neighborhood
+    ? `${venue.neighborhood}, ${city.name}`
+    : city.name;
+  const heroLede =
+    primarySport === "padel"
+      ? `Club de pádel en ${placeBit}. Reservá horario o publicá un hueco acá.`
+      : primarySport === "basquet"
+        ? `Cancha de básquet en ${placeBit}. Publicá un hueco o sumate a un partido acá.`
+        : primarySport === "voleibol"
+          ? `Cancha de voleibol en ${placeBit}. Publicá un hueco o sumate a un partido acá.`
+          : primarySport === "futbol_sala"
+            ? `Cancha de fútbol sala en ${placeBit}. Publicá un hueco o sumate a un partido acá.`
+            : surface === "Sintética"
+              ? `Cancha sintética en ${placeBit}. Publicá un hueco o sumate a un partido acá.`
+              : `${surface} en ${placeBit}. Publicá un hueco o sumate a un partido acá.`;
   const phoneLink = meta.phone ? phoneHref(meta.phone) : undefined;
   const websiteUrl = safeHttpUrl(meta.website);
   const description = meta.description;
@@ -205,16 +230,20 @@ export default async function CanchaPage({ params }: Props) {
   const photoAlt = `${venue.name}, ${venue.neighborhood ?? city.name}`;
 
   return (
-    <main className="page page-venue-detail" id="main">
+    <main
+      className={`page page-venue-detail${isPremium ? " is-premium" : ""}`}
+      id="main"
+    >
       <JsonLd data={venueJsonLd(venue, city.name)} />
       <p className="venue-back">
         <Link href="/canchas">← Directorio de canchas</Link>
       </p>
 
-      <header className="venue-hero">
+      <header className={`venue-hero${isPremium ? " is-premium" : ""}`}>
         <div className="venue-hero-top">
           <p className="eyebrow">{city.name}</p>
-          <div className="venue-hero-badges">
+          <div className="venue-hero-badges" aria-label="Estado de la cancha">
+            {isPremium ? <VenuePremiumBadge /> : null}
             {venue.is_verified ? <VenueVerifiedBadge /> : null}
             {meta.rating != null ? (
               <span className="venue-rating" aria-label={`Calificación ${meta.rating} de 5`}>
@@ -227,23 +256,59 @@ export default async function CanchaPage({ params }: Props) {
           </div>
         </div>
         <h1>{venue.name}</h1>
-        <p className="lede venue-hero-lede">
-          {surface === "Sintética" ? "Cancha sintética" : surface} en{" "}
-          {venue.neighborhood ? `${venue.neighborhood}, ${city.name}` : city.name}. Publicá un hueco
-          o sumate a un partido de fútbol aquí.
-        </p>
+        {isPremium ? (
+          <p className="venue-premium-signal">
+            Destacada en BaFut
+            {demandBits.length > 0 ? ` · ${demandBits.join(" · ")}` : ""}
+            {primarySportLabel ? ` · ${primarySportLabel}` : ""}
+          </p>
+        ) : null}
+        <p className="lede venue-hero-lede">{heroLede}</p>
         <div className="venue-badges" aria-label="Características de la cancha">
           {venue.neighborhood ? <span className="venue-badge is-neighborhood">{venue.neighborhood}</span> : null}
           <span className="venue-badge">{kind}</span>
           {venue.covered != null ? (
             <span className="venue-badge">{venue.covered ? "Techada" : "Descubierta"}</span>
           ) : null}
-          {venue.sports?.map((sport) => (
+          {sportsList.map((sport) => (
             <span key={sport} className="venue-badge is-sport">
-              {sportLabel[sport as Sport] ?? sport}
+              {sportLabel[sport] ?? sport}
             </span>
           ))}
         </div>
+        {isPremium ? (
+          <aside className="venue-premium-cta" aria-labelledby="venue-premium-cta-title">
+            <div className="venue-premium-cta-copy">
+              <p className="venue-premium-cta-eyebrow" id="venue-premium-cta-title">
+                {showTournamentsCta ? "Campeonatos" : "Cancha Premium"}
+              </p>
+              <p className="venue-premium-cta-text">
+                {showTournamentsCta
+                  ? "Esta cancha publica torneos y llaves en BaFut."
+                  : "Prioridad en el directorio y el mapa. Más visibilidad para jugadores cerca."}
+              </p>
+            </div>
+            {showTournamentsCta ? (
+              <Link
+                className="btn-flood venue-premium-cta-link"
+                href={`/canchas/${venue.slug}/torneos`}
+              >
+                Ver campeonatos
+              </Link>
+            ) : showBookingCta ? (
+              <Link
+                className="btn-flood venue-premium-cta-link"
+                href={`/canchas/${venue.slug}/turno`}
+              >
+                Reservar horario
+              </Link>
+            ) : (
+              <Link className="btn-flood venue-premium-cta-link" href={publishHref}>
+                Publicar hueco aquí
+              </Link>
+            )}
+          </aside>
+        ) : null}
         {canClaim && userId ? (
           <div className="venue-claim-cta">
             <Link href={`/canchas/${venue.slug}/reclamar`} className="btn-ghost btn-small">
@@ -406,13 +471,19 @@ export default async function CanchaPage({ params }: Props) {
       ) : null}
 
       {photoGallery.length > 0 ? (
-        <section className="venue-photos-section" aria-labelledby="venue-photos-heading">
+        <section
+          className={`venue-photos-section${isPremium ? " is-premium" : ""}`}
+          aria-labelledby="venue-photos-heading"
+        >
           <h2 className="subhead" id="venue-photos-heading">
             Fotos
           </h2>
           <ul className="venue-photo-grid">
             {photoGallery.map((item, index) => (
-              <li key={`${item.src}-${index}`}>
+              <li
+                key={`${item.src}-${index}`}
+                className={isPremium && index === 0 ? "is-premium-lead" : undefined}
+              >
                 <Image
                   src={item.src}
                   alt={index === 0 ? photoAlt : ""}
@@ -542,6 +613,7 @@ export default async function CanchaPage({ params }: Props) {
         label={showBookingCta ? "Reservar" : "Publicar hueco aquí"}
         secondaryHref={showBookingCta ? publishHref : undefined}
         secondaryLabel={showBookingCta ? "Publicar hueco" : undefined}
+        isPremium={isPremium}
       />
     </main>
   );

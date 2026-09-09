@@ -23,7 +23,7 @@ export function AdminScoreboard({ counts }: { counts: AdminQueueCounts }) {
       urgent: (n) => n > 0,
     },
     {
-      href: "/admin/subscriptions",
+      href: "/admin/premium",
       label: "Premium",
       count: counts.pendingSubRequests,
       urgent: (n) => n > 0,
@@ -34,6 +34,7 @@ export function AdminScoreboard({ counts }: { counts: AdminQueueCounts }) {
       count: counts.pendingRenewals,
       urgent: (n) => n > 0,
     },
+    { href: "/admin/flags", label: "Flags", count: null },
     { href: "/admin/venues", label: "Canchas", count: counts.totalVenues },
   ];
 

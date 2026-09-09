@@ -398,6 +398,82 @@ export type Database = {
         }
         Relationships: []
       }
+      premium_admin_audit: {
+        Row: {
+          action: string
+          actor_id: string
+          created_at: string
+          id: string
+          payload: Json
+          subscription_id: string | null
+          venue_id: string | null
+        }
+        Insert: {
+          action: string
+          actor_id: string
+          created_at?: string
+          id?: string
+          payload?: Json
+          subscription_id?: string | null
+          venue_id?: string | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string
+          created_at?: string
+          id?: string
+          payload?: Json
+          subscription_id?: string | null
+          venue_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "premium_admin_audit_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "premium_admin_audit_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "venue_subscriptions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "premium_admin_audit_venue_id_fkey"
+            columns: ["venue_id"]
+            isOneToOne: false
+            referencedRelation: "venues"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      premium_plan_config: {
+        Row: {
+          daily_rate_cop: number
+          default_duration_days: number
+          key: string
+          list_price_cop: number | null
+          updated_at: string
+        }
+        Insert: {
+          daily_rate_cop: number
+          default_duration_days?: number
+          key?: string
+          list_price_cop?: number | null
+          updated_at?: string
+        }
+        Update: {
+          daily_rate_cop?: number
+          default_duration_days?: number
+          key?: string
+          list_price_cop?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       match_alerts: {
         Row: {
           city_id: string
@@ -2096,6 +2172,7 @@ export type Database = {
       venue_subscriptions: {
         Row: {
           auto_renew: boolean
+          amount_cop: number | null
           created_at: string
           expires_at: string
           id: string
@@ -2108,6 +2185,7 @@ export type Database = {
         }
         Insert: {
           auto_renew?: boolean
+          amount_cop?: number | null
           created_at?: string
           expires_at: string
           id?: string
@@ -2120,6 +2198,7 @@ export type Database = {
         }
         Update: {
           auto_renew?: boolean
+          amount_cop?: number | null
           created_at?: string
           expires_at?: string
           id?: string
@@ -2257,6 +2336,66 @@ export type Database = {
           p_type: string
         }
         Returns: string
+      }
+      admin_cancel_venue_premium: {
+        Args: { p_note?: string; p_subscription_id: string }
+        Returns: string
+      }
+      admin_extend_venue_premium: {
+        Args: {
+          p_amount_cop?: number
+          p_new_expires_at: string
+          p_note?: string
+          p_subscription_id: string
+        }
+        Returns: string
+      }
+      admin_grant_venue_premium: {
+        Args: {
+          p_amount_cop?: number
+          p_daily_rate_cop?: number
+          p_expires_at: string
+          p_note?: string
+          p_payment_method?: string
+          p_started_at: string
+          p_venue_id: string
+        }
+        Returns: string
+      }
+      admin_set_feature_flag: {
+        Args: { p_enabled: boolean; p_key: string }
+        Returns: {
+          description: string | null
+          enabled: boolean
+          key: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "feature_flags"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      admin_update_premium_plan_config: {
+        Args: {
+          p_daily_rate_cop: number
+          p_default_duration_days: number
+          p_list_price_cop?: number
+        }
+        Returns: {
+          daily_rate_cop: number
+          default_duration_days: number
+          key: string
+          list_price_cop: number | null
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "premium_plan_config"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       apply_match_pricing: {
         Args: { p_match_id: string; p_overridden_price_cop?: number }

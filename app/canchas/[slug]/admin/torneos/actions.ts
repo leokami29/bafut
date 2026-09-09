@@ -19,7 +19,6 @@ import {
 import {
   formatSupportsStageGeneration,
   isTournamentFormat,
-  isTournamentSport,
   parseCreateTournamentInput,
   startKnockoutStageFromGroups,
   startStageForTournament,
@@ -27,7 +26,6 @@ import {
   type CreateTournamentInput,
   type RegisterTeamInput,
 } from "@/lib/tournaments/service";
-import type { TeamSide } from "@/lib/tournaments/sports";
 
 export type TournamentActionResult =
   | { ok: true; id: string; message?: string }
@@ -483,13 +481,4 @@ export async function confirmMatchResultAction(
     id: String(bmMatchId),
     message: `Confirmado ${result.data.score.a}-${result.data.score.b}.`,
   };
-}
-
-/** Helpers exportados para formularios tipados. */
-export function assertSportFormat(sport: string, format: string) {
-  return isTournamentSport(sport) && isTournamentFormat(format);
-}
-
-export function isTeamSide(v: string): v is TeamSide {
-  return v === "a" || v === "b";
 }

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { TournamentAccessNotice } from "@/components/tournaments/TournamentAccessNotice";
 import { TournamentMatchActa } from "@/components/tournaments/TournamentMatchActa";
 import { requireUserId } from "@/lib/auth";
 import { getActiveCity, getVenueBySlug } from "@/lib/data";
@@ -9,8 +10,8 @@ import { isUuid } from "@/lib/ids";
 import { robotsNoIndex } from "@/lib/seo";
 import { createClient } from "@/lib/supabase/server";
 import {
-  canAccessVenueTournamentsAdmin,
   canScoreTournament,
+  resolveVenueTournamentsGate,
   type VenueStaffRole,
 } from "@/lib/tournaments/authz";
 import { tournamentSportLabel } from "@/lib/tournaments/labels";
@@ -20,7 +21,6 @@ import {
   parseBmOpponent,
 } from "@/lib/tournaments/load";
 import type { SportId } from "@/lib/tournaments/sports";
-import { venueHasActivePremium } from "@/lib/venue-premium";
 
 export const metadata: Metadata = {
   title: "Acta de partido",
@@ -99,15 +99,24 @@ export default async function VenueTournamentMatchActaPage({ params }: Props) {
     tournamentsFlagEnabled,
   };
 
-  if (!canAccessVenueTournamentsAdmin(authzCtx, userId)) {
+  const gate = resolveVenueTournamentsGate(authzCtx, userId);
+  if (gate === "forbidden") {
     notFound();
   }
 
-  const isPremium = venueHasActivePremium(activeSubs ?? []);
-  const canScore =
-    tournamentsFlagEnabled &&
-    isPremium &&
-    canScoreTournament(authzCtx, userId);
+  const base = `/canchas/${slug}/admin`;
+  if (gate !== "ok") {
+    return (
+      <main className="page page-venue-admin" id="main">
+        <p className="venue-back">
+          <Link href={`${base}/torneos/${id}`}>← Torneo</Link>
+        </p>
+        <TournamentAccessNotice reason={gate} adminBase={base} />
+      </main>
+    );
+  }
+
+  const canScore = canScoreTournament(authzCtx, userId);
 
   const [events, bracket, { data: confirmed }] = await Promise.all([
     loadMatchEvents(supabase, id, bmMatchId),
