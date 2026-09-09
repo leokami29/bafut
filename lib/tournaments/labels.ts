@@ -78,6 +78,41 @@ export function tournamentEventLabel(sport: SportId, type: string): string {
   return EVENT_LABELS[sport]?.[type] ?? type;
 }
 
+/** Unidad del marcador principal (lo que confirma el bracket). */
+export function tournamentScoreUnitLabel(sport: SportId): string {
+  switch (sport) {
+    case "futbol":
+      return "Goles";
+    case "basquet":
+      return "Puntos";
+    case "voleibol":
+    case "padel":
+      return "Sets";
+    default:
+      return "Marcador";
+  }
+}
+
+/** Etiquetas de periodo / reloj en el acta según deporte. */
+export function tournamentActaFieldLabels(sport: SportId): {
+  period: string;
+  clock: string;
+  clockPlaceholder: string;
+} {
+  switch (sport) {
+    case "futbol":
+      return { period: "Tiempo", clock: "Minuto", clockPlaceholder: "ej. 12" };
+    case "basquet":
+      return { period: "Cuarto", clock: "Minuto", clockPlaceholder: "ej. 3" };
+    case "voleibol":
+      return { period: "Set", clock: "Punto #", clockPlaceholder: "opcional" };
+    case "padel":
+      return { period: "Set", clock: "Game #", clockPlaceholder: "opcional" };
+    default:
+      return { period: "Periodo", clock: "Reloj", clockPlaceholder: "opcional" };
+  }
+}
+
 export function bmMatchStatusLabel(status: number): string {
   switch (status) {
     case 0:

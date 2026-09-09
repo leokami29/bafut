@@ -14,7 +14,10 @@ import {
   resolveVenueTournamentsGate,
   type VenueStaffRole,
 } from "@/lib/tournaments/authz";
-import { tournamentSportLabel } from "@/lib/tournaments/labels";
+import {
+  bmMatchStatusLabel,
+  tournamentSportLabel,
+} from "@/lib/tournaments/labels";
 import {
   loadMatchEvents,
   loadTournamentBracket,
@@ -137,17 +140,20 @@ export default async function VenueTournamentMatchActaPage({ params }: Props) {
   const sport = tournament.sport as SportId;
 
   return (
-    <main className="page page-venue-admin" id="main">
+    <main className="page page-venue-admin page-tournament-acta" id="main">
       <p className="venue-back">
         <Link href={`/canchas/${slug}/admin/torneos/${id}`}>← {tournament.name}</Link>
       </p>
-      <header className="page-head page-head-compact">
-        <p className="eyebrow">
-          Acta · {tournamentSportLabel[sport] ?? sport} · Partido #{matchRow.number}
-        </p>
+      <header className="page-head page-head-compact tournament-acta-page-head">
+        <p className="eyebrow">Acta de partido</p>
         <h1>
-          {nameA} vs {nameB}
+          {nameA} <span className="tournament-acta-vs">vs</span> {nameB}
         </h1>
+        <p className="tournament-acta-page-meta">
+          {tournamentSportLabel[sport] ?? sport}
+          {matchRow.number != null ? ` · Partido #${matchRow.number}` : ""}
+          {` · ${bmMatchStatusLabel(matchRow.status as number)}`}
+        </p>
       </header>
 
       <TournamentMatchActa
