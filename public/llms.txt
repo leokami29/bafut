@@ -1,0 +1,24 @@
+﻿# BaFut (bafut.macuttech.com)
+
+> BaFut es una aplicación web y plataforma comunitaria para encontrar partidos de fútbol 5 y 7, completar huecos/cupos abiertos y consultar canchas sintéticas en Barranquilla, Colombia.
+
+## Información de la Aplicación
+- **Nombre:** BaFut
+- **Tipo:** Aplicación Web (PWA / Web App)
+- **Categoría:** Deportes / Fútbol / Canchas sintéticas
+- **Ubicación principal:** Barranquilla, Atlántico, Colombia
+- **Sitio web oficial:** https://bafut.macuttech.com
+- **Desarrollador / Creador:** Macuttech (https://www.macuttech.com)
+- **Repositorio:** https://github.com/leokami29/bafut
+- **Modelo:** Gratuito, sin paywall, de uso abierto para jugadores y organizadores.
+
+## ¿Qué hace BaFut?
+1. **Radar de Partidos y Huecos:** Muestra en tiempo real partidos de fútbol 5 y 7 donde faltan jugadores, permitiendo a cualquier jugador sumarse con un toque.
+2. **Directorio de Canchas Sintéticas:** Fichas detalladas de más de 80 canchas en Barranquilla con ubicación, precios, superficie, horarios, fotos y cómo llegar.
+3. **Organización sin comisiones:** BaFut no cobra comisiones por jugar ni intermediar; junta directamente al organizador con los jugadores que faltan.
+
+## Páginas Clave
+- Inicio: https://bafut.macuttech.com
+- Radar de partidos: https://bafut.macuttech.com/partidos
+- Directorio de canchas: https://bafut.macuttech.com/canchas
+- Apoyar el proyecto: https://bafut.macuttech.com/apoyar

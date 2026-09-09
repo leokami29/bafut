@@ -27,9 +27,14 @@ export function homeJsonLd(cityName = "Barranquilla"): JsonLdNode[] {
       "@type": "Organization",
       "@id": `${url}#organization`,
       name: SITE_NAME,
+      alternateName: ["BaFut Colombia", "BaFut App"],
       url,
       logo: absoluteUrl("/icon.svg"),
       description: DEFAULT_DESCRIPTION,
+      sameAs: [
+        "https://www.macuttech.com/",
+        "https://github.com/leokami29/bafut",
+      ],
       areaServed: {
         "@type": "City",
         name: cityName,
@@ -49,8 +54,64 @@ export function homeJsonLd(cityName = "Barranquilla"): JsonLdNode[] {
       publisher: { "@id": `${url}#organization` },
       about: {
         "@type": "Thing",
-        name: `Pateadas y canchas sintéticas en ${cityName}`,
+        name: `Pateadas, partidos de fútbol y canchas sintéticas en ${cityName}`,
       },
+    },
+    {
+      "@type": "WebApplication",
+      "@id": `${url}#webapp`,
+      name: SITE_NAME,
+      applicationCategory: "SportsApplication",
+      operatingSystem: "All",
+      browserRequirements: "Requires JavaScript. Requires HTML5.",
+      url,
+      description: `Aplicación web y plataforma deportiva en ${cityName}, Colombia, para encontrar partidos de fútbol 5 y 7, completar cupos abiertos (huecos) y consultar el directorio de canchas sintéticas.`,
+      offers: {
+        "@type": "Offer",
+        price: "0",
+        priceCurrency: "COP",
+      },
+      creator: {
+        "@type": "Organization",
+        name: "Macuttech",
+        url: "https://www.macuttech.com/",
+      },
+      featureList: [
+        "Radar de partidos y cupos abiertos en tiempo real",
+        "Directorio geolocalizado de canchas sintéticas y clubes deportivos",
+        "Publicación y gestión de huecos para completar equipos de fútbol 5 y 7",
+        "Fichas de canchas con fotos, servicios, precios y horarios",
+      ],
+    },
+    {
+      "@type": "FAQPage",
+      "@id": `${url}#faq`,
+      mainEntity: [
+        {
+          "@type": "Question",
+          name: "¿Qué es BaFut?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: `BaFut es una aplicación web y plataforma deportiva comunitaria de ${cityName}, Colombia, diseñada para conectar jugadores y completar cupos en partidos de fútbol 5 y 7, además de ofrecer un directorio completo de canchas sintéticas.`,
+          },
+        },
+        {
+          "@type": "Question",
+          name: "¿BaFut cobra por publicar o unirse a partidos?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "No. BaFut es una plataforma comunitaria y abierta. Conecta directamente a organizadores de partidos que necesitan jugadores con quienes quieren jugar, sin comisiones ni intermediarios de cobro.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "¿Dónde funciona BaFut?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: `BaFut opera principalmente en ${cityName} y el área metropolitana del Atlántico, cubriendo canchas y partidos de fútbol 5, fútbol 7, fútbol sala y pádel.`,
+          },
+        },
+      ],
     },
   ];
 }
