@@ -855,7 +855,8 @@ export type Database = {
           host_id: string
           id?: string
           notes?: string | null
-          occupy_range: unknown
+          /** Rellenado por trigger (sync occupy_range). */
+          occupy_range?: unknown
           share_code?: string
           sport?: string
           starts_at: string
@@ -2398,7 +2399,7 @@ export type Database = {
         }
       }
       apply_match_pricing: {
-        Args: { p_match_id: string; p_overridden_price_cop?: number }
+        Args: { p_match_id: string; p_overridden_price_cop?: number | null }
         Returns: Json
       }
       approve_venue_booking: {
@@ -2477,17 +2478,17 @@ export type Database = {
       }
       create_promotion: {
         Args: {
-          p_date_end?: string
-          p_date_start?: string
-          p_days_of_week?: number[]
-          p_discount_pct?: number
-          p_end_time?: string
+          p_date_end?: string | null
+          p_date_start?: string | null
+          p_days_of_week?: number[] | null
+          p_discount_pct?: number | null
+          p_end_time?: string | null
           p_kind: string
           p_lead_time_minutes?: number
           p_name: string
-          p_override_price_cop?: number
+          p_override_price_cop?: number | null
           p_sport: string
-          p_start_time?: string
+          p_start_time?: string | null
           p_venue_id: string
         }
         Returns: string
@@ -2496,12 +2497,12 @@ export type Database = {
         Args: {
           p_address?: string
           p_city_id: string
-          p_covered?: boolean
+          p_covered?: boolean | null
           p_lat?: number
           p_lng?: number
           p_name: string
           p_neighborhood?: string
-          p_notes?: string
+          p_notes?: string | null
           p_sports?: string[]
           p_surface?: string
           p_venue_kind?: string
@@ -2762,13 +2763,13 @@ export type Database = {
       unclaim_venue: { Args: { p_venue_id: string }; Returns: undefined }
       update_match: {
         Args: {
-          p_cost_per_person: number
+          p_cost_per_person?: number | null
           p_duration_min: number
           p_format: string
-          p_formation_id?: string
+          p_formation_id?: string | null
           p_gender_policy: string
           p_match_id: string
-          p_notes: string
+          p_notes?: string | null
           p_slots: Json
           p_sport: string
           p_starts_at: string
@@ -2788,7 +2789,7 @@ export type Database = {
       update_venue: {
         Args: {
           p_address?: string
-          p_covered?: boolean
+          p_covered?: boolean | null
           p_lat?: number
           p_lng?: number
           p_name?: string

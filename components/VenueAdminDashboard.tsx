@@ -256,8 +256,8 @@ export function VenueAdminDashboard({
       p_phone: changed.has("phone") ? form.phone.trim() : undefined,
       p_website: changed.has("website") ? form.website.trim() : undefined,
       p_notes: changed.has("notes") ? form.notes.trim() : undefined,
-      p_lat: changed.has("lat") && hasCoord ? nextEditable.lat : undefined,
-      p_lng: changed.has("lng") && hasCoord ? nextEditable.lng : undefined,
+      p_lat: changed.has("lat") && hasCoord && nextEditable.lat != null ? nextEditable.lat : undefined,
+      p_lng: changed.has("lng") && hasCoord && nextEditable.lng != null ? nextEditable.lng : undefined,
       p_sports:
         form.sports.join(",") !== original.sports.join(",") && form.sports.length > 0
           ? form.sports
