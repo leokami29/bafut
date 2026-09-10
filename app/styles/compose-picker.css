@@ -7,6 +7,77 @@
   outline-offset: 2px;
 }
 
+.venue-picker-confirmed {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+  background: color-mix(in oklab, var(--turf) 6%, var(--paper));
+  border-left: 3px solid var(--turf);
+}
+
+.venue-picker-confirmed-info {
+  display: grid;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.venue-picker-confirmed-tag {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--turf);
+  font-weight: 600;
+}
+
+.venue-picker-confirmed-name {
+  font-family: var(--font-display), "Barlow Condensed", sans-serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1.15;
+  margin: 0;
+}
+
+.venue-picker-confirmed-meta {
+  font-size: 0.85rem;
+  color: color-mix(in oklab, var(--ink) 65%, transparent);
+  margin: 0;
+}
+
+.venue-picker-change-btn {
+  font-size: 0.82rem;
+  padding: 0.4rem 0.75rem;
+  min-height: 2.3rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.venue-picker-head-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.venue-picker-cancel-btn {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  font-family: var(--font-sans), sans-serif;
+  font-size: 0.82rem;
+  color: var(--turf);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.venue-picker-cancel-btn:hover {
+  color: var(--turf-deep);
+}
+
 .venue-picker-head {
   display: grid;
   gap: 0.35rem;
@@ -153,7 +224,11 @@
 @media (max-width: 899px) {
   .page-nuevo-partido,
   .page-editar-partido {
-    padding-bottom: calc(10.75rem + env(safe-area-inset-bottom));
+    padding-bottom: calc(5.75rem + env(safe-area-inset-bottom));
+  }
+
+  .match-compose-aside-map {
+    display: none;
   }
 
   .match-compose-actions-inline {

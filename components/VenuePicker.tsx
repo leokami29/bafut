@@ -26,6 +26,8 @@ export function VenuePicker({
     defaultVenueId && venues.some((v) => v.id === defaultVenueId) ? defaultVenueId : "",
   );
 
+  const [isChanging, setIsChanging] = useState(false);
+
   const effectiveSelected =
     selected && venues.some((v) => v.id === selected)
       ? selected
@@ -59,17 +61,64 @@ export function VenuePicker({
 
   function selectVenue(id: string) {
     setSelected(id);
+    setIsChanging(false);
     onVenueChange?.(id);
+  }
+
+  // Si ya hay cancha seleccionada y el usuario no está cambiándola activamente,
+  // mostrar una tarjeta compacta de confirmación sin desplegar el listado completo.
+  if (selectedVenue && !isChanging && !invalid) {
+    return (
+      <div className="venue-picker venue-picker-is-confirmed">
+        <div className="venue-picker-confirmed">
+          <div className="venue-picker-confirmed-info">
+            <span className="venue-picker-confirmed-tag">Cancha elegida</span>
+            <p className="venue-picker-confirmed-name">{selectedVenue.name}</p>
+            {selectedVenue.neighborhood ? (
+              <p className="venue-picker-confirmed-meta">{selectedVenue.neighborhood}</p>
+            ) : null}
+          </div>
+          <button
+            type="button"
+            className="btn-ghost venue-picker-change-btn"
+            onClick={() => setIsChanging(true)}
+          >
+            Cambiar cancha
+          </button>
+          <input
+            type="radio"
+            name="venue_id"
+            value={selectedVenue.id}
+            checked
+            readOnly
+            className="sr-only"
+            tabIndex={-1}
+            aria-hidden="true"
+          />
+        </div>
+      </div>
+    );
   }
 
   return (
     <div className={`venue-picker${invalid ? " is-invalid" : ""}`}>
       <div className="venue-picker-head">
-        <label htmlFor={searchId}>
-          Cancha <span className="req-mark" aria-hidden="true">
-            *
-          </span>
-        </label>
+        <div className="venue-picker-head-row">
+          <label htmlFor={searchId}>
+            Cancha <span className="req-mark" aria-hidden="true">
+              *
+            </span>
+          </label>
+          {selectedVenue && isChanging ? (
+            <button
+              type="button"
+              className="venue-picker-cancel-btn"
+              onClick={() => setIsChanging(false)}
+            >
+              Mantener actual
+            </button>
+          ) : null}
+        </div>
         <p className="field-help" id={helpId}>
           Busca por nombre o barrio y elige dónde se juega.
         </p>

@@ -200,6 +200,100 @@
   line-height: 1.4;
 }
 
+.match-compose-mode-row {
+  margin-bottom: 0.25rem;
+}
+
+.match-compose-challenge-fields {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.match-compose-slots-row {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.match-compose-open-wrap {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.match-compose-open-label {
+  font-size: 0.9rem;
+}
+
+.match-compose-open-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.match-compose-open-input {
+  width: 4.85rem !important;
+  text-align: center;
+  font-weight: 700;
+  font-size: 1.15rem;
+}
+
+.match-compose-bench-wrap {
+  display: grid;
+  gap: 0.45rem;
+  margin-top: 0.65rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed color-mix(in oklab, var(--ink) 12%, transparent);
+}
+
+.match-compose-bench-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.match-compose-bench-rule {
+  flex: 1;
+  min-width: 13rem;
+}
+
+.match-compose-bench-select {
+  width: 100%;
+  min-height: 2.5rem;
+  font-size: 0.88rem;
+}
+
+.match-compose-cost-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.match-compose-cost-row input {
+  flex: 1;
+}
+
+.match-compose-gratis-btn {
+  font-size: 0.82rem;
+  font-weight: 650;
+  min-height: 2.75rem;
+  padding: 0 0.95rem;
+  border-color: color-mix(in oklab, var(--ink) 25%, transparent);
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.match-compose-gratis-btn.is-on {
+  background: var(--flood);
+  color: var(--ink);
+  border-color: var(--flood);
+  font-weight: 700;
+}
+
+.match-compose-rate-inline {
+  margin-top: 0.45rem;
+}
+
 .match-compose-banner-error {
   padding: 0.75rem 0.85rem;
   background: color-mix(in oklab, var(--bib) 10%, var(--paper));

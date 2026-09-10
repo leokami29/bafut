@@ -38,6 +38,7 @@ export function FormationPicker({
 }) {
   const uid = useId();
   const [showAll, setShowAll] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(() => openSlots.length > 0);
   const all = useMemo(() => formationsForSportFormat(sport, format), [sport, format]);
   const featured = useMemo(() => featuredFormations(sport, format), [sport, format]);
   const visible = showAll ? all : featured;
@@ -88,127 +89,159 @@ export function FormationPicker({
     : (["any"] as Position[]);
 
   return (
-    <div className="formation-picker">
-      <p className="match-compose-field-label" id={`${uid}-formation`}>
-        Formación
-      </p>
-      <p className="field-help">
-        {interactive
-          ? "Elegí el dibujo. Después tocá huecos en la cancha (o usá “N cupos cualquiera” abajo)."
-          : "Elegí el dibujo táctico del partido."}
-      </p>
-      <div className="filter-chips match-compose-chips" role="group" aria-labelledby={`${uid}-formation`}>
-        {visible.map((item) => (
+    <div className={`formation-picker${isExpanded ? " is-expanded" : " is-collapsed"}`}>
+      <div className="formation-picker-summary">
+        <div className="formation-picker-summary-info">
+          <span className="formation-picker-summary-tag">Táctica</span>
+          <p className="formation-picker-summary-title">
+            Dibujo <strong>{entry.label}</strong>
+            {entry.name ? ` · ${entry.name}` : ""}
+            {openSlots.length > 0 ? (
+              <span className="formation-picker-holes-badge"> · {openSlots.length} en cancha</span>
+            ) : null}
+          </p>
+        </div>
+        {interactive ? (
           <button
-            key={item.id}
             type="button"
-            className={formationId === item.id ? "is-on" : undefined}
-            aria-pressed={formationId === item.id}
-            onClick={() => selectFormation(item)}
-            title={item.name ?? item.label}
+            className="btn-ghost formation-picker-toggle-btn"
+            onClick={() => setIsExpanded((prev) => !prev)}
+            aria-expanded={isExpanded}
           >
-            {item.label}
-          </button>
-        ))}
-        {all.length > featured.length ? (
-          <button type="button" className="is-ghost-chip" onClick={() => setShowAll((v) => !v)}>
-            {showAll ? "Ver menos" : `Ver más (${all.length - featured.length})`}
+            {isExpanded
+              ? "Cerrar pizarra ▴"
+              : openSlots.length > 0
+                ? "Editar pizarra ▾"
+                : "Personalizar en cancha ▾"}
           </button>
         ) : null}
       </div>
 
-      <div className="formation-preview">
-        <p className="formation-preview-label">
-          {entry.label}
-          {entry.name ? ` · ${entry.name}` : ""}
-        </p>
-        <svg
-          className="formation-preview-svg"
-          viewBox="0 0 360 220"
-          role="img"
-          aria-label={`Cancha ${entry.label}. Tocá una posición para marcar hueco.`}
-        >
-          <rect width="360" height="220" fill="#0c6b4c" />
-          <g fill="none" stroke="#d9f2a5" strokeWidth="1.4" opacity="0.85">
-            <rect x="40" y="28" width="140" height="164" />
-            <line x1="180" y1="28" x2="180" y2="192" />
-          </g>
-          {board.dots
-            .filter((d) => d.side === "a")
-            .map((dot) => {
-              const open = openSlots.some((s) => s.pitchIndex === dot.pitchIndex);
-              return (
-                <g key={`p-${dot.pitchIndex}`}>
-                  <circle
-                    cx={dot.x}
-                    cy={dot.y}
-                    r={open ? 11 : 8}
-                    className={open ? "formation-hole is-open" : "formation-hole"}
-                    role={interactive ? "button" : undefined}
-                    tabIndex={interactive ? 0 : undefined}
-                    onClick={interactive ? () => toggleHole(dot) : undefined}
-                    onKeyDown={
-                      interactive
-                        ? (e) => {
-                            if (e.key === "Enter" || e.key === " ") {
-                              e.preventDefault();
-                              toggleHole(dot);
-                            }
-                          }
-                        : undefined
-                    }
-                    style={{ cursor: interactive ? "pointer" : "default" }}
-                  />
-                  {open ? (
-                    <text
-                      x={dot.x}
-                      y={dot.y}
-                      textAnchor="middle"
-                      dominantBaseline="central"
-                      className="formation-hole-mark"
-                      pointerEvents="none"
-                    >
-                      ?
-                    </text>
-                  ) : null}
-                </g>
-              );
-            })}
-        </svg>
-        <p className="field-help">
-          {!interactive
-            ? "La formación se guarda al editar el partido."
-            : openSlots.length > 0
-              ? `${openSlots.length} hueco${openSlots.length === 1 ? "" : "s"} marcado${openSlots.length === 1 ? "" : "s"} en la cancha.`
-              : "Sin huecos marcados: se usan los cupos rápidos de abajo."}
-        </p>
-      </div>
-
-      {openSlots.length > 0 ? (
-        <ul className="formation-open-list">
-          {openSlots
-            .slice()
-            .sort((a, b) => a.pitchIndex - b.pitchIndex)
-            .map((slot) => (
-              <li key={slot.pitchIndex} className="formation-open-row">
-                <span>Hueco #{slot.pitchIndex + 1}</span>
-                <label>
-                  Rol
-                  <select
-                    value={slot.position}
-                    onChange={(e) => updateSlotRole(slot.pitchIndex, e.target.value as Position)}
-                  >
-                    {positions.map((pos) => (
-                      <option key={pos} value={pos}>
-                        {positionLabel[pos as keyof typeof positionLabel] ?? pos}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              </li>
+      {isExpanded || !interactive ? (
+        <div className="formation-picker-drawer">
+          <p className="match-compose-field-label" id={`${uid}-formation`}>
+            Cambiar dibujo táctico
+          </p>
+          <p className="field-help">
+            {interactive
+              ? "Elegí el dibujo y tocá las posiciones que faltan en la cancha."
+              : "Dibujo táctico del partido."}
+          </p>
+          <div className="filter-chips match-compose-chips" role="group" aria-labelledby={`${uid}-formation`}>
+            {visible.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                className={formationId === item.id ? "is-on" : undefined}
+                aria-pressed={formationId === item.id}
+                onClick={() => selectFormation(item)}
+                title={item.name ?? item.label}
+              >
+                {item.label}
+              </button>
             ))}
-        </ul>
+            {all.length > featured.length ? (
+              <button type="button" className="is-ghost-chip" onClick={() => setShowAll((v) => !v)}>
+                {showAll ? "Ver menos" : `Ver más (${all.length - featured.length})`}
+              </button>
+            ) : null}
+          </div>
+
+          <div className="formation-preview">
+            <p className="formation-preview-label">
+              {entry.label}
+              {entry.name ? ` · ${entry.name}` : ""}
+            </p>
+            <svg
+              className="formation-preview-svg"
+              viewBox="0 0 360 220"
+              role="img"
+              aria-label={`Cancha ${entry.label}. Tocá una posición para marcar hueco.`}
+            >
+              <rect width="360" height="220" fill="#0c6b4c" />
+              <g fill="none" stroke="#d9f2a5" strokeWidth="1.4" opacity="0.85">
+                <rect x="40" y="28" width="140" height="164" />
+                <line x1="180" y1="28" x2="180" y2="192" />
+              </g>
+              {board.dots
+                .filter((d) => d.side === "a")
+                .map((dot) => {
+                  const open = openSlots.some((s) => s.pitchIndex === dot.pitchIndex);
+                  return (
+                    <g key={`p-${dot.pitchIndex}`}>
+                      <circle
+                        cx={dot.x}
+                        cy={dot.y}
+                        r={open ? 11 : 8}
+                        className={open ? "formation-hole is-open" : "formation-hole"}
+                        role={interactive ? "button" : undefined}
+                        tabIndex={interactive ? 0 : undefined}
+                        onClick={interactive ? () => toggleHole(dot) : undefined}
+                        onKeyDown={
+                          interactive
+                            ? (e) => {
+                                if (e.key === "Enter" || e.key === " ") {
+                                  e.preventDefault();
+                                  toggleHole(dot);
+                                }
+                              }
+                            : undefined
+                        }
+                        style={{ cursor: interactive ? "pointer" : "default" }}
+                      />
+                      {open ? (
+                        <text
+                          x={dot.x}
+                          y={dot.y}
+                          textAnchor="middle"
+                          dominantBaseline="central"
+                          className="formation-hole-mark"
+                          pointerEvents="none"
+                        >
+                          ?
+                        </text>
+                      ) : null}
+                    </g>
+                  );
+                })}
+            </svg>
+            <p className="field-help">
+              {!interactive
+                ? "La formación se guarda al editar el partido."
+                : openSlots.length > 0
+                  ? `${openSlots.length} hueco${openSlots.length === 1 ? "" : "s"} marcado${openSlots.length === 1 ? "" : "s"} en la cancha.`
+                  : "Sin huecos marcados: se usan los cupos rápidos de abajo."}
+            </p>
+          </div>
+
+          {openSlots.length > 0 ? (
+            <ul className="formation-open-list">
+              {openSlots
+                .slice()
+                .sort((a, b) => a.pitchIndex - b.pitchIndex)
+                .map((slot) => (
+                  <li key={slot.pitchIndex} className="formation-open-row">
+                    <span>Hueco #{slot.pitchIndex + 1}</span>
+                    <label>
+                      Rol
+                      <select
+                        value={slot.position}
+                        onChange={(e) => updateSlotRole(slot.pitchIndex, e.target.value as Position)}
+                      >
+                        {positions.map((pos) => (
+                          <option key={pos} value={pos}>
+                            {positionLabel[pos as keyof typeof positionLabel] ?? pos}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                  </li>
+                ))}
+            </ul>
+          ) : null}
+        </div>
       ) : null}
+
 
       <input type="hidden" name="formation_id" value={formationId} />
       <input

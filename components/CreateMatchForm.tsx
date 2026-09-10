@@ -524,25 +524,6 @@ export function CreateMatchForm({
                   setVenueMissing(false);
                 }}
               />
-              {selectedVenue ? (
-                <div className="venue-day-block">
-                  <p className="match-compose-field-label">Horas ya tomadas en {selectedVenue.name}</p>
-                  <p className="field-help">
-                    Una pateada = esa cancha a esa hora. Si choca: ¿vas con ellos o en contra?
-                  </p>
-                  <VenueDayTimeline
-                    items={dayOccupancy}
-                    timeZone={city.timezone}
-                    selectedStartsAtIso={selectedStartsIso}
-                    selectedDurationMin={durationMin}
-                    emptyHint="Ese día todavía está libre en esta cancha."
-                    compact
-                  />
-                </div>
-              ) : null}
-              <p className="match-compose-disclaimer" role="note">
-                {huecoDisclaimer}
-              </p>
             </fieldset>
 
             <div className="match-compose-actions match-compose-actions-inline">
@@ -566,10 +547,9 @@ export function CreateMatchForm({
             className={step === 2 ? "create-step is-active" : "create-step"}
             hidden={step !== 2}
           >
+            {/* Módulo 1: Horario & Disponibilidad */}
             <fieldset className="match-compose-group">
-              <legend className="match-compose-legend">Cuándo</legend>
-              <p className="field-help">Usa una hora que todavía no haya pasado.</p>
-
+              <legend className="match-compose-legend">01 · Horario y Cancha</legend>
               <div className="form-split">
                 <label htmlFor={startsId}>
                   Hora de inicio <span className="req-mark" aria-hidden="true">*</span>
@@ -603,7 +583,7 @@ export function CreateMatchForm({
               </div>
               {selectedVenue ? (
                 <div className="venue-day-block">
-                  <p className="match-compose-field-label">Ocupación ese día en {selectedVenue.name}</p>
+                  <p className="match-compose-field-label">Disponibilidad ese día en {selectedVenue.name}</p>
                   <VenueDayTimeline
                     items={dayOccupancy}
                     timeZone={city.timezone}
@@ -616,13 +596,10 @@ export function CreateMatchForm({
               ) : null}
             </fieldset>
 
-            <p className="match-compose-disclaimer" role="note">
-              {huecoDisclaimer}
-            </p>
-
+            {/* Módulo 2: Convocatoria & Cupos */}
             {isEdit ? (
               <fieldset className="match-compose-group">
-                <legend className="match-compose-legend">Cupos</legend>
+                <legend className="match-compose-legend">02 · Cupos del partido</legend>
                 <p className="field-help">
                   Podés sumar o quitar huecos. No se quitan cupos confirmados ni con pedido pendiente.
                 </p>
@@ -710,12 +687,10 @@ export function CreateMatchForm({
                 </button>
               </fieldset>
             ) : (
-              <>
-                <fieldset className="match-compose-group">
-                  <legend className="match-compose-legend">Tipo de Convocatoria</legend>
-                  <p className="field-help">
-                    ¿Te faltan cupos para armar tu equipo o ya lo tienes listo y buscas un equipo rival?
-                  </p>
+              <fieldset className="match-compose-group">
+                <legend className="match-compose-legend">02 · Convocatoria y Cupos</legend>
+
+                <div className="match-compose-mode-row">
                   <div className="filter-chips match-compose-chips" role="group">
                     <button
                       type="button"
@@ -734,11 +709,10 @@ export function CreateMatchForm({
                       ⚔️ Buscar equipo rival
                     </button>
                   </div>
-                </fieldset>
+                </div>
 
                 {matchMode === "challenge" ? (
-                  <fieldset className="match-compose-group">
-                    <legend className="match-compose-legend">Reto y Rival</legend>
+                  <div className="match-compose-challenge-fields">
                     <p className="field-help">
                       Tu equipo ({playersPerSideFromFormat(activeFormat)} jugadores) está listo. Se abrirán {playersPerSideFromFormat(activeFormat)} cupos para que la comunidad arme el rival o un equipo acepte el reto.
                     </p>
@@ -769,80 +743,81 @@ export function CreateMatchForm({
                         </select>
                       </label>
                     </div>
-                  </fieldset>
+                  </div>
                 ) : (
-                  <fieldset className="match-compose-group">
-                    <legend className="match-compose-legend">Cupos</legend>
-                    <p className="field-help">
-                      {pitchOpenSlots.length > 0
-                        ? "Estás usando huecos marcados en la cancha. Los cupos rápidos se ignoran."
-                        : "Cuántos faltan para cerrar el partido (cualquiera), o marcá huecos arriba en la formación."}
-                    </p>
+                  <div className="match-compose-slots-row">
+                    <div className="match-compose-open-wrap">
+                      <label htmlFor={openId} className="match-compose-open-label">
+                        Cupos faltantes <span className="req-mark" aria-hidden="true">*</span>
+                      </label>
+                      <div className="match-compose-open-controls">
+                        <input
+                          id={openId}
+                          type="number"
+                          name="open_count"
+                          min={1}
+                          max={12}
+                          value={openCount}
+                          onChange={(e) => {
+                            setOpenCount(Number(e.target.value));
+                            setPitchOpenSlots([]);
+                          }}
+                          inputMode="numeric"
+                          disabled={pitchOpenSlots.length > 0}
+                          className="match-compose-open-input"
+                        />
+                        <div className="filter-chips">
+                          {[2, 4, 6].map((n) => (
+                            <button
+                              key={n}
+                              type="button"
+                              className={openCount === n && pitchOpenSlots.length === 0 ? "is-on" : undefined}
+                              aria-pressed={openCount === n && pitchOpenSlots.length === 0}
+                              onClick={() => {
+                                setOpenCount(n);
+                                setPitchOpenSlots([]);
+                              }}
+                            >
+                              {n} cupos
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                    {pitchOpenSlots.length > 0 ? (
+                      <p className="field-help">
+                        Estás usando {pitchOpenSlots.length} huecos marcados en la cancha interactiva.
+                      </p>
+                    ) : null}
+                  </div>
+                )}
 
-                    <label htmlFor={openId}>
-                      Faltan <span className="req-mark" aria-hidden="true">*</span>
-                      <input
-                        id={openId}
-                        type="number"
-                        name="open_count"
-                        min={1}
-                        max={12}
-                        value={openCount}
-                        onChange={(e) => {
-                          setOpenCount(Number(e.target.value));
-                          setPitchOpenSlots([]);
-                        }}
-                        inputMode="numeric"
-                        disabled={pitchOpenSlots.length > 0}
-                      />
-                    </label>
-
-                    <div className="filter-chips">
-                      {[2, 4, 6].map((n) => (
+                <div className="match-compose-bench-wrap">
+                  <p className="match-compose-field-label">Suplentes / Rotación activa</p>
+                  <div className="match-compose-bench-controls">
+                    <div className="filter-chips" role="group">
+                      {[0, 1, 2, 3, 4].map((n) => (
                         <button
                           key={n}
                           type="button"
-                          className={openCount === n && pitchOpenSlots.length === 0 ? "is-on" : undefined}
-                          aria-pressed={openCount === n && pitchOpenSlots.length === 0}
-                          onClick={() => {
-                            setOpenCount(n);
-                            setPitchOpenSlots([]);
-                          }}
+                          className={benchCount === n ? "is-on" : undefined}
+                          aria-pressed={benchCount === n}
+                          onClick={() => setBenchCount(n)}
                         >
-                          {n} cupos
+                          {n === 0 ? "Sin banca" : `${n} banca`}
                         </button>
                       ))}
                     </div>
-                  </fieldset>
-                )}
-
-                <fieldset className="match-compose-group">
-                  <legend className="match-compose-legend">Suplentes / Rotación activa</legend>
-                  <p className="field-help">
-                    Suma relevos para oxigenar el partido y que la cuota de la cancha se divida entre más jugadores.
-                  </p>
-                  <div className="filter-chips" role="group">
-                    {[0, 1, 2, 3, 4].map((n) => (
-                      <button
-                        key={n}
-                        type="button"
-                        className={benchCount === n ? "is-on" : undefined}
-                        aria-pressed={benchCount === n}
-                        onClick={() => setBenchCount(n)}
-                      >
-                        {n === 0 ? "Sin banca" : `${n} en rotación`}
-                      </button>
-                    ))}
-                  </div>
-
-                  {benchCount > 0 ? (
-                    <div style={{ marginTop: "1rem" }}>
-                      <label htmlFor={`${formId}-rotation-rule`}>
-                        Pacto de rotación
+                    {benchCount > 0 ? (
+                      <div className="match-compose-bench-rule">
+                        <label htmlFor={`${formId}-rotation-rule`} className="sr-only">
+                          Pacto de rotación
+                        </label>
                         <select
                           id={`${formId}-rotation-rule`}
                           value={rotationRule}
                           onChange={(e) => setRotationRule(e.target.value)}
+                          className="match-compose-bench-select"
                         >
                           {ROTATION_RULES.map((rule) => (
                             <option key={rule} value={rule}>
@@ -850,62 +825,77 @@ export function CreateMatchForm({
                             </option>
                           ))}
                         </select>
-                      </label>
-                    </div>
-                  ) : null}
-                </fieldset>
-              </>
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
+              </fieldset>
             )}
 
-            <fieldset className="match-compose-group match-compose-aporte">
-              <legend className="match-compose-legend">Aporte entre jugadores</legend>
-              <p className="field-help">
-                Lo que pone cada uno al grupo. Vacío = se arregla en el partido.
-              </p>
-              <label htmlFor={costId}>
-                Aporte / persona (COP)
-                <input
-                  id={costId}
-                  type="number"
-                  name="cost_per_person"
-                  min={0}
-                  step={500}
-                  value={costPerPerson}
-                  onChange={(e) => setCostPerPerson(e.target.value)}
-                  placeholder="15000"
-                  inputMode="numeric"
-                />
-              </label>
-              <div className="filter-chips">
-                <button
-                  type="button"
-                  className={costPerPerson === "0" ? "is-on" : undefined}
-                  aria-pressed={costPerPerson === "0"}
-                  onClick={() => setCostPerPerson("0")}
-                >
-                  Gratis
-                </button>
-              </div>
-            </fieldset>
-
-            {venueId && sport && startsAtIso && durationMin && !isEdit ? (
-              <div className="match-compose-ref" aria-label="Referencia de alquiler de la cancha">
-                <p className="match-compose-ref-kicker">Referencia · alquiler de franja</p>
-                <VenueRateHint
-                  key={`${venueId}-${sport}-${startsAtIso}-${durationMin}`}
-                  venueId={venueId}
-                  sport={sport}
-                  startsAt={startsAtIso}
-                  durationMin={durationMin}
-                  canOverride={canOverrideVenueRate}
-                />
-              </div>
-            ) : null}
-
+            {/* Módulo 3: Condiciones y Nota */}
             <fieldset className="match-compose-group">
-              <legend className="match-compose-legend">Quién entra</legend>
+              <legend className="match-compose-legend">03 · Condiciones y Nota</legend>
 
-              {isEdit ? null : (
+              <div className="form-split">
+                <div>
+                  <label htmlFor={costId}>
+                    Aporte por persona (COP)
+                  </label>
+                  <div className="match-compose-cost-row">
+                    <input
+                      id={costId}
+                      type="number"
+                      name="cost_per_person"
+                      min={0}
+                      step={500}
+                      value={costPerPerson}
+                      onChange={(e) => setCostPerPerson(e.target.value)}
+                      placeholder="Ej: 15000"
+                      inputMode="numeric"
+                    />
+                    <button
+                      type="button"
+                      className={`btn-ghost match-compose-gratis-btn${costPerPerson === "0" ? " is-on" : ""}`}
+                      onClick={() => setCostPerPerson("0")}
+                    >
+                      Gratis
+                    </button>
+                  </div>
+                  {venueId && sport && startsAtIso && durationMin && !isEdit ? (
+                    <div className="match-compose-rate-inline">
+                      <VenueRateHint
+                        key={`${venueId}-${sport}-${startsAtIso}-${durationMin}`}
+                        venueId={venueId}
+                        sport={sport}
+                        startsAt={startsAtIso}
+                        durationMin={durationMin}
+                        canOverride={canOverrideVenueRate}
+                      />
+                    </div>
+                  ) : null}
+                </div>
+
+                <div>
+                  <p className="match-compose-field-label" id={genderId}>
+                    Quién juega
+                  </p>
+                  <div className="filter-chips match-compose-chips" role="group" aria-labelledby={genderId}>
+                    {GENDERS.map((gender) => (
+                      <button
+                        key={gender}
+                        type="button"
+                        className={genderPolicy === gender ? "is-on" : undefined}
+                        aria-pressed={genderPolicy === gender}
+                        onClick={() => setGenderPolicy(gender)}
+                      >
+                        {genderLabel[gender]}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {!isEdit ? (
                 <div className="form-split">
                   <label htmlFor={positionId}>
                     Posición
@@ -932,7 +922,7 @@ export function CreateMatchForm({
                     </select>
                   </label>
                 </div>
-              )}
+              ) : null}
 
               {!isEdit && hasKeeper ? (
                 <label className="check-line">
@@ -941,37 +931,21 @@ export function CreateMatchForm({
                 </label>
               ) : null}
 
-              <p className="match-compose-field-label" id={genderId}>
-                Quién juega
-              </p>
-              <div className="filter-chips match-compose-chips" role="group" aria-labelledby={genderId}>
-                {GENDERS.map((gender) => (
-                  <button
-                    key={gender}
-                    type="button"
-                    className={genderPolicy === gender ? "is-on" : undefined}
-                    aria-pressed={genderPolicy === gender}
-                    onClick={() => setGenderPolicy(gender)}
-                  >
-                    {genderLabel[gender]}
-                  </button>
-                ))}
-              </div>
-            </fieldset>
-
-            <fieldset className="match-compose-group">
-              <legend className="match-compose-legend">Nota</legend>
               <label htmlFor={notesId}>
                 Detalle para el grupo <span className="field-optional">(opcional)</span>
                 <textarea
                   id={notesId}
                   name="notes"
-                  rows={3}
+                  rows={2}
                   maxLength={500}
                   defaultValue={edit?.notes ?? ""}
                   placeholder="Punto de encuentro, chalecos, nivel de la pateada…"
                 />
               </label>
+
+              <p className="match-compose-disclaimer" role="note">
+                {huecoDisclaimer}
+              </p>
             </fieldset>
 
             <div className="match-compose-submit" aria-live="polite">
@@ -1039,7 +1013,7 @@ export function CreateMatchForm({
                   <Link href={`/canchas/${selectedVenue.slug}`}>Ficha de la cancha</Link>
                 </p>
               </div>
-              <div className="venue-map-wrap venue-map-detail match-venue-map">
+              <div className="venue-map-wrap venue-map-detail match-venue-map match-compose-aside-map">
                 <VenueMapLazy
                   venues={[selectedVenue]}
                   center={{ lat: selectedVenue.lat, lng: selectedVenue.lng }}
