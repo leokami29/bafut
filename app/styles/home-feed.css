@@ -371,3 +371,570 @@
     padding-inline: 2.5rem;
   }
 }
+
+/* ==========================================================================
+   HOME COMMUNITY STATS & MULTISPORT ECOSYSTEM (WCAG AA COMPLIANT)
+   ========================================================================== */
+
+.home-community-stats {
+  padding-top: 2.75rem;
+  padding-bottom: 3.25rem;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--turf) 6%, var(--paper)) 0%,
+      color-mix(in oklab, var(--turf) 2%, var(--paper)) 100%
+    );
+  border-block: 1px solid color-mix(in oklab, var(--ink) 12%, transparent);
+}
+
+.home-stats-sheet-head {
+  margin-bottom: 2rem;
+  max-width: 46rem;
+}
+
+.home-stats-eyebrow-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 0.4rem;
+}
+
+.home-stats-live-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--turf-deep);
+  background: color-mix(in oklab, var(--turf) 12%, var(--paper));
+  padding: 0.15rem 0.5rem;
+  border: 1px solid color-mix(in oklab, var(--turf) 28%, transparent);
+}
+
+.stats-live-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #059669;
+  box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.3);
+}
+
+.home-stats-heading {
+  margin: 0;
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(1.45rem, 3.4vw, 1.95rem);
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--turf-deep);
+}
+
+.home-stats-lede {
+  margin: 0.45rem 0 0;
+  max-width: 48ch;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: color-mix(in oklab, var(--ink) 78%, transparent);
+}
+
+/* 1. KPIs Grid */
+.home-stats-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 0.85rem;
+  margin-bottom: 1.75rem;
+}
+
+.home-kpi-card {
+  background: var(--paper);
+  border: 1px solid color-mix(in oklab, var(--ink) 14%, transparent);
+  padding: 1.25rem 1.15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.home-kpi-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--turf);
+  box-shadow: 0 6px 18px color-mix(in oklab, var(--turf) 10%, transparent);
+}
+
+.home-kpi-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.home-kpi-icon-wrap {
+  width: 2.35rem;
+  height: 2.35rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+}
+
+.home-kpi-icon-wrap.is-green {
+  background: color-mix(in oklab, #059669 14%, var(--paper));
+  color: #065f46;
+  border: 1px solid color-mix(in oklab, #059669 32%, transparent);
+}
+
+.home-kpi-icon-wrap.is-gold {
+  background: color-mix(in oklab, var(--flood) 30%, var(--paper));
+  color: #78350f;
+  border: 1px solid color-mix(in oklab, var(--flood) 55%, transparent);
+}
+
+.home-kpi-icon-wrap.is-turf {
+  background: color-mix(in oklab, var(--turf) 14%, var(--paper));
+  color: var(--turf-deep);
+  border: 1px solid color-mix(in oklab, var(--turf) 32%, transparent);
+}
+
+.home-kpi-icon-wrap.is-amber {
+  background: color-mix(in oklab, #d97706 14%, var(--paper));
+  color: #92400e;
+  border: 1px solid color-mix(in oklab, #d97706 32%, transparent);
+}
+
+.kpi-emoji {
+  font-size: 1.15rem;
+}
+
+.home-kpi-tag {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: color-mix(in oklab, var(--ink) 60%, transparent);
+}
+
+.home-kpi-number {
+  font-family: var(--font-display), sans-serif;
+  font-size: 2.1rem;
+  font-weight: 800;
+  color: var(--turf-deep);
+  line-height: 1;
+  display: block;
+  margin-bottom: 0.2rem;
+}
+
+.home-kpi-label {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--turf-deep);
+  display: block;
+}
+
+.home-kpi-desc {
+  margin: 0.25rem 0 0;
+  font-size: 0.86rem;
+  line-height: 1.4;
+  color: color-mix(in oklab, var(--ink) 78%, transparent);
+}
+
+/* 2. Canchas Públicas vs Privadas */
+.home-venues-split-card {
+  background: var(--paper);
+  border: 1px solid color-mix(in oklab, var(--ink) 14%, transparent);
+  padding: 1.45rem;
+  margin-bottom: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.home-venues-split-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 0.75rem 1rem;
+}
+
+.home-split-kicker {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--turf);
+  display: block;
+  margin-bottom: 0.15rem;
+}
+
+.home-split-title {
+  margin: 0;
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--turf-deep);
+}
+
+.home-split-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--turf-deep);
+  text-decoration: none;
+  padding-bottom: 0.15rem;
+  border-bottom: 2px solid var(--turf);
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.home-split-link:hover {
+  color: var(--turf);
+  border-bottom-color: var(--turf-deep);
+}
+
+.home-split-link:focus-visible {
+  outline: 2px solid var(--flood);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 4px var(--turf-deep);
+}
+
+.home-split-bar-wrap {
+  display: flex;
+  height: 1.85rem;
+  overflow: hidden;
+  background: color-mix(in oklab, var(--ink) 12%, transparent);
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border: 1px solid color-mix(in oklab, var(--ink) 18%, transparent);
+}
+
+.home-split-bar-segment.is-public {
+  background: #047857;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  padding-left: 0.75rem;
+  transition: width 0.3s ease;
+  white-space: nowrap;
+}
+
+.home-split-bar-segment.is-private {
+  background: #073828;
+  color: var(--chalk);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 0.75rem;
+  transition: width 0.3s ease;
+  white-space: nowrap;
+}
+
+.home-split-cards-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 0.85rem;
+}
+
+.home-split-subcard {
+  padding: 1.1rem 1.15rem;
+  background: color-mix(in oklab, var(--turf) 3%, var(--paper));
+  border: 1px solid color-mix(in oklab, var(--ink) 10%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.home-subcard-title {
+  margin: 0;
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--turf-deep);
+}
+
+.home-subcard-desc {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  color: color-mix(in oklab, var(--ink) 78%, transparent);
+}
+
+.home-split-badge-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.2rem;
+}
+
+.home-split-badge {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.15rem 0.45rem;
+}
+
+.home-split-badge.is-green {
+  background: color-mix(in oklab, #047857 14%, var(--paper));
+  color: #064e3b;
+  border: 1px solid color-mix(in oklab, #047857 32%, transparent);
+}
+
+.home-split-badge.is-turf {
+  background: color-mix(in oklab, var(--turf) 14%, var(--paper));
+  color: var(--turf-deep);
+  border: 1px solid color-mix(in oklab, var(--turf) 32%, transparent);
+}
+
+.home-split-count {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--turf-deep);
+}
+
+/* 3. Desglose por Deportes Activos */
+.home-sports-showcase {
+  margin-bottom: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.home-sports-showcase-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.4rem;
+}
+
+.home-sports-subtitle {
+  margin: 0;
+  font-size: 0.92rem;
+  color: color-mix(in oklab, var(--ink) 75%, transparent);
+}
+
+.home-sports-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 0.85rem;
+}
+
+.home-sport-card {
+  padding: 1.15rem;
+  background: var(--paper);
+  border: 1px solid color-mix(in oklab, var(--ink) 14%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  position: relative;
+}
+
+.home-sport-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px color-mix(in oklab, var(--ink) 8%, transparent);
+  border-color: var(--turf);
+}
+
+.home-sport-card:focus-visible {
+  outline: 2px solid var(--flood);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px var(--turf-deep);
+}
+
+/* Bordes superiores acentuados por deporte */
+.home-sport-card.is-padel {
+  border-top: 4px solid #059669;
+}
+
+.home-sport-card.is-futbol {
+  border-top: 4px solid #0c6b4c;
+}
+
+.home-sport-card.is-basquet {
+  border-top: 4px solid #d97706;
+}
+
+.home-sport-card.is-voleibol {
+  border-top: 4px solid #0284c7;
+}
+
+.home-sport-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.2rem;
+}
+
+.home-sport-icon-circle {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.home-sport-icon-circle.is-padel {
+  background: color-mix(in oklab, #059669 14%, var(--paper));
+  color: #065f46;
+  border: 1px solid color-mix(in oklab, #059669 30%, transparent);
+}
+
+.home-sport-icon-circle.is-futbol {
+  background: color-mix(in oklab, #0c6b4c 14%, var(--paper));
+  color: var(--turf-deep);
+  border: 1px solid color-mix(in oklab, #0c6b4c 30%, transparent);
+}
+
+.home-sport-icon-circle.is-basquet {
+  background: color-mix(in oklab, #d97706 14%, var(--paper));
+  color: #92400e;
+  border: 1px solid color-mix(in oklab, #d97706 30%, transparent);
+}
+
+.home-sport-icon-circle.is-voleibol {
+  background: color-mix(in oklab, #0284c7 14%, var(--paper));
+  color: #0369a1;
+  border: 1px solid color-mix(in oklab, #0284c7 30%, transparent);
+}
+
+.home-sport-count-pill {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--turf-deep);
+  background: color-mix(in oklab, var(--turf) 10%, var(--paper));
+  padding: 0.15rem 0.5rem;
+  border: 1px solid color-mix(in oklab, var(--turf) 25%, transparent);
+}
+
+.home-sport-name {
+  margin: 0;
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--turf-deep);
+}
+
+.home-sport-desc {
+  margin: 0;
+  font-size: 0.86rem;
+  line-height: 1.4;
+  color: color-mix(in oklab, var(--ink) 78%, transparent);
+  flex: 1;
+}
+
+.home-sport-cta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--turf-deep);
+  margin-top: 0.45rem;
+  padding-top: 0.45rem;
+  border-top: 1px dashed color-mix(in oklab, var(--ink) 12%, transparent);
+}
+
+.home-sport-card:hover .home-sport-arrow {
+  transform: translateX(4px);
+  transition: transform 0.15s ease;
+}
+
+/* 4. Footer CTA de la sección */
+.home-stats-footer-cta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem 1.5rem;
+  padding: 1.35rem 1.5rem;
+  background: color-mix(in oklab, var(--turf) 8%, var(--paper));
+  border: 1px solid color-mix(in oklab, var(--turf) 25%, transparent);
+}
+
+.home-stats-cta-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.home-stats-cta-copy strong {
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--turf-deep);
+}
+
+.home-stats-cta-copy span {
+  font-size: 0.92rem;
+  color: color-mix(in oklab, var(--ink) 78%, transparent);
+}
+
+.home-stats-cta-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.home-cta-btn-primary {
+  min-height: 2.85rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.home-cta-btn-secondary {
+  min-height: 2.85rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+@media (max-width: 640px) {
+  .home-community-stats {
+    padding-top: 2rem;
+    padding-bottom: 2.5rem;
+  }
+
+  .home-stats-footer-cta {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .home-stats-cta-actions {
+    flex-direction: column;
+  }
+
+  .home-stats-cta-actions .btn-flood,
+  .home-stats-cta-actions .btn-turf {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+

@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { HeroBanner } from "@/components/HeroBanner";
+import { HomeCommunityStats } from "@/components/HomeCommunityStats";
 import { HomeFeed } from "@/components/HomeFeed";
 import { HomeFeedSkeleton } from "@/components/HomeFeedSkeleton";
 import { HomeHowItWorks } from "@/components/HomeHowItWorks";
 import { HomeVenueOwner } from "@/components/HomeVenueOwner";
 import { JsonLd, homeJsonLd } from "@/components/JsonLd";
-import { getActiveCity, getUpcomingMatches } from "@/lib/data";
+import { getActiveCity, getUpcomingMatches, getHomeCommunityStats } from "@/lib/data";
 import {
   DEFAULT_DESCRIPTION,
   DEFAULT_TITLE,
@@ -26,7 +27,10 @@ export const metadata: Metadata = {
 export default async function HomePage() {
   const city = await getActiveCity();
   const cityName = city?.name ?? "Barranquilla";
-  const matches = city ? await getUpcomingMatches(city.id) : [];
+  const [matches, stats] = await Promise.all([
+    city ? getUpcomingMatches(city.id) : Promise.resolve([]),
+    getHomeCommunityStats(city?.id),
+  ]);
   const hasUpcoming = matches.length > 0;
 
   return (
@@ -39,6 +43,8 @@ export default async function HomePage() {
       <Suspense fallback={<HomeFeedSkeleton cityName={cityName} />}>
         <HomeFeed />
       </Suspense>
+
+      <HomeCommunityStats stats={stats} cityName={cityName} />
 
       <HomeHowItWorks cityName={cityName} />
 

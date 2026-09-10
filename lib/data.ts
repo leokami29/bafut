@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { CITY_COOKIE, DEFAULT_CITY_SLUG } from "@/lib/constants";
 import { mapDayOccupancyRpcRow } from "@/lib/occupancy";
 import { createClient } from "@/lib/supabase/server";
+import { tryCreateServiceClient } from "@/lib/supabase/admin";
 import type { MatchDetail, ProfileWithContact, VenueWithPremium } from "@/lib/types";
 import { venueHasActivePremium } from "@/lib/venue-premium";
 
@@ -586,3 +587,106 @@ export const getVenuePublicPricing = cache(async (venueId: string): Promise<Venu
     })),
   };
 });
+
+export type HomeCommunityStats = {
+  totalUsers: number;
+  totalSlots: number;
+  openSlots: number;
+  totalMatches: number;
+  totalVenues: number;
+  publicVenues: number;
+  privateVenues: number;
+  totalTournaments: number;
+  activeTournaments: number;
+  sports: {
+    padel: number;
+    futbol: number;
+    basquet: number;
+    voleibol: number;
+  };
+};
+
+export const getHomeCommunityStats = cache(
+  async (cityId?: string): Promise<HomeCommunityStats> => {
+    const supabase = tryCreateServiceClient() ?? (await createClient());
+
+    let venuesQ = supabase
+      .from("venues")
+      .select("id, venue_kind, sports, city_id")
+      .is("deleted_at", null);
+    let matchesQ = supabase
+      .from("matches")
+      .select("id", { count: "exact", head: true });
+    let slotsQ = supabase
+      .from("match_slots")
+      .select("id", { count: "exact", head: true });
+    let profilesQ = supabase
+      .from("profiles")
+      .select("id", { count: "exact", head: true });
+    let tournamentsQ = supabase
+      .from("tournaments")
+      .select("id, status, visibility, venue_id");
+
+    if (cityId) {
+      venuesQ = venuesQ.eq("city_id", cityId);
+      matchesQ = matchesQ.eq("city_id", cityId);
+    }
+
+    const [
+      { data: venuesData },
+      { count: matchesCount },
+      { count: slotsCount },
+      { count: profilesCount },
+      { data: tournamentsData },
+    ] = await Promise.all([
+      venuesQ,
+      matchesQ,
+      slotsQ,
+      profilesQ,
+      tournamentsQ,
+    ]);
+
+    const venues = venuesData ?? [];
+    const totalVenues = venues.length;
+    const publicVenues = venues.filter((v) => v.venue_kind === "publica").length;
+    const privateVenues = venues.filter((v) => v.venue_kind !== "publica").length;
+
+    const padelVenues = venues.filter((v) => v.sports?.includes("padel")).length;
+    const futbolVenues = venues.filter((v) =>
+      v.sports?.some((s) => s === "futbol" || s === "futbol_sala"),
+    ).length;
+    const basquetVenues = venues.filter((v) => v.sports?.includes("basquet")).length;
+    const voleibolVenues = venues.filter((v) => v.sports?.includes("voleibol")).length;
+
+    const tournaments = tournamentsData ?? [];
+    const venueIds = new Set(venues.map((v) => v.id));
+    const filteredTournaments = cityId
+      ? tournaments.filter((t) => venueIds.has(t.venue_id))
+      : tournaments;
+    const publishedTournaments = filteredTournaments.filter(
+      (t) => t.visibility === "published",
+    );
+    const activeTournaments = publishedTournaments.filter(
+      (t) => t.status === "active" || t.status === "registration",
+    );
+
+    return {
+      totalUsers: profilesCount ?? 0,
+      totalSlots: slotsCount ?? 0,
+      openSlots: slotsCount ?? 0,
+      totalMatches: matchesCount ?? 0,
+      totalVenues,
+      publicVenues,
+      privateVenues,
+      totalTournaments: publishedTournaments.length,
+      activeTournaments: activeTournaments.length,
+      sports: {
+        padel: padelVenues,
+        futbol: futbolVenues,
+        basquet: basquetVenues,
+        voleibol: voleibolVenues,
+      },
+    };
+  },
+);
+

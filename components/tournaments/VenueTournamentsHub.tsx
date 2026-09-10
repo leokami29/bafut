@@ -44,11 +44,11 @@ type Props = {
 };
 
 const SPORT_ACCENT: Record<string, { badge: string; color: string; term: string }> = {
-  padel: { badge: "🎾 Pádel", color: "#10b981", term: "parejas" },
-  futbol: { badge: "⚽ Fútbol", color: "#0c6b4c", term: "equipos" },
-  futbol_sala: { badge: "⚽ Futsal", color: "#0c6b4c", term: "equipos" },
-  basquet: { badge: "🏀 Básquet", color: "#f59e0b", term: "equipos" },
-  voleibol: { badge: "🏐 Voleibol", color: "#0ea5e9", term: "equipos" },
+  padel: { badge: "Pádel", color: "#10b981", term: "parejas" },
+  futbol: { badge: "Fútbol", color: "#0c6b4c", term: "equipos" },
+  futbol_sala: { badge: "Futsal", color: "#0c6b4c", term: "equipos" },
+  basquet: { badge: "Básquet", color: "#f59e0b", term: "equipos" },
+  voleibol: { badge: "Voleibol", color: "#0ea5e9", term: "equipos" },
 };
 
 function getCtaLabel(format: string, status: string): string {
