@@ -1,19 +1,18 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { TournamentBracketTable } from "@/components/tournaments/TournamentBracketTable";
-import { TournamentGroupStandings } from "@/components/tournaments/TournamentGroupStandings";
+import { ArrowLeft } from "@/components/tournaments/TournamentIcons";
+import { TournamentVisualBracket } from "@/components/tournaments/TournamentVisualBracket";
+import { TournamentLeagueView } from "@/components/tournaments/TournamentLeagueView";
+import { TournamentSportHeader } from "@/components/tournaments/TournamentSportHeader";
+import { TournamentSportIcon } from "@/components/tournaments/TournamentSportIcon";
 import { TournamentStatsPanel } from "@/components/tournaments/TournamentStatsPanel";
 import { getActiveCity, getVenueBySlug } from "@/lib/data";
 import { isFeatureEnabled } from "@/lib/feature-flags";
 import { isUuid } from "@/lib/ids";
+import { tryCreateServiceClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import type { TournamentFormat, TournamentSport, TournamentStatus } from "@/lib/tournaments/authz";
-import {
-  tournamentFormatLabel,
-  tournamentSportLabel,
-  tournamentStatusLabel,
-} from "@/lib/tournaments/labels";
 import {
   loadGroupStandings,
   loadTournamentBracket,
@@ -35,7 +34,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const city = await getActiveCity();
   const venue = city ? await getVenueBySlug(city.id, slug) : null;
-  const supabase = await createClient();
+  const supabase = tryCreateServiceClient() ?? (await createClient());
   const { data: tournament } = await supabase
     .from("tournaments")
     .select("name, visibility")
@@ -71,7 +70,7 @@ export default async function VenueTournamentPublicDetailPage({ params }: Props)
   const flagOn = await isFeatureEnabled("venue_tournaments");
   if (!flagOn) notFound();
 
-  const supabase = await createClient();
+  const supabase = tryCreateServiceClient() ?? (await createClient());
   const { data: tournament } = await supabase
     .from("tournaments")
     .select(
@@ -90,8 +89,11 @@ export default async function VenueTournamentPublicDetailPage({ params }: Props)
 
   const sport = tournament.sport as TournamentSport;
   const format = tournament.format as TournamentFormat;
-  const showLeagueTable =
-    format === "round_robin" || format === "groups_knockout";
+  const isKnockout = format === "single_elim" || format === "double_elim";
+  const isLeague = format === "round_robin";
+  const isGroupsKnockout = format === "groups_knockout";
+
+  const showLeagueTable = isLeague || isGroupsKnockout;
 
   const [{ data: teams }, bracket, stats, groupStandings] = await Promise.all([
     supabase
@@ -107,82 +109,173 @@ export default async function VenueTournamentPublicDetailPage({ params }: Props)
   ]);
 
   const status = tournament.status as TournamentStatus;
+  const teamsList = teams ?? [];
+
+  // Separación para formato híbrido (Grupos + Llave)
+  const knockoutMatches = isGroupsKnockout
+    ? bracket.matches.filter((m) => m.stageType !== "round_robin")
+    : bracket.matches;
+  const knockoutRounds = isGroupsKnockout
+    ? bracket.rounds.filter((r) => knockoutMatches.some((m) => m.roundId === r.id))
+    : bracket.rounds;
+  const groupMatches = isGroupsKnockout
+    ? bracket.matches.filter((m) => m.stageType === "round_robin")
+    : bracket.matches;
+  const groupRounds = isGroupsKnockout
+    ? bracket.rounds.filter((r) => groupMatches.some((m) => m.roundId === r.id))
+    : bracket.rounds;
+
+  const sportParticipantTerm = sport === "padel" ? "Parejas" : "Equipos";
 
   return (
-    <main className="page page-narrow" id="main">
-      <p className="tournament-public-nav">
-        <Link href={`/canchas/${slug}/torneos`}>← Torneos · {venue.name}</Link>
-      </p>
-      <header className="page-head">
-        <p className="eyebrow">
-          {tournamentSportLabel[sport] ?? tournament.sport} ·{" "}
-          {tournamentFormatLabel[format] ?? tournament.format}
-        </p>
-        <h1>{tournament.name}</h1>
-        <p className="tournament-list-meta">
-          <span>{tournamentStatusLabel[status] ?? tournament.status}</span>
-          <span>{(teams ?? []).length} equipos</span>
-        </p>
-      </header>
+    <main className="page page-tournament-detail" id="main">
+      <nav className="tournament-public-nav" aria-label="Navegación de torneos">
+        <Link href={`/canchas/${slug}/torneos`} className="tournament-back-link">
+          <ArrowLeft size={15} aria-hidden="true" />
+          <span>Todos los torneos · {venue.name}</span>
+        </Link>
+      </nav>
 
-      <section aria-labelledby="public-teams-title">
-        <h2 id="public-teams-title" className="subhead">
-          Equipos
-        </h2>
-        {(teams ?? []).length === 0 ? (
-          <p className="field-help">Sin equipos publicados todavía.</p>
+      {/* Header temático según el deporte */}
+      <TournamentSportHeader
+        name={tournament.name}
+        sport={sport}
+        format={format}
+        status={status}
+        teamCount={teamsList.length}
+        maxTeams={tournament.max_teams}
+        venueName={venue.name}
+        venueSlug={slug}
+        cityName={city.name}
+        startsAt={tournament.starts_at}
+      />
+
+      {/* Formato 1: Eliminación Directa / Doble Eliminación (Llave Visual de Árbol) */}
+      {isKnockout && (
+        <section aria-labelledby="public-bracket-title" className="tournament-main-section">
+          <div className="section-head-split">
+            <div>
+              <span className="section-kicker">Cuadro de Competencia</span>
+              <h2 id="public-bracket-title" className="subhead">
+                Árbol de Llaves
+              </h2>
+            </div>
+            {bracket.stageName ? (
+              <span className="badge tournament-stage-pill">{bracket.stageName}</span>
+            ) : null}
+          </div>
+
+          <TournamentVisualBracket
+            matches={bracket.matches}
+            rounds={bracket.rounds}
+            sport={sport}
+            emptyHint="El cuadro de llaves se publicará una vez que comience el torneo."
+          />
+        </section>
+      )}
+
+      {/* Formato 2: Liga / Todos contra Todos (Tabla de posiciones + Jornadas) */}
+      {isLeague && (
+        <section aria-labelledby="public-league-title" className="tournament-main-section">
+          <div className="section-head-split">
+            <div>
+              <span className="section-kicker">Competencia Regular</span>
+              <h2 id="public-league-title" className="subhead">
+                Tabla y Calendario
+              </h2>
+            </div>
+          </div>
+
+          <TournamentLeagueView
+            matches={bracket.matches}
+            rounds={bracket.rounds}
+            groups={bracket.groups}
+            groupStandings={groupStandings}
+            forLabel={stats.forLabel}
+            againstLabel={stats.againstLabel}
+            sport={sport}
+            emptyHint="El calendario de fechas aún no ha sido publicado."
+          />
+        </section>
+      )}
+
+      {/* Formato 3: Grupos + Eliminación (Híbrido) */}
+      {isGroupsKnockout && (
+        <div className="tournament-hybrid-sections">
+          <section aria-labelledby="hybrid-groups-title" className="tournament-main-section">
+            <div className="section-head-split">
+              <div>
+                <span className="section-kicker">Fase 1</span>
+                <h2 id="hybrid-groups-title" className="subhead">
+                  Fase de Grupos
+                </h2>
+              </div>
+            </div>
+            <TournamentLeagueView
+              matches={groupMatches}
+              rounds={groupRounds}
+              groups={bracket.groups}
+              groupStandings={groupStandings}
+              forLabel={stats.forLabel}
+              againstLabel={stats.againstLabel}
+              sport={sport}
+              emptyHint="Los grupos se publicarán al iniciar el torneo."
+            />
+          </section>
+
+          <section aria-labelledby="hybrid-knockout-title" className="tournament-main-section">
+            <div className="section-head-split">
+              <div>
+                <span className="section-kicker">Fase 2</span>
+                <h2 id="hybrid-knockout-title" className="subhead">
+                  Llaves Finales (Playoffs)
+                </h2>
+              </div>
+            </div>
+            <TournamentVisualBracket
+              matches={knockoutMatches}
+              rounds={knockoutRounds}
+              sport={sport}
+              emptyHint="Las llaves eliminatorias se generarán al finalizar la fase de grupos."
+            />
+          </section>
+        </div>
+      )}
+
+      {/* Sección de Equipos / Parejas Participantes */}
+      <section aria-labelledby="public-teams-title" className="tournament-main-section">
+        <div className="section-head-split">
+          <div>
+            <span className="section-kicker">Inscripciones</span>
+            <h2 id="public-teams-title" className="subhead">
+              {sportParticipantTerm} Confirmadas ({teamsList.length}/{tournament.max_teams})
+            </h2>
+          </div>
+        </div>
+
+        {teamsList.length === 0 ? (
+          <p className="field-help">Aún no hay inscripciones confirmadas para este torneo.</p>
         ) : (
-          <ul className="tournament-team-list">
-            {(teams ?? []).map((team, idx) => (
-              <li key={team.id} className="tournament-team-row">
-                <span>
-                  {idx + 1}. {team.name}
-                </span>
-                {team.seed != null ? (
-                  <span className="tournament-list-meta">Seed {team.seed}</span>
-                ) : null}
-              </li>
+          <div className="tournament-teams-grid">
+            {teamsList.map((team, idx) => (
+              <div key={team.id} className="tournament-team-card">
+                <div className="tournament-team-seed">
+                  {team.seed != null ? `#${team.seed}` : `${idx + 1}`}
+                </div>
+                <div className="tournament-team-info">
+                  <span className="tournament-team-name">{team.name}</span>
+                  <span className="tournament-team-badge">
+                    <TournamentSportIcon sport={sport} size={11} aria-hidden="true" />
+                    <span>{sport === "padel" ? "Dupla" : "Equipo"}</span>
+                  </span>
+                </div>
+              </div>
             ))}
-          </ul>
+          </div>
         )}
       </section>
 
-      {showLeagueTable && bracket.stageId ? (
-        <section aria-labelledby="public-standings-title">
-          <h2 id="public-standings-title" className="subhead">
-            {format === "groups_knockout" ? "Tablas de grupos" : "Tabla de posiciones"}
-          </h2>
-          <TournamentGroupStandings
-            blocks={groupStandings}
-            forLabel={stats.forLabel}
-            againstLabel={stats.againstLabel}
-          />
-        </section>
-      ) : null}
-
-      <section aria-labelledby="public-bracket-title">
-        <h2 id="public-bracket-title" className="subhead">
-          {format === "round_robin"
-            ? "Fixtures"
-            : format === "groups_knockout"
-              ? "Grupos / llave"
-              : "Llave"}
-        </h2>
-        {bracket.stages.length > 1 ? (
-          <p className="field-help">
-            {bracket.stages.map((s) => s.name).join(" · ")}
-          </p>
-        ) : bracket.stageName ? (
-          <p className="field-help">{bracket.stageName}</p>
-        ) : null}
-        <TournamentBracketTable
-          matches={bracket.matches}
-          rounds={bracket.rounds}
-          groups={bracket.groups}
-          emptyHint="El fixture aún no está generado."
-        />
-      </section>
-
+      {/* Panel de Estadísticas (Goleadores, Fair Play, etc.) */}
       <TournamentStatsPanel stats={stats} idPrefix="public-stats" />
     </main>
   );

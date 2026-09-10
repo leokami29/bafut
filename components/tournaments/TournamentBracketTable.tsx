@@ -45,26 +45,20 @@ export function TournamentBracketTable({
   const multiStage = new Set(matches.map((m) => m.stageId)).size > 1;
   const multiGroup = (groups?.length ?? 0) > 1;
 
-  let lastStage = -1;
-  let lastGroup = -1;
-  let lastRound = -1;
-
   return (
     <div className="tournament-bracket">
       <ul className="tournament-fixture-list">
-        {matches.map((match) => {
-          const showStage = multiStage && match.stageId !== lastStage;
+        {matches.map((match, idx) => {
+          const prev = matches[idx - 1];
+          const showStage = multiStage && (!prev || match.stageId !== prev.stageId);
           const showGroup =
             multiGroup &&
-            (match.groupId !== lastGroup || match.stageId !== lastStage);
+            (!prev || match.groupId !== prev.groupId || match.stageId !== prev.stageId);
           const showRound =
-            match.roundId !== lastRound ||
-            match.groupId !== lastGroup ||
-            match.stageId !== lastStage;
-
-          lastStage = match.stageId;
-          lastGroup = match.groupId;
-          lastRound = match.roundId;
+            !prev ||
+            match.roundId !== prev.roundId ||
+            match.groupId !== prev.groupId ||
+            match.stageId !== prev.stageId;
 
           const gLabel = groupLabel(match, groups);
           const rLabel =
