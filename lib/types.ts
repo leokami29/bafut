@@ -66,3 +66,57 @@ export function matchCanBeHostEdited(
     match.starts_at > now.toISOString()
   );
 }
+
+export function slotIsBench(slot: Pick<MatchSlot, "slot_role">) {
+  return slot.slot_role === "bench";
+}
+
+export function openStarterSlotCount(match: Pick<MatchDetail, "match_slots">) {
+  return match.match_slots.filter((s) => !slotIsBench(s) && slotIsOpen(s)).length;
+}
+
+export function openBenchSlotCount(match: Pick<MatchDetail, "match_slots">) {
+  return match.match_slots.filter((s) => slotIsBench(s) && slotIsOpen(s)).length;
+}
+
+export function openSideASlotCount(match: Pick<MatchDetail, "match_slots">) {
+  return match.match_slots.filter((s) => s.side !== "b" && slotIsOpen(s)).length;
+}
+
+export function openSideBSlotCount(match: Pick<MatchDetail, "match_slots">) {
+  return match.match_slots.filter((s) => s.side === "b" && slotIsOpen(s)).length;
+}
+
+export function isChallengeMatch(match: Pick<Match, "match_mode">) {
+  return match.match_mode === "challenge";
+}
+
+export type MatchDisplayState =
+  | "cancelled"
+  | "challenge_open"
+  | "bench_only"
+  | "open"
+  | "full";
+
+export function matchDisplayStatus(
+  match: Pick<MatchDetail, "status" | "match_mode" | "match_slots">,
+): MatchDisplayState {
+  if (match.status === "cancelled") return "cancelled";
+  const totalOpen = openSlotCount(match);
+  if (totalOpen === 0) return "full";
+
+  if (isChallengeMatch(match)) {
+    const sideBOpen = openSideBSlotCount(match);
+    if (sideBOpen > 0) return "challenge_open";
+    const benchOpen = openBenchSlotCount(match);
+    if (benchOpen > 0) return "bench_only";
+    return "full";
+  }
+
+  const starterOpen = openStarterSlotCount(match);
+  if (starterOpen > 0) return "open";
+  const benchOpen = openBenchSlotCount(match);
+  if (benchOpen > 0) return "bench_only";
+  return "full";
+}
+

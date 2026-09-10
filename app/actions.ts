@@ -30,11 +30,17 @@ import {
 } from "@/lib/sport-rules";
 import {
   isGenderPolicy,
+  parseBenchCount,
   parseCostPerPerson,
+  parseMatchMode,
   parsePitchSlotsJson,
+  parseRotationRule,
   parseSlotsJson,
+  parseTeamName,
   resolveFormationIdInput,
 } from "@/lib/match-write";
+import { playersPerSideFromFormat } from "@/lib/match-formation";
+
 import {
   humanizeSideBError,
   isJoinableOccupancyReason,
@@ -205,21 +211,62 @@ export async function createMatchAction(formData: FormData): Promise<MatchCompos
     return { error: "La nota es demasiado larga (máx. 500 caracteres)." };
   }
 
+  const matchMode = parseMatchMode(formData.get("match_mode"));
+  const hostTeamName = parseTeamName(formData.get("host_team_name"));
+  const rotationRule = parseRotationRule(formData.get("rotation_rule"));
+  const benchCount = parseBenchCount(formData.get("bench_count"));
+  const challengeTargetLevel = asOne(formData.get("challenge_target_level"), LEVELS, "any");
+
   let slotsPayload: Array<{
     match_id?: string;
     position: Position;
     level: string;
-    side: "a";
+    side: "a" | "b";
+    slot_role: "starter" | "bench";
     pitch_index?: number | null;
   }>;
 
-  if (pitchParsed && "slots" in pitchParsed) {
+  if (matchMode === "challenge") {
+    const sideBCount = playersPerSideFromFormat(format);
+    slotsPayload = Array.from({ length: sideBCount }, (_, index) => ({
+      position: (needKeeper && index === 0 ? "gk" : position) as Position,
+      level: challengeTargetLevel,
+      side: "b" as const,
+      slot_role: "starter" as const,
+      pitch_index: null,
+    }));
+
+    if (benchCount > 0) {
+      for (let i = 0; i < benchCount; i++) {
+        slotsPayload.push({
+          position: "any",
+          level: challengeTargetLevel,
+          side: "b" as const,
+          slot_role: "bench" as const,
+          pitch_index: null,
+        });
+      }
+    }
+  } else if (pitchParsed && "slots" in pitchParsed) {
     slotsPayload = pitchParsed.slots.map((slot) => ({
       position: slot.position,
       level: slot.level,
       side: "a" as const,
+      slot_role: "starter" as const,
       pitch_index: slot.pitch_index,
     }));
+
+    if (benchCount > 0) {
+      for (let i = 0; i < benchCount; i++) {
+        slotsPayload.push({
+          position: "any",
+          level,
+          side: "a" as const,
+          slot_role: "bench" as const,
+          pitch_index: null,
+        });
+      }
+    }
   } else {
     const openCountRaw = Number(formData.get("open_count") ?? "");
     if (!Number.isInteger(openCountRaw) || openCountRaw < 1 || openCountRaw > 12) {
@@ -229,8 +276,21 @@ export async function createMatchAction(formData: FormData): Promise<MatchCompos
       position: (needKeeper && index === 0 ? "gk" : position) as Position,
       level,
       side: "a" as const,
+      slot_role: "starter" as const,
       pitch_index: null,
     }));
+
+    if (benchCount > 0) {
+      for (let i = 0; i < benchCount; i++) {
+        slotsPayload.push({
+          position: "any",
+          level,
+          side: "a" as const,
+          slot_role: "bench" as const,
+          pitch_index: null,
+        });
+      }
+    }
   }
 
   const { data: match, error } = await supabase
@@ -248,6 +308,10 @@ export async function createMatchAction(formData: FormData): Promise<MatchCompos
       gender_policy: asOne(formData.get("gender_policy"), GENDERS, "mixed"),
       notes: notes || null,
       status: "open",
+      match_mode: matchMode,
+      host_team_name: hostTeamName,
+      challenge_target_level: challengeTargetLevel,
+      rotation_rule: rotationRule,
     })
     .select("id, share_code")
     .single();
@@ -681,6 +745,39 @@ export async function withdrawClaimAction(formData: FormData): Promise<MutationA
   revalidatePath("/perfil/partidos");
   return { ok: true };
 }
+
+export async function acceptChallengeFullTeamAction(formData: FormData): Promise<MutationActionState> {
+  const matchId = String(formData.get("match_id") ?? "").trim();
+  const teamName = String(formData.get("team_name") ?? "").trim();
+  const shareCode = String(formData.get("share_code") ?? "").trim();
+
+  if (!isUuid(matchId)) {
+    return { error: "Partido no válido." };
+  }
+  if (!teamName || teamName.length < 2) {
+    return { error: "Ingresá un nombre para tu equipo (mínimo 2 caracteres)." };
+  }
+
+  const { supabase } = await requireUserId(shareCode ? `/p/${shareCode}` : "/partidos");
+
+  const { data: share, error } = await supabase.rpc("accept_challenge_full_team", {
+    p_match_id: matchId,
+    p_team_name: teamName,
+  });
+
+  if (error) {
+    return { error: error.message || "No se pudo aceptar el reto." };
+  }
+
+  const targetShare = (typeof share === "string" && share) ? share : shareCode;
+  if (targetShare) {
+    revalidatePath(`/p/${targetShare}`);
+  }
+  revalidatePath("/partidos");
+  revalidatePath("/perfil/partidos");
+  return { ok: true };
+}
+
 
 export async function cancelMatchAction(formData: FormData): Promise<void> {
   const matchId = String(formData.get("match_id") ?? "").trim();

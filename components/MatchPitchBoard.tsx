@@ -149,6 +149,37 @@ export function MatchPitchBoard({
               </g>
             ))}
           </g>
+          {/* Zona de banquillo / suplentes si existen cupos de rotación */}
+          {((board.benchDotsA && board.benchDotsA.length > 0) || (board.benchDotsB && board.benchDotsB.length > 0)) ? (
+            <g className="match-pitch-bench-group" aria-label="Banquillo de suplentes">
+              <line x1="24" y1="192" x2="336" y2="192" stroke="#d9f2a5" strokeWidth="0.8" strokeDasharray="3 3" strokeOpacity="0.45" />
+              <text x="180" y="190" textAnchor="middle" fill="#d9f2a5" fontSize="7" fillOpacity="0.7" letterSpacing="0.8">
+                BANQUILLO / ROTACIÓN
+              </text>
+              {[...(board.benchDotsA ?? []), ...(board.benchDotsB ?? [])].map((dot, index) => (
+                <g key={`bench-${dot.side}-${index}`}>
+                  <circle
+                    className={`match-pitch-spot is-${dot.state} is-side-${dot.side} is-bench`}
+                    cx={dot.x}
+                    cy={dot.y}
+                    r={dot.state === "open" ? 6.5 : 5}
+                    strokeDasharray={dot.state === "open" ? "2 2" : undefined}
+                  />
+                  <text
+                    className="match-pitch-spot-mark is-bench-mark"
+                    x={dot.x}
+                    y={dot.y}
+                    textAnchor="middle"
+                    dominantBaseline="central"
+                    fontSize="7"
+                    fill="currentColor"
+                  >
+                    ⇄
+                  </text>
+                </g>
+              ))}
+            </g>
+          ) : null}
         </svg>
 
         {interactive ? (

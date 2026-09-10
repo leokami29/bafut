@@ -1,4 +1,14 @@
-import { GENDERS, LEVELS, type Level, type Position } from "@/lib/constants";
+import {
+  GENDERS,
+  LEVELS,
+  MATCH_MODES,
+  SLOT_ROLES,
+  type GenderPolicy,
+  type Level,
+  type MatchMode,
+  type Position,
+  type SlotRole,
+} from "@/lib/constants";
 import { getFormationById } from "@/lib/formations-catalog";
 import { isPosition, positionAllowedForSport, type Sport } from "@/lib/sport-rules";
 
@@ -7,6 +17,9 @@ export type SlotWrite = {
   position: Position;
   level: Level;
   pitch_index?: number | null;
+  side?: "a" | "b";
+  slot_role?: SlotRole;
+  custom_cost_per_person?: number | null;
 };
 
 export function parseSlotsJson(raw: string, sport: Sport): { error: string } | { slots: SlotWrite[] } {
@@ -146,6 +159,31 @@ export function isGenderPolicy(value: string): value is (typeof GENDERS)[number]
   return (GENDERS as readonly string[]).includes(value);
 }
 
+export function parseMatchMode(raw: unknown): MatchMode {
+  return raw === "challenge" ? "challenge" : "pickup";
+}
+
+export function parseTeamName(raw: unknown): string | null {
+  if (typeof raw !== "string") return null;
+  const trimmed = raw.trim();
+  if (trimmed.length < 2 || trimmed.length > 60) return null;
+  return trimmed;
+}
+
+export function parseRotationRule(raw: unknown): string | null {
+  if (typeof raw !== "string") return null;
+  const trimmed = raw.trim();
+  if (trimmed.length < 2 || trimmed.length > 120) return null;
+  return trimmed;
+}
+
+export function parseBenchCount(raw: unknown): number {
+  const n = Number(raw);
+  if (!Number.isInteger(n) || n < 0 || n > 8) return 0;
+  return n;
+}
+
 function isUuid(value: string) {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
 }
+

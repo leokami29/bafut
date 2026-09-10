@@ -118,3 +118,14 @@ export const claimStatusLabel: Record<string, string> = {
   rejected: "Rechazado",
   withdrawn: "Retirado",
 };
+
+export const matchModeLabel: Record<string, string> = {
+  pickup: "Completar equipo",
+  challenge: "Búsqueda de rival",
+};
+
+export const slotRoleLabel: Record<string, string> = {
+  starter: "Titular",
+  bench: "Rotación / Banca",
+};
+

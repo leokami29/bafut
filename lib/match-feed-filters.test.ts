@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { matchFitsProfileLevel, selectUpcomingOutsideFilter } from "@/lib/match-feed-filters";
+import {
+  filterMatchesByMode,
+  matchFitsProfileLevel,
+  selectUpcomingOutsideFilter,
+} from "@/lib/match-feed-filters";
 import type { MatchDetail } from "@/lib/types";
 
 function slot(
@@ -13,6 +17,7 @@ function slot(
     level,
     pitch_index: 0,
     created_at: "2026-01-01T00:00:00Z",
+    slot_role: "starter",
     slot_claims: claimStatus
       ? [
           {
@@ -27,6 +32,7 @@ function slot(
       : [],
   } as MatchDetail["match_slots"][number];
 }
+
 
 describe("matchFitsProfileLevel", () => {
   it("acepta cupo any o del mismo nivel", () => {
@@ -66,3 +72,41 @@ describe("selectUpcomingOutsideFilter", () => {
     expect(selectUpcomingOutsideFilter(many, [], "3h", 3)).toHaveLength(3);
   });
 });
+
+describe("filterMatchesByMode", () => {
+  const mPickup = {
+    id: "m-pickup",
+    match_mode: "pickup",
+    match_slots: [slot("any")],
+  };
+  const mChallenge = {
+    id: "m-challenge",
+    match_mode: "challenge",
+    match_slots: [slot("any")],
+  };
+  const mBench = {
+    id: "m-bench",
+    match_mode: "pickup",
+    match_slots: [{ ...slot("any"), slot_role: "bench" }],
+  };
+
+  it("all devuelve todos los partidos", () => {
+    expect(filterMatchesByMode([mPickup, mChallenge, mBench], "all")).toHaveLength(3);
+  });
+
+  it("challenge filtra solo los que buscan rival", () => {
+    const result = filterMatchesByMode([mPickup, mChallenge, mBench], "challenge");
+    expect(result).toEqual([mChallenge]);
+  });
+
+  it("bench filtra partidos con cupos de rotación abiertos", () => {
+    const result = filterMatchesByMode([mPickup, mChallenge, mBench], "bench");
+    expect(result).toEqual([mBench]);
+  });
+
+  it("pickup filtra partidos normales de completar", () => {
+    const result = filterMatchesByMode([mPickup, mChallenge], "pickup");
+    expect(result).toEqual([mPickup]);
+  });
+});
+

@@ -590,30 +590,36 @@ export type Database = {
       match_slots: {
         Row: {
           created_at: string
+          custom_cost_per_person: number | null
           id: string
           level: string
           match_id: string
           pitch_index: number | null
           position: string
           side: string
+          slot_role: string
         }
         Insert: {
           created_at?: string
+          custom_cost_per_person?: number | null
           id?: string
           level?: string
           match_id: string
           pitch_index?: number | null
           position?: string
           side?: string
+          slot_role?: string
         }
         Update: {
           created_at?: string
+          custom_cost_per_person?: number | null
           id?: string
           level?: string
           match_id?: string
           pitch_index?: number | null
           position?: string
           side?: string
+          slot_role?: string
         }
         Relationships: [
           {
@@ -823,6 +829,8 @@ export type Database = {
       matches: {
         Row: {
           away_opened_by: string | null
+          away_team_name: string | null
+          challenge_target_level: string
           city_id: string
           cost_per_person: number | null
           created_at: string
@@ -832,9 +840,12 @@ export type Database = {
           formation_id: string | null
           gender_policy: string
           host_id: string
+          host_team_name: string | null
           id: string
+          match_mode: string
           notes: string | null
           occupy_range: unknown
+          rotation_rule: string | null
           share_code: string
           sport: string
           starts_at: string
@@ -844,6 +855,8 @@ export type Database = {
         }
         Insert: {
           away_opened_by?: string | null
+          away_team_name?: string | null
+          challenge_target_level?: string
           city_id: string
           cost_per_person?: number | null
           created_at?: string
@@ -853,10 +866,13 @@ export type Database = {
           formation_id?: string | null
           gender_policy?: string
           host_id: string
+          host_team_name?: string | null
           id?: string
+          match_mode?: string
           notes?: string | null
           /** Rellenado por trigger (sync occupy_range). */
           occupy_range?: unknown
+          rotation_rule?: string | null
           share_code?: string
           sport?: string
           starts_at: string
@@ -866,6 +882,8 @@ export type Database = {
         }
         Update: {
           away_opened_by?: string | null
+          away_team_name?: string | null
+          challenge_target_level?: string
           city_id?: string
           cost_per_person?: number | null
           created_at?: string
@@ -875,9 +893,12 @@ export type Database = {
           formation_id?: string | null
           gender_policy?: string
           host_id?: string
+          host_team_name?: string | null
           id?: string
+          match_mode?: string
           notes?: string | null
           occupy_range?: unknown
+          rotation_rule?: string | null
           share_code?: string
           sport?: string
           starts_at?: string
@@ -2814,7 +2835,15 @@ export type Database = {
       }
       venue_tournaments_flag_on: { Args: never; Returns: boolean }
       void_match_event: { Args: { p_event_id: string }; Returns: string }
+      accept_challenge_full_team: {
+        Args: {
+          p_match_id: string
+          p_team_name: string
+        }
+        Returns: string
+      }
       withdraw_claim: { Args: { p_claim_id: string }; Returns: undefined }
+
     }
     Enums: {
       [_ in never]: never

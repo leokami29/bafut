@@ -7,12 +7,20 @@ import { MatchRow } from "@/components/MatchRow";
 import { MatchFormationSection } from "@/components/MatchFormationSection";
 import { MatchHashScroll } from "@/components/MatchHashScroll";
 import { MatchSeekerCta } from "@/components/MatchSeekerCta";
+import { AcceptChallengeCard } from "@/components/AcceptChallengeCard";
 import { HostShareBanner, ShareWhatsApp } from "@/components/ShareWhatsApp";
 import { SlotList } from "@/components/SlotList";
 import { VenueMapLazy } from "@/components/VenueMapLazy";
 import { getHostMatchCount, getMatchByCode, getProfile, getSessionUserId, getUpcomingMatches } from "@/lib/data";
 import { formatLevelOkBadge } from "@/lib/level-trust";
-import { openSlotCount, openSlotPositions } from "@/lib/types";
+import {
+  isChallengeMatch,
+  matchDisplayStatus,
+  openBenchSlotCount,
+  openSlotCount,
+  openSlotPositions,
+} from "@/lib/types";
+
 import { formatMoney, formatWhen, openSlotsPhrase } from "@/lib/format";
 import { formatLabel, genderLabel, matchStatusLabel, sportLabel } from "@/lib/labels";
 import { buildFormationFromSlots } from "@/lib/match-formation";
@@ -120,6 +128,44 @@ export default async function PartidoPage({ params }: Props) {
     formationId: match.formation_id,
   });
 
+  const isChallenge = isChallengeMatch(match);
+  const displayStatus = matchDisplayStatus(match);
+  const benchCount = openBenchSlotCount(match);
+
+  const statusLabel = cancelled
+    ? matchStatusLabel.cancelled
+    : isChallenge
+      ? open > 0
+        ? "⚔️ Reto Abierto"
+        : "⚔️ Reto Pactado"
+      : displayStatus === "bench_only"
+        ? "🔄 Solo Rotación"
+        : open > 0
+          ? "Abierto"
+          : "Completo";
+
+  const statusClass = cancelled
+    ? "is-full"
+    : isChallenge && open > 0
+      ? "is-open"
+      : displayStatus === "bench_only"
+        ? "is-open"
+        : open > 0
+          ? "is-open"
+          : "is-full";
+
+  const challengeHeading = match.host_team_name
+    ? `⚔️ ${match.host_team_name} busca rival`
+    : `⚔️ Se busca rival (${formatLabel[match.format as keyof typeof formatLabel] ?? match.format})`;
+
+  const headingText = cancelled
+    ? "Partido cancelado"
+    : isChallenge
+      ? challengeHeading
+      : displayStatus === "bench_only"
+        ? `Cupos de rotación / banca (${benchCount})`
+        : hole;
+
   return (
     <main className="page page-match-detail" id="main">
       <MatchHashScroll />
@@ -129,11 +175,11 @@ export default async function PartidoPage({ params }: Props) {
           <header className="match-detail-head">
             <div className="match-status-row">
               <p className="eyebrow">{match.cities.name}</p>
-              <span className={`status-chip ${cancelled ? "is-full" : open > 0 ? "is-open" : "is-full"}`}>
-                {cancelled ? matchStatusLabel.cancelled : open > 0 ? "Abierto" : "Completo"}
+              <span className={`status-chip ${statusClass}`}>
+                {statusLabel}
               </span>
             </div>
-            <h1>{cancelled ? "Partido cancelado" : hole}</h1>
+            <h1>{headingText}</h1>
             <p className="lede match-detail-when">{when}</p>
           </header>
 
@@ -202,6 +248,15 @@ export default async function PartidoPage({ params }: Props) {
             </div>
           ) : null}
 
+          {isChallenge && !match.away_opened_by && !isHost && !cancelled && open > 0 ? (
+            <AcceptChallengeCard
+              matchId={match.id}
+              shareCode={match.share_code}
+              userId={userId}
+              hostTeamName={match.host_team_name}
+            />
+          ) : null}
+
           <h2 className="subhead" id="cupos">
             Cupos
           </h2>
@@ -212,7 +267,11 @@ export default async function PartidoPage({ params }: Props) {
             userId={userId}
             matchCancelled={cancelled}
             profileLevel={profile?.level ?? null}
-            showSides={hasSideB}
+            showSides={hasSideB || isChallenge}
+            awayOpenedBy={match.away_opened_by}
+            sideATitle={match.host_team_name ?? "Con ellos"}
+            sideBTitle={match.away_team_name ?? (isChallenge ? "Equipo Rival" : "En contra")}
+            rotationRule={match.rotation_rule}
           />
 
           <MatchFormationSection
@@ -224,8 +283,11 @@ export default async function PartidoPage({ params }: Props) {
             userId={userId}
             cancelled={cancelled}
             secondaryToClaim={showSeekerCta}
+            sideATitle={match.host_team_name ?? "Con ellos"}
+            sideBTitle={match.away_team_name ?? (isChallenge ? "Equipo Rival" : "En contra")}
           />
         </div>
+
 
         <section className="match-venue-block" aria-labelledby="match-venue-heading">
           <div className="match-venue-copy">

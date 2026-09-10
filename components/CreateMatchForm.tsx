@@ -14,13 +14,17 @@ import {
   DURATIONS,
   GENDERS,
   LEVELS,
+  ROTATION_RULES,
   SPORTS,
   type DurationMin,
   type Format,
   type GenderPolicy,
   type Level,
+  type MatchMode,
   type Sport,
 } from "@/lib/constants";
+import { playersPerSideFromFormat } from "@/lib/match-formation";
+
 import { datetimeLocalInZoneToDate, defaultStartsAtLocal } from "@/lib/datetime";
 import { defaultFormationId } from "@/lib/formations-catalog";
 import { formatMoney, formatWhen } from "@/lib/format";
@@ -123,6 +127,11 @@ export function CreateMatchForm({
   );
   const [pitchOpenSlots, setPitchOpenSlots] = useState<PitchOpenSlot[]>([]);
   const [position, setPosition] = useState("any");
+  const [matchMode, setMatchMode] = useState<MatchMode>("pickup");
+  const [hostTeamName, setHostTeamName] = useState("");
+  const [benchCount, setBenchCount] = useState(0);
+  const [rotationRule, setRotationRule] = useState<string>("Rotación activa continua");
+  const [challengeTargetLevel, setChallengeTargetLevel] = useState<Level>("any");
   const [step, setStep] = useState<1 | 2>(1);
   const [openCount, setOpenCount] = useState(2);
   const [durationMin, setDurationMin] = useState<DurationMin>(initialDuration(edit?.durationMin));
@@ -130,6 +139,7 @@ export function CreateMatchForm({
   const [costPerPerson, setCostPerPerson] = useState<string>(
     edit?.costPerPerson != null ? String(edit.costPerPerson) : "",
   );
+
   const [venueMissing, setVenueMissing] = useState(false);
   const [startsAt, setStartsAt] = useState(() =>
     edit ? edit.startsAtLocal : defaultStartsAtLocal(),
@@ -354,10 +364,24 @@ export function CreateMatchForm({
           />
         </>
       ) : (
-        <input type="hidden" name="position" value={activePosition} />
+        <>
+          <input type="hidden" name="position" value={activePosition} />
+          <input type="hidden" name="match_mode" value={matchMode} />
+          {matchMode === "challenge" ? (
+            <>
+              <input type="hidden" name="host_team_name" value={hostTeamName} />
+              <input type="hidden" name="challenge_target_level" value={challengeTargetLevel} />
+            </>
+          ) : null}
+          <input type="hidden" name="bench_count" value={benchCount} />
+          {benchCount > 0 ? (
+            <input type="hidden" name="rotation_rule" value={rotationRule} />
+          ) : null}
+        </>
       )}
 
       <div className="match-compose-progress" aria-label={`Paso ${step} de 2`}>
+
         <div className="match-compose-progress-track" aria-hidden="true">
           <span className={step >= 1 ? "is-on" : undefined} />
           <span className={step >= 2 ? "is-on" : undefined} />
@@ -686,49 +710,151 @@ export function CreateMatchForm({
                 </button>
               </fieldset>
             ) : (
-              <fieldset className="match-compose-group">
-                <legend className="match-compose-legend">Cupos</legend>
-                <p className="field-help">
-                  {pitchOpenSlots.length > 0
-                    ? "Estás usando huecos marcados en la cancha. Los cupos rápidos se ignoran."
-                    : "Cuántos faltan para cerrar el partido (cualquiera), o marcá huecos arriba en la formación."}
-                </p>
-
-                <label htmlFor={openId}>
-                  Faltan <span className="req-mark" aria-hidden="true">*</span>
-                  <input
-                    id={openId}
-                    type="number"
-                    name="open_count"
-                    min={1}
-                    max={12}
-                    value={openCount}
-                    onChange={(e) => {
-                      setOpenCount(Number(e.target.value));
-                      setPitchOpenSlots([]);
-                    }}
-                    inputMode="numeric"
-                    disabled={pitchOpenSlots.length > 0}
-                  />
-                </label>
-
-                <div className="filter-chips">
-                  {[2, 4, 6].map((n) => (
+              <>
+                <fieldset className="match-compose-group">
+                  <legend className="match-compose-legend">Tipo de Convocatoria</legend>
+                  <p className="field-help">
+                    ¿Te faltan cupos para armar tu equipo o ya lo tienes listo y buscas un equipo rival?
+                  </p>
+                  <div className="filter-chips match-compose-chips" role="group">
                     <button
-                      key={n}
                       type="button"
-                      className={openCount === n && pitchOpenSlots.length === 0 ? "is-on" : undefined}
-                      aria-pressed={openCount === n && pitchOpenSlots.length === 0}
-                      onClick={() => {
-                        setOpenCount(n);
-                        setPitchOpenSlots([]);
-                      }}
+                      className={matchMode === "pickup" ? "is-on" : undefined}
+                      aria-pressed={matchMode === "pickup"}
+                      onClick={() => setMatchMode("pickup")}
                     >
-                      {n} cupos
+                      👤 Completar mi equipo
                     </button>
-                  ))}
-                </div>
-              </fieldset>
+                    <button
+                      type="button"
+                      className={matchMode === "challenge" ? "is-on" : undefined}
+                      aria-pressed={matchMode === "challenge"}
+                      onClick={() => setMatchMode("challenge")}
+                    >
+                      ⚔️ Buscar equipo rival
+                    </button>
+                  </div>
+                </fieldset>
+
+                {matchMode === "challenge" ? (
+                  <fieldset className="match-compose-group">
+                    <legend className="match-compose-legend">Reto y Rival</legend>
+                    <p className="field-help">
+                      Tu equipo ({playersPerSideFromFormat(activeFormat)} jugadores) está listo. Se abrirán {playersPerSideFromFormat(activeFormat)} cupos para que la comunidad arme el rival o un equipo acepte el reto.
+                    </p>
+                    <div className="form-split">
+                      <label htmlFor={`${formId}-host-team`}>
+                        Nombre de tu equipo (opcional)
+                        <input
+                          id={`${formId}-host-team`}
+                          type="text"
+                          maxLength={60}
+                          placeholder="Ej: Los Galácticos"
+                          value={hostTeamName}
+                          onChange={(e) => setHostTeamName(e.target.value)}
+                        />
+                      </label>
+                      <label htmlFor={`${formId}-target-level`}>
+                        Nivel esperado del rival
+                        <select
+                          id={`${formId}-target-level`}
+                          value={challengeTargetLevel}
+                          onChange={(e) => setChallengeTargetLevel(e.target.value as Level)}
+                        >
+                          {LEVELS.map((lvl) => (
+                            <option key={lvl} value={lvl}>
+                              {levelLabel[lvl]}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                    </div>
+                  </fieldset>
+                ) : (
+                  <fieldset className="match-compose-group">
+                    <legend className="match-compose-legend">Cupos</legend>
+                    <p className="field-help">
+                      {pitchOpenSlots.length > 0
+                        ? "Estás usando huecos marcados en la cancha. Los cupos rápidos se ignoran."
+                        : "Cuántos faltan para cerrar el partido (cualquiera), o marcá huecos arriba en la formación."}
+                    </p>
+
+                    <label htmlFor={openId}>
+                      Faltan <span className="req-mark" aria-hidden="true">*</span>
+                      <input
+                        id={openId}
+                        type="number"
+                        name="open_count"
+                        min={1}
+                        max={12}
+                        value={openCount}
+                        onChange={(e) => {
+                          setOpenCount(Number(e.target.value));
+                          setPitchOpenSlots([]);
+                        }}
+                        inputMode="numeric"
+                        disabled={pitchOpenSlots.length > 0}
+                      />
+                    </label>
+
+                    <div className="filter-chips">
+                      {[2, 4, 6].map((n) => (
+                        <button
+                          key={n}
+                          type="button"
+                          className={openCount === n && pitchOpenSlots.length === 0 ? "is-on" : undefined}
+                          aria-pressed={openCount === n && pitchOpenSlots.length === 0}
+                          onClick={() => {
+                            setOpenCount(n);
+                            setPitchOpenSlots([]);
+                          }}
+                        >
+                          {n} cupos
+                        </button>
+                      ))}
+                    </div>
+                  </fieldset>
+                )}
+
+                <fieldset className="match-compose-group">
+                  <legend className="match-compose-legend">Suplentes / Rotación activa</legend>
+                  <p className="field-help">
+                    Suma relevos para oxigenar el partido y que la cuota de la cancha se divida entre más jugadores.
+                  </p>
+                  <div className="filter-chips" role="group">
+                    {[0, 1, 2, 3, 4].map((n) => (
+                      <button
+                        key={n}
+                        type="button"
+                        className={benchCount === n ? "is-on" : undefined}
+                        aria-pressed={benchCount === n}
+                        onClick={() => setBenchCount(n)}
+                      >
+                        {n === 0 ? "Sin banca" : `${n} en rotación`}
+                      </button>
+                    ))}
+                  </div>
+
+                  {benchCount > 0 ? (
+                    <div style={{ marginTop: "1rem" }}>
+                      <label htmlFor={`${formId}-rotation-rule`}>
+                        Pacto de rotación
+                        <select
+                          id={`${formId}-rotation-rule`}
+                          value={rotationRule}
+                          onChange={(e) => setRotationRule(e.target.value)}
+                        >
+                          {ROTATION_RULES.map((rule) => (
+                            <option key={rule} value={rule}>
+                              {rule}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                    </div>
+                  ) : null}
+                </fieldset>
+              </>
             )}
 
             <fieldset className="match-compose-group match-compose-aporte">

@@ -11,7 +11,8 @@ import {
   type PitchSetup,
 } from "@/lib/pitch-config";
 import { isFormat, isSport } from "@/lib/sport-rules";
-import { slotIsOpen, type SlotWithClaims } from "@/lib/types";
+import { positionLabel } from "@/lib/labels";
+import { slotIsBench, slotIsOpen, type SlotWithClaims } from "@/lib/types";
 
 export { playersPerSideFromFormat };
 
@@ -23,6 +24,7 @@ export type FormationDot = DotPosition & {
   label?: string;
   slotId?: string;
   pitchIndex?: number;
+  role?: "starter" | "bench";
 };
 
 export type MatchFormationBoard = {
@@ -31,11 +33,14 @@ export type MatchFormationBoard = {
   label: string;
   formationId: string;
   dots: FormationDot[];
+  benchDotsA?: FormationDot[];
+  benchDotsB?: FormationDot[];
   sideAOpen: number;
   sideBOpen: number;
   hasSideB: boolean;
   playersPerSide: number;
 };
+
 
 function setupFromResolved(
   sport: Sport,
@@ -221,17 +226,25 @@ export function buildFormationFromSlots(input: {
   const base = baseDotsForHalf(setup);
   const capacity = Math.max(base.length, formationSlotCount(entry));
 
-  const sideA = input.slots
-    .filter((slot) => slot.side !== "b")
+  const startersA = input.slots
+    .filter((slot) => slot.side !== "b" && !slotIsBench(slot))
     .sort((a, b) => a.created_at.localeCompare(b.created_at));
-  const sideB = input.slots
-    .filter((slot) => slot.side === "b")
+  const startersB = input.slots
+    .filter((slot) => slot.side === "b" && !slotIsBench(slot))
     .sort((a, b) => a.created_at.localeCompare(b.created_at));
-  const hasSideB = input.hasSideB ?? sideB.length > 0;
 
-  const aMarks = marksMapFromSlots(sideA, capacity);
+  const benchA = input.slots
+    .filter((slot) => slot.side !== "b" && slotIsBench(slot))
+    .sort((a, b) => a.created_at.localeCompare(b.created_at));
+  const benchB = input.slots
+    .filter((slot) => slot.side === "b" && slotIsBench(slot))
+    .sort((a, b) => a.created_at.localeCompare(b.created_at));
+
+  const hasSideB = input.hasSideB ?? (startersB.length > 0 || benchB.length > 0);
+
+  const aMarks = marksMapFromSlots(startersA, capacity);
   const bMarks = hasSideB
-    ? marksMapFromSlots(sideB, capacity)
+    ? marksMapFromSlots(startersB, capacity)
     : new Map<number, SlotMark>(
         Array.from({ length: Math.min(2, playersPerSideFromFormat(format)) }, (_, i) => [
           i,
@@ -244,17 +257,42 @@ export function buildFormationFromSlots(input: {
     ...applyMarksToHalf(base, bMarks, "b", true),
   ];
 
+  const benchDotsA: FormationDot[] = benchA.map((slot, i) => ({
+    x: 40 + i * 26,
+    y: 206,
+    state: slotIsOpen(slot) ? "open" : "filled",
+    side: "a",
+    slotId: slot.id,
+    label: positionLabel[slot.position as keyof typeof positionLabel] ?? slot.position,
+    role: "bench",
+  }));
+
+  const benchDotsB: FormationDot[] = benchB.map((slot, i) => ({
+    x: PITCH_VIEWBOX_WIDTH - 40 - i * 26,
+    y: 206,
+    state: slotIsOpen(slot) ? "open" : "filled",
+    side: "b",
+    slotId: slot.id,
+    label: positionLabel[slot.position as keyof typeof positionLabel] ?? slot.position,
+    role: "bench",
+  }));
+
   return {
     sport,
     format,
     label: setup.label,
     formationId: entry.id,
     dots,
-    sideAOpen: [...aMarks.values()].filter((m) => m.state === "open").length,
-    sideBOpen: [...bMarks.values()].filter((m) => m.state === "open" || m.state === "invite").length,
+    benchDotsA: benchDotsA.length > 0 ? benchDotsA : undefined,
+    benchDotsB: benchDotsB.length > 0 ? benchDotsB : undefined,
+    sideAOpen: [...aMarks.values()].filter((m) => m.state === "open").length + benchA.filter(slotIsOpen).length,
+    sideBOpen:
+      [...bMarks.values()].filter((m) => m.state === "open" || m.state === "invite").length +
+      benchB.filter(slotIsOpen).length,
     hasSideB,
     playersPerSide: playersPerSideFromFormat(format),
   };
+
 }
 
 /** Tablero resumido para banner de ocupación (sin lista de cupos). */

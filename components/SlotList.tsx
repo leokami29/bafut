@@ -29,6 +29,10 @@ export function SlotList({
   matchCancelled = false,
   profileLevel = null,
   showSides = false,
+  awayOpenedBy = null,
+  sideATitle = "Con ellos",
+  sideBTitle = "En contra",
+  rotationRule = null,
 }: {
   slots: SlotWithClaims[];
   shareCode: string;
@@ -37,6 +41,10 @@ export function SlotList({
   matchCancelled?: boolean;
   profileLevel?: string | null;
   showSides?: boolean;
+  awayOpenedBy?: string | null;
+  sideATitle?: string;
+  sideBTitle?: string;
+  rotationRule?: string | null;
 }) {
   const ordered = [...slots].sort((a, b) => {
     const sideA = a.side === "b" ? 1 : 0;
@@ -47,30 +55,41 @@ export function SlotList({
   const sideA = ordered.filter((slot) => slot.side !== "b");
   const sideB = ordered.filter((slot) => slot.side === "b");
 
+  const rotationBanner = rotationRule ? (
+    <p className="slot-rotation-rule" style={{ fontSize: "0.9rem", color: "#a8e6cf", marginBottom: "1rem" }}>
+      ⏱️ <strong>Pacto de juego:</strong> {rotationRule}
+    </p>
+  ) : null;
+
   if (!showSides || sideB.length === 0) {
     return (
-      <ol className="slot-list">
-        {ordered.map((slot, index) => (
-          <SlotRow
-            key={slot.id}
-            slot={slot}
-            index={index}
-            shareCode={shareCode}
-            isHost={isHost}
-            userId={userId}
-            matchCancelled={matchCancelled}
-            profileLevel={profileLevel}
-          />
-        ))}
-      </ol>
+      <div>
+        {rotationBanner}
+        <ol className="slot-list">
+          {ordered.map((slot, index) => (
+            <SlotRow
+              key={slot.id}
+              slot={slot}
+              index={index}
+              shareCode={shareCode}
+              isHost={isHost}
+              userId={userId}
+              matchCancelled={matchCancelled}
+              profileLevel={profileLevel}
+              awayOpenedBy={awayOpenedBy}
+            />
+          ))}
+        </ol>
+      </div>
     );
   }
 
   return (
     <div className="slot-sides">
+      {rotationBanner}
       <section className="slot-side-block" aria-labelledby="slot-side-a">
         <h3 className="slot-side-heading" id="slot-side-a">
-          Con ellos
+          {sideATitle}
         </h3>
         <p className="slot-side-hint">Pedí cupo acá si vas en ese mismo equipo.</p>
         <ol className="slot-list">
@@ -84,13 +103,14 @@ export function SlotList({
               userId={userId}
               matchCancelled={matchCancelled}
               profileLevel={profileLevel}
+              awayOpenedBy={awayOpenedBy}
             />
           ))}
         </ol>
       </section>
       <section className="slot-side-block is-away" aria-labelledby="slot-side-b">
         <h3 className="slot-side-heading" id="slot-side-b">
-          En contra
+          {sideBTitle}
         </h3>
         <p className="slot-side-hint">Misma cancha y hora · el rival de la pateada.</p>
         <ol className="slot-list">
@@ -104,6 +124,7 @@ export function SlotList({
               userId={userId}
               matchCancelled={matchCancelled}
               profileLevel={profileLevel}
+              awayOpenedBy={awayOpenedBy}
             />
           ))}
         </ol>
@@ -111,6 +132,7 @@ export function SlotList({
     </div>
   );
 }
+
 
 function ContactLink({ claimId, label }: { claimId: string; label: string }) {
   const [href, setHref] = useState<string | null>(null);
@@ -154,6 +176,7 @@ function SlotRow({
   userId,
   matchCancelled,
   profileLevel,
+  awayOpenedBy,
 }: {
   slot: SlotWithClaims;
   index: number;
@@ -162,6 +185,7 @@ function SlotRow({
   userId: string | null;
   matchCancelled: boolean;
   profileLevel: string | null;
+  awayOpenedBy?: string | null;
 }) {
   const [declared, setDeclared] = useState<DeclaredLevel>(() => defaultDeclaredLevel(profileLevel));
   const mismatch = isMismatch(slot.level, declared);
@@ -188,15 +212,36 @@ function SlotRow({
     null,
   );
 
+  const isBench = slot.slot_role === "bench";
+  const canModerate =
+    isHost || (slot.side === "b" && Boolean(awayOpenedBy) && awayOpenedBy === userId);
   const open = slotIsOpen(slot) && !matchCancelled;
   const accepted = slot.slot_claims.find((claim) => claim.status === "accepted");
   const mine = slot.slot_claims.find((claim) => claim.player_id === userId);
   const pending = slot.slot_claims.filter((claim) => claim.status === "pending");
 
   return (
-    <li className={`slot-row ${open ? "is-open" : "is-filled"}`}>
+    <li className={`slot-row ${open ? "is-open" : "is-filled"} ${isBench ? "is-bench-row" : ""}`}>
       <div>
-        <p className="slot-index">Cupo {index + 1}</p>
+        <p className="slot-index">
+          Cupo {index + 1}
+          {isBench ? (
+            <span
+              className="bench-badge"
+              style={{
+                marginLeft: "0.5rem",
+                fontSize: "0.75rem",
+                background: "rgba(168, 230, 207, 0.2)",
+                color: "#a8e6cf",
+                padding: "2px 6px",
+                borderRadius: "4px",
+                border: "1px solid rgba(168, 230, 207, 0.4)",
+              }}
+            >
+              🔄 Rotación / Banca
+            </span>
+          ) : null}
+        </p>
         <p className="slot-need">
           {positionLabel[slot.position as Position] ?? slot.position} ·{" "}
           {levelLabel[slot.level as Level] ?? slot.level}
@@ -221,7 +266,7 @@ function SlotRow({
         </div>
       </div>
 
-      {open && !isHost && !mine && userId ? (
+      {open && !canModerate && !mine && userId ? (
         <form action={claimAction} className="claim-form">
           <input type="hidden" name="slot_id" value={slot.id} />
           <input type="hidden" name="share_code" value={shareCode} />
@@ -247,19 +292,19 @@ function SlotRow({
             </label>
           ) : null}
           <button className="btn-bib" type="submit" disabled={claimPending}>
-            {claimPending ? "Pidiendo…" : "Pedir cupo"}
+            {claimPending ? "Pidiendo…" : isBench ? "Pedir cupo en rotación" : "Pedir cupo"}
           </button>
-          <small className="slot-reassurance">Sin pago — el host confirma</small>
+          <small className="slot-reassurance">Sin pago — se confirma en la app</small>
         </form>
       ) : null}
 
-      {open && !isHost && !mine && !userId ? (
+      {open && !canModerate && !mine && !userId ? (
         <a className="btn-bib" href={`/entrar?next=/p/${shareCode}`}>
           Entra para pedir
         </a>
       ) : null}
 
-      {mine?.status === "pending" && !isHost ? (
+      {mine?.status === "pending" && !canModerate ? (
         <form action={withdrawAction}>
           <input type="hidden" name="claim_id" value={mine.id} />
           <input type="hidden" name="share_code" value={shareCode} />
@@ -269,15 +314,16 @@ function SlotRow({
         </form>
       ) : null}
 
-      {accepted && !matchCancelled && userId && (isHost || mine?.id === accepted.id) ? (
+      {accepted && !matchCancelled && userId && (canModerate || mine?.id === accepted.id) ? (
         <ContactLink
           claimId={accepted.id}
-          label={isHost ? (accepted.profiles?.display_name ?? "jugador") : "host"}
+          label={canModerate ? (accepted.profiles?.display_name ?? "jugador") : "capitán"}
         />
       ) : null}
 
-      {isHost && !matchCancelled && pending.length > 0 ? (
+      {canModerate && !matchCancelled && pending.length > 0 ? (
         <div className="claim-inbox-wrap">
+
           <p className="claim-inbox-label">Piden cupo:</p>
           <ul className="claim-inbox">
             {pending.map((claim) => {

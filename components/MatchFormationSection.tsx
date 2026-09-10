@@ -16,6 +16,8 @@ export function MatchFormationSection({
   userId,
   cancelled,
   secondaryToClaim = false,
+  sideATitle = "Con ellos",
+  sideBTitle = "En contra",
 }: {
   board: MatchFormationBoard;
   matchId: string;
@@ -26,6 +28,8 @@ export function MatchFormationSection({
   cancelled: boolean;
   /** Si el CTA Pedir cupo ya está arriba, la formación se lee como secundaria. */
   secondaryToClaim?: boolean;
+  sideATitle?: string;
+  sideBTitle?: string;
 }) {
   const [showRival, setShowRival] = useState(false);
   const cuposHref = `#cupos`;
@@ -70,8 +74,9 @@ export function MatchFormationSection({
 
       <MatchPitchBoard
         board={board}
-        sideATitle="Con ellos"
-        sideBTitle="En contra"
+        sideATitle={sideATitle}
+        sideBTitle={sideBTitle}
+
         sideBEmptyHint={canOpenRival ? "¿Jugás en contra? Tocá acá" : "Rival aún no armado"}
         activeSide={showRival ? "b" : null}
         sideAHit={

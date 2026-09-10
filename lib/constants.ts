@@ -19,3 +19,16 @@ export const GENDERS = ["mixed", "men", "women"] as const;
 
 export type Level = (typeof LEVELS)[number];
 export type GenderPolicy = (typeof GENDERS)[number];
+
+export const MATCH_MODES = ["pickup", "challenge"] as const;
+export type MatchMode = (typeof MATCH_MODES)[number];
+
+export const SLOT_ROLES = ["starter", "bench"] as const;
+export type SlotRole = (typeof SLOT_ROLES)[number];
+
+export const ROTATION_RULES = [
+  "Rotación activa continua",
+  "Cambios cada 15 min",
+  "Por cansancio / lesión",
+  "Acordado en cancha",
+] as const;
