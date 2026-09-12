@@ -14,6 +14,7 @@ import {
   parseRotationRule,
   parseTeamName,
 } from "@/lib/match-write";
+import { playersPerSideFromFormat } from "@/lib/formations-catalog";
 
 function makeSlot(
   id: string,
@@ -155,5 +156,42 @@ describe("Parsing Helpers for Challenge & Bench Write", () => {
     expect(parseRotationRule("Rotación cada 15 min")).toBe("Rotación cada 15 min");
     expect(parseRotationRule("   ")).toBeNull();
     expect(parseRotationRule(null)).toBeNull();
+  });
+
+  it("calcula correctamente cupos de lado B para reto de voleibol 6v6", () => {
+    const format = "6v6";
+    const sideBCount = playersPerSideFromFormat(format);
+    const benchCount = 0;
+    const challengeTargetLevel = "any";
+    const position = "any";
+
+    const slots: Array<{
+      position: string;
+      level: string;
+      side: "a" | "b";
+      slot_role: "starter" | "bench";
+      pitch_index: number | null;
+    }> = Array.from({ length: sideBCount }, () => ({
+      position,
+      level: challengeTargetLevel,
+      side: "b" as const,
+      slot_role: "starter" as const,
+      pitch_index: null,
+    }));
+
+    if (benchCount > 0) {
+      for (let i = 0; i < benchCount; i++) {
+        slots.push({
+          position: "any",
+          level: challengeTargetLevel,
+          side: "b" as const,
+          slot_role: "bench" as const,
+          pitch_index: null,
+        });
+      }
+    }
+
+    expect(slots).toHaveLength(6);
+    expect(slots.every((s) => s.side === "b" && s.slot_role === "starter")).toBe(true);
   });
 });

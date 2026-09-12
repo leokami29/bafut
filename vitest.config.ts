@@ -8,7 +8,7 @@ export default defineConfig({
     },
   },
   test: {
-    include: ["lib/**/*.test.ts", "app/**/*.test.ts", "creative-assets/**/*.test.ts"],
+    include: ["lib/**/*.test.ts", "app/**/*.test.ts", "creative-assets/**/*.test.ts", "components/**/*.test.tsx"],
     environment: "node",
   },
 });

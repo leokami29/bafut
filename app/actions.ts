@@ -39,7 +39,10 @@ import {
   parseTeamName,
   resolveFormationIdInput,
 } from "@/lib/match-write";
-import { playersPerSideFromFormat } from "@/lib/match-formation";
+import {
+  buildMatchSlotsPayload,
+  type MatchCreationIntent,
+} from "@/lib/match-intent-payload";
 
 import {
   humanizeSideBError,
@@ -195,9 +198,32 @@ export async function createMatchAction(formData: FormData): Promise<MatchCompos
   }
   const formationId = typeof formationResolved === "string" ? formationResolved : null;
 
-  const pitchParsed = parsePitchSlotsJson(String(formData.get("pitch_slots_json") ?? ""), sport);
-  if (pitchParsed && "error" in pitchParsed) {
-    return { error: pitchParsed.error };
+  const rawIntent = formData.get("intent")?.toString().trim();
+  let intent: MatchCreationIntent;
+  if (rawIntent === "starter_slots" || rawIntent === "bench_only" || rawIntent === "challenge") {
+    intent = rawIntent;
+  } else {
+    const modeRaw = formData.get("match_mode")?.toString().trim();
+    const benchRaw = Number(formData.get("bench_count") ?? 0);
+    const openCountRaw = formData.get("open_count")?.toString().trim();
+    const pitchRaw = formData.get("pitch_slots_json")?.toString().trim();
+
+    if (modeRaw === "challenge") {
+      intent = "challenge";
+    } else if (benchRaw > 0 && (!openCountRaw || openCountRaw === "0") && (!pitchRaw || pitchRaw === "[]")) {
+      intent = "bench_only";
+    } else {
+      intent = "starter_slots";
+    }
+  }
+
+  let pitchParsed = null;
+  const pitchRaw = String(formData.get("pitch_slots_json") ?? "").trim();
+  if (intent === "starter_slots" && pitchRaw && pitchRaw !== "[]") {
+    pitchParsed = parsePitchSlotsJson(pitchRaw, sport);
+    if (pitchParsed && "error" in pitchParsed) {
+      return { error: pitchParsed.error };
+    }
   }
 
   const needKeeper = formData.get("need_keeper") === "on" && SPORT_RULES[sport].hasKeeper;
@@ -211,87 +237,52 @@ export async function createMatchAction(formData: FormData): Promise<MatchCompos
     return { error: "La nota es demasiado larga (máx. 500 caracteres)." };
   }
 
-  const matchMode = parseMatchMode(formData.get("match_mode"));
-  const hostTeamName = parseTeamName(formData.get("host_team_name"));
-  const rotationRule = parseRotationRule(formData.get("rotation_rule"));
+  const pitchSlotsInput =
+    intent === "starter_slots" && pitchParsed && "slots" in pitchParsed && pitchParsed.slots.length > 0
+      ? pitchParsed.slots.map((s) => ({
+          pitchIndex: s.pitch_index,
+          position: s.position,
+          level: s.level,
+        }))
+      : undefined;
+
+  const starterCountInput =
+    intent === "starter_slots" && !pitchSlotsInput
+      ? Number(formData.get("open_count") ?? 0)
+      : undefined;
+
   const benchCount = parseBenchCount(formData.get("bench_count"));
+  const rotationRule = formData.get("rotation_rule")?.toString();
+  const hostTeamName = formData.get("host_team_name")?.toString();
   const challengeTargetLevel = asOne(formData.get("challenge_target_level"), LEVELS, "any");
+  const challengeModeType = formData.get("challenge_mode_type") === "open_slots" ? "open_slots" : "full_team";
 
-  let slotsPayload: Array<{
-    match_id?: string;
-    position: Position;
-    level: string;
-    side: "a" | "b";
-    slot_role: "starter" | "bench";
-    pitch_index?: number | null;
-  }>;
+  const payloadResult = buildMatchSlotsPayload({
+    intent,
+    sport,
+    format,
+    formationId,
+    pitchSlots: pitchSlotsInput,
+    starterCount: starterCountInput,
+    benchCount,
+    rotationRule,
+    hostTeamName,
+    challengeModeType,
+    defaultPosition: position,
+    defaultLevel: intent === "challenge" ? challengeTargetLevel : level,
+    needKeeper,
+  });
 
-  if (matchMode === "challenge") {
-    const sideBCount = playersPerSideFromFormat(format);
-    slotsPayload = Array.from({ length: sideBCount }, (_, index) => ({
-      position: (needKeeper && index === 0 ? "gk" : position) as Position,
-      level: challengeTargetLevel,
-      side: "b" as const,
-      slot_role: "starter" as const,
-      pitch_index: null,
-    }));
-
-    if (benchCount > 0) {
-      for (let i = 0; i < benchCount; i++) {
-        slotsPayload.push({
-          position: "any",
-          level: challengeTargetLevel,
-          side: "b" as const,
-          slot_role: "bench" as const,
-          pitch_index: null,
-        });
-      }
-    }
-  } else if (pitchParsed && "slots" in pitchParsed) {
-    slotsPayload = pitchParsed.slots.map((slot) => ({
-      position: slot.position,
-      level: slot.level,
-      side: "a" as const,
-      slot_role: "starter" as const,
-      pitch_index: slot.pitch_index,
-    }));
-
-    if (benchCount > 0) {
-      for (let i = 0; i < benchCount; i++) {
-        slotsPayload.push({
-          position: "any",
-          level,
-          side: "a" as const,
-          slot_role: "bench" as const,
-          pitch_index: null,
-        });
-      }
-    }
-  } else {
-    const openCountRaw = Number(formData.get("open_count") ?? "");
-    if (!Number.isInteger(openCountRaw) || openCountRaw < 1 || openCountRaw > 12) {
-      return { error: "Los cupos deben ser un número entero entre 1 y 12." };
-    }
-    slotsPayload = Array.from({ length: openCountRaw }, (_, index) => ({
-      position: (needKeeper && index === 0 ? "gk" : position) as Position,
-      level,
-      side: "a" as const,
-      slot_role: "starter" as const,
-      pitch_index: null,
-    }));
-
-    if (benchCount > 0) {
-      for (let i = 0; i < benchCount; i++) {
-        slotsPayload.push({
-          position: "any",
-          level,
-          side: "a" as const,
-          slot_role: "bench" as const,
-          pitch_index: null,
-        });
-      }
-    }
+  if (!payloadResult.ok) {
+    return { error: payloadResult.error };
   }
+
+  const {
+    matchMode,
+    hostTeamName: validatedHostTeamName,
+    rotationRule: validatedRotationRule,
+    slots: validatedSlots,
+  } = payloadResult.data;
 
   const { data: match, error } = await supabase
     .from("matches")
@@ -309,9 +300,9 @@ export async function createMatchAction(formData: FormData): Promise<MatchCompos
       notes: notes || null,
       status: "open",
       match_mode: matchMode,
-      host_team_name: hostTeamName,
+      host_team_name: validatedHostTeamName,
       challenge_target_level: challengeTargetLevel,
-      rotation_rule: rotationRule,
+      rotation_rule: validatedRotationRule,
     })
     .select("id, share_code")
     .single();
@@ -338,11 +329,22 @@ export async function createMatchAction(formData: FormData): Promise<MatchCompos
     };
   }
 
-  const slots = slotsPayload.map((slot) => ({ ...slot, match_id: match.id }));
+  const slots = validatedSlots.map((slot) => ({
+    match_id: match.id,
+    side: slot.side,
+    slot_role: slot.slot_role,
+    position: slot.position,
+    level: slot.level,
+    pitch_index: slot.pitch_index,
+  }));
 
   const { error: slotError } = await supabase.from("match_slots").insert(slots);
   if (slotError) {
+    console.error("[createMatchAction] Error inserting match_slots:", slotError);
     await supabase.from("matches").delete().eq("id", match.id);
+    if (slotError.message && /lado b/i.test(slotError.message)) {
+      return { error: humanizeSideBError(slotError.message) };
+    }
     return { error: "El partido se armó mal. Inténtalo de nuevo." };
   }
 
