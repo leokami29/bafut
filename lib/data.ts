@@ -246,6 +246,126 @@ export const getPublicPlayerCardByCode = cache(async (cardCode: string): Promise
   };
 });
 
+/** Canchas públicas de la ciudad del jugador filtradas por su deporte (para "Dónde jugar"). */
+export const getVenuesForPlayerSport = cache(
+  async (cityId: string | null, sport: string | null, limit = 6): Promise<VenueWithPremium[]> => {
+    if (!cityId || !sport) return [];
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("venues")
+      .select(
+        `
+        *,
+        venue_subscriptions (
+          status,
+          plan,
+          expires_at
+        )
+      `,
+      )
+      .eq("city_id", cityId)
+      .is("deleted_at", null)
+      .contains("sports", [sport])
+      .order("is_verified", { ascending: false })
+      .order("name")
+      .limit(limit);
+    if (error) {
+      throw error;
+    }
+    return (data ?? []).map(({ venue_subscriptions, ...venue }) => ({
+      ...venue,
+      is_premium: venueHasActivePremium(venue_subscriptions),
+    }));
+  },
+);
+
+export type PlayerRecentMatch = {
+  id: string;
+  share_code: string;
+  starts_at: string;
+  sport: string;
+  format: string;
+  status: string;
+  venue_name: string;
+  venue_slug: string;
+  city_timezone: string;
+  hosted: boolean;
+};
+
+/** Partidos recientes del jugador (host o cupo aceptado), más nuevos primero. */
+export const getPlayerRecentMatches = cache(
+  async (userId: string, limit = 6): Promise<PlayerRecentMatch[]> => {
+    const supabase = await createClient();
+    const lookback = new Date(Date.now() - 120 * 24 * 60 * 60 * 1000).toISOString();
+
+    const [{ data: hostedRows, error: hostedError }, { data: claimRows, error: claimError }] =
+      await Promise.all([
+        supabase
+          .from("matches")
+          .select("id, share_code, starts_at, sport, format, status, venues(name, slug), cities(timezone)")
+          .eq("host_id", userId)
+          .neq("status", "cancelled")
+          .gte("starts_at", lookback)
+          .order("starts_at", { ascending: false })
+          .limit(limit),
+        supabase
+          .from("slot_claims")
+          .select(
+            "match_id, matches!inner(id, share_code, starts_at, sport, format, status, venues(name, slug), cities(timezone))",
+          )
+          .eq("player_id", userId)
+          .eq("status", "accepted")
+          .gte("matches.starts_at", lookback)
+          .order("created_at", { ascending: false })
+          .limit(limit),
+      ]);
+    if (hostedError) throw hostedError;
+    if (claimError) throw claimError;
+
+    const out = new Map<string, PlayerRecentMatch>();
+
+    for (const row of hostedRows ?? []) {
+      const venue = Array.isArray(row.venues) ? row.venues[0] : row.venues;
+      const city = Array.isArray(row.cities) ? row.cities[0] : row.cities;
+      out.set(row.id, {
+        id: row.id,
+        share_code: row.share_code,
+        starts_at: row.starts_at,
+        sport: row.sport,
+        format: row.format,
+        status: row.status,
+        venue_name: venue?.name ?? "Cancha",
+        venue_slug: venue?.slug ?? "",
+        city_timezone: city?.timezone ?? "America/Bogota",
+        hosted: true,
+      });
+    }
+
+    for (const row of claimRows ?? []) {
+      const match = Array.isArray(row.matches) ? row.matches[0] : row.matches;
+      if (!match || out.has(match.id)) continue;
+      const venue = Array.isArray(match.venues) ? match.venues[0] : match.venues;
+      const city = Array.isArray(match.cities) ? match.cities[0] : match.cities;
+      out.set(match.id, {
+        id: match.id,
+        share_code: match.share_code,
+        starts_at: match.starts_at,
+        sport: match.sport,
+        format: match.format,
+        status: match.status,
+        venue_name: venue?.name ?? "Cancha",
+        venue_slug: venue?.slug ?? "",
+        city_timezone: city?.timezone ?? "America/Bogota",
+        hosted: false,
+      });
+    }
+
+    return [...out.values()]
+      .sort((a, b) => new Date(b.starts_at).getTime() - new Date(a.starts_at).getTime())
+      .slice(0, limit);
+  },
+);
+
 function matchFromClaim(row: { matches: unknown }) {
   const match = Array.isArray(row.matches) ? row.matches[0] : row.matches;
   return match as { starts_at?: string; status?: string } | null;

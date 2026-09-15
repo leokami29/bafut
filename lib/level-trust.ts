@@ -45,6 +45,22 @@ export function matchEndsAt(startsAt: Date | string, durationMin: number): Date 
   return new Date(start.getTime() + durationMin * 60_000);
 }
 
+/**
+ * Partido en modo historial: ya terminó (`starts_at` + `duration_min`).
+ * No usa fin de día civil (evitar marcar historial a un partido nocturno aún en juego).
+ */
+export function isMatchHistory(
+  startsAt: Date | string,
+  durationMin: number,
+  now: Date = new Date(),
+): boolean {
+  const start = typeof startsAt === "string" ? new Date(startsAt) : startsAt;
+  if (Number.isNaN(start.getTime()) || !Number.isFinite(durationMin) || durationMin < 0) {
+    return false;
+  }
+  return now.getTime() >= matchEndsAt(start, durationMin).getTime();
+}
+
 /** Eligible from match end through +7 days (inclusive of end, exclusive past window). */
 export function isFeedbackWindow(
   now: Date,

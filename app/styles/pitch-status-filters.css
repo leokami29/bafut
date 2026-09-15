@@ -105,6 +105,12 @@
   color: color-mix(in oklab, var(--ink) 55%, transparent);
 }
 
+.status-chip.is-history {
+  color: var(--turf-deep);
+  border-color: color-mix(in oklab, var(--turf-deep) 55%, transparent);
+  background: color-mix(in oklab, var(--turf) 10%, var(--paper));
+}
+
 .host-banner-text {
   margin: 0;
   line-height: 1.45;
@@ -130,6 +136,14 @@
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: color-mix(in oklab, var(--ink) 55%, transparent);
+}
+
+.player-card-download {
+  margin-top: 0.85rem;
+}
+
+.player-card-download .share-btn-download {
+  width: 100%;
 }
 
 .share-row-social {

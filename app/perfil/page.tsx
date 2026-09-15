@@ -17,7 +17,8 @@ import {
   getVenueOwnerSummary,
   getVenuesByCity,
 } from "@/lib/data";
-import { formatLabel, levelLabel, sportLabel } from "@/lib/labels";
+import { ensureProfileCardShareCode } from "@/lib/ensure-card-share-code";
+import { formatLabel, levelLabel, positionLabel, sportLabel } from "@/lib/labels";
 import {
   formatStatCount,
   formatTrustStat,
@@ -139,6 +140,8 @@ export default async function PerfilPage({
     );
   }
 
+  const profileWithCode = await ensureProfileCardShareCode(profile);
+
   const venues = city ? await getVenuesByCity(city.id) : [];
   const neighborhoods = [
     ...new Set(
@@ -150,16 +153,24 @@ export default async function PerfilPage({
 
   const { data: authData } = await supabase.auth.getUser();
   const email = authData.user?.email ?? null;
-  const complete = isProfileComplete(profile, email);
-  const hint = profileCompletenessHint(profile, email);
-  const citySlug = cities.find((item) => item.id === profile.city_id)?.slug ?? city?.slug ?? DEFAULT_CITY_SLUG;
+  const complete = isProfileComplete(profileWithCode, email);
+  const hint = profileCompletenessHint(profileWithCode, email);
+  const citySlug =
+    cities.find((item) => item.id === profileWithCode.city_id)?.slug ??
+    city?.slug ??
+    DEFAULT_CITY_SLUG;
   const cityName = cities.find((item) => item.slug === citySlug)?.name ?? city?.name ?? "Barranquilla";
-  const draft = toPlayerCardDraft(profile, stats, cityName);
+  const draft = toPlayerCardDraft(profileWithCode, stats, cityName);
 
-  const sport = profile.preferred_sport && isSport(profile.preferred_sport) ? profile.preferred_sport : null;
+  const sport =
+    profileWithCode.preferred_sport && isSport(profileWithCode.preferred_sport)
+      ? profileWithCode.preferred_sport
+      : null;
   const format =
-    profile.preferred_format && isFormat(profile.preferred_format) ? profile.preferred_format : null;
-  const levelRaw = profile.level;
+    profileWithCode.preferred_format && isFormat(profileWithCode.preferred_format)
+      ? profileWithCode.preferred_format
+      : null;
+  const levelRaw = profileWithCode.level;
   const level: Level | null =
     levelRaw && (LEVELS as readonly string[]).includes(levelRaw) ? (levelRaw as Level) : null;
 
@@ -218,7 +229,7 @@ export default async function PerfilPage({
     <main className="page page-perfil" id="main">
       <header className="page-head">
         <p className="perfil-eyebrow">Vestuario</p>
-        <h1>{complete ? profile.display_name : "Armá tu carta"}</h1>
+        <h1>{complete ? profileWithCode.display_name : "Armá tu carta"}</h1>
         <p className="lede">
           {complete
             ? "Tu ficha, tus atajos y lo que falta por retocar — todo en un solo lugar."
@@ -253,7 +264,8 @@ export default async function PerfilPage({
                 displayName: draft.displayName,
                 overall: stats.overall,
                 sport: sport ? sportLabel[sport] : "Deporte",
-                cardCode: profile.card_share_code ?? "",
+                position: draft.position ? positionLabel[draft.position] : null,
+                cardCode: profileWithCode.card_share_code ?? "",
               }}
             />
             <ul className="perfil-stats" aria-label="Números de cancha">

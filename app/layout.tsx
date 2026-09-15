@@ -7,8 +7,10 @@ import { MobileNav } from "@/components/MobileNav";
 import { PwaRegister } from "@/components/PwaRegister";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
+import { rejectPurgedProfileSession } from "@/lib/auth";
 import { canCancelAccountDeletion } from "@/lib/account-deletion";
 import { getActiveCity, getCities, getHostPendingInbox, getIsAdmin, getProfile, getSessionUserId } from "@/lib/data";
+import { createClient } from "@/lib/supabase/server";
 import { siteUrl } from "@/lib/env";
 import {
   DEFAULT_DESCRIPTION,
@@ -86,6 +88,12 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         getIsAdmin(userId),
       ])
     : [{ count: 0, href: "/perfil/partidos" }, null, false];
+
+  if (userId && profile) {
+    const supabase = await createClient();
+    await rejectPurgedProfileSession(supabase, userId, profile);
+  }
+
   const pendingCount = pendingInbox.count;
   const deletionBannerPurgeAt =
     profile && canCancelAccountDeletion(profile) && profile.purge_at ? profile.purge_at : null;

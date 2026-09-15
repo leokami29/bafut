@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { PlayerCard } from "@/components/PlayerCard";
 import { PublicPlayerCardShareBlock } from "@/components/PlayerCardShareBlock";
 import { getPublicPlayerCardByCode, getSessionUserId } from "@/lib/data";
-import { sportLabel } from "@/lib/labels";
+import { positionLabel, sportLabel } from "@/lib/labels";
 import { toPlayerCardDraft } from "@/lib/player-card-draft";
 import { isPublicPlayerCard } from "@/lib/profile";
 import {
@@ -90,19 +90,29 @@ export default async function CartaPage({ params }: Props) {
               displayName: draft.displayName,
               overall: stats.overall,
               sport,
+              position: draft.position ? positionLabel[draft.position] : null,
               cardCode: code,
             }}
           />
         ) : (
-          <PlayerCard draft={draft} cityName={cityName} enter={false} />
+          <>
+            <PlayerCard draft={draft} cityName={cityName} enter={false} />
+            <p className="empty-home-actions" style={{ marginTop: "1rem" }}>
+              <Link href={`/jugador/${code}`} className="btn-flood">
+                Ver perfil
+              </Link>
+            </p>
+          </>
         )}
       </div>
 
       <p className="field-help">
         {isOwner ? (
           <>
-            Esta es la vista que ven otros.{" "}
-            <Link href="/perfil">Volver a tu vestuario</Link>
+            La carta es la imagen. Tu ficha completa (posición, pierna, etc.) está en{" "}
+            <Link href={`/jugador/${code}`}>tu perfil público</Link>
+            {" · "}
+            <Link href="/perfil">Volver al vestuario</Link>
           </>
         ) : (
           <>

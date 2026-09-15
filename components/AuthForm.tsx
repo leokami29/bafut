@@ -19,6 +19,9 @@ function authErrorMessage(code: string | null | undefined) {
   if (code === "exchange_failed") {
     return "No pudimos completar la recuperación. Pedí de nuevo el correo.";
   }
+  if (code === "cuenta_eliminada") {
+    return "Tu cuenta ya fue eliminada. Si creés que es un error, escribinos.";
+  }
   return "No se pudo completar el enlace. Pedí uno nuevo desde Recuperar.";
 }
 

@@ -28,6 +28,7 @@ export function SlotList({
   isHost,
   userId,
   matchCancelled = false,
+  matchPast = false,
   profileLevel = null,
   showSides = false,
   awayOpenedBy = null,
@@ -40,6 +41,8 @@ export function SlotList({
   isHost: boolean;
   userId: string | null;
   matchCancelled?: boolean;
+  /** Partido ya jugado: sin pedir cupo ni moderar pendientes. */
+  matchPast?: boolean;
   profileLevel?: string | null;
   showSides?: boolean;
   awayOpenedBy?: string | null;
@@ -55,6 +58,7 @@ export function SlotList({
   });
   const sideA = ordered.filter((slot) => slot.side !== "b");
   const sideB = ordered.filter((slot) => slot.side === "b");
+  const readOnly = matchCancelled || matchPast;
 
   const rotationBanner = rotationRule ? (
     <p className="slot-rotation-rule">
@@ -76,6 +80,8 @@ export function SlotList({
               isHost={isHost}
               userId={userId}
               matchCancelled={matchCancelled}
+              matchPast={matchPast}
+              readOnly={readOnly}
               profileLevel={profileLevel}
               awayOpenedBy={awayOpenedBy}
             />
@@ -86,50 +92,62 @@ export function SlotList({
   }
 
   return (
-    <div className="slot-sides">
+    <div>
       {rotationBanner}
-      <section className="slot-side-block" aria-labelledby="slot-side-a">
-        <h3 className="slot-side-heading" id="slot-side-a">
-          {sideATitle}
-        </h3>
-        <p className="slot-side-hint">Pedí cupo acá si vas en ese mismo equipo.</p>
-        <ol className="slot-list">
-          {sideA.map((slot, index) => (
-            <SlotRow
-              key={slot.id}
-              slot={slot}
-              index={index}
-              shareCode={shareCode}
-              isHost={isHost}
-              userId={userId}
-              matchCancelled={matchCancelled}
-              profileLevel={profileLevel}
-              awayOpenedBy={awayOpenedBy}
-            />
-          ))}
-        </ol>
-      </section>
-      <section className="slot-side-block is-away" aria-labelledby="slot-side-b">
-        <h3 className="slot-side-heading" id="slot-side-b">
-          {sideBTitle}
-        </h3>
-        <p className="slot-side-hint">Misma cancha y hora · el rival de la pateada.</p>
-        <ol className="slot-list">
-          {sideB.map((slot, index) => (
-            <SlotRow
-              key={slot.id}
-              slot={slot}
-              index={index}
-              shareCode={shareCode}
-              isHost={isHost}
-              userId={userId}
-              matchCancelled={matchCancelled}
-              profileLevel={profileLevel}
-              awayOpenedBy={awayOpenedBy}
-            />
-          ))}
-        </ol>
-      </section>
+      <div className="slot-sides">
+        <section className="slot-side-block" aria-labelledby="slot-side-a">
+          <h3 className="slot-side-heading" id="slot-side-a">
+            {sideATitle}
+          </h3>
+          <p className="slot-side-hint">
+            {matchPast ? "Quién jugó en este equipo." : "Pedí cupo acá si vas en ese mismo equipo."}
+          </p>
+          <ol className="slot-list">
+            {sideA.map((slot, index) => (
+              <SlotRow
+                key={slot.id}
+                slot={slot}
+                index={index}
+                shareCode={shareCode}
+                isHost={isHost}
+                userId={userId}
+                matchCancelled={matchCancelled}
+                matchPast={matchPast}
+                readOnly={readOnly}
+                profileLevel={profileLevel}
+                awayOpenedBy={awayOpenedBy}
+              />
+            ))}
+          </ol>
+        </section>
+        <section className="slot-side-block is-away" aria-labelledby="slot-side-b">
+          <h3 className="slot-side-heading" id="slot-side-b">
+            {sideBTitle}
+          </h3>
+          <p className="slot-side-hint">
+            {matchPast
+              ? "Quién jugó del otro lado."
+              : "Misma cancha y hora · el rival de la pateada."}
+          </p>
+          <ol className="slot-list">
+            {sideB.map((slot, index) => (
+              <SlotRow
+                key={slot.id}
+                slot={slot}
+                index={index}
+                shareCode={shareCode}
+                isHost={isHost}
+                userId={userId}
+                matchCancelled={matchCancelled}
+                matchPast={matchPast}
+                readOnly={readOnly}
+                profileLevel={profileLevel}
+                awayOpenedBy={awayOpenedBy}
+              />
+            ))}
+          </ol>
+        </section>
+      </div>
     </div>
   );
 }
@@ -176,6 +194,8 @@ function SlotRow({
   isHost,
   userId,
   matchCancelled,
+  matchPast,
+  readOnly,
   profileLevel,
   awayOpenedBy,
 }: {
@@ -185,6 +205,8 @@ function SlotRow({
   isHost: boolean;
   userId: string | null;
   matchCancelled: boolean;
+  matchPast: boolean;
+  readOnly: boolean;
   profileLevel: string | null;
   awayOpenedBy?: string | null;
 }) {
@@ -216,7 +238,7 @@ function SlotRow({
   const isBench = slot.slot_role === "bench";
   const canModerate =
     isHost || (slot.side === "b" && Boolean(awayOpenedBy) && awayOpenedBy === userId);
-  const open = slotIsOpen(slot) && !matchCancelled;
+  const open = slotIsOpen(slot) && !readOnly;
   const accepted = slot.slot_claims.find((claim) => claim.status === "accepted");
   const mine = slot.slot_claims.find((claim) => claim.player_id === userId);
   const pending = slot.slot_claims.filter((claim) => claim.status === "pending");
@@ -240,10 +262,14 @@ function SlotRow({
               // eslint-disable-next-line @next/next/no-img-element
               <img src={profileAvatarPublicUrl(accepted.profiles.avatar_path)} alt="" />
             ) : null}
-            <span>Entra {accepted.profiles?.display_name}</span>
+            <span>
+              {matchPast ? "Jugó" : "Entra"} {accepted.profiles?.display_name}
+            </span>
           </p>
+        ) : matchPast && !accepted ? (
+          <p className="slot-mine">Sin cubrir</p>
         ) : null}
-        {mine && !accepted ? (
+        {mine && !accepted && !matchPast ? (
           <p className="slot-mine">
             {mine.status === "pending"
               ? "Pediste este cupo. Espera confirmación."
@@ -300,7 +326,7 @@ function SlotRow({
         </a>
       ) : null}
 
-      {mine?.status === "pending" && !canModerate ? (
+      {mine?.status === "pending" && !canModerate && !readOnly ? (
         <form action={withdrawAction}>
           <input type="hidden" name="claim_id" value={mine.id} />
           <input type="hidden" name="share_code" value={shareCode} />
@@ -317,7 +343,7 @@ function SlotRow({
         />
       ) : null}
 
-      {canModerate && !matchCancelled && pending.length > 0 ? (
+      {canModerate && !readOnly && pending.length > 0 ? (
         <div className="claim-inbox-wrap">
 
           <p className="claim-inbox-label">Piden cupo:</p>

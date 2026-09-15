@@ -15,6 +15,7 @@ export function MatchFormationSection({
   canOpenRival,
   userId,
   cancelled,
+  isHistory = false,
   secondaryToClaim = false,
   sideATitle = "Con ellos",
   sideBTitle = "En contra",
@@ -26,6 +27,8 @@ export function MatchFormationSection({
   canOpenRival: boolean;
   userId: string | null;
   cancelled: boolean;
+  /** Partido ya jugado: solo lectura, sin CTAs de reclutar. */
+  isHistory?: boolean;
   /** Si el CTA Pedir cupo ya está arriba, la formación se lee como secundaria. */
   secondaryToClaim?: boolean;
   sideATitle?: string;
@@ -33,6 +36,7 @@ export function MatchFormationSection({
 }) {
   const [showRival, setShowRival] = useState(false);
   const cuposHref = `#cupos`;
+  const locked = cancelled || isHistory;
 
   useEffect(() => {
     if (!canOpenRival) return;
@@ -53,17 +57,21 @@ export function MatchFormationSection({
     });
   };
 
-  const lead = secondaryToClaim
-    ? canOpenRival
-      ? "Orientación: izquierda = con ellos · derecha = rival. El pedido de cupo va arriba."
-      : board.hasSideB
-        ? "Dos equipos en la misma cancha y hora. Pedí cupo arriba en el que te toque."
-        : "Así va armada esta pateada (secundario al pedido de cupo)."
-    : canOpenRival
-      ? "Mitad izquierda = pedir cupo con ellos. Mitad derecha = armar el rival."
-      : board.hasSideB
-        ? "Dos equipos en la misma cancha y hora. Pedí cupo en el que te toque."
-        : "Así va la formación de esta pateada.";
+  const lead = isHistory
+    ? "Así quedó armada esta pateada."
+    : secondaryToClaim
+      ? canOpenRival
+        ? "Orientación: izquierda = con ellos · derecha = rival. El pedido de cupo va arriba."
+        : board.hasSideB
+          ? "Dos equipos en la misma cancha y hora. Pedí cupo arriba en el que te toque."
+          : "Así va armada esta pateada (secundario al pedido de cupo)."
+      : canOpenRival
+        ? "Mitad izquierda = pedir cupo con ellos. Mitad derecha = armar el rival."
+        : board.hasSideB
+          ? "Dos equipos en la misma cancha y hora. Pedí cupo en el que te toque."
+          : "Así va la formación de esta pateada.";
+
+  const disabledLabel = cancelled ? "Cancelado" : "Finalizado";
 
   return (
     <section className="match-formation-section" id="formacion" aria-labelledby="match-formation-heading">
@@ -77,16 +85,22 @@ export function MatchFormationSection({
         sideATitle={sideATitle}
         sideBTitle={sideBTitle}
 
-        sideBEmptyHint={canOpenRival ? "¿Jugás en contra? Tocá acá" : "Rival aún no armado"}
+        sideBEmptyHint={
+          isHistory
+            ? "Sin rival"
+            : canOpenRival
+              ? "¿Jugás en contra? Tocá acá"
+              : "Rival aún no armado"
+        }
         activeSide={showRival ? "b" : null}
         sideAHit={
-          cancelled
-            ? { kind: "disabled", label: "Cancelado" }
+          locked
+            ? { kind: "disabled", label: disabledLabel }
             : { kind: "link", href: cuposHref, label: "Voy con ellos" }
         }
         sideBHit={
-          cancelled
-            ? { kind: "disabled", label: "Cancelado" }
+          locked
+            ? { kind: "disabled", label: disabledLabel }
             : canOpenRival
               ? { kind: "button", onClick: openForm, label: "Voy en contra" }
               : board.hasSideB

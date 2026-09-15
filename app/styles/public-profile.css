@@ -1,0 +1,658 @@
+/* Perfil público /jugador/[code] — carta + stats + canchas + partidos */
+
+.page-jugador {
+  width: 100%;
+  max-width: 68rem;
+  margin-inline: auto;
+  padding-bottom: 3rem;
+}
+
+.page-jugador .venue-back {
+  max-width: none;
+}
+
+.page-jugador .share-panel {
+  max-width: none;
+}
+
+.public-profile {
+  display: grid;
+  gap: 2.25rem;
+  width: 100%;
+}
+
+/* —— Héroe: carta | intro + números de cancha —— */
+.pp-hero {
+  display: grid;
+  gap: 1.75rem;
+  align-items: start;
+  justify-items: center;
+  padding: 0.5rem 0 0.25rem;
+}
+
+@media (min-width: 900px) {
+  .pp-hero {
+    grid-template-columns: minmax(17rem, 20.5rem) minmax(0, 1fr);
+    gap: 2.5rem 2.75rem;
+    justify-items: stretch;
+    align-items: start;
+  }
+}
+
+.pp-hero-card {
+  width: min(100%, 20.5rem);
+  justify-self: center;
+}
+
+@media (min-width: 900px) {
+  .pp-hero-card {
+    justify-self: start;
+    position: sticky;
+    top: 1rem;
+  }
+}
+
+.pp-hero-aside {
+  display: grid;
+  gap: 1.5rem;
+  width: 100%;
+  min-width: 0;
+  justify-items: center;
+}
+
+@media (min-width: 900px) {
+  .pp-hero-aside {
+    justify-items: stretch;
+    align-content: start;
+    gap: 1.75rem;
+  }
+}
+
+.pp-hero-intro {
+  display: grid;
+  gap: 0.55rem;
+  justify-items: center;
+  text-align: center;
+  width: 100%;
+  max-width: 36rem;
+}
+
+@media (min-width: 900px) {
+  .pp-hero-intro {
+    justify-items: start;
+    text-align: left;
+    max-width: none;
+  }
+}
+
+.pp-hero-stats {
+  display: grid;
+  gap: 0.75rem;
+  width: 100%;
+  min-width: 0;
+}
+
+.pp-hero-stats-head .pp-section-lede {
+  max-width: none;
+}
+
+@media (max-width: 899px) {
+  .pp-hero-stats {
+    max-width: 36rem;
+  }
+}
+
+.pp-eyebrow {
+  margin: 0;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  font-weight: 650;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--ink) 55%, transparent);
+}
+
+.pp-name {
+  margin: 0;
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(1.9rem, 5vw, 2.6rem);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  line-height: 1.02;
+}
+
+.pp-role {
+  margin: 0;
+  font-size: 1.05rem;
+  color: color-mix(in oklab, var(--ink) 70%, transparent);
+}
+
+.pp-ovr-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 0.85rem;
+  margin-top: 0.35rem;
+  justify-content: center;
+}
+
+@media (min-width: 900px) {
+  .pp-ovr-row {
+    justify-content: flex-start;
+  }
+}
+
+.pp-ovr,
+.pp-trust {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  padding: 0.4rem 0.7rem;
+  background: color-mix(in oklab, var(--turf) 10%, var(--paper));
+  border: 1px solid color-mix(in oklab, var(--turf-deep) 26%, transparent);
+}
+
+.pp-ovr-num {
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--turf-deep);
+  font-variant-numeric: tabular-nums;
+}
+
+.pp-ovr-label,
+.pp-trust-label {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.62rem;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--ink) 55%, transparent);
+}
+
+.pp-trust {
+  background: color-mix(in oklab, var(--flood) 14%, var(--paper));
+  border-color: color-mix(in oklab, var(--flood) 40%, transparent);
+}
+
+.pp-trust-num {
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.pp-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 0.6rem;
+  justify-content: center;
+}
+
+@media (min-width: 900px) {
+  .pp-hero-actions {
+    justify-content: flex-start;
+  }
+}
+
+/* —— Secciones —— */
+.pp-section {
+  display: grid;
+  gap: 0.85rem;
+  min-width: 0;
+}
+
+.pp-section-head {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.pp-section-title {
+  margin: 0;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  font-weight: 650;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--ink) 55%, transparent);
+}
+
+.pp-section-lede {
+  margin: 0;
+  max-width: 42ch;
+  font-size: 0.86rem;
+  line-height: 1.35;
+  color: color-mix(in oklab, var(--ink) 58%, transparent);
+}
+
+/* —— Stats: marcador (en héroe) —— */
+.pp-stats {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+@media (min-width: 900px) {
+  .pp-stats--hero {
+    gap: 0.7rem;
+  }
+}
+
+.pp-stat {
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.9rem 0.85rem 1rem;
+  text-align: left;
+  background: color-mix(in oklab, var(--paper) 94%, white);
+  border: 1px solid color-mix(in oklab, var(--ink) 12%, transparent);
+  border-bottom: 3px solid var(--turf);
+}
+
+.pp-stat-code {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--turf-deep);
+}
+
+.pp-stat-num {
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(1.75rem, 3vw, 2.15rem);
+  font-weight: 800;
+  line-height: 1;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.pp-stat-label {
+  margin-top: 0.15rem;
+  font-size: 0.8rem;
+  line-height: 1.25;
+  color: color-mix(in oklab, var(--ink) 58%, transparent);
+}
+
+/* —— Cómo juega: highlights + meta —— */
+.pp-section-facts {
+  display: grid;
+  gap: 1rem;
+}
+
+.pp-highlights {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.65rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 560px) {
+  .pp-highlights {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 900px) {
+  .pp-highlights {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.pp-highlight {
+  display: grid;
+  gap: 0.35rem;
+  padding: 1rem 1.05rem;
+  background:
+    linear-gradient(
+      160deg,
+      color-mix(in oklab, var(--turf) 14%, var(--paper)) 0%,
+      color-mix(in oklab, var(--paper) 92%, white) 70%
+    );
+  border: 1px solid color-mix(in oklab, var(--turf-deep) 22%, transparent);
+}
+
+.pp-highlight-label {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.62rem;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--ink) 50%, transparent);
+}
+
+.pp-highlight-value {
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(1.15rem, 2vw, 1.4rem);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  line-height: 1.15;
+  text-transform: uppercase;
+  color: var(--turf-deep);
+}
+
+.pp-meta {
+  margin: 0;
+  display: grid;
+  gap: 0;
+  grid-template-columns: 1fr;
+  border-top: 1px solid color-mix(in oklab, var(--ink) 12%, transparent);
+}
+
+@media (min-width: 560px) {
+  .pp-meta {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 1.5rem;
+  }
+}
+
+.pp-meta-row {
+  display: grid;
+  grid-template-columns: minmax(6.5rem, 9rem) minmax(0, 1fr);
+  gap: 0.35rem 0.85rem;
+  align-items: baseline;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid color-mix(in oklab, var(--ink) 10%, transparent);
+  min-width: 0;
+}
+
+.pp-meta-row dt {
+  margin: 0;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.68rem;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--ink) 52%, transparent);
+}
+
+.pp-meta-row dd {
+  margin: 0;
+  font-weight: 650;
+  font-size: 0.95rem;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 519px) {
+  .pp-meta-row {
+    grid-template-columns: 1fr;
+    gap: 0.15rem;
+  }
+}
+
+/* —— Split: partidos (timeline) | canchas (mosaic) —— */
+.pp-split {
+  display: grid;
+  gap: 1.75rem;
+  align-items: start;
+}
+
+@media (min-width: 960px) {
+  .pp-split {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: 1.75rem 2rem;
+  }
+}
+
+/* Partidos: lista vertical tipo agenda */
+.pp-section-matches {
+  padding: 1.1rem 1.15rem 1.2rem;
+  background: color-mix(in oklab, var(--paper) 92%, white);
+  border: 1px solid color-mix(in oklab, var(--ink) 12%, transparent);
+  border-left: 4px solid var(--turf-deep);
+}
+
+.pp-match-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.pp-match {
+  display: grid;
+  grid-template-columns: 3.1rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.7rem 0.85rem;
+  padding: 0.65rem 0.55rem;
+  text-decoration: none;
+  color: var(--ink);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid color-mix(in oklab, var(--ink) 10%, transparent);
+  transition: background 0.15s ease;
+}
+
+.pp-match-list > li:last-child .pp-match {
+  border-bottom: none;
+}
+
+.pp-match:hover {
+  background: color-mix(in oklab, var(--turf) 6%, transparent);
+}
+
+.pp-match:focus-visible {
+  outline: 2px solid var(--flood);
+  outline-offset: 2px;
+}
+
+.pp-match-date {
+  display: grid;
+  place-items: center;
+  gap: 0.05rem;
+  width: 3.1rem;
+  padding: 0.35rem 0.2rem;
+  text-align: center;
+  background: color-mix(in oklab, var(--turf) 12%, var(--chalk));
+  border: 1px solid color-mix(in oklab, var(--turf-deep) 20%, transparent);
+}
+
+.pp-match-day {
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.15rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--turf-deep);
+  font-variant-numeric: tabular-nums;
+}
+
+.pp-match-month {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.58rem;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--ink) 55%, transparent);
+}
+
+.pp-match-copy {
+  display: grid;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.pp-match-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.5rem;
+  font-size: 0.88rem;
+  font-weight: 650;
+  line-height: 1.25;
+}
+
+.pp-match-top time {
+  font-weight: 650;
+}
+
+.pp-match-place {
+  font-size: 0.8rem;
+  color: color-mix(in oklab, var(--ink) 60%, transparent);
+}
+
+.pp-match-tag {
+  padding: 0.1rem 0.4rem;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--ink) 62%, transparent);
+  background: color-mix(in oklab, var(--ink) 7%, var(--paper));
+  border: 1px solid color-mix(in oklab, var(--ink) 14%, transparent);
+}
+
+.pp-match-tag.is-host {
+  color: var(--turf-deep);
+  background: color-mix(in oklab, var(--turf) 14%, var(--paper));
+  border-color: color-mix(in oklab, var(--turf-deep) 26%, transparent);
+}
+
+.pp-match-arrow {
+  font-size: 1rem;
+  color: color-mix(in oklab, var(--ink) 35%, transparent);
+  transition: transform 0.15s ease, color 0.15s ease;
+}
+
+.pp-match:hover .pp-match-arrow {
+  transform: translateX(2px);
+  color: var(--turf-deep);
+}
+
+/* Canchas: mosaico de lugares */
+.pp-section-venues {
+  padding: 1.1rem 1.15rem 1.25rem;
+  background:
+    linear-gradient(
+      165deg,
+      color-mix(in oklab, var(--turf) 10%, var(--paper)) 0%,
+      color-mix(in oklab, var(--mist) 40%, var(--paper)) 100%
+    );
+  border: 1px solid color-mix(in oklab, var(--turf-deep) 16%, transparent);
+}
+
+.pp-venue-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.65rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 520px) {
+  .pp-venue-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 960px) {
+  .pp-venue-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 1100px) {
+  .pp-venue-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.pp-venue {
+  display: grid;
+  gap: 0.4rem;
+  min-height: 6.5rem;
+  padding: 0.85rem 0.9rem;
+  text-decoration: none;
+  color: var(--ink);
+  background: color-mix(in oklab, var(--paper) 94%, white);
+  border: 1px solid color-mix(in oklab, var(--ink) 12%, transparent);
+  border-top: 3px solid var(--turf);
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.pp-venue:hover {
+  background: var(--paper);
+  border-color: color-mix(in oklab, var(--turf) 40%, transparent);
+  border-top-color: var(--turf-deep);
+  box-shadow: 0 6px 18px color-mix(in oklab, var(--ink) 8%, transparent);
+}
+
+.pp-venue:focus-visible {
+  outline: 2px solid var(--flood);
+  outline-offset: 2px;
+}
+
+.pp-venue-top {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+.pp-venue-mark {
+  display: grid;
+  place-items: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  color: var(--turf-deep);
+  background: color-mix(in oklab, var(--turf) 14%, var(--chalk));
+  border: 1px solid color-mix(in oklab, var(--turf-deep) 18%, transparent);
+}
+
+.pp-venue-name {
+  font-family: var(--font-display), sans-serif;
+  font-size: 1rem;
+  font-weight: 750;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+}
+
+.pp-venue-sub {
+  font-size: 0.8rem;
+  color: color-mix(in oklab, var(--ink) 58%, transparent);
+}
+
+.pp-venue-flag {
+  padding: 0.1rem 0.4rem;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--turf-deep);
+  background: color-mix(in oklab, var(--turf) 16%, var(--paper));
+  border: 1px solid color-mix(in oklab, var(--turf-deep) 24%, transparent);
+}
+
+.pp-venue-flag.is-premium {
+  color: var(--bib-ink);
+  background: var(--bib);
+  border-color: var(--bib);
+}
+
+.pp-privacy {
+  margin: 0;
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pp-venue,
+  .pp-match,
+  .pp-match-arrow {
+    transition: none;
+  }
+}

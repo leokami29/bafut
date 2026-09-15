@@ -12,7 +12,7 @@ import { ShareWhatsApp } from "@/components/ShareWhatsApp";
 import { SlotList } from "@/components/SlotList";
 import { VenueMapLazy } from "@/components/VenueMapLazy";
 import { getHostMatchCount, getMatchByCode, getProfile, getSessionUserId, getUpcomingMatches } from "@/lib/data";
-import { formatLevelOkBadge } from "@/lib/level-trust";
+import { formatLevelOkBadge, isMatchHistory } from "@/lib/level-trust";
 import {
   isChallengeMatch,
   matchDisplayStatus,
@@ -92,12 +92,13 @@ export default async function PartidoPage({ params }: Props) {
     getUpcomingMatches(match.city_id),
   ]);
   const cancelled = match.status === "cancelled";
-  const open = cancelled ? 0 : openSlotCount(match);
-  const hole = cancelled ? "Completo" : openSlotsPhrase(openSlotPositions(match));
+  const isHistory = !cancelled && isMatchHistory(match.starts_at, match.duration_min);
+  const open = cancelled || isHistory ? 0 : openSlotCount(match);
+  const hole = cancelled ? "Completo" : isHistory ? "Partido jugado" : openSlotsPhrase(openSlotPositions(match));
   const when = formatWhen(match.starts_at, match.cities.timezone);
   const price = formatMoney(match.cost_per_person, match.currency);
   const isHost = userId === match.host_id;
-  const canCancel = isHost && !cancelled && match.starts_at > new Date().toISOString();
+  const canCancel = isHost && !cancelled && !isHistory && match.starts_at > new Date().toISOString();
   const hostName = match.profiles.display_name;
   const levelOkBadge = formatLevelOkBadge(
     match.profiles.level_ok_count ?? 0,
@@ -127,8 +128,12 @@ export default async function PartidoPage({ params }: Props) {
     moreHere.length > 0 ? "Más huecos en esta cancha" : `Más ${sportLabel[match.sport as keyof typeof sportLabel] ?? match.sport}`;
   const hasSideB = Boolean(match.away_opened_by) || match.match_slots.some((slot) => slot.side === "b");
   const canOpenRival =
-    !cancelled && !isHost && !match.away_opened_by && match.starts_at > new Date().toISOString();
-  const showSeekerCta = !isHost && !cancelled && open > 0;
+    !cancelled &&
+    !isHistory &&
+    !isHost &&
+    !match.away_opened_by &&
+    match.starts_at > new Date().toISOString();
+  const showSeekerCta = !isHost && !cancelled && !isHistory && open > 0;
   const formationBoard = buildFormationFromSlots({
     sport: match.sport,
     format: match.format,
@@ -143,25 +148,29 @@ export default async function PartidoPage({ params }: Props) {
 
   const statusLabel = cancelled
     ? matchStatusLabel.cancelled
-    : isChallenge
-      ? open > 0
-        ? "Reto abierto"
-        : "Reto pactado"
-      : displayStatus === "bench_only"
-        ? "Solo rotación"
-        : open > 0
-          ? "Abierto"
-          : "Completo";
+    : isHistory
+      ? "Finalizado"
+      : isChallenge
+        ? open > 0
+          ? "Reto abierto"
+          : "Reto pactado"
+        : displayStatus === "bench_only"
+          ? "Solo rotación"
+          : open > 0
+            ? "Abierto"
+            : "Completo";
 
   const statusClass = cancelled
     ? "is-full"
-    : isChallenge && open > 0
-      ? "is-open"
-      : displayStatus === "bench_only"
+    : isHistory
+      ? "is-history"
+      : isChallenge && open > 0
         ? "is-open"
-        : open > 0
+        : displayStatus === "bench_only"
           ? "is-open"
-          : "is-full";
+          : open > 0
+            ? "is-open"
+            : "is-full";
 
   const challengeHeading = match.host_team_name
     ? `${match.host_team_name} busca rival`
@@ -169,11 +178,17 @@ export default async function PartidoPage({ params }: Props) {
 
   const headingText = cancelled
     ? "Partido cancelado"
-    : isChallenge
-      ? challengeHeading
-      : displayStatus === "bench_only"
-        ? `Cupos de rotación / banca (${benchCount})`
-        : hole;
+    : isHistory
+      ? isChallenge
+        ? match.host_team_name && match.away_team_name
+          ? `${match.host_team_name} vs ${match.away_team_name}`
+          : "Partido jugado"
+        : "Partido jugado"
+      : isChallenge
+        ? challengeHeading
+        : displayStatus === "bench_only"
+          ? `Cupos de rotación / banca (${benchCount})`
+          : hole;
 
   return (
     <main className="page page-match-detail" id="main">
@@ -233,7 +248,7 @@ export default async function PartidoPage({ params }: Props) {
             <MatchSeekerCta open={open} canOpenRival={canOpenRival} cancelled={cancelled} />
           ) : null}
 
-          {!cancelled ? (
+          {!cancelled && !isHistory ? (
             <ShareWhatsApp
               {...shareProps}
               highlight={isHost && open > 0}
@@ -256,7 +271,7 @@ export default async function PartidoPage({ params }: Props) {
             </div>
           ) : null}
 
-          {isChallenge && !match.away_opened_by && !isHost && !cancelled && open > 0 ? (
+          {isChallenge && !match.away_opened_by && !isHost && !cancelled && !isHistory && open > 0 ? (
             <AcceptChallengeCard
               matchId={match.id}
               shareCode={match.share_code}
@@ -266,7 +281,7 @@ export default async function PartidoPage({ params }: Props) {
           ) : null}
 
           <h2 className="subhead" id="cupos">
-            Cupos
+            {isHistory ? "Quién jugó" : "Cupos"}
           </h2>
           <SlotList
             slots={match.match_slots}
@@ -274,6 +289,7 @@ export default async function PartidoPage({ params }: Props) {
             isHost={isHost}
             userId={userId}
             matchCancelled={cancelled}
+            matchPast={isHistory}
             profileLevel={profile?.level ?? null}
             showSides={hasSideB || isChallenge}
             awayOpenedBy={match.away_opened_by}
@@ -290,6 +306,7 @@ export default async function PartidoPage({ params }: Props) {
             canOpenRival={canOpenRival}
             userId={userId}
             cancelled={cancelled}
+            isHistory={isHistory}
             secondaryToClaim={showSeekerCta}
             sideATitle={match.host_team_name ?? "Con ellos"}
             sideBTitle={match.away_team_name ?? (isChallenge ? "Equipo Rival" : "En contra")}

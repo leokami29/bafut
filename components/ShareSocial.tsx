@@ -20,6 +20,7 @@ export type ShareSocialProps = {
   copyPromptMessage?: string;
   defaultHint?: string;
   igCopiedHint?: string;
+  extra?: ReactNode;
 };
 
 async function copyText(value: string, promptMessage: string): Promise<boolean> {
@@ -76,17 +77,6 @@ function IconShare({ className }: { className?: string }) {
   );
 }
 
-function IconDownload({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-      <path
-        fill="currentColor"
-        d="M12 16l-5-5h3V4h4v7h3l-5 5zm-7 4h14v-2H5v2z"
-      />
-    </svg>
-  );
-}
-
 function IconLink({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
@@ -138,6 +128,7 @@ export function ShareSocial({
   copyPromptMessage = "Copiá el link:",
   defaultHint = "Instagram no abre un post directo: en el celular usá «Más apps» o pegá el link en historia / DM.",
   igCopiedHint = "Link copiado. Pegalo en tu historia o DM de Instagram.",
+  extra,
 }: ShareSocialProps) {
   const waHref = whatsappShareHref(waText);
   const fbHref = facebookShareHref(pageUrl);
@@ -183,63 +174,8 @@ export function ShareSocial({
     window.open(fbHref, "_blank", "noopener,noreferrer");
   }
 
-  async function exportCardImage() {
-    const element = resolvePlayerCardElement(getCardElement);
-    if (!element && !imageFallbackUrl) {
-      throw new PlayerCardExportError("No encontramos la carta para exportar.");
-    }
-    return exportPlayerCardElement(element, imageFallbackUrl);
-  }
-
   async function shareInstagram() {
     trackShare("instagram");
-
-    if (cardImageShare) {
-      setExporting(true);
-      try {
-        const { file, blob } = await exportCardImage();
-
-        if (typeof navigator !== "undefined" && typeof navigator.share === "function") {
-          if (canShareFiles([file])) {
-            try {
-              await navigator.share({
-                files: [file],
-                title: nativeTitle,
-                text: caption,
-              });
-              flash(igImageShareSheetHint);
-              return;
-            } catch (err) {
-              if (err instanceof DOMException && err.name === "AbortError") return;
-            }
-          }
-
-          try {
-            await navigator.share({
-              title: nativeTitle,
-              text: caption,
-              url: pageUrl,
-            });
-            return;
-          } catch (err) {
-            if (err instanceof DOMException && err.name === "AbortError") return;
-          }
-        }
-
-        downloadPlayerCardBlob(blob);
-        flash(igImageDownloadHint);
-        return;
-      } catch (err) {
-        if (err instanceof PlayerCardExportError) {
-          flash(err.message || cardExportErrorHint);
-        } else {
-          flash(cardExportErrorHint);
-        }
-      } finally {
-        setExporting(false);
-      }
-    }
-
     if (typeof navigator !== "undefined" && typeof navigator.share === "function") {
       try {
         await navigator.share({
@@ -254,29 +190,6 @@ export function ShareSocial({
     }
     const ok = await copyText(pageUrl, copyPromptMessage);
     flash(ok ? igCopiedHint : "Copiá el link y pegalo en Instagram.");
-  }
-
-  async function downloadCardImage() {
-    trackShare("download_image");
-    setExporting(true);
-    try {
-      const { blob } = await exportCardImage();
-      downloadPlayerCardBlob(blob);
-      flash("Carta descargada.");
-    } catch (err) {
-      if (imageFallbackUrl) {
-        downloadPlayerCardFromUrl(imageFallbackUrl);
-        flash("Carta descargada.");
-        return;
-      }
-      if (err instanceof PlayerCardExportError) {
-        flash(err.message || cardExportErrorHint, 6000);
-      } else {
-        flash(cardExportErrorHint, 6000);
-      }
-    } finally {
-      setExporting(false);
-    }
   }
 
   async function shareNative() {
@@ -307,24 +220,9 @@ export function ShareSocial({
       <ShareBtn className="btn-ghost share-btn-fb" onClick={() => void shareFacebook()} label="Facebook">
         <IconFacebook className="share-btn-icon" />
       </ShareBtn>
-      <ShareBtn
-        className="btn-ghost share-btn-ig"
-        onClick={() => void shareInstagram()}
-        label={exporting ? "Generando…" : "Instagram"}
-        disabled={exporting}
-      >
+      <ShareBtn className="btn-ghost share-btn-ig" onClick={() => void shareInstagram()} label="Instagram">
         <IconInstagram className="share-btn-icon" />
       </ShareBtn>
-      {cardImageShare ? (
-        <ShareBtn
-          className="btn-ghost share-btn-download"
-          onClick={() => void downloadCardImage()}
-          label={exporting ? "Generando…" : "Descargar carta"}
-          disabled={exporting}
-        >
-          <IconDownload className="share-btn-icon" />
-        </ShareBtn>
-      ) : null}
       {canNativeShare ? (
         <ShareBtn className="btn-ghost" onClick={() => void shareNative()} label="Más apps">
           <IconShare className="share-btn-icon" />
@@ -337,6 +235,7 @@ export function ShareSocial({
       >
         <IconLink className="share-btn-icon" />
       </ShareBtn>
+      {extra}
     </div>
   );
 
@@ -358,9 +257,7 @@ export function ShareSocial({
             {hint}
           </p>
         ) : (
-          <p className="share-hint field-help">
-            {cardImageShare ? igImageShareHint : defaultHint}
-          </p>
+          <p className="share-hint field-help">{defaultHint}</p>
         )}
       </aside>
 

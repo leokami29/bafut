@@ -7,6 +7,7 @@ import {
   isFeedbackWindow,
   isMismatch,
   LEVEL_SIGNAL_MIN,
+  isMatchHistory,
   matchEndsAt,
 } from "@/lib/level-trust";
 
@@ -67,6 +68,19 @@ describe("matchEndsAt", () => {
     expect(matchEndsAt(new Date("2026-09-05T15:00:00.000Z"), 30).toISOString()).toBe(
       "2026-09-05T15:30:00.000Z",
     );
+  });
+});
+
+describe("isMatchHistory", () => {
+  const startsAt = "2026-09-05T15:00:00.000Z";
+
+  it("false antes del fin del partido", () => {
+    expect(isMatchHistory(startsAt, 60, new Date("2026-09-05T15:59:59.000Z"))).toBe(false);
+  });
+
+  it("true desde el instante de fin inclusive", () => {
+    expect(isMatchHistory(startsAt, 60, new Date("2026-09-05T16:00:00.000Z"))).toBe(true);
+    expect(isMatchHistory(startsAt, 60, new Date("2026-09-06T12:00:00.000Z"))).toBe(true);
   });
 });
 
