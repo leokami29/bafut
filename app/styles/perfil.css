@@ -340,13 +340,49 @@
   }
 }
 
-/* —— Zona de riesgo (eliminar cuenta) —— */
+/* —— Eliminar cuenta (discreto hasta abrir) —— */
 .perfil-danger {
+  margin-top: 1.25rem;
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+
+.perfil-danger.is-open {
   margin-top: 0.35rem;
   padding: 1rem 1rem 1.1rem;
-  border: 1px solid color-mix(in oklab, var(--bib) 42%, transparent);
-  border-top: 2px solid color-mix(in oklab, var(--bib) 55%, transparent);
-  background: color-mix(in oklab, var(--bib) 5%, var(--paper));
+  border: 1px solid color-mix(in oklab, var(--bib) 28%, transparent);
+  background: color-mix(in oklab, var(--bib) 4%, var(--paper));
+}
+
+.perfil-danger-quiet {
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: color-mix(in oklab, var(--ink) 42%, transparent);
+}
+
+.perfil-danger-quiet-link {
+  appearance: none;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  color: color-mix(in oklab, var(--ink) 48%, transparent);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+  cursor: pointer;
+}
+
+.perfil-danger-quiet-link:hover,
+.perfil-danger-quiet-link:focus-visible {
+  color: var(--bib);
+  outline: none;
+}
+
+.perfil-danger-quiet-hint {
+  color: color-mix(in oklab, var(--ink) 32%, transparent);
 }
 
 .perfil-danger-eyebrow {
@@ -375,16 +411,6 @@
   font-size: 0.84rem;
   line-height: 1.45;
   color: color-mix(in oklab, var(--ink) 68%, transparent);
-}
-
-.perfil-danger-trigger {
-  width: 100%;
-}
-
-@media (min-width: 560px) {
-  .perfil-danger-trigger {
-    width: auto;
-  }
 }
 
 .perfil-danger-form {
