@@ -40,8 +40,8 @@ import {
 } from "@/lib/sport-rules";
 import { isProfileComplete } from "@/lib/profile";
 import { normalizeWhatsapp } from "@/lib/whatsapp-contact";
+import { SOLE_ADMIN_DELETION_ERROR } from "@/lib/account-deletion";
 import { isDeleteAccountConfirmation } from "@/lib/delete-account-confirmation";
-import { SERVICE_ROLE_CONFIG_ERROR, tryCreateServiceClient } from "@/lib/supabase/admin";
 
 type State = { ok?: true; error?: string };
 
@@ -313,64 +313,48 @@ export async function saveProfileExtrasAction(formData: FormData): Promise<State
   return { ok: true };
 }
 
-async function removeProfileAvatarStorage(userId: string, avatarPath: string | null) {
-  const service = tryCreateServiceClient();
-  if (!service) return;
-
-  const paths = new Set<string>();
-  if (avatarPath) paths.add(avatarPath);
-
-  const { data: listed } = await service.storage.from(PROFILE_AVATARS_BUCKET).list(userId, {
-    limit: 100,
-  });
-  for (const item of listed ?? []) {
-    if (item.name) paths.add(`${userId}/${item.name}`);
+function mapScheduleDeletionError(message: string): string {
+  if (message.includes(SOLE_ADMIN_DELETION_ERROR) || message.includes("único administrador")) {
+    return SOLE_ADMIN_DELETION_ERROR;
   }
-
-  if (paths.size > 0) {
-    await service.storage.from(PROFILE_AVATARS_BUCKET).remove([...paths]);
-  }
+  return "No se pudo programar la eliminación. Si el problema sigue, escribinos desde Apoyar BaFut.";
 }
 
-export async function deleteAccountAction(formData: FormData): Promise<{ error?: string }> {
+export async function scheduleAccountDeletionAction(formData: FormData): Promise<{ error?: string }> {
   const confirm = String(formData.get("confirm") ?? "");
   if (!isDeleteAccountConfirmation(confirm)) {
     return { error: "Escribí ELIMINAR exactamente para confirmar." };
   }
 
-  const { supabase, userId } = await requireUserId("/perfil");
-  const service = tryCreateServiceClient();
-  if (!service) {
-    return { error: SERVICE_ROLE_CONFIG_ERROR };
-  }
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("avatar_path")
-    .eq("id", userId)
-    .maybeSingle();
-
-  const { error: rpcError } = await supabase.rpc("delete_own_account");
+  const { supabase } = await requireUserId("/perfil");
+  const { error: rpcError } = await supabase.rpc("schedule_own_account_deletion");
   if (rpcError) {
-    console.error("delete_own_account", rpcError);
-    return {
-      error:
-        "No se pudo eliminar la cuenta. Si el problema sigue, escribinos desde Apoyar BaFut.",
-    };
+    console.error("schedule_own_account_deletion", rpcError);
+    return { error: mapScheduleDeletionError(rpcError.message ?? "") };
   }
 
-  await removeProfileAvatarStorage(userId, profile?.avatar_path ?? null);
-
-  const { error: authError } = await service.auth.admin.deleteUser(userId);
-  if (authError) {
-    console.error("auth.admin.deleteUser", authError);
-    return {
-      error:
-        "Se borraron tus datos, pero no pudimos cerrar la sesión de acceso. Contactanos para terminar el proceso.",
-    };
-  }
-
-  await supabase.auth.signOut();
   revalidatePath("/");
-  redirect("/entrar");
+  revalidatePath("/perfil");
+  return {};
+}
+
+/** @deprecated Alias de scheduleAccountDeletionAction para callers legacy. */
+export async function deleteAccountAction(formData: FormData): Promise<{ error?: string }> {
+  return scheduleAccountDeletionAction(formData);
+}
+
+export async function cancelAccountDeletionAction(): Promise<{ error?: string }> {
+  const { supabase } = await requireUserId("/perfil");
+  const { error: rpcError } = await supabase.rpc("cancel_own_account_deletion");
+  if (rpcError) {
+    console.error("cancel_own_account_deletion", rpcError);
+    return {
+      error:
+        "No se pudo cancelar la eliminación. Si el plazo ya venció, la cuenta puede estar en proceso de borrado.",
+    };
+  }
+
+  revalidatePath("/");
+  revalidatePath("/perfil");
+  return {};
 }

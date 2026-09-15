@@ -1015,10 +1015,13 @@ export type Database = {
           avatar_path: string | null
           avatar_zoom: number
           birth_date: string | null
-          card_share_code: string
+          card_share_code: string | null
           city_id: string | null
           created_at: string
+          deleted_at: string | null
+          deletion_scheduled_at: string | null
           display_name: string
+          purge_at: string | null
           gender: string | null
           height_cm: number | null
           id: string
@@ -1044,10 +1047,13 @@ export type Database = {
           avatar_path?: string | null
           avatar_zoom?: number
           birth_date?: string | null
-          card_share_code?: string
+          card_share_code?: string | null
           city_id?: string | null
           created_at?: string
+          deleted_at?: string | null
+          deletion_scheduled_at?: string | null
           display_name: string
+          purge_at?: string | null
           gender?: string | null
           height_cm?: number | null
           id: string
@@ -1073,10 +1079,13 @@ export type Database = {
           avatar_path?: string | null
           avatar_zoom?: number
           birth_date?: string | null
-          card_share_code?: string
+          card_share_code?: string | null
           city_id?: string | null
           created_at?: string
+          deleted_at?: string | null
+          deletion_scheduled_at?: string | null
           display_name?: string
+          purge_at?: string | null
           gender?: string | null
           height_cm?: number | null
           id?: string
@@ -2604,7 +2613,13 @@ export type Database = {
         Returns: undefined
       }
       delete_price_slot: { Args: { p_slot_id: string }; Returns: undefined }
+      cancel_own_account_deletion: { Args: never; Returns: undefined }
       delete_own_account: { Args: never; Returns: undefined }
+      purge_due_deleted_accounts: {
+        Args: never
+        Returns: { avatar_path: string | null; user_id: string }[]
+      }
+      schedule_own_account_deletion: { Args: never; Returns: undefined }
       delete_venue: { Args: { p_venue_id: string }; Returns: undefined }
       expire_venue_booking_holds: { Args: never; Returns: number }
       expire_venue_subscriptions: { Args: never; Returns: number }

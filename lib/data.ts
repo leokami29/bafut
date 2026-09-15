@@ -220,6 +220,7 @@ export const getPublicPlayerCardByCode = cache(async (cardCode: string): Promise
     .from("profiles")
     .select("*")
     .eq("card_share_code", cardCode)
+    .is("deleted_at", null)
     .maybeSingle();
   if (error) {
     throw error;

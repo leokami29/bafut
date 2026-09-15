@@ -178,6 +178,9 @@ Hoy:
 - `GET /api/cron/weekly-matches` — templates → partidos del día
 - `GET /api/cron/expire-subscriptions` — `venue_subscriptions` `active` → `expired` si `expires_at < now()`
 - `GET /api/cron/expire-booking-holds` — `venue_bookings` `pending` con hold vencido → `expired` (no-op si `venue_booking` está off)
+- `GET /api/cron/purge-deleted-accounts` — cuentas con `purge_at` vencido → tombstone + `auth.admin.deleteUser` (diario)
+
+En despliegue split, `proxy.ts` redirige `/api/cron/*` a BaFut_Admin: replicá `app/api/cron/purge-deleted-accounts/route.ts` allí o apuntá el cron a ops con el mismo `CRON_SECRET`.
 
 Helper: `lib/cron-auth.ts` (`requireCronSecret`). La respuesta solo incluye ids/conteos y mensajes de error de RPC (sin PII).
 

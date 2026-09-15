@@ -1,3 +1,4 @@
+import { isProfilePurged } from "@/lib/account-deletion";
 import type { ProfileGate } from "@/lib/player-card";
 import { formatMatchesPosition, formatMatchesSportAndFormat } from "@/lib/player-card";
 
@@ -13,7 +14,11 @@ function realDisplayName(
 }
 
 /** Carta pública en /carta/[code]: misma ficha visible sin filtrar WhatsApp. */
-export function isPublicPlayerCard(profile: ProfileGate): boolean {
+export function isPublicPlayerCard(
+  profile: ProfileGate & { deleted_at?: string | null; card_share_code?: string | null },
+): boolean {
+  if (isProfilePurged(profile)) return false;
+  if (!profile.card_share_code?.trim()) return false;
   if (!profile.display_name?.trim() || profile.display_name.trim().length < 2) return false;
   if (!profile.avatar_path?.trim()) return false;
   if (!formatMatchesSportAndFormat(profile.preferred_sport, profile.preferred_format)) {

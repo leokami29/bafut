@@ -1,12 +1,14 @@
 import type { Metadata, Viewport } from "next";
 import { Barlow_Condensed, IBM_Plex_Mono, Outfit } from "next/font/google";
+import { AccountDeletionBanner } from "@/components/AccountDeletionBanner";
 import { AuthHashHandler } from "@/components/AuthHashHandler";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import { MobileNav } from "@/components/MobileNav";
 import { PwaRegister } from "@/components/PwaRegister";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
-import { getActiveCity, getCities, getHostPendingInbox, getIsAdmin, getSessionUserId } from "@/lib/data";
+import { canCancelAccountDeletion } from "@/lib/account-deletion";
+import { getActiveCity, getCities, getHostPendingInbox, getIsAdmin, getProfile, getSessionUserId } from "@/lib/data";
 import { siteUrl } from "@/lib/env";
 import {
   DEFAULT_DESCRIPTION,
@@ -77,11 +79,16 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
     getCities(),
     getSessionUserId(),
   ]);
-  const pendingInbox = userId
-    ? await getHostPendingInbox(userId)
-    : { count: 0, href: "/perfil/partidos" };
+  const [pendingInbox, profile, isAdmin] = userId
+    ? await Promise.all([
+        getHostPendingInbox(userId),
+        getProfile(userId),
+        getIsAdmin(userId),
+      ])
+    : [{ count: 0, href: "/perfil/partidos" }, null, false];
   const pendingCount = pendingInbox.count;
-  const isAdmin = await getIsAdmin(userId);
+  const deletionBannerPurgeAt =
+    profile && canCancelAccountDeletion(profile) && profile.purge_at ? profile.purge_at : null;
 
   return (
     <html lang="es" className={`${display.variable} ${sans.variable} ${mono.variable}`} suppressHydrationWarning>
@@ -100,6 +107,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
           pendingInboxHref={pendingInbox.href}
           isAdmin={isAdmin}
         />
+        {deletionBannerPurgeAt ? <AccountDeletionBanner purgeAt={deletionBannerPurgeAt} /> : null}
         {children}
         <SiteFooter />
         <MobileNav

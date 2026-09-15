@@ -1,7 +1,16 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import { deleteAccountAction } from "@/app/perfil/actions";
+import {
+  cancelAccountDeletionAction,
+  scheduleAccountDeletionAction,
+} from "@/app/perfil/actions";
+import {
+  ACCOUNT_PURGE_DAYS,
+  canCancelAccountDeletion,
+  formatPurgeDate,
+  type AccountDeletionFields,
+} from "@/lib/account-deletion";
 import {
   DELETE_ACCOUNT_CONFIRMATION,
   isDeleteAccountConfirmation,
@@ -9,17 +18,30 @@ import {
 
 type State = { error?: string } | null;
 
-export function DeleteAccountSection() {
-  const [open, setOpen] = useState(false);
+type Props = Pick<AccountDeletionFields, "deletion_scheduled_at" | "purge_at" | "deleted_at">;
+
+export function DeleteAccountSection({ deletion_scheduled_at, purge_at, deleted_at }: Props) {
+  const scheduled = canCancelAccountDeletion({
+    deletion_scheduled_at,
+    purge_at,
+    deleted_at,
+  });
+  const [open, setOpen] = useState(scheduled);
   const [confirmText, setConfirmText] = useState("");
   const [acknowledged, setAcknowledged] = useState(false);
-  const [state, action, pending] = useActionState(
-    async (_prev: State, formData: FormData) => deleteAccountAction(formData),
+  const [scheduleState, scheduleAction, schedulePending] = useActionState(
+    async (_prev: State, formData: FormData) => scheduleAccountDeletionAction(formData),
+    null,
+  );
+  const [cancelState, cancelAction, cancelPending] = useActionState(
+    async (_prev: State) => cancelAccountDeletionAction(),
     null,
   );
 
-  const canSubmit =
-    acknowledged && isDeleteAccountConfirmation(confirmText) && !pending;
+  const canSubmitSchedule =
+    acknowledged && isDeleteAccountConfirmation(confirmText) && !schedulePending;
+
+  const purgeLabel = purge_at ? formatPurgeDate(purge_at) : null;
 
   return (
     <section className={`perfil-danger${open ? " is-open" : ""}`}>
@@ -35,75 +57,113 @@ export function DeleteAccountSection() {
             aria-expanded={false}
             aria-controls="perfil-danger-panel"
           >
-            Eliminar cuenta
+            {scheduled ? "Eliminación programada" : "Eliminar cuenta"}
           </button>
-          <span className="perfil-danger-quiet-hint"> · permanente</span>
+          <span className="perfil-danger-quiet-hint">
+            {scheduled && purgeLabel ? ` · se elimina el ${purgeLabel}` : ` · ${ACCOUNT_PURGE_DAYS} días de gracia`}
+          </span>
         </p>
       ) : (
         <div id="perfil-danger-panel">
           <p className="perfil-danger-eyebrow">Zona de riesgo</p>
           <p className="perfil-danger-title" aria-hidden="true">
-            Eliminar cuenta
+            {scheduled ? "Eliminación programada" : "Eliminar cuenta"}
           </p>
-          <p className="perfil-danger-lede">
-            Se borra tu perfil, foto, WhatsApp, carta pública, cupos pedidos, reservas de cancha,
-            alertas, templates de partido y votos de confianza de nivel. Los partidos que organizaste
-            desaparecen del feed. Si abriste el lado rival en partidos ajenos, esos cupos se quitan.
-            Las canchas a tu nombre siguen en el directorio, pero sin dueño vinculado a esta cuenta.
-            No hay forma de recuperar nada: es permanente.
-          </p>
-
-          <form action={action} className="perfil-danger-form">
-            <label className="perfil-danger-check">
-              <input
-                type="checkbox"
-                checked={acknowledged}
-                onChange={(event) => setAcknowledged(event.target.checked)}
-              />
-              <span>Entiendo que se borran mis datos y que no hay vuelta atrás.</span>
-            </label>
-
-            <label className="perfil-danger-confirm">
-              Escribí <strong>{DELETE_ACCOUNT_CONFIRMATION}</strong> para continuar
-              <input
-                type="text"
-                name="confirm"
-                autoComplete="off"
-                spellCheck={false}
-                value={confirmText}
-                onChange={(event) => setConfirmText(event.target.value)}
-                placeholder={DELETE_ACCOUNT_CONFIRMATION}
-                aria-describedby="perfil-danger-confirm-hint"
-              />
-            </label>
-            <p id="perfil-danger-confirm-hint" className="perfil-danger-hint">
-              Mayúsculas exactas, sin comillas.
-            </p>
-
-            {state?.error ? (
-              <p className="form-error" role="alert">
-                {state.error}
+          {scheduled && purgeLabel ? (
+            <>
+              <p className="perfil-danger-lede">
+                Tu cuenta se eliminará el <strong>{purgeLabel}</strong>. Hasta entonces podés seguir
+                jugando, organizando partidos y gestionando canchas con normalidad. Si cambiás de
+                opinión, podés mantener tu cuenta antes de esa fecha.
               </p>
-            ) : null}
+              <form action={cancelAction} className="perfil-danger-form">
+                {cancelState?.error ? (
+                  <p className="form-error" role="alert">
+                    {cancelState.error}
+                  </p>
+                ) : null}
+                <div className="perfil-danger-actions">
+                  <button
+                    type="button"
+                    className="btn-ghost"
+                    disabled={cancelPending}
+                    onClick={() => setOpen(false)}
+                  >
+                    Cerrar
+                  </button>
+                  <button type="submit" className="btn-bib" disabled={cancelPending}>
+                    {cancelPending ? "Guardando…" : "Mantener mi cuenta"}
+                  </button>
+                </div>
+              </form>
+            </>
+          ) : (
+            <>
+              <p className="perfil-danger-lede">
+                Programamos la eliminación con {ACCOUNT_PURGE_DAYS} días de gracia. Durante ese plazo
+                tu cuenta sigue activa: podés cancelar cuando quieras. Al vencer, anonimizamos tu
+                ficha, cancelamos partidos futuros que organices, liberamos canchas a tu nombre y
+                borramos tu acceso. El historial visible para otros (cupos confirmados, partidos
+                pasados) se conserva como &quot;Jugador eliminado&quot;. Si más adelante creás otra
+                cuenta con el mismo correo, no recuperás el historial anterior.
+              </p>
 
-            <div className="perfil-danger-actions">
-              <button
-                type="button"
-                className="btn-ghost"
-                disabled={pending}
-                onClick={() => {
-                  setOpen(false);
-                  setConfirmText("");
-                  setAcknowledged(false);
-                }}
-              >
-                Cancelar
-              </button>
-              <button type="submit" className="btn-bib" disabled={!canSubmit}>
-                {pending ? "Eliminando…" : "Eliminar mi cuenta para siempre"}
-              </button>
-            </div>
-          </form>
+              <form action={scheduleAction} className="perfil-danger-form">
+                <label className="perfil-danger-check">
+                  <input
+                    type="checkbox"
+                    checked={acknowledged}
+                    onChange={(event) => setAcknowledged(event.target.checked)}
+                  />
+                  <span>
+                    Entiendo el plazo de {ACCOUNT_PURGE_DAYS} días y que la eliminación definitiva
+                    es irreversible una vez vencido.
+                  </span>
+                </label>
+
+                <label className="perfil-danger-confirm">
+                  Escribí <strong>{DELETE_ACCOUNT_CONFIRMATION}</strong> para continuar
+                  <input
+                    type="text"
+                    name="confirm"
+                    autoComplete="off"
+                    spellCheck={false}
+                    value={confirmText}
+                    onChange={(event) => setConfirmText(event.target.value)}
+                    placeholder={DELETE_ACCOUNT_CONFIRMATION}
+                    aria-describedby="perfil-danger-confirm-hint"
+                  />
+                </label>
+                <p id="perfil-danger-confirm-hint" className="perfil-danger-hint">
+                  Mayúsculas exactas, sin comillas.
+                </p>
+
+                {scheduleState?.error ? (
+                  <p className="form-error" role="alert">
+                    {scheduleState.error}
+                  </p>
+                ) : null}
+
+                <div className="perfil-danger-actions">
+                  <button
+                    type="button"
+                    className="btn-ghost"
+                    disabled={schedulePending}
+                    onClick={() => {
+                      setOpen(false);
+                      setConfirmText("");
+                      setAcknowledged(false);
+                    }}
+                  >
+                    Cancelar
+                  </button>
+                  <button type="submit" className="btn-bib" disabled={!canSubmitSchedule}>
+                    {schedulePending ? "Programando…" : "Solicitar eliminación de cuenta"}
+                  </button>
+                </div>
+              </form>
+            </>
+          )}
         </div>
       )}
     </section>

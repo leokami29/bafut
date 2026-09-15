@@ -1,50 +1,75 @@
 "use client";
 
-import { ShareSocial } from "@/components/ShareSocial";
+import { useState } from "react";
+import { trackEvent } from "@/lib/analytics";
 import {
-  playerCardShareCaption,
-  playerCardShareText,
-  playerCardUrl,
-} from "@/lib/player-card-share";
+  downloadPlayerCardBlob,
+  downloadPlayerCardFromUrl,
+  exportPlayerCardElement,
+  resolvePlayerCardElement,
+} from "@/lib/player-card-export";
 
 type SharePlayerCardProps = {
-  displayName: string;
-  overall: number;
-  sport: string;
   cardCode: string;
   getCardElement?: () => HTMLElement | null;
+  displayName?: string;
+  overall?: number;
+  sport?: string;
 };
 
-export function SharePlayerCard({
-  displayName,
-  overall,
-  sport,
-  cardCode,
-  getCardElement,
-}: SharePlayerCardProps) {
-  const shareInput = { displayName, overall, sport, cardCode };
-  const pageUrl = playerCardUrl(cardCode);
+function IconDownload({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+      <path
+        fill="currentColor"
+        d="M12 16l-5-5h3V4h4v7h3l-5 5zm-7 4h14v-2H5v2z"
+      />
+    </svg>
+  );
+}
+
+export function SharePlayerCard({ cardCode, getCardElement }: SharePlayerCardProps) {
+  const [exporting, setExporting] = useState(false);
+  const [hint, setHint] = useState<string | null>(null);
+  const imageFallbackUrl = `/carta/${cardCode}/opengraph-image`;
+
+  function flash(msg: string, holdMs = 3200) {
+    setHint(msg);
+    window.setTimeout(() => setHint(null), holdMs);
+  }
+
+  async function downloadCardImage() {
+    trackEvent("player_card_share_clicked", { method: "download_image" });
+    setExporting(true);
+    try {
+      const element = resolvePlayerCardElement(getCardElement);
+      const { blob } = await exportPlayerCardElement(element, imageFallbackUrl);
+      downloadPlayerCardBlob(blob);
+      flash("Carta descargada.");
+    } catch {
+      downloadPlayerCardFromUrl(imageFallbackUrl);
+      flash("Carta descargada.");
+    } finally {
+      setExporting(false);
+    }
+  }
 
   return (
-    <ShareSocial
-      pageUrl={pageUrl}
-      waText={playerCardShareText(shareInput)}
-      caption={playerCardShareCaption(shareInput)}
-      nativeTitle="Mi carta BaFut"
-      panelLabel="Compartir carta"
-      ariaLabel="Compartir carta del jugador"
-      analyticsEvent="player_card_share_clicked"
-      copyPromptMessage="Copiá el link de tu carta:"
-      getCardElement={getCardElement}
-      defaultHint={
-        getCardElement
-          ? "Instagram: tocá el botón para compartir la imagen. En desktop, descargala y subila a historia o publicación."
-          : undefined
-      }
-      igImageShareHint="Abrí Instagram → historia o publicación → elegí la imagen."
-      igImageDownloadHint="Imagen descargada. Abrí Instagram → historia o publicación → elegí la imagen."
-      igImageShareSheetHint="Elegí Instagram (u otra app) para publicar la carta."
-      cardExportErrorHint="No pudimos generar la imagen. Podés descargar de nuevo o copiar el link."
-    />
+    <aside className="share-panel player-card-download" aria-label="Descargar carta">
+      <button
+        type="button"
+        className="btn-flood share-btn share-btn-download"
+        onClick={() => void downloadCardImage()}
+        disabled={exporting}
+      >
+        <IconDownload className="share-btn-icon" />
+        <span>{exporting ? "Generando…" : "Descargar carta"}</span>
+      </button>
+      {hint ? (
+        <p className="share-hint" role="status">
+          {hint}
+        </p>
+      ) : null}
+    </aside>
   );
 }

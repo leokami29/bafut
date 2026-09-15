@@ -25,7 +25,12 @@ const tierBackground: Record<string, string> = {
 
 export default async function Image({ params }: Props) {
   const { code } = await params;
-  const data = await getPublicPlayerCardByCode(code);
+  let data: Awaited<ReturnType<typeof getPublicPlayerCardByCode>> = null;
+  try {
+    data = await getPublicPlayerCardByCode(code);
+  } catch {
+    data = null;
+  }
   const shareable = data ? isPublicPlayerCard(data.profile) : false;
 
   if (!data || !shareable) {

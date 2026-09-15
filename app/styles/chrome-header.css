@@ -181,3 +181,27 @@
   max-width: 9.5rem;
   font-size: 0.85rem;
 }
+
+.account-deletion-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  padding: 0.65rem 1rem;
+  background: color-mix(in oklab, var(--bib) 12%, var(--paper));
+  border-bottom: 1px solid color-mix(in oklab, var(--bib) 22%, transparent);
+  color: var(--ink);
+}
+
+.account-deletion-banner-text {
+  margin: 0;
+  font-size: 0.86rem;
+  line-height: 1.45;
+  max-width: 52rem;
+}
+
+.account-deletion-banner-btn {
+  flex-shrink: 0;
+  font-size: 0.84rem;
+}

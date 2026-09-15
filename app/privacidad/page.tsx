@@ -147,7 +147,7 @@ export default function PrivacidadPage() {
         usuarios.
       </p>
 
-      <h2>6. Conservación</h2>
+      <h2>6. Conservación y eliminación de cuenta</h2>
       <p>
         Conservamos los datos mientras la cuenta esté activa y el tiempo adicional
         necesario para reclamos, auditoría de pagos/comprobantes (Exclusivo y reservas), defensa
@@ -155,6 +155,16 @@ export default function PrivacidadPage() {
         razonable para conciliación y prevención de fraude; después pueden eliminarse o
         anonimizarse. Si una cancha se retira del directorio activo, los historiales
         vinculados pueden conservarse según esa política de retención.
+      </p>
+      <p>
+        Si solicitás eliminar tu cuenta desde el vestuario, programamos la baja con{" "}
+        <strong>30 días de gracia</strong>: durante ese plazo podés seguir usando BaFut y
+        cancelar la solicitud. Al vencer, anonimizamos tu ficha (nombre, foto, WhatsApp, carta
+        pública), cancelamos partidos futuros que organices, liberamos canchas a tu nombre y
+        cerramos tu acceso. Conservamos referencias mínimas en historial de terceros (p. ej.
+        cupos confirmados o partidos pasados) como &quot;Jugador eliminado&quot;, sin datos
+        identificables. Si más adelante creás otra cuenta con el mismo correo, no se fusiona con
+        el historial anterior.
       </p>
 
       <h2>7. Derechos de los titulares (habeas data)</h2>

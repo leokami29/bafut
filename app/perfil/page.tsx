@@ -253,7 +253,7 @@ export default async function PerfilPage({
                 displayName: draft.displayName,
                 overall: stats.overall,
                 sport: sport ? sportLabel[sport] : "Deporte",
-                cardCode: profile.card_share_code,
+                cardCode: profile.card_share_code ?? "",
               }}
             />
             <ul className="perfil-stats" aria-label="Números de cancha">
@@ -347,7 +347,11 @@ export default async function PerfilPage({
               </details>
             </section>
 
-            <DeleteAccountSection />
+            <DeleteAccountSection
+              deletion_scheduled_at={profile.deletion_scheduled_at}
+              purge_at={profile.purge_at}
+              deleted_at={profile.deleted_at}
+            />
           </div>
         </div>
       ) : (
@@ -362,7 +366,11 @@ export default async function PerfilPage({
             userId={userId}
             nextPath={nextPath || undefined}
           />
-          <DeleteAccountSection />
+          <DeleteAccountSection
+            deletion_scheduled_at={profile.deletion_scheduled_at}
+            purge_at={profile.purge_at}
+            deleted_at={profile.deleted_at}
+          />
         </>
       )}
     </main>

@@ -3,20 +3,8 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { trackEvent } from "@/lib/analytics";
 import { facebookShareHref, whatsappShareHref } from "@/lib/match-share";
-import {
-  canShareFiles,
-  downloadPlayerCardBlob,
-  exportPlayerCardElement,
-  PlayerCardExportError,
-} from "@/lib/player-card-export";
 
-type ShareMethod =
-  | "whatsapp"
-  | "facebook"
-  | "instagram"
-  | "native"
-  | "copy_link"
-  | "download_image";
+type ShareMethod = "whatsapp" | "facebook" | "instagram" | "native" | "copy_link";
 
 export type ShareSocialProps = {
   pageUrl: string;
@@ -32,11 +20,6 @@ export type ShareSocialProps = {
   copyPromptMessage?: string;
   defaultHint?: string;
   igCopiedHint?: string;
-  getCardElement?: () => HTMLElement | null;
-  igImageShareHint?: string;
-  igImageDownloadHint?: string;
-  igImageShareSheetHint?: string;
-  cardExportErrorHint?: string;
 };
 
 async function copyText(value: string, promptMessage: string): Promise<boolean> {
@@ -120,11 +103,13 @@ function ShareBtn({
   onClick,
   children,
   label,
+  disabled,
 }: {
   className: string;
   onClick?: () => void;
   children: ReactNode;
   label: string;
+  disabled?: boolean;
 }) {
   const content = (
     <>
@@ -133,7 +118,7 @@ function ShareBtn({
     </>
   );
   return (
-    <button type="button" className={`${className} share-btn`} onClick={onClick}>
+    <button type="button" className={`${className} share-btn`} onClick={onClick} disabled={disabled}>
       {content}
     </button>
   );
@@ -153,11 +138,6 @@ export function ShareSocial({
   copyPromptMessage = "Copiá el link:",
   defaultHint = "Instagram no abre un post directo: en el celular usá «Más apps» o pegá el link en historia / DM.",
   igCopiedHint = "Link copiado. Pegalo en tu historia o DM de Instagram.",
-  getCardElement,
-  igImageShareHint = "Abrí Instagram → historia o publicación → elegí la imagen.",
-  igImageDownloadHint = "Imagen descargada. Abrí Instagram → historia o publicación → elegí la imagen.",
-  igImageShareSheetHint = "Elegí Instagram para publicar la carta.",
-  cardExportErrorHint = "No pudimos generar la imagen. Probá de nuevo o copiá el link.",
 }: ShareSocialProps) {
   const waHref = whatsappShareHref(waText);
   const fbHref = facebookShareHref(pageUrl);
@@ -165,8 +145,6 @@ export function ShareSocial({
   const [hint, setHint] = useState<string | null>(null);
   const [canNativeShare, setCanNativeShare] = useState(false);
   const [showSticky, setShowSticky] = useState(false);
-  const [exporting, setExporting] = useState(false);
-  const cardImageShare = Boolean(getCardElement);
 
   useEffect(() => {
     setCanNativeShare(typeof navigator !== "undefined" && typeof navigator.share === "function");
@@ -186,13 +164,13 @@ export function ShareSocial({
     trackEvent(analyticsEvent, { method });
   }
 
-  function flash(msg?: string) {
+  function flash(msg?: string, holdMs = 3200) {
     setCopied(true);
     if (msg) setHint(msg);
     window.setTimeout(() => {
       setCopied(false);
       setHint(null);
-    }, 3200);
+    }, holdMs);
   }
 
   function shareWhatsApp() {
@@ -206,11 +184,11 @@ export function ShareSocial({
   }
 
   async function exportCardImage() {
-    const element = getCardElement?.();
-    if (!element) {
+    const element = resolvePlayerCardElement(getCardElement);
+    if (!element && !imageFallbackUrl) {
       throw new PlayerCardExportError("No encontramos la carta para exportar.");
     }
-    return exportPlayerCardElement(element);
+    return exportPlayerCardElement(element, imageFallbackUrl);
   }
 
   async function shareInstagram() {
@@ -284,12 +262,17 @@ export function ShareSocial({
     try {
       const { blob } = await exportCardImage();
       downloadPlayerCardBlob(blob);
-      flash(cardImageShare ? igImageShareHint : "Imagen descargada.");
+      flash("Carta descargada.");
     } catch (err) {
+      if (imageFallbackUrl) {
+        downloadPlayerCardFromUrl(imageFallbackUrl);
+        flash("Carta descargada.");
+        return;
+      }
       if (err instanceof PlayerCardExportError) {
-        flash(err.message || cardExportErrorHint);
+        flash(err.message || cardExportErrorHint, 6000);
       } else {
-        flash(cardExportErrorHint);
+        flash(cardExportErrorHint, 6000);
       }
     } finally {
       setExporting(false);
@@ -328,6 +311,7 @@ export function ShareSocial({
         className="btn-ghost share-btn-ig"
         onClick={() => void shareInstagram()}
         label={exporting ? "Generando…" : "Instagram"}
+        disabled={exporting}
       >
         <IconInstagram className="share-btn-icon" />
       </ShareBtn>
@@ -336,6 +320,7 @@ export function ShareSocial({
           className="btn-ghost share-btn-download"
           onClick={() => void downloadCardImage()}
           label={exporting ? "Generando…" : "Descargar carta"}
+          disabled={exporting}
         >
           <IconDownload className="share-btn-icon" />
         </ShareBtn>

@@ -7,7 +7,12 @@ import {
 } from "@/lib/profile";
 import type { ProfileGate } from "@/lib/player-card";
 
-function gate(over: Partial<ProfileGate> = {}): ProfileGate {
+function gate(
+  over: Partial<ProfileGate> & {
+    card_share_code?: string | null;
+    deleted_at?: string | null;
+  } = {},
+) {
   return {
     display_name: "Juan",
     whatsapp: "573001234567",
@@ -16,6 +21,8 @@ function gate(over: Partial<ProfileGate> = {}): ProfileGate {
     preferred_format: "5v5",
     preferred_position: "fwd",
     terms_accepted_at: "2026-09-15T00:00:00Z",
+    card_share_code: "abc12345",
+    deleted_at: null as string | null,
     ...over,
   };
 }
@@ -28,6 +35,17 @@ describe("isPublicPlayerCard", () => {
   it("no pública sin foto ni términos", () => {
     expect(isPublicPlayerCard(gate({ avatar_path: null }))).toBe(false);
     expect(isPublicPlayerCard(gate({ terms_accepted_at: null }))).toBe(false);
+  });
+
+  it("rechaza carta purgada o sin código", () => {
+    expect(
+      isPublicPlayerCard(
+        gate({
+          deleted_at: "2026-10-01T00:00:00Z",
+        }),
+      ),
+    ).toBe(false);
+    expect(isPublicPlayerCard(gate({ card_share_code: null }))).toBe(false);
   });
 });
 
