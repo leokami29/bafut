@@ -26,6 +26,7 @@ function placeMarkers(
     else if (venue.is_verified) el.classList.add("is-verified");
     if (focusId === venue.id) el.classList.add("is-focus");
     el.setAttribute("aria-label", venue.name);
+    el.dataset.venueId = venue.id;
     el.addEventListener("click", (event) => {
       event.stopPropagation();
       onOpen(venue.slug);
@@ -134,12 +135,21 @@ export function VenueMap({
       if (!navigateRef.current) return;
       routerRef.current.push(`/canchas/${slug}`);
     });
+  }, [venues]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !loadedRef.current) return;
+    for (const marker of markersRef.current) {
+      const el = marker.getElement();
+      el.classList.toggle("is-focus", el.dataset.venueId === focusId);
+    }
     if (!focusId) return;
     const focused = venues.find((venue) => venue.id === focusId);
     if (focused) {
       map.easeTo({ center: [focused.lng, focused.lat], zoom: Math.max(map.getZoom(), 13), duration: 450 });
     }
-  }, [venues, focusId]);
+  }, [focusId, venues]);
 
   return <div ref={root} className="venue-map" />;
 }
