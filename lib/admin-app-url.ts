@@ -6,7 +6,11 @@ export function resolveAdminAppOrigin(env: {
   NEXT_PUBLIC_OPS_URL?: string | null;
   NEXT_PUBLIC_ADMIN_URL?: string | null;
   OPS_APP_URL?: string | null;
-} = process.env): string {
+} = {
+  NEXT_PUBLIC_ADMIN_URL: process.env.NEXT_PUBLIC_ADMIN_URL,
+  NEXT_PUBLIC_OPS_URL: process.env.NEXT_PUBLIC_OPS_URL,
+  OPS_APP_URL: process.env.OPS_APP_URL,
+}): string {
   const raw = (
     env.NEXT_PUBLIC_ADMIN_URL ||
     env.NEXT_PUBLIC_OPS_URL ||
