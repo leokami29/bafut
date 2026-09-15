@@ -10,8 +10,22 @@ export type Match = Tables<"matches">;
 export type MatchSlot = Tables<"match_slots">;
 export type SlotClaim = Tables<"slot_claims">;
 
+/** Lean profile on claims. Feed only fills id/name/avatar; match detail adds preview fields. */
+export type ClaimPreviewProfile = Pick<Profile, "id" | "display_name" | "avatar_path"> &
+  Partial<
+    Pick<
+      Profile,
+      | "card_share_code"
+      | "preferred_sport"
+      | "preferred_position"
+      | "preferred_format"
+      | "level"
+      | "terms_accepted_at"
+    >
+  >;
+
 export type ClaimWithPlayer = SlotClaim & {
-  profiles: Pick<Profile, "id" | "display_name" | "avatar_path"> | null;
+  profiles: ClaimPreviewProfile | null;
 };
 
 export type SlotWithClaims = MatchSlot & {

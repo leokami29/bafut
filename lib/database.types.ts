@@ -2674,6 +2674,15 @@ export type Database = {
         Args: { p_roles?: string[]; p_uid?: string; p_venue_id: string }
         Returns: boolean
       }
+      list_my_match_contacts: {
+        Args: { p_match_id: string }
+        Returns: {
+          display_name: string
+          other_user_id: string
+          relation: string
+          whatsapp: string
+        }[]
+      }
       list_upcoming_open_match_ids: {
         Args: { p_city_id: string; p_limit?: number }
         Returns: string[]
@@ -2721,6 +2730,24 @@ export type Database = {
           venue_id: string
           venue_name: string
         }[]
+      }
+      match_is_contactable:
+        | { Args: { p_match_id: string }; Returns: boolean }
+        | {
+            Args: {
+              p_duration_min: number
+              p_starts_at: string
+              p_status: string
+            }
+            Returns: boolean
+          }
+      match_side_moderator: {
+        Args: {
+          p_away_opened_by: string | null
+          p_host_id: string
+          p_side: string
+        }
+        Returns: string
       }
       open_match_side_b: {
         Args: {

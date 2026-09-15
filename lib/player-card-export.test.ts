@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
+  avatarPublicUrlToProxyUrl,
   downloadPlayerCardBlob,
   downloadPlayerCardFromUrl,
   PLAYER_CARD_EXPORT_FILENAME,
@@ -72,5 +73,34 @@ describe("downloadPlayerCardFromUrl", () => {
     expect(click).toHaveBeenCalledOnce();
     expect(anchor.href).toBe("/carta/abc/opengraph-image");
     expect(anchor.download).toBe(PLAYER_CARD_EXPORT_FILENAME);
+  });
+});
+
+describe("avatarPublicUrlToProxyUrl", () => {
+  it("mapea URL pública de Supabase al proxy same-origin", () => {
+    const src =
+      "https://xyz.supabase.co/storage/v1/object/public/profile-avatars/11111111-1111-1111-1111-111111111111/foto.jpg";
+    expect(avatarPublicUrlToProxyUrl(src, "https://bafut.local")).toBe(
+      "/api/media/avatar?path=11111111-1111-1111-1111-111111111111%2Ffoto.jpg",
+    );
+  });
+
+  it("rechaza URLs que no son del bucket de avatares", () => {
+    expect(
+      avatarPublicUrlToProxyUrl(
+        "https://xyz.supabase.co/storage/v1/object/public/other-bucket/a.jpg",
+        "https://bafut.local",
+      ),
+    ).toBeNull();
+    expect(avatarPublicUrlToProxyUrl("https://evil.test/foto.jpg", "https://bafut.local")).toBeNull();
+  });
+
+  it("rechaza paths inseguros", () => {
+    expect(
+      avatarPublicUrlToProxyUrl(
+        "https://xyz.supabase.co/storage/v1/object/public/profile-avatars/../secret.jpg",
+        "https://bafut.local",
+      ),
+    ).toBeNull();
   });
 });

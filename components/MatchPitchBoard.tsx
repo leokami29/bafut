@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useId } from "react";
+import { useEffect, useId, useState } from "react";
 import type { MatchFormationBoard } from "@/lib/match-formation";
 import type { Sport } from "@/lib/constants";
+import { joinedSlotStorageKey } from "@/lib/match-contacts";
 
 function CourtLines({ sport }: { sport: Sport }) {
   switch (sport) {
@@ -91,6 +92,50 @@ export function MatchPitchBoard({
     ? board.dots.filter((d) => d.side === "b" && d.state === "open").length
     : 0;
   const interactive = Boolean(sideAHit || sideBHit);
+  const [pulseSlotId, setPulseSlotId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const preferReduce =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    let clearPulse: number | undefined;
+    const activate = (slotId: string) => {
+      if (preferReduce) return;
+      setPulseSlotId(slotId);
+      window.clearTimeout(clearPulse);
+      clearPulse = window.setTimeout(() => setPulseSlotId(null), 1200);
+    };
+
+    try {
+      for (const dot of board.dots) {
+        if (!dot.slotId) continue;
+        if (sessionStorage.getItem(joinedSlotStorageKey(dot.slotId))) {
+          activate(dot.slotId);
+          window.setTimeout(() => {
+            try {
+              sessionStorage.removeItem(joinedSlotStorageKey(dot.slotId!));
+            } catch {
+              /* ignore */
+            }
+          }, 1200);
+          break;
+        }
+      }
+    } catch {
+      /* ignore */
+    }
+
+    const onJoined = (event: Event) => {
+      const detail = (event as CustomEvent<{ slotId?: string }>).detail;
+      if (detail?.slotId) activate(detail.slotId);
+    };
+    window.addEventListener("bafut:slot-joined", onJoined);
+    return () => {
+      window.removeEventListener("bafut:slot-joined", onJoined);
+      window.clearTimeout(clearPulse);
+    };
+  }, [board.dots]);
 
   const summaryA =
     openA > 0 ? `Faltan ${openA} · pedí cupo` : "Equipo lleno";
@@ -129,10 +174,11 @@ export function MatchPitchBoard({
             {board.dots.map((dot, index) => (
               <g key={`${dot.side}-${dot.x}-${dot.y}-${index}`}>
                 <circle
-                  className={`match-pitch-spot is-${dot.state} is-side-${dot.side}`}
+                  className={`match-pitch-spot is-${dot.state} is-side-${dot.side}${pulseSlotId && dot.slotId === pulseSlotId ? " is-just-joined" : ""}`}
                   cx={dot.x}
                   cy={dot.y}
                   r={dot.state === "open" || dot.state === "invite" ? 7 : 5.5}
+                  data-slot-id={dot.slotId}
                   style={{ animationDelay: `${0.08 + index * 0.04}s` }}
                 />
                 {dot.state === "open" || dot.state === "invite" ? (

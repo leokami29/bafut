@@ -18,6 +18,7 @@ export type {
   SlotClaim,
   MatchDetail,
   ProfileWithContact,
+  ClaimPreviewProfile,
 } from "@/lib/types";
 export { openSlotCount, slotIsOpen } from "@/lib/types";
 
@@ -35,7 +36,7 @@ const matchSelect = `
   )
 `;
 
-/** Detail-only: includes host level-trust counters. Do not use on radar feed. */
+/** Detail-only: includes host level-trust counters + claim preview fields. Do not use on radar feed. */
 const matchDetailSelect = `
   *,
   venues (*),
@@ -45,7 +46,17 @@ const matchDetailSelect = `
     *,
     slot_claims (
       *,
-      profiles (id, display_name, avatar_path)
+      profiles (
+        id,
+        display_name,
+        avatar_path,
+        card_share_code,
+        preferred_sport,
+        preferred_position,
+        preferred_format,
+        level,
+        terms_accepted_at
+      )
     )
   )
 `;

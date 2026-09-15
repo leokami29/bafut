@@ -307,6 +307,8 @@ export function PlayerCard({
               draggable={false}
               crossOrigin="anonymous"
               referrerPolicy="no-referrer"
+              decoding="sync"
+              loading="eager"
               style={avatarFocusStyle(focus)}
             />
           ) : (

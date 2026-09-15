@@ -229,6 +229,29 @@
   fill: var(--flood);
 }
 
+.match-pitch-spot.is-just-joined {
+  animation: pitch-spot-joined 1.2s ease;
+}
+
+@keyframes pitch-spot-joined {
+  0%,
+  35% {
+    fill: color-mix(in oklab, var(--flood) 55%, white);
+    stroke: #fff;
+    stroke-width: 2.2;
+  }
+  100% {
+    fill: var(--flood);
+    stroke-width: 1.2;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .match-pitch-spot.is-just-joined {
+    animation: none;
+  }
+}
+
 .match-pitch-spot.is-open {
   fill: var(--bib);
   stroke: #fff6;

@@ -286,6 +286,8 @@ export default async function PartidoPage({ params }: Props) {
           <SlotList
             slots={match.match_slots}
             shareCode={match.share_code}
+            matchId={match.id}
+            hostId={match.host_id}
             isHost={isHost}
             userId={userId}
             matchCancelled={cancelled}

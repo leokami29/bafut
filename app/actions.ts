@@ -80,6 +80,18 @@ export type MatchContactState = {
   error?: string;
 };
 
+/** Fila de listMyMatchContactsAction (espejo RPC list_my_match_contacts). */
+export type MatchContactListRow = {
+  otherUserId: string;
+  displayName: string;
+  whatsapp: string | null;
+  relation: string;
+};
+
+export type ListMatchContactsState =
+  | { ok: true; contacts: MatchContactListRow[] }
+  | { error: string };
+
 type ServerClient = Awaited<ReturnType<typeof createClient>>;
 
 async function findVenueOccupancy(
@@ -817,16 +829,61 @@ export async function cancelMatchAction(formData: FormData): Promise<void> {
   revalidatePath("/perfil/partidos");
 }
 
+export async function listMyMatchContactsAction(
+  matchId: string,
+): Promise<ListMatchContactsState> {
+  if (!isUuid(matchId)) {
+    return { error: "Partido no válido." };
+  }
+  const { supabase } = await requireUserId();
+  const { data, error } = await supabase.rpc("list_my_match_contacts", {
+    p_match_id: matchId,
+  });
+  if (error) {
+    return { error: "No se pudo cargar los contactos." };
+  }
+  const rows = Array.isArray(data) ? data : data ? [data] : [];
+  return {
+    ok: true as const,
+    contacts: rows.map((row) => ({
+      otherUserId: row.other_user_id as string,
+      displayName: (row.display_name as string) ?? "Jugador",
+      whatsapp: (row.whatsapp as string | null) ?? null,
+      relation: (row.relation as string) ?? "",
+    })),
+  };
+}
+
 export async function getMatchContactAction(claimId: string): Promise<MatchContactState> {
   if (!isUuid(claimId)) {
     return { error: "Pedido no válido." };
   }
-  const { supabase } = await requireUserId();
-  const { data, error } = await supabase.rpc("get_match_contact", { p_claim_id: claimId });
+  const { supabase, userId } = await requireUserId();
+
+  // Fuente de verdad: list_my_match_contacts (matriz v1). Claim resuelve match + contraparte.
+  const { data: claim, error: claimError } = await supabase
+    .from("slot_claims")
+    .select("match_id, player_id")
+    .eq("id", claimId)
+    .maybeSingle();
+
+  if (claimError || !claim?.match_id) {
+    return { error: "No se pudo cargar el contacto." };
+  }
+
+  const { data, error } = await supabase.rpc("list_my_match_contacts", {
+    p_match_id: claim.match_id,
+  });
   if (error) {
     return { error: "No se pudo cargar el contacto." };
   }
-  const row = Array.isArray(data) ? data[0] : data;
+
+  const rows = Array.isArray(data) ? data : data ? [data] : [];
+  const row =
+    claim.player_id === userId
+      ? rows.find((r) => r.relation === "my_moderator")
+      : rows.find((r) => r.other_user_id === claim.player_id);
+
   if (!row?.whatsapp) {
     return { error: "Todavía no hay WhatsApp de la otra parte." };
   }

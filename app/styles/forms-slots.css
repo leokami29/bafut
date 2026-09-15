@@ -338,3 +338,130 @@
   display: grid;
   gap: 0.5rem;
 }
+
+/* Preview compacta del postulante (detalle de partido) */
+.claim-player-preview {
+  display: grid;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.claim-player-preview-main {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-width: 0;
+}
+
+.claim-player-preview-avatar {
+  width: 2.25rem;
+  height: 2.25rem;
+  flex-shrink: 0;
+  object-fit: cover;
+  background: var(--mist);
+}
+
+.claim-player-preview-avatar.is-empty {
+  display: block;
+  background: color-mix(in oklab, var(--ink) 12%, var(--mist));
+}
+
+.claim-player-preview-copy {
+  min-width: 0;
+  display: grid;
+  gap: 0.1rem;
+}
+
+.claim-player-preview-name {
+  margin: 0;
+  font-weight: 650;
+  font-size: 0.95rem;
+  line-height: 1.25;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.claim-player-preview-meta,
+.claim-player-preview-level,
+.claim-player-preview-incomplete,
+.claim-player-preview-links {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.3;
+  color: var(--muted);
+}
+
+.claim-player-preview-level.is-mismatch {
+  color: var(--bib);
+}
+
+.claim-player-preview-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.claim-player-preview-links a {
+  color: var(--turf);
+  text-decoration: underline;
+  text-underline-offset: 0.12em;
+}
+
+.claim-player-preview-links a:hover {
+  color: var(--flood);
+}
+
+/* Contacto WA lazy + confirm → slot */
+.match-contact-privacy {
+  margin: 0.35rem 0 0.75rem;
+  font-size: 0.78rem;
+  line-height: 1.35;
+  color: var(--muted);
+}
+
+.match-contact-host-away {
+  margin: 0.5rem 0 0.75rem;
+}
+
+.match-contact-btn-wrap {
+  display: grid;
+  gap: 0.25rem;
+  margin-top: 0.35rem;
+}
+
+.slot-filled-block {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.slot-joined-badge {
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 650;
+  color: var(--turf);
+}
+
+.slot-row.is-just-joined {
+  animation: slot-joined-flash 1.2s ease;
+}
+
+.slot-row.is-joined-reduced {
+  animation: none;
+}
+
+@keyframes slot-joined-flash {
+  0% {
+    background: color-mix(in oklab, var(--turf) 22%, transparent);
+  }
+  100% {
+    background: transparent;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slot-row.is-just-joined {
+    animation: none;
+  }
+}
