@@ -26,7 +26,7 @@ export function AcceptChallengeCard({
   return (
     <aside className="challenge-accept-card" aria-labelledby="challenge-accept-title">
       <div className="challenge-accept-head">
-        <span className="challenge-tag">⚔️ Modo Reto</span>
+        <span className="challenge-tag">Modo reto</span>
         <h3 id="challenge-accept-title" className="challenge-accept-title">
           {hostTeamName ? `¿Tu equipo le juega a ${hostTeamName}?` : "¿Tienes tu equipo completo?"}
         </h3>
@@ -56,7 +56,7 @@ export function AcceptChallengeCard({
           </div>
 
           <button className="btn-flood btn-challenge" type="submit" disabled={isPending}>
-            {isPending ? "Aceptando reto…" : "⚔️ Aceptar reto con mi equipo"}
+            {isPending ? "Aceptando reto…" : "Aceptar reto con mi equipo"}
           </button>
 
           {state?.error ? <p className="form-error" role="alert">{state.error}</p> : null}

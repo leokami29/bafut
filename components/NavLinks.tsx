@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { adminAppUrl } from "@/lib/admin-app-url";
 
 const links = [
   { href: "/partidos", label: "Hoy" },
@@ -31,7 +32,6 @@ export function NavLinks({
   const partidosHref = pendingCount > 0 ? pendingInboxHref : "/perfil/partidos";
   const pedidosActive = pathname.startsWith("/perfil/partidos");
   const perfilActive = pathname === "/perfil";
-  const adminActive = pathname === "/admin" || pathname.startsWith("/admin/");
 
   return (
     <>
@@ -70,13 +70,9 @@ export function NavLinks({
             Perfil
           </Link>
           {isAdmin ? (
-            <Link
-              href="/admin"
-              aria-current={adminActive ? "page" : undefined}
-              className={`nav-link-admin ${adminActive ? "is-active" : ""}`.trim()}
-            >
+            <a href={adminAppUrl("/admin")} className="nav-link-admin">
               Admin
-            </Link>
+            </a>
           ) : null}
         </>
       ) : (

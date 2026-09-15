@@ -827,7 +827,7 @@ export function LiveMatchBoard({
                   fontSize="12"
                   fontWeight="bold"
                 >
-                  ⚔
+                  VS
                 </text>
                 <text
                   x="270"

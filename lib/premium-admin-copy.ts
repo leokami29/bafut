@@ -8,7 +8,7 @@ export function friendlyPremiumAdminError(message: string): string {
       "La extensión no puede superar 366 días desde el vencimiento actual (o desde hoy si ya venció).",
     "Solo se extiende una suscripción active":
       "Solo se puede extender una suscripción activa.",
-    "Solo se extiende plan premium": "Solo aplica a plan Premium.",
+    "Solo se extiende plan premium": "Solo aplica a plan Exclusivo.",
     "Suscripción no encontrada": "No encontramos esa suscripción.",
     "Solo billing/super pueden extender Premium":
       "Sin permiso: necesitás rol billing o super.",

@@ -1,6 +1,6 @@
 # Cold-start Barranquilla (seeding ops)
 
-Premium y el directorio no convierten si el feed está vacío. Antes de empujar monetización B2B, hace falta **liquidez visible**: hosts reales publicando huecos del día y seekers que pidan cupo.
+Exclusivo y el directorio no convierten si el feed está vacío. Antes de empujar monetización B2B, hace falta **liquidez visible**: hosts reales publicando huecos del día y seekers que pidan cupo.
 
 Segunda ciudad: solo cuando BQ tenga oferta/demanda estable varios días seguidos.
 
@@ -51,7 +51,7 @@ Si a las 15:00 hay < 3 abiertos: coordinar por chat interno a 1–2 hosts semill
 
 ### 5. Criterio de “liquidez estable”
 
-Antes de escalar premium / segunda ciudad:
+Antes de escalar Exclusivo / segunda ciudad:
 
 - [ ] ≥3 partidos “hoy” en el feed la mayoría de días laborables (2 semanas)
 - [ ] ≥1 claim real confirmado por semana (no solo hosts semilla pidiéndose entre sí)
@@ -60,7 +60,7 @@ Antes de escalar premium / segunda ciudad:
 ## Anti-patrones
 
 - Seed SQL de partidos falsos como sustituto de hosts humanos.
-- Pagar o forzar premium sin demanda en el radar.
+- Pagar o forzar Exclusivo sin demanda en el radar.
 - Abrir otra ciudad porque “el schema lo permite”.
 
 ## Relacionado

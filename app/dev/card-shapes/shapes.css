@@ -1,0 +1,727 @@
+/* —— Lab: comparación de formas (dev only) —— */
+
+.shape-lab {
+  --poly-octagon: polygon(6% 0, 94% 0, 100% 7%, 100% 93%, 94% 100%, 6% 100%, 0 93%, 0 7%);
+  --poly-octagon-in: polygon(7% 0.85%, 93% 0.85%, 99.15% 8%, 99.15% 92%, 93% 99.15%, 7% 99.15%, 0.85% 92%, 0.85% 8%);
+  --poly-ticket: polygon(
+    1.1rem 0,
+    calc(100% - 1.1rem) 0,
+    100% 1.1rem,
+    100% calc(100% - 1.1rem),
+    calc(100% - 1.1rem) 100%,
+    1.1rem 100%,
+    0 calc(100% - 1.1rem),
+    0 1.1rem
+  );
+  --poly-ticket-in: polygon(
+    calc(1.1rem + 2px) 2px,
+    calc(100% - 1.1rem - 2px) 2px,
+    calc(100% - 2px) calc(1.1rem + 2px),
+    calc(100% - 2px) calc(100% - 1.1rem - 2px),
+    calc(100% - 1.1rem - 2px) calc(100% - 2px),
+    calc(1.1rem + 2px) calc(100% - 2px),
+    2px calc(100% - 1.1rem - 2px),
+    2px calc(1.1rem + 2px)
+  );
+  --poly-asymmetric: polygon(
+    0 0,
+    100% 0,
+    100% calc(100% - 1.35rem),
+    88% 100%,
+    12% 100%,
+    0 calc(100% - 1.35rem)
+  );
+  --poly-asymmetric-in: polygon(
+    2px 2px,
+    calc(100% - 2px) 2px,
+    calc(100% - 2px) calc(100% - 1.35rem - 1px),
+    calc(88% - 1px) calc(100% - 2px),
+    calc(12% + 1px) calc(100% - 2px),
+    2px calc(100% - 1.35rem - 1px)
+  );
+  /* Sincronizado con app/styles/player-card.css */
+  --poly-hexagon: polygon(
+    12% 0%,
+    88% 0%,
+    100% 14%,
+    100% 86%,
+    88% 100%,
+    12% 100%,
+    0% 86%,
+    0% 14%
+  );
+  --poly-hexagon-in: polygon(
+    12.8% 1.5%,
+    87.2% 1.5%,
+    98.5% 14.8%,
+    98.5% 85.2%,
+    87.2% 98.5%,
+    12.8% 98.5%,
+    1.5% 85.2%,
+    1.5% 14.8%
+  );
+  --poly-label: polygon(
+    0 0,
+    calc(100% - 1.45rem) 0,
+    100% 1.45rem,
+    100% 100%,
+    0 100%
+  );
+  --poly-label-in: polygon(
+    2px 2px,
+    calc(100% - 1.45rem - 1px) 2px,
+    calc(100% - 2px) calc(1.45rem + 1px),
+    calc(100% - 2px) calc(100% - 2px),
+    2px calc(100% - 2px)
+  );
+  --card-fill: linear-gradient(165deg, #1a7a55 0%, var(--turf-deep) 48%, #03140f 100%);
+  --card-glow: radial-gradient(90% 55% at 50% -10%, color-mix(in oklab, var(--flood) 42%, transparent), transparent 58%);
+
+  min-height: 100%;
+  padding: 1.5rem clamp(1rem, 3vw, 2.5rem) 3rem;
+  background:
+    radial-gradient(120% 80% at 50% -20%, color-mix(in oklab, var(--turf) 18%, transparent), transparent 55%),
+    var(--paper);
+  color: var(--ink);
+}
+
+.shape-lab__header {
+  max-width: 72rem;
+  margin: 0 auto 2rem;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.shape-lab__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  width: fit-content;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--turf-deep);
+  text-decoration: none;
+  padding: 0.35rem 0.55rem;
+  border: 1px solid color-mix(in oklab, var(--turf-deep) 28%, transparent);
+  background: color-mix(in oklab, var(--turf) 10%, var(--paper));
+  transition: background 140ms ease, border-color 140ms ease;
+}
+
+.shape-lab__back:hover {
+  background: color-mix(in oklab, var(--turf) 18%, var(--paper));
+  border-color: color-mix(in oklab, var(--turf-deep) 45%, transparent);
+}
+
+.shape-lab__back:focus-visible {
+  outline: 2px solid var(--flood);
+  outline-offset: 2px;
+}
+
+.shape-lab__title {
+  margin: 0;
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(1.85rem, 4vw, 2.75rem);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--turf-deep);
+  line-height: 0.95;
+}
+
+.shape-lab__lead {
+  margin: 0;
+  max-width: 52rem;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.78rem;
+  line-height: 1.55;
+  letter-spacing: 0.04em;
+  color: color-mix(in oklab, var(--ink) 62%, transparent);
+}
+
+.shape-lab__section {
+  max-width: 72rem;
+  margin: 0 auto 2.75rem;
+}
+
+.shape-lab__section-head {
+  margin-bottom: 1.35rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid color-mix(in oklab, var(--ink) 12%, transparent);
+}
+
+.shape-lab__section-title {
+  margin: 0;
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(1.15rem, 2.5vw, 1.45rem);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--turf-deep);
+}
+
+.shape-lab__section-desc {
+  margin: 0.45rem 0 0;
+  max-width: 48rem;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  line-height: 1.5;
+  letter-spacing: 0.04em;
+  color: color-mix(in oklab, var(--ink) 55%, transparent);
+}
+
+.shape-lab__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17.5rem), 1fr));
+  gap: clamp(1.25rem, 2.5vw, 2rem);
+  align-items: start;
+}
+
+.shape-lab__col {
+  display: grid;
+  gap: 0.75rem;
+  justify-items: center;
+}
+
+.shape-lab__col-head {
+  width: 100%;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.shape-lab__label {
+  margin: 0;
+  width: 100%;
+  text-align: center;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--ink) 58%, transparent);
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid color-mix(in oklab, var(--ink) 14%, transparent);
+}
+
+.shape-lab__badge {
+  margin: 0;
+  width: 100%;
+  text-align: center;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--flood) 75%, var(--ink));
+  padding: 0.25rem 0.4rem;
+  background: color-mix(in oklab, var(--flood) 8%, var(--paper));
+  border: 1px solid color-mix(in oklab, var(--flood) 22%, transparent);
+}
+
+.shape-lab__notes {
+  width: 100%;
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.55rem 0.35rem 0;
+  border-top: 1px dashed color-mix(in oklab, var(--ink) 12%, transparent);
+}
+
+.shape-lab__note,
+.shape-lab__pros,
+.shape-lab__cons {
+  margin: 0;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.62rem;
+  line-height: 1.45;
+  letter-spacing: 0.03em;
+  color: color-mix(in oklab, var(--ink) 62%, transparent);
+}
+
+.shape-lab__pros span,
+.shape-lab__cons span {
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.shape-lab__pros span {
+  color: color-mix(in oklab, var(--turf-deep) 85%, var(--ink));
+}
+
+.shape-lab__cons span {
+  color: color-mix(in oklab, var(--flood) 70%, var(--ink));
+}
+
+/* —— Wrappers: sombra sin clip —— */
+
+.mock-wrap {
+  width: min(100%, 16.5rem);
+}
+
+.mock-wrap--shadow {
+  filter: drop-shadow(0 14px 32px color-mix(in oklab, #03140f 50%, transparent));
+}
+
+.mock-wrap--box-shadow .mock-card {
+  box-shadow:
+    0 14px 32px color-mix(in oklab, #03140f 50%, transparent),
+    inset 0 0 0 2px var(--mock-border);
+}
+
+/* —— Shell dorado (doble capa) —— */
+
+.mock-shell {
+  background: var(--mock-gold);
+  padding: 2px;
+}
+
+.mock-shell--octagon {
+  clip-path: var(--poly-octagon);
+}
+
+.mock-shell--ticket {
+  clip-path: var(--poly-ticket);
+}
+
+.mock-shell--hexagon {
+  clip-path: var(--poly-hexagon);
+}
+
+.mock-shell--label {
+  clip-path: var(--poly-label);
+}
+
+.mock-shell--asymmetric {
+  clip-path: var(--poly-asymmetric);
+}
+
+.mock-shell--scoop {
+  border-radius: 0;
+  -webkit-mask: var(--mask-scoop);
+  mask: var(--mask-scoop);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+
+/* —— Mock carta —— */
+
+.mock-card {
+  --mock-gold: #e8c35a;
+  --mock-ink: #f4ffe8;
+  --mock-accent: var(--flood);
+  --mock-glow: color-mix(in oklab, var(--flood) 35%, transparent);
+  --mock-border: color-mix(in oklab, var(--mock-gold) 85%, white 10%);
+
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  padding: 0.85rem 0.85rem 0.7rem;
+  color: var(--mock-ink);
+  background: var(--card-glow), var(--card-fill);
+  box-shadow: inset 0 0 0 2px var(--mock-border);
+}
+
+.mock-card--inner {
+  box-shadow: none;
+}
+
+/* Legacy: clip-path puro */
+
+.mock-card--octagon {
+  clip-path: var(--poly-octagon);
+}
+
+.mock-card--ticket {
+  clip-path: var(--poly-ticket);
+}
+
+.mock-card--asymmetric {
+  clip-path: var(--poly-asymmetric);
+}
+
+.mock-card--hexagon {
+  clip-path: var(--poly-hexagon);
+}
+
+.mock-card--rounded {
+  border-radius: 14px;
+}
+
+/* Fix: inner polygons (doble capa) */
+
+.mock-card--octagon-inner {
+  clip-path: var(--poly-octagon-in);
+}
+
+.mock-card--ticket-inner {
+  clip-path: var(--poly-ticket-in);
+}
+
+.mock-card--hexagon-inner {
+  clip-path: var(--poly-hexagon-in);
+}
+
+.mock-card--label-inner {
+  clip-path: var(--poly-label-in);
+}
+
+.mock-card--asymmetric-inner {
+  clip-path: var(--poly-asymmetric-in);
+}
+
+/* Fix: gradientes en esquinas (sin clip) */
+
+.mock-card--grad-ticket {
+  border: 2px solid var(--mock-border);
+  box-shadow: 0 14px 32px color-mix(in oklab, #03140f 50%, transparent);
+  background:
+    linear-gradient(135deg, var(--paper) 50%, transparent 50.5%) 0 0 / 1.12rem 1.12rem no-repeat,
+    linear-gradient(225deg, var(--paper) 50%, transparent 50.5%) 100% 0 / 1.12rem 1.12rem no-repeat,
+    linear-gradient(45deg, var(--paper) 50%, transparent 50.5%) 0 100% / 1.12rem 1.12rem no-repeat,
+    linear-gradient(315deg, var(--paper) 50%, transparent 50.5%) 100% 100% / 1.12rem 1.12rem no-repeat,
+    var(--card-glow),
+    var(--card-fill);
+}
+
+/* Fix: SVG notch en esquinas */
+
+.mock-card--svg-notch {
+  border: 2px solid var(--mock-border);
+  box-shadow: 0 14px 32px color-mix(in oklab, #03140f 50%, transparent);
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 264 420' preserveAspectRatio='none'%3E%3Cpath fill='%23dff3e6' d='M0 0h18v18H0zm246 0h18v18h-18zm0 402h18v18h-18zm-246 0h18v18H0z'/%3E%3C/svg%3E")
+      center / 100% 100% no-repeat,
+    var(--card-glow),
+    var(--card-fill);
+}
+
+/* Fix: scooped corners con mask radial */
+
+.shape-lab {
+  --scoop-r: 1.05rem;
+  --mask-scoop:
+    radial-gradient(circle var(--scoop-r) at var(--scoop-r) var(--scoop-r), transparent calc(var(--scoop-r) - 0.5px), #000 calc(var(--scoop-r) + 0.5px)) top left / 51% 51% no-repeat,
+    radial-gradient(circle var(--scoop-r) at calc(100% - var(--scoop-r)) var(--scoop-r), transparent calc(var(--scoop-r) - 0.5px), #000 calc(var(--scoop-r) + 0.5px)) top right / 51% 51% no-repeat,
+    radial-gradient(circle var(--scoop-r) at calc(100% - var(--scoop-r)) calc(100% - var(--scoop-r)), transparent calc(var(--scoop-r) - 0.5px), #000 calc(var(--scoop-r) + 0.5px)) bottom right / 51% 51% no-repeat,
+    radial-gradient(circle var(--scoop-r) at var(--scoop-r) calc(100% - var(--scoop-r)), transparent calc(var(--scoop-r) - 0.5px), #000 calc(var(--scoop-r) + 0.5px)) bottom left / 51% 51% no-repeat,
+    linear-gradient(#000 0 0);
+}
+
+.mock-card--scoop-inner {
+  -webkit-mask: var(--mask-scoop);
+  mask: var(--mask-scoop);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+
+/* —— Contenido mock —— */
+
+.mock-card__glow {
+  pointer-events: none;
+  position: absolute;
+  inset: 8% 12% auto;
+  height: 42%;
+  background: radial-gradient(circle, var(--mock-glow), transparent 70%);
+  z-index: 0;
+}
+
+.mock-card__top,
+.mock-card__shot,
+.mock-card__meta,
+.mock-card__stats,
+.mock-card__foot {
+  position: relative;
+  z-index: 1;
+}
+
+.mock-card__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 0.15rem 0.2rem 0.35rem;
+}
+
+.mock-card__overall {
+  margin: 0;
+  display: grid;
+  gap: 0.12rem;
+  line-height: 0.85;
+}
+
+.mock-card__ovr {
+  font-family: var(--font-display), sans-serif;
+  font-size: 2.85rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: var(--mock-accent);
+}
+
+.mock-card__pos {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--chalk);
+}
+
+.mock-card__brand {
+  margin: 0.2rem 0 0;
+  font-family: var(--font-display), sans-serif;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  color: color-mix(in oklab, var(--chalk) 80%, white);
+}
+
+.mock-card__shot {
+  position: relative;
+  height: 11.5rem;
+  margin: 0 0.15rem;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, transparent 55%, color-mix(in oklab, #03140f 82%, transparent)),
+    repeating-linear-gradient(
+      90deg,
+      color-mix(in oklab, var(--chalk) 16%, transparent) 0 2px,
+      transparent 2px 18px
+    );
+}
+
+.mock-card__silhouette {
+  height: 100%;
+  display: grid;
+  place-items: end center;
+}
+
+.mock-card__silhouette span {
+  width: 6.4rem;
+  height: 8.4rem;
+  background: color-mix(in oklab, var(--mist) 28%, transparent);
+  clip-path: ellipse(48% 46% at 50% 28%);
+  box-shadow: 0 4rem 0 -1.4rem color-mix(in oklab, var(--mist) 22%, transparent);
+}
+
+.mock-card__meta {
+  padding: 0.45rem 0.25rem 0.15rem;
+  text-align: center;
+}
+
+.mock-card__name {
+  margin: 0;
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.55rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 0.95;
+}
+
+.mock-card__club,
+.mock-card__place,
+.mock-card__foot {
+  margin: 0.2rem 0 0;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--chalk) 85%, white);
+}
+
+.mock-card__stats {
+  margin: 0.55rem 0 0;
+  padding: 0.45rem 0.2rem 0.15rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.15rem 0.55rem;
+  border-top: 1px solid color-mix(in oklab, var(--chalk) 35%, transparent);
+}
+
+.mock-card__stats div {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.3rem;
+}
+
+.mock-card__stats dt {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.14em;
+  color: color-mix(in oklab, var(--chalk) 75%, white);
+}
+
+.mock-card__stats dd {
+  margin: 0;
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--mock-accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.mock-card__foot {
+  text-align: center;
+  padding-bottom: 0.15rem;
+}
+
+/* —— Vista producción (deporte × tier) —— */
+
+.prod-preview-section {
+  margin-bottom: 3rem;
+  padding: 1.25rem clamp(0.85rem, 2.5vw, 1.5rem) 1.75rem;
+  background: var(--paper);
+  border: 1px solid color-mix(in oklab, var(--ink) 12%, transparent);
+  box-shadow: 0 1px 0 color-mix(in oklab, var(--ink) 6%, transparent);
+}
+
+.prod-preview__legend {
+  margin: 0 0 1.15rem;
+  padding: 0.65rem 0.85rem;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.68rem;
+  line-height: 1.55;
+  letter-spacing: 0.04em;
+  color: color-mix(in oklab, var(--ink) 68%, transparent);
+  background: color-mix(in oklab, var(--chalk) 35%, var(--paper));
+  border: 1px solid color-mix(in oklab, var(--ink) 14%, transparent);
+}
+
+.prod-preview__legend strong {
+  font-weight: 650;
+  color: var(--turf-deep);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.prod-preview__tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid color-mix(in oklab, var(--ink) 12%, transparent);
+}
+
+.prod-preview__tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.45rem 0.75rem;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: color-mix(in oklab, var(--ink) 62%, transparent);
+  background: color-mix(in oklab, var(--chalk) 28%, var(--paper));
+  border: 1px solid color-mix(in oklab, var(--ink) 14%, transparent);
+  transition:
+    background 140ms ease,
+    border-color 140ms ease,
+    color 140ms ease;
+}
+
+.prod-preview__tab:hover {
+  color: var(--turf-deep);
+  background: color-mix(in oklab, var(--turf) 12%, var(--paper));
+  border-color: color-mix(in oklab, var(--turf-deep) 28%, transparent);
+}
+
+.prod-preview__tab:focus-visible {
+  outline: 2px solid var(--flood);
+  outline-offset: 2px;
+}
+
+.prod-preview__tab--active {
+  color: var(--turf-deep);
+  font-weight: 650;
+  background: color-mix(in oklab, var(--turf) 16%, var(--paper));
+  border-color: color-mix(in oklab, var(--turf-deep) 38%, transparent);
+  box-shadow: inset 0 -2px 0 var(--turf-deep);
+}
+
+.prod-preview__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20.5rem), 20.5rem));
+  gap: 1.75rem 1.25rem;
+  justify-content: center;
+}
+
+.prod-preview__item {
+  margin: 0;
+  display: grid;
+  gap: 0.65rem;
+  justify-items: center;
+}
+
+.prod-preview__card-slot {
+  width: min(100%, 20.5rem);
+  padding-bottom: 1.25rem;
+}
+
+.prod-preview__card-slot .player-card,
+.prod-preview__card-slot .player-card-wrap,
+.prod-preview__card-slot .player-card-motion-host {
+  width: 100%;
+  margin-inline: 0;
+}
+
+.prod-preview__card-slot .player-card-wrap .player-card {
+  width: 100%;
+}
+
+.prod-preview__caption {
+  display: grid;
+  gap: 0.25rem;
+  width: min(100%, 20.5rem);
+  text-align: center;
+}
+
+.prod-preview__tier-name {
+  font-family: var(--font-display), sans-serif;
+  font-size: 0.88rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--turf-deep);
+}
+
+.prod-preview__tier-threshold {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.62rem;
+  line-height: 1.45;
+  letter-spacing: 0.04em;
+  color: color-mix(in oklab, var(--ink) 58%, transparent);
+}
+
+@media (max-width: 480px) {
+  .shape-lab {
+    padding-top: 1rem;
+  }
+
+  .mock-wrap {
+    width: min(100%, 15.5rem);
+  }
+
+  .prod-preview-section {
+    padding-inline: 0.75rem;
+  }
+
+  .prod-preview__tabs {
+    gap: 0.35rem;
+  }
+
+  .prod-preview__tab {
+    flex: 1 1 calc(50% - 0.35rem);
+    min-width: 0;
+    padding-inline: 0.5rem;
+    font-size: 0.62rem;
+  }
+
+  .prod-preview__grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}

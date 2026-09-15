@@ -7,6 +7,15 @@ Partidos abiertos y “falta un jugador” en Barranquilla. El organizador publi
 
 **Demo:** [bafut.macuttech.com](https://bafut.macuttech.com)
 
+## Apps
+
+| App | Carpeta | Comando | Puerto |
+|-----|---------|---------|--------|
+| Web (jugadores) | este repo | `npm run dev` | 3005 |
+| Admin (dueños + plataforma) | `D:\EstudioALL\2026\BaFut_Admin` | `npm run dev` | 3006 |
+
+BaFut **solo** sirve la web pública. Paneles admin viven en **BaFut_Admin**. Ver `docs/adr/ops-app-split.md`.
+
 ## Qué hace
 
 - Feed de partidos abiertos del día / ciudad
@@ -56,7 +65,7 @@ Requisitos: Node.js 20+ y un proyecto Supabase.
    | `NEXT_PUBLIC_SITE_URL` | Sí | Local: `http://localhost:3005` |
    | `STAGING_SUPABASE_*` / `STAGING_SITE_URL` | No | Plantilla del proyecto staging; la app no las lee en runtime (ver [docs/staging.md](./docs/staging.md)) |
    | `NEXT_PUBLIC_DONATE_*` | No | Ko-fi / GitHub Sponsors / Nequi (donaciones) |
-   | `NEXT_PUBLIC_PREMIUM_*` | No | Precio, días, Nequi/banco para pago Premium del listado (no Reservar) |
+   | `NEXT_PUBLIC_PREMIUM_*` | No | Precio, días, Nequi/banco para pago Exclusivo del listado (no Reservar) |
    | `NEXT_PUBLIC_VENUE_OWNER_*` | No | WhatsApp / email para dueños de cancha |
    | `NEXT_PUBLIC_GA4_MEASUREMENT_ID` | No | Google Analytics 4 |
    | `CRON_SECRET` | Prod (cron) | Bearer para `/api/cron/*` (`openssl rand -hex 32`; distinto staging vs prod) |
@@ -178,7 +187,7 @@ En Railway/Vercel: variable `CRON_SECRET` + crons diarios (y periódico para hol
 
 `delete_venue` pone `venues.deleted_at` (no borra la fila). Claims, suscripciones y fotos se retienen para auditoría/habeas data. El directorio y fichas públicas filtran `deleted_at is null`; admins siguen viendo soft-deleted vía RLS.
 
-### Pago premium (Nequi / banco)
+### Pago Exclusivo (Nequi / banco)
 
 Variables `NEXT_PUBLIC_PREMIUM_NEQUI`, `NEXT_PUBLIC_PREMIUM_BANK_*`, precio y duración: ver `.env.example`. El dueño sube comprobante; un admin con rol `billing` o `super` aprueba.
 
@@ -215,16 +224,16 @@ values ('<uuid-del-perfil>', 'super');
 
 Flags DB: `premium_paywall`, `push_alerts`, `directory_premium_boost`, `venue_booking` (**default off**), `venue_tournaments` (**default off**).
 
-### Torneos premium (`venue_tournaments`)
+### Torneos Exclusivo (`venue_tournaments`)
 
-Kill-switch global + Premium activo por cancha. Crear/administrar exige **ambos**: flag ON y `venue_subscriptions` con `plan=premium`, `status=active`, `expires_at > now()`. Además owner, `venue_staff.manager` o admin de plataforma.
+Kill-switch global + Exclusivo activo por cancha. Crear/administrar exige **ambos**: flag ON y `venue_subscriptions` con `plan=premium`, `status=active`, `expires_at > now()`. Además owner, `venue_staff.manager` o admin de plataforma.
 
 | Pieza | Detalle |
 | --- | --- |
 | Flag DB | `feature_flags.key = 'venue_tournaments'` (seed `enabled=false`) |
 | Env | `FEATURE_VENUE_TOURNAMENTS=1` / `0` (pisa DB en app Next; requiere restart). Las RPCs SQL (`can_manage_venue_tournaments`) leen solo la fila DB — activá también el flag en DB para escrituras. |
-| Premium | Admin: `/admin/venues` → **+ Premium**, o aprobar en `/admin/subscriptions`. Dueño: tab Premium del panel. |
-| Dueño / staff | `/canchas/[slug]/admin/torneos` (paywall claro si falta flag o premium) |
+| Exclusivo | Admin: `/admin/venues` → **+ Exclusivo**, o aprobar en `/admin/subscriptions`. Dueño: tab Exclusivo del panel. |
+| Dueño / staff | `/canchas/[slug]/admin/torneos` (paywall claro si falta flag o Exclusivo) |
 | Público | `/canchas/[slug]/torneos` (solo si el flag está on) |
 
 **Activar en una cancha (local / staging):**
@@ -238,13 +247,13 @@ Kill-switch global + Premium activo por cancha. Crear/administrar exige **ambos*
 -- 2) Flag en DB (necesario para RPCs de create/score)
 update public.feature_flags set enabled = true where key = 'venue_tournaments';
 
--- 3) Premium 30 días (como admin billing/super vía UI, o SQL de smoke):
--- preferí la UI /admin/venues → "+ Premium" (RPC create_venue_subscription)
+-- 3) Exclusivo 30 días (como admin billing/super vía UI, o SQL de smoke):
+-- preferí la UI /admin/venues → "+ Exclusivo" (RPC create_venue_subscription)
 ```
 
 ### Reservar (`venue_booking`)
 
-Publicar un hueco (`/partidos/nuevo`) **no** requiere precios de cancha: el partido se publica igual; el snapshot de tarifa es best-effort. **Reservar** sí exige tarifas del deporte + dueño + flags. El pago de la reserva va al **dueño de la cancha** (comprobante + WhatsApp); no uses `NEXT_PUBLIC_PREMIUM_*` para eso — esas variables son solo del listado Premium de BaFut.
+Publicar un hueco (`/partidos/nuevo`) **no** requiere precios de cancha: el partido se publica igual; el snapshot de tarifa es best-effort. **Reservar** sí exige tarifas del deporte + dueño + flags. El pago de la reserva va al **dueño de la cancha** (comprobante + WhatsApp); no uses `NEXT_PUBLIC_PREMIUM_*` para eso — esas variables son solo del listado Exclusivo de BaFut.
 
 Kill-switch global + opt-in por cancha. CTA y flujos solo si **ambos** están on, la cancha tiene `owner_id` y pricing usable para el deporte.
 
@@ -318,7 +327,7 @@ Detalle: [docs/staging.md](./docs/staging.md).
 
 ## Cold-start Barranquilla
 
-Sin partidos del día en el feed, premium no convierte. Runbook corto (N hosts semilla, 3–5 partidos hoy, outreach WhatsApp): [docs/cold-start-barranquilla.md](./docs/cold-start-barranquilla.md).
+Sin partidos del día en el feed, Exclusivo no convierte. Runbook corto (N hosts semilla, 3–5 partidos hoy, outreach WhatsApp): [docs/cold-start-barranquilla.md](./docs/cold-start-barranquilla.md).
 
 Segunda ciudad solo cuando BQ tenga liquidez estable.
 

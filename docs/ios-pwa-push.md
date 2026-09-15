@@ -16,7 +16,7 @@ No dependemos del **SMTP free de Supabase** (≈2 emails/hora) para retención o
 | Caso | Canal |
 | --- | --- |
 | Host con pedidos de cupo | Deep-link inbox → partido `#cupos` + WhatsApp del seeker al confirmar |
-| Renovación Premium T-7 / T-1 | Cola en `/admin/renewals` con botón **Abrir WhatsApp** al `contact_whatsapp` de la cancha o al WA del owner |
+| Renovación Exclusivo T-7 / T-1 | Cola en `/admin/renewals` con botón **Abrir WhatsApp** al `contact_whatsapp` de la cancha o al WA del owner |
 | Email renovación | Solo si `RESEND_API_KEY` está configurado; si no, `admin_queue` |
 
 Cron: `GET /api/cron/renewal-reminders` con `Authorization: Bearer $CRON_SECRET` encola filas idempotentes (`subscription_id` + `t7`/`t1`).

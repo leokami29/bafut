@@ -52,13 +52,12 @@ export default async function CanchasPage() {
     <main className="page page-canchas" id="main">
       <JsonLd data={venueDirectoryJsonLd(venues, city.name)} />
       <header className="page-head page-head-compact">
-        <p className="eyebrow">Dónde se está armando · {city.name}</p>
-        <h1>Canchas sintéticas en {city.name}</h1>
+        <h1>Canchas en {city.name}</h1>
         <p className="lede">
           {withDemand > 0
-            ? `${venues.length} canchas en ${city.name} · ${withDemand} con huecos abiertos para partidos de fútbol 5/7. `
-            : `${venues.length} canchas en ${city.name} para armar pateadas de fútbol. BaFut no reserva: marcas el punto y armas el partido. `}
-          <Link href="/partidos">Ver partidos y huecos abiertos</Link>.
+            ? `${withDemand} ${withDemand === 1 ? "cancha con huecos" : "canchas con huecos"}. `
+            : null}
+          <Link href="/partidos">Ver partidos</Link>
         </p>
       </header>
       <VenueDirectory

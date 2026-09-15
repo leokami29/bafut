@@ -55,7 +55,7 @@ export function InvoiceDocument({ invoice }: InvoiceDocumentProps) {
       </dl>
 
       <p className="invoice-note">
-        Documento informativo de BaFut. No es factura electrónica DIAN. El plan Premium
+        Documento informativo de BaFut. No es factura electrónica DIAN. El plan Exclusivo
         destaca la cancha en el directorio; no incluye reserva ni cobros entre jugadores.
       </p>
 

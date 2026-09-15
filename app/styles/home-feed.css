@@ -180,6 +180,70 @@
   font-size: 0.82rem;
 }
 
+/* Pacto de rotación / badge banca: contraste AA sobre --paper (sin pasteles #a8e6cf). */
+.slot-rotation-rule {
+  margin: 0 0 1rem;
+  padding: 0.65rem 0.75rem;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: var(--ink);
+  background: color-mix(in oklab, var(--turf) 10%, var(--paper));
+  border-left: 3px solid var(--turf-deep);
+}
+
+.slot-rotation-rule strong {
+  font-weight: 700;
+  color: var(--turf-deep);
+}
+
+.bench-badge {
+  display: inline-block;
+  margin-left: 0.5rem;
+  padding: 0.15rem 0.45rem;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.68rem;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  vertical-align: middle;
+  color: var(--turf-deep);
+  background: color-mix(in oklab, var(--turf) 14%, var(--paper));
+  border: 1px solid color-mix(in oklab, var(--turf-deep) 35%, transparent);
+}
+
+.challenge-tag {
+  display: inline-block;
+  margin: 0 0 0.35rem;
+  padding: 0.2rem 0.5rem;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.7rem;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--paper);
+  background: var(--bib);
+}
+
+.challenge-accept-card {
+  display: grid;
+  gap: 0.85rem;
+  margin: 0.75rem 0 1.25rem;
+  padding: 1rem;
+  border: 1px solid color-mix(in oklab, var(--bib) 40%, transparent);
+  background: color-mix(in oklab, var(--bib) 6%, var(--paper));
+}
+
+.challenge-accept-title {
+  margin: 0 0 0.35rem;
+  font-size: 1.15rem;
+}
+
+.challenge-accept-desc {
+  margin: 0;
+  color: color-mix(in oklab, var(--ink) 72%, transparent);
+  line-height: 1.45;
+}
+
 .match-row time {
   font-variant-numeric: tabular-nums;
 }
@@ -239,6 +303,35 @@
   height: 40vh;
   border: 1px solid color-mix(in oklab, var(--turf) 35%, transparent);
   background: color-mix(in oklab, var(--turf) 4%, var(--paper));
+}
+
+.venue-map-dot {
+  appearance: none;
+  display: block;
+  width: 12px;
+  height: 12px;
+  padding: 0;
+  border: 2px solid var(--chalk);
+  background: var(--turf);
+  cursor: pointer;
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--ink) 25%, transparent);
+}
+
+.venue-map-dot.is-verified {
+  background: var(--chalk);
+  border-color: var(--turf);
+}
+
+.venue-map-dot.is-premium {
+  width: 13px;
+  height: 13px;
+  background: var(--flood);
+  border-color: var(--ink);
+}
+
+.venue-map-dot.is-focus {
+  outline: 2px solid var(--flood);
+  outline-offset: 2px;
 }
 
 .venue-map-loading {

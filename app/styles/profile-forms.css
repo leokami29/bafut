@@ -1,0 +1,218 @@
+/* —— Formularios de edición en /perfil —— */
+.profile-form {
+  display: grid;
+  gap: 1.1rem;
+}
+
+.profile-form.stack-form {
+  gap: 1.1rem;
+}
+
+.profile-form-banner {
+  margin: 0;
+  padding: 0.65rem 0.8rem;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  background: color-mix(in oklab, var(--flood) 18%, var(--paper));
+  border-left: 3px solid var(--flood);
+}
+
+.profile-form-section {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0 0 0.15rem;
+  border: 0;
+  min-width: 0;
+}
+
+.profile-form-section + .profile-form-section {
+  padding-top: 0.85rem;
+  border-top: 1px solid color-mix(in oklab, var(--ink) 12%, transparent);
+}
+
+.profile-form-section-title {
+  margin: 0 0 0.1rem;
+  padding: 0;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.68rem;
+  font-weight: 650;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--ink) 52%, transparent);
+}
+
+.profile-form-section-lede {
+  margin: -0.15rem 0 0.15rem;
+  font-size: 0.82rem;
+  line-height: 1.35;
+  color: color-mix(in oklab, var(--ink) 58%, transparent);
+}
+
+.profile-form-grid {
+  display: grid;
+  gap: 0.6rem;
+  min-width: 0;
+}
+
+@media (min-width: 480px) {
+  .profile-form-grid.is-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.profile-form label,
+.profile-form .check-line {
+  gap: 0.3rem;
+  font-size: 0.9rem;
+  font-weight: 550;
+  color: var(--ink);
+}
+
+.profile-form input,
+.profile-form select,
+.profile-form textarea {
+  font-weight: 400;
+  background: color-mix(in oklab, var(--chalk) 22%, var(--paper));
+  border: 1px solid color-mix(in oklab, var(--ink) 18%, transparent);
+  border-bottom: 1px solid color-mix(in oklab, var(--ink) 28%, transparent);
+}
+
+.profile-form input:focus-visible,
+.profile-form select:focus-visible,
+.profile-form textarea:focus-visible {
+  outline: 2px solid var(--flood);
+  outline-offset: 1px;
+  border-color: color-mix(in oklab, var(--turf) 45%, transparent);
+}
+
+.profile-form-hint {
+  margin: -0.2rem 0 0;
+  font-size: 0.8rem;
+  font-weight: 400;
+  line-height: 1.4;
+  color: color-mix(in oklab, var(--ink) 58%, transparent);
+}
+
+.profile-form-photo {
+  margin-top: 0.15rem;
+}
+
+.profile-form-photo .ficha-photo {
+  gap: 0.4rem;
+}
+
+.profile-form-photo .ficha-photo img {
+  border: 2px solid color-mix(in oklab, var(--turf-deep) 35%, transparent);
+}
+
+.profile-form .ficha-choice-grid {
+  grid-template-columns: repeat(auto-fill, minmax(5.25rem, 1fr));
+  gap: 0.4rem;
+}
+
+.profile-form .ficha-choice {
+  min-height: 2.5rem;
+  padding: 0.4rem 0.45rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  border-color: color-mix(in oklab, var(--ink) 22%, transparent);
+  background: color-mix(in oklab, var(--chalk) 15%, var(--paper));
+}
+
+.profile-form .ficha-choice.is-on {
+  background: color-mix(in oklab, var(--turf) 16%, var(--paper));
+  border-color: var(--turf-deep);
+  color: var(--turf-deep);
+  box-shadow: inset 0 -2px 0 var(--turf-deep);
+}
+
+.profile-form .ficha-choice:focus-visible {
+  outline: 2px solid var(--flood);
+  outline-offset: 2px;
+}
+
+.profile-form .check-line {
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  gap: 0.55rem;
+  padding: 0.55rem 0.65rem;
+  font-weight: 550;
+  background: color-mix(in oklab, var(--turf) 6%, var(--paper));
+  border: 1px solid color-mix(in oklab, var(--ink) 14%, transparent);
+}
+
+.profile-form .check-line input[type="checkbox"] {
+  width: 1.05rem;
+  height: 1.05rem;
+  min-height: 1.05rem;
+  margin-top: 0.12rem;
+  padding: 0;
+  accent-color: var(--turf-deep);
+}
+
+.profile-form-status {
+  margin: 0;
+  padding: 0.6rem 0.75rem;
+  font-size: 0.88rem;
+  line-height: 1.4;
+}
+
+.profile-form-status.is-error {
+  color: var(--bib);
+  background: color-mix(in oklab, var(--bib) 7%, var(--paper));
+  border-left: 3px solid var(--bib);
+}
+
+.profile-form-status.is-ok {
+  color: var(--turf-deep);
+  background: color-mix(in oklab, var(--turf) 10%, var(--paper));
+  border-left: 3px solid var(--turf);
+}
+
+.profile-form-actions {
+  display: grid;
+  gap: 0.45rem;
+  padding-top: 0.15rem;
+}
+
+.profile-form-actions .btn-turf {
+  width: 100%;
+  min-height: 2.85rem;
+  font-family: var(--font-display), sans-serif;
+  font-size: 0.95rem;
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.profile-form-actions .btn-turf:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.profile-form-intro {
+  margin: 0 0 0.15rem;
+  font-size: 0.84rem;
+  line-height: 1.4;
+  color: color-mix(in oklab, var(--ink) 62%, transparent);
+}
+
+.profile-form-subgroup {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.profile-form-subgroup-label {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 550;
+  color: var(--ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .profile-form .ficha-choice {
+    transition: none;
+  }
+}

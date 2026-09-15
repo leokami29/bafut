@@ -18,6 +18,8 @@
 @import "./styles/formation-pitch.css";
 @import "./styles/compose-picker.css";
 @import "./styles/inbox-misc.css";
+@import "./styles/perfil.css";
+@import "./styles/profile-forms.css";
 @import "./styles/my-matches.css";
 @import "./styles/formation-picker.css";
 @import "./styles/venue-registration.css";
@@ -25,3 +27,6 @@
 @import "./styles/venue-booking.css";
 @import "./styles/tournaments.css";
 @import "./styles/admin-console.css";
+@import "./styles/player-card.css";
+@import "./styles/venue-ops-agenda.css";
+@import "./styles/not-found.css";

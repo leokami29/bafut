@@ -1,4 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { isOpsPath, rewriteAdminPathToOps } from "@bafut/venue-ops";
+import { resolveAdminAppOrigin } from "@/lib/admin-app-url";
 import { updateSession } from "@/lib/supabase/session";
 
 function loginRedirectTarget(request: NextRequest) {
@@ -24,6 +26,21 @@ function loginRedirectTarget(request: NextRequest) {
 }
 
 export async function proxy(request: NextRequest) {
+  const pathname = request.nextUrl.pathname;
+
+  // BaFut web no sirve admin/crons: todo eso vive en BaFut_Admin.
+  if (isOpsPath(pathname)) {
+    const adminOrigin = resolveAdminAppOrigin({
+      NEXT_PUBLIC_ADMIN_URL: process.env.NEXT_PUBLIC_ADMIN_URL,
+      NEXT_PUBLIC_OPS_URL: process.env.NEXT_PUBLIC_OPS_URL,
+      OPS_APP_URL: process.env.OPS_APP_URL,
+    });
+    return NextResponse.redirect(
+      rewriteAdminPathToOps(pathname, request.nextUrl.search, adminOrigin),
+      308,
+    );
+  }
+
   if (request.nextUrl.pathname === "/login") {
     return NextResponse.redirect(loginRedirectTarget(request));
   }

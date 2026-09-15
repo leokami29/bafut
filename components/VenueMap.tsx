@@ -2,11 +2,42 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
-import maplibregl from "maplibre-gl";
+import * as maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import type { Venue, VenueWithPremium } from "@/lib/types";
 
-type FeatureProps = { id: string; slug: string; name: string; premium: 0 | 1 };
+function isPremium(venue: Venue | VenueWithPremium) {
+  return "is_premium" in venue && venue.is_premium;
+}
+
+function placeMarkers(
+  map: maplibregl.Map,
+  venues: Array<Venue | VenueWithPremium>,
+  focusId: string | undefined,
+  onOpen: (slug: string) => void,
+) {
+  const markers: maplibregl.Marker[] = [];
+  for (const venue of venues) {
+    if (!Number.isFinite(venue.lng) || !Number.isFinite(venue.lat)) continue;
+    const el = document.createElement("button");
+    el.type = "button";
+    el.className = "venue-map-dot";
+    if (isPremium(venue)) el.classList.add("is-premium");
+    else if (venue.is_verified) el.classList.add("is-verified");
+    if (focusId === venue.id) el.classList.add("is-focus");
+    el.setAttribute("aria-label", venue.name);
+    el.addEventListener("click", (event) => {
+      event.stopPropagation();
+      onOpen(venue.slug);
+    });
+    markers.push(
+      new maplibregl.Marker({ element: el, anchor: "center" })
+        .setLngLat([venue.lng, venue.lat])
+        .addTo(map),
+    );
+  }
+  return markers;
+}
 
 export function VenueMap({
   venues,
@@ -20,15 +51,28 @@ export function VenueMap({
   navigateOnClick?: boolean;
 }) {
   const root = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<maplibregl.Map | null>(null);
+  const markersRef = useRef<maplibregl.Marker[]>([]);
+  const loadedRef = useRef(false);
+  const venuesRef = useRef(venues);
+  const focusRef = useRef(focusId);
+  const navigateRef = useRef(navigateOnClick);
   const router = useRouter();
+  const routerRef = useRef(router);
+
+  venuesRef.current = venues;
+  focusRef.current = focusId;
+  navigateRef.current = navigateOnClick;
+  routerRef.current = router;
 
   useEffect(() => {
-    if (!root.current) {
+    const container = root.current;
+    if (!container) {
       return;
     }
 
     const map = new maplibregl.Map({
-      container: root.current,
+      container,
       style: {
         version: 8,
         sources: {
@@ -42,143 +86,60 @@ export function VenueMap({
         layers: [{ id: "osm", type: "raster", source: "osm" }],
       },
       center: [center.lng, center.lat],
-      zoom: focusId ? 14 : 11.5,
+      zoom: focusRef.current ? 14 : 11.5,
       attributionControl: { compact: true },
     });
+    mapRef.current = map;
 
-    const geojson: GeoJSON.FeatureCollection<GeoJSON.Point, FeatureProps> = {
-      type: "FeatureCollection",
-      features: venues.map((venue) => ({
-        type: "Feature",
-        properties: {
-          id: venue.id,
-          slug: venue.slug,
-          name: venue.name,
-          premium: "is_premium" in venue && venue.is_premium ? 1 : 0,
-        },
-        geometry: { type: "Point", coordinates: [venue.lng, venue.lat] },
-      })),
+    const refreshMarkers = () => {
+      for (const marker of markersRef.current) marker.remove();
+      markersRef.current = placeMarkers(map, venuesRef.current, focusRef.current, (slug) => {
+        if (!navigateRef.current) return;
+        routerRef.current.push(`/canchas/${slug}`);
+      });
     };
 
-    map.on("load", () => {
-      map.addSource("venues", {
-        type: "geojson",
-        data: geojson,
-        cluster: true,
-        clusterMaxZoom: 14,
-        clusterRadius: 48,
-      });
-
-      map.addLayer({
-        id: "clusters",
-        type: "circle",
-        source: "venues",
-        filter: ["has", "point_count"],
-        paint: {
-          "circle-color": "#0C6B4C",
-          "circle-radius": ["step", ["get", "point_count"], 16, 8, 20, 25, 26],
-          "circle-stroke-width": 2,
-          "circle-stroke-color": "#F4F7F2",
-        },
-      });
-
-      map.addLayer({
-        id: "cluster-count",
-        type: "symbol",
-        source: "venues",
-        filter: ["has", "point_count"],
-        layout: {
-          "text-field": "{point_count_abbreviated}",
-          "text-size": 13,
-        },
-        paint: {
-          "text-color": "#F4F7F2",
-        },
-      });
-
-      map.addLayer({
-        id: "unclustered",
-        type: "circle",
-        source: "venues",
-        filter: ["!", ["has", "point_count"]],
-        paint: {
-          "circle-color": [
-            "case",
-            ["==", ["get", "id"], focusId ?? ""],
-            "#E8F56A",
-            ["==", ["get", "premium"], 1],
-            "#D9F2A5",
-            "#F4F7F2",
-          ],
-          "circle-radius": [
-            "case",
-            ["==", ["get", "id"], focusId ?? ""],
-            9,
-            ["==", ["get", "premium"], 1],
-            8,
-            7,
-          ],
-          "circle-stroke-width": [
-            "case",
-            ["==", ["get", "premium"], 1],
-            2.5,
-            2,
-          ],
-          "circle-stroke-color": [
-            "case",
-            ["==", ["get", "premium"], 1],
-            "#FFD25A",
-            "#0C6B4C",
-          ],
-        },
-      });
-
-      map.on("click", "clusters", (e) => {
-        const features = map.queryRenderedFeatures(e.point, { layers: ["clusters"] });
-        const clusterId = features[0]?.properties?.cluster_id as number | undefined;
-        const source = map.getSource("venues") as maplibregl.GeoJSONSource;
-        if (clusterId == null) return;
-        void source.getClusterExpansionZoom(clusterId).then((zoom) => {
-          const coords = (features[0]?.geometry as GeoJSON.Point).coordinates as [number, number];
-          map.easeTo({ center: coords, zoom });
-        });
-      });
-
-      map.on("click", "unclustered", (e) => {
-        if (!navigateOnClick) return;
-        const slug = e.features?.[0]?.properties?.slug;
-        if (typeof slug === "string") {
-          router.push(`/canchas/${slug}`);
-        }
-      });
-
-      map.on("mouseenter", "clusters", () => {
-        map.getCanvas().style.cursor = "pointer";
-      });
-      map.on("mouseleave", "clusters", () => {
-        map.getCanvas().style.cursor = "";
-      });
-      map.on("mouseenter", "unclustered", () => {
-        if (!navigateOnClick) return;
-        map.getCanvas().style.cursor = "pointer";
-      });
-      map.on("mouseleave", "unclustered", () => {
-        map.getCanvas().style.cursor = "";
+    const ro = new ResizeObserver(() => {
+      if (!loadedRef.current) return;
+      if (container.clientWidth < 2 || container.clientHeight < 2) return;
+      window.requestAnimationFrame(() => {
+        if (loadedRef.current) map.resize();
       });
     });
 
-    if (focusId) {
-      const focused = venues.find((v) => v.id === focusId);
-      if (focused) {
-        map.flyTo({ center: [focused.lng, focused.lat], zoom: 14, duration: 600 });
-      }
-    }
+    const start = () => {
+      if (loadedRef.current || !map.isStyleLoaded()) return;
+      loadedRef.current = true;
+      refreshMarkers();
+      ro.observe(container);
+    };
+    map.on("load", start);
+    map.on("idle", start);
 
     return () => {
-      map.stop(); // Detener animaciones en curso
+      loadedRef.current = false;
+      ro.disconnect();
+      for (const marker of markersRef.current) marker.remove();
+      markersRef.current = [];
       map.remove();
+      mapRef.current = null;
     };
-  }, [venues, center.lat, center.lng, focusId, navigateOnClick, router]);
+  }, [center.lat, center.lng]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !loadedRef.current) return;
+    for (const marker of markersRef.current) marker.remove();
+    markersRef.current = placeMarkers(map, venues, focusId, (slug) => {
+      if (!navigateRef.current) return;
+      routerRef.current.push(`/canchas/${slug}`);
+    });
+    if (!focusId) return;
+    const focused = venues.find((venue) => venue.id === focusId);
+    if (focused) {
+      map.easeTo({ center: [focused.lng, focused.lat], zoom: Math.max(map.getZoom(), 13), duration: 450 });
+    }
+  }, [venues, focusId]);
 
   return <div ref={root} className="venue-map" />;
 }

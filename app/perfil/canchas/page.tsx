@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { requireUserId } from "@/lib/auth";
+import { adminAppUrl } from "@/lib/admin-app-url";
 import { getOwnedVenues, getUserVenueClaims } from "@/lib/data";
 import { createClient } from "@/lib/supabase/server";
 import { robotsNoIndex } from "@/lib/seo";
@@ -59,8 +60,8 @@ export default async function MyVenuesPage() {
       {adminRow ? (
         <p className="owner-admin-note">
           Sos editor de BaFut ·{" "}
-          <Link href="/admin/claims">cola de reclamos pendientes</Link> ·{" "}
-          <Link href="/admin/venues">gestión de canchas</Link>
+          <a href={adminAppUrl("/admin/claims")}>cola de reclamos pendientes</a> ·{" "}
+          <a href={adminAppUrl("/admin/venues")}>gestión de canchas</a>
         </p>
       ) : null}
 
@@ -105,9 +106,12 @@ export default async function MyVenuesPage() {
                   <Link href={`/canchas/${venue.slug}`} className="btn-ghost">
                     Ficha
                   </Link>
-                  <Link href={`/canchas/${venue.slug}/admin`} className="btn-flood">
+                  <a
+                    href={adminAppUrl(`/canchas/${venue.slug}/admin`)}
+                    className="btn-flood"
+                  >
                     Panel
-                  </Link>
+                  </a>
                 </div>
               </li>
             ))}
@@ -174,9 +178,12 @@ export default async function MyVenuesPage() {
                 </span>
                 <div className="venue-admin-row-actions">
                   {claim.status === "approved" && claim.venue ? (
-                    <Link href={`/canchas/${claim.venue.slug}/admin`} className="btn-flood">
+                    <a
+                      href={adminAppUrl(`/canchas/${claim.venue.slug}/admin`)}
+                      className="btn-flood"
+                    >
                       Panel
-                    </Link>
+                    </a>
                   ) : null}
                   {claim.status === "rejected" && claim.venue ? (
                     <Link href={`/canchas/${claim.venue.slug}/reclamar`} className="btn-ghost">

@@ -20,6 +20,50 @@ export const formatLabel: Record<Format, string> = {
   "11v11": "11 vs 11",
 };
 
+export const positionShort: Record<Position, string> = {
+  any: "—",
+  gk: "ARQ",
+  def: "DEF",
+  mid: "MED",
+  fwd: "DEL",
+  cierre: "CIE",
+  ala: "ALA",
+  pivot: "PIV",
+  base: "BAS",
+  escolta: "ESC",
+  ala_pivot: "AP",
+  armador: "ARM",
+  central: "CEN",
+  opuesto: "OPU",
+  receptor: "REC",
+  libero: "LIB",
+  drive: "DRV",
+  reves: "REV",
+};
+
+export const weekdayLabel: Record<string, string> = {
+  lun: "Lun",
+  mar: "Mar",
+  mie: "Mié",
+  jue: "Jue",
+  vie: "Vie",
+  sab: "Sáb",
+  dom: "Dom",
+};
+
+export const preferredFootLabel: Record<string, string> = {
+  right: "Derecha",
+  left: "Izquierda",
+  both: "Ambas",
+};
+
+export const playerGenderLabel: Record<string, string> = {
+  woman: "Mujer",
+  man: "Hombre",
+  other: "Otro",
+  undisclosed: "Prefiero no decir",
+};
+
 export const positionLabel: Record<Position, string> = {
   any: "Cualquiera",
   gk: "Arquero",

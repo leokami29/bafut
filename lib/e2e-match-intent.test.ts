@@ -306,7 +306,7 @@ function createMockMatchDetail(
             player_id: "p1",
             status: "accepted",
             created_at: "2026-09-10T00:00:00Z",
-            profiles: { id: "p1", display_name: "Jugador Test" },
+            profiles: { id: "p1", display_name: "Jugador Test", avatar_path: null },
           },
         ]
       : [],

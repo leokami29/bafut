@@ -12,7 +12,7 @@ import {
 type LegalAcceptCheckboxProps = {
   checked: boolean;
   onChange: (checked: boolean) => void;
-  /** `claim` | `premium` | `booking` (reservar horario). */
+  /** `claim` | `premium` | `booking` | `signup`. */
   variant?: LegalAcceptVariant;
   id?: string;
   disabled?: boolean;
@@ -35,10 +35,12 @@ export function LegalAcceptCheckbox({
 }: LegalAcceptCheckboxProps) {
   const label =
     variant === "premium"
-      ? "Acepto los términos de uso y la política de privacidad de BaFut, incluido el tratamiento de mis datos y del comprobante de pago para revisar la solicitud premium."
+      ? "Acepto los términos de uso y la política de privacidad de BaFut, incluido el tratamiento de mis datos y del comprobante de pago para revisar la solicitud del plan Exclusivo."
       : variant === "booking"
         ? "Acepto los términos de uso y la política de privacidad de BaFut, incluido el tratamiento de mis datos y del comprobante de pago para que el dueño revise el pedido de reserva."
-        : "Acepto los términos de uso y la política de privacidad de BaFut, incluido el tratamiento de mis datos para verificar la titularidad de la cancha.";
+        : variant === "signup"
+          ? "Acepto los términos de uso y la política de privacidad de BaFut, incluido el tratamiento de mi ficha de jugador (nombre, foto, deporte, barrio y contacto)."
+          : "Acepto los términos de uso y la política de privacidad de BaFut, incluido el tratamiento de mis datos para verificar la titularidad de la cancha.";
 
   return (
     <label className={className} htmlFor={id}>

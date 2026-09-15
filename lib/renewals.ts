@@ -50,7 +50,7 @@ export function renewalWhatsAppMessage(input: {
   });
   const label = input.reminderType === "t7" ? "en ~7 días" : "mañana";
   return (
-    `Hola — tu plan Premium de *${input.venueName}* en BaFut vence ${label} (${when}). ` +
+    `Hola — tu plan Exclusivo de *${input.venueName}* en BaFut vence ${label} (${when}). ` +
     `Si querés renovar, respondé este mensaje o pedí el comprobante Nequi/banco.`
   );
 }

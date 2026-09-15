@@ -1,0 +1,1119 @@
+/* —— Tokens locales (carta) —— */
+.player-card,
+.player-card-shell {
+  /* Escudo hexagonal flat-top/bottom: chaflanes laterales, borde plano arriba/abajo */
+  --poly-hexagon: polygon(
+    12% 0%,
+    88% 0%,
+    100% 14%,
+    100% 86%,
+    88% 100%,
+    12% 100%,
+    0% 86%,
+    0% 14%
+  );
+  --poly-hexagon-in: polygon(
+    12.8% 1.5%,
+    87.2% 1.5%,
+    98.5% 14.8%,
+    98.5% 85.2%,
+    87.2% 98.5%,
+    12.8% 98.5%,
+    1.5% 85.2%,
+    1.5% 14.8%
+  );
+  --card-notch-size: 1.12rem;
+}
+
+.player-card {
+  --card-gold: #e8c35a;
+  --card-ink: #f4ffe8;
+  --card-accent: var(--flood);
+  --card-glow: color-mix(in oklab, var(--flood) 35%, transparent);
+  --card-border: color-mix(in oklab, var(--card-gold) 85%, white 10%);
+  --card-notch: #03140f;
+  --card-bg-glow: radial-gradient(
+    90% 55% at 50% -10%,
+    color-mix(in oklab, var(--flood) 42%, transparent),
+    transparent 58%
+  );
+  --card-bg-fill: linear-gradient(165deg, #1a7a55 0%, var(--turf-deep) 48%, #03140f 100%);
+}
+
+/* —— Stage + sticky compartido —— */
+.player-card-stage {
+  display: grid;
+  gap: 1.25rem;
+}
+
+@media (min-width: 880px) {
+  .player-card-stage {
+    grid-template-columns: minmax(16rem, 20rem) minmax(0, 1fr);
+    align-items: start;
+    gap: 1.75rem;
+  }
+}
+
+/* Sticky solo carta (onboarding en 2 cols): desktop únicamente */
+.player-card-sticky-slot {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 20.5rem);
+  margin-inline: auto;
+  padding-bottom: 1.25rem;
+}
+
+@media (min-width: 900px) {
+  .player-card-sticky-slot {
+    position: sticky;
+    top: 5.5rem;
+  }
+}
+
+.player-card-sticky-slot .player-card,
+.player-card-sticky-slot .player-card-wrap {
+  margin-inline: 0;
+  width: 100%;
+}
+
+/* Carta + controles de recorte (vestuario / perfil) */
+.player-card-stack {
+  display: grid;
+  gap: 1rem;
+  width: min(100%, 20.5rem);
+  margin-inline: auto;
+}
+
+/* Compat: sticky directo en la carta (legacy) */
+.player-card-sticky {
+  position: relative;
+}
+
+@media (min-width: 900px) {
+  .player-card-sticky {
+    position: sticky;
+    top: 5.5rem;
+  }
+}
+
+/* —— Wrapper elite (sombra sin clip) —— */
+.player-card-wrap {
+  width: min(100%, 20.5rem);
+  margin-inline: auto;
+}
+
+.player-card-wrap--elite {
+  --card-gold: #e8c35a;
+  filter: drop-shadow(0 18px 40px color-mix(in oklab, #03140f 55%, transparent));
+  transition: filter 280ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.player-card-shell {
+  position: relative;
+  background: linear-gradient(
+    145deg,
+    color-mix(in oklab, var(--card-gold) 92%, white 18%),
+    var(--card-gold),
+    color-mix(in oklab, var(--card-gold) 78%, #a67c00 22%)
+  );
+  padding: 6px;
+  clip-path: var(--poly-hexagon);
+}
+
+/* —— Layout carta —— */
+.player-card {
+  position: relative;
+  isolation: isolate;
+  width: min(100%, 20.5rem);
+  margin-inline: auto;
+  padding: 0.85rem 0.85rem 0.7rem;
+  color: var(--card-ink);
+  background: var(--card-bg-glow), var(--card-bg-fill);
+  transition:
+    box-shadow 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease;
+}
+
+/* Host Motion: perspective para tilt interno (club/oro/elite) */
+.player-card-motion-host {
+  width: 100%;
+  perspective: 900px;
+}
+
+.player-card-tilt {
+  transform-style: preserve-3d;
+}
+
+/* Forma base ticket: borde real + chaflanes simulados con gradientes (club = 3px) */
+.player-card:not(.player-card--inner) {
+  border: 3px solid var(--card-border);
+  box-shadow: 0 18px 40px color-mix(in oklab, #03140f 55%, transparent);
+  background:
+    linear-gradient(135deg, var(--card-notch) 50%, transparent 50.5%) 0 0 /
+      var(--card-notch-size) var(--card-notch-size) no-repeat,
+    linear-gradient(225deg, var(--card-notch) 50%, transparent 50.5%) 100% 0 /
+      var(--card-notch-size) var(--card-notch-size) no-repeat,
+    linear-gradient(45deg, var(--card-notch) 50%, transparent 50.5%) 0 100% /
+      var(--card-notch-size) var(--card-notch-size) no-repeat,
+    linear-gradient(315deg, var(--card-notch) 50%, transparent 50.5%) 100% 100% /
+      var(--card-notch-size) var(--card-notch-size) no-repeat,
+    var(--card-bg-glow),
+    var(--card-bg-fill);
+}
+
+.player-card-wrap .player-card {
+  width: 100%;
+  margin-inline: 0;
+}
+
+/* Forma elite: inner con clip-path hexagonal (sin borde propio) */
+.player-card--inner {
+  clip-path: var(--poly-hexagon-in);
+  border: none;
+  box-shadow: none;
+}
+
+/* Elite: padding mínimo en article; safe-zone lleva el contenido */
+.player-card[data-tier="elite"].player-card--inner {
+  padding: 0.3rem 0.15rem 0.25rem;
+  overflow: visible;
+}
+
+.player-card--inner .player-card-safe {
+  padding: 0.35rem 0.5rem 0.5rem;
+  box-sizing: border-box;
+}
+
+.player-card--inner .player-card-foot {
+  padding-bottom: 0.35rem;
+  overflow: visible;
+}
+
+.player-card--inner .player-card-shot {
+  height: 11.75rem;
+}
+
+.player-card[data-tier="elite"] .player-card-top {
+  padding: 0.15rem 0.35rem 0.3rem 0.45rem;
+}
+
+.player-card[data-tier="elite"] .player-card-overall-n {
+  font-size: 2.35rem;
+}
+
+.player-card[data-tier="elite"] .player-card-pos {
+  font-size: 0.76rem;
+}
+
+.player-card[data-tier="elite"] .player-card-meta {
+  padding-inline: 0.35rem;
+}
+
+.player-card[data-tier="elite"] .player-card-stats {
+  max-width: 82%;
+  margin: 0.45rem auto 0;
+  padding: 0.45rem 0.65rem 0.25rem;
+}
+
+.player-card[data-tier="elite"] .player-card-foot {
+  padding-inline: 0.35rem;
+  font-size: 0.62rem;
+}
+
+.player-card-glow {
+  pointer-events: none;
+  position: absolute;
+  inset: 8% 12% auto;
+  height: 42%;
+  background: radial-gradient(circle, var(--card-glow), transparent 70%);
+  z-index: 0;
+  transition: background 180ms ease;
+}
+
+.player-card-top,
+.player-card-shot,
+.player-card-meta,
+.player-card-stats,
+.player-card-foot {
+  position: relative;
+  z-index: 1;
+}
+
+.player-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 0.15rem 0.2rem 0.35rem;
+}
+
+.player-card-overall {
+  margin: 0;
+  display: grid;
+  gap: 0.12rem;
+  line-height: 0.85;
+}
+
+.player-card-overall-n {
+  font-family: var(--font-display), sans-serif;
+  font-size: 3.1rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: var(--card-accent);
+}
+
+.player-card-pos {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.82rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--chalk);
+}
+
+.player-card-level-chip {
+  justify-self: start;
+  margin-top: 0.15rem;
+  padding: 0.12rem 0.35rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.58rem;
+  font-weight: 650;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--card-ink);
+  background: color-mix(in oklab, var(--ink) 55%, transparent);
+  border: 1px solid color-mix(in oklab, var(--card-gold) 45%, transparent);
+}
+
+.player-card-brand {
+  margin: 0.2rem 0 0;
+  font-family: var(--font-display), sans-serif;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  color: color-mix(in oklab, var(--chalk) 80%, white);
+}
+
+.player-card-shot {
+  position: relative;
+  height: 13.5rem;
+  margin: 0 0.15rem;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, transparent 55%, color-mix(in oklab, #03140f 82%, transparent)),
+    repeating-linear-gradient(
+      90deg,
+      color-mix(in oklab, var(--chalk) 16%, transparent) 0 2px,
+      transparent 2px 18px
+    );
+}
+
+.player-card-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: var(--avatar-x, 50%) var(--avatar-y, 22%);
+  transform: scale(var(--avatar-zoom, 1));
+  transform-origin: var(--avatar-x, 50%) var(--avatar-y, 22%);
+  pointer-events: none;
+  user-select: none;
+}
+
+.player-card-shot.is-interactive {
+  cursor: grab;
+  touch-action: none;
+}
+
+.player-card-shot.is-interactive:active {
+  cursor: grabbing;
+}
+
+.player-card-crop-hint {
+  position: absolute;
+  left: 0.45rem;
+  bottom: 0.45rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.4rem;
+  background: color-mix(in oklab, var(--ink) 72%, transparent);
+  color: var(--flood);
+}
+
+.player-card-silhouette {
+  height: 100%;
+  display: grid;
+  place-items: end center;
+}
+
+.player-card-silhouette span {
+  width: 7.2rem;
+  height: 9.5rem;
+  background: color-mix(in oklab, var(--mist) 28%, transparent);
+  clip-path: ellipse(48% 46% at 50% 28%);
+  box-shadow: 0 4.6rem 0 -1.6rem color-mix(in oklab, var(--mist) 22%, transparent);
+}
+
+.player-card-pay,
+.player-card-rookie {
+  position: absolute;
+  top: 0.45rem;
+  right: 0.45rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.4rem;
+  background: var(--flood);
+  color: var(--ink);
+}
+
+.player-card-pay {
+  top: auto;
+  bottom: 0.45rem;
+  background: var(--bib);
+  color: var(--bib-ink);
+}
+
+.player-card-meta {
+  padding: 0.45rem 0.25rem 0.15rem;
+  text-align: center;
+}
+
+.player-card-name {
+  margin: 0;
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.85rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 0.95;
+}
+
+.player-card-club,
+.player-card-place,
+.player-card-foot {
+  margin: 0.2rem 0 0;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--chalk) 85%, white);
+}
+
+.player-card-stats {
+  margin: 0.55rem 0 0;
+  padding: 0.45rem 0.2rem 0.15rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.15rem 0.65rem;
+  border-top: 1px solid color-mix(in oklab, var(--chalk) 35%, transparent);
+}
+
+.player-card-stats div {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.35rem;
+}
+
+.player-card-stats dt {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  color: color-mix(in oklab, var(--chalk) 75%, white);
+}
+
+.player-card-stats dd {
+  margin: 0;
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--card-accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.player-card-foot {
+  text-align: center;
+  padding-bottom: 0.15rem;
+}
+
+/* —— Temas por deporte (acento/glow/notch; misma geometría) —— */
+.player-card[data-sport="futbol"] {
+  --card-accent: var(--flood);
+  --card-glow: color-mix(in oklab, var(--flood) 35%, transparent);
+  --card-notch: #03140f;
+}
+
+.player-card[data-sport="futbol_sala"],
+.player-card-wrap--elite[data-sport="futbol_sala"] {
+  --card-accent: #7dd3fc;
+  --card-gold: #a5f3fc;
+  --card-glow: color-mix(in oklab, #38bdf8 38%, transparent);
+  --card-notch: #020617;
+  --card-bg-glow: radial-gradient(
+    90% 55% at 50% -10%,
+    color-mix(in oklab, #38bdf8 36%, transparent),
+    transparent 58%
+  );
+  --card-bg-fill: linear-gradient(165deg, #0c4a6e 0%, #082f49 48%, #020617 100%);
+}
+
+.player-card[data-sport="basquet"],
+.player-card-wrap--elite[data-sport="basquet"] {
+  --card-accent: #ffb347;
+  --card-gold: #fdba74;
+  --card-glow: color-mix(in oklab, #ffb347 40%, transparent);
+  --card-notch: #140704;
+  --card-bg-glow: radial-gradient(
+    90% 55% at 50% -10%,
+    color-mix(in oklab, #ffb347 40%, transparent),
+    transparent 58%
+  );
+  --card-bg-fill: linear-gradient(165deg, #9a3412 0%, #3b1208 55%, #140704 100%);
+}
+
+.player-card[data-sport="voleibol"],
+.player-card-wrap--elite[data-sport="voleibol"] {
+  --card-accent: #93c5fd;
+  --card-gold: #bfdbfe;
+  --card-glow: color-mix(in oklab, var(--flood) 50%, transparent);
+  --card-notch: #04111f;
+  --card-bg-glow: radial-gradient(
+    90% 55% at 50% -10%,
+    color-mix(in oklab, var(--flood) 50%, transparent),
+    transparent 58%
+  );
+  --card-bg-fill: linear-gradient(165deg, #1d4e89 0%, #0b2744 55%, #04111f 100%);
+}
+
+.player-card[data-sport="padel"],
+.player-card-wrap--elite[data-sport="padel"] {
+  --card-accent: var(--chalk);
+  --card-gold: #99f6e4;
+  --card-glow: color-mix(in oklab, var(--chalk) 45%, transparent);
+  --card-notch: #042f2e;
+  --card-bg-glow: radial-gradient(
+    90% 55% at 50% -10%,
+    color-mix(in oklab, var(--chalk) 45%, transparent),
+    transparent 58%
+  );
+  --card-bg-fill: linear-gradient(165deg, #0f766e 0%, #134e4a 55%, #042f2e 100%);
+}
+
+/* —— Tier por logros —— */
+.player-card[data-tier="rookie"]:not(.player-card--inner) {
+  border-width: 2px;
+  --card-border: color-mix(in oklab, var(--card-gold) 36%, var(--chalk) 64%);
+}
+
+.player-card[data-tier="club"]:not(.player-card--inner) {
+  border-width: 3px;
+  --card-border: color-mix(in oklab, var(--card-gold) 85%, white 10%);
+}
+
+.player-card[data-tier="oro"]:not(.player-card--inner) {
+  border-width: 5px;
+  --card-border: color-mix(in oklab, var(--card-gold) 98%, white 28%);
+  box-shadow:
+    0 18px 40px color-mix(in oklab, #03140f 55%, transparent),
+    0 0 28px color-mix(in oklab, var(--card-gold) 42%, transparent);
+}
+
+.player-card-wrap--elite .player-card-shell {
+  padding: 6px;
+  box-shadow: 0 0 32px color-mix(in oklab, var(--card-gold) 48%, transparent);
+}
+
+/* —— Matiz por nivel —— */
+.player-card[data-level="low"] {
+  --card-border: color-mix(in oklab, var(--card-gold) 55%, #86efac 45%);
+}
+
+.player-card[data-level="mid"] {
+  --card-border: color-mix(in oklab, var(--card-gold) 85%, white 10%);
+}
+
+.player-card[data-level="high"]:not(.player-card--inner) {
+  --card-border: color-mix(in oklab, var(--card-gold) 70%, #fca5a5 30%);
+  box-shadow:
+    0 18px 40px color-mix(in oklab, #03140f 55%, transparent),
+    0 0 18px color-mix(in oklab, #fca5a5 18%, transparent);
+}
+
+/* —— Motion (enter/hover lift → motion/react; idle → CSS abajo) —— */
+@keyframes player-card-elite-shell-mount {
+  0% {
+    box-shadow: 0 0 0 color-mix(in oklab, var(--card-gold) 0%, transparent);
+    filter: brightness(1);
+  }
+  45% {
+    box-shadow: 0 0 52px color-mix(in oklab, var(--card-gold) 62%, transparent);
+    filter: brightness(1.1);
+  }
+  100% {
+    box-shadow: 0 0 32px color-mix(in oklab, var(--card-gold) 48%, transparent);
+    filter: brightness(1);
+  }
+}
+
+/* Oro: destello breve al montar (complementa enter elástico de Motion) */
+@keyframes player-card-oro-mount-flash {
+  0% {
+    filter: brightness(1);
+    box-shadow:
+      0 18px 40px color-mix(in oklab, #03140f 55%, transparent),
+      0 0 12px color-mix(in oklab, var(--card-gold) 18%, transparent);
+  }
+  42% {
+    filter: brightness(1.09);
+    box-shadow:
+      0 18px 40px color-mix(in oklab, #03140f 55%, transparent),
+      0 0 44px color-mix(in oklab, var(--card-gold) 58%, transparent);
+  }
+  100% {
+    filter: brightness(1);
+    box-shadow:
+      0 18px 40px color-mix(in oklab, #03140f 55%, transparent),
+      0 0 28px color-mix(in oklab, var(--card-gold) 42%, transparent);
+  }
+}
+
+/* —— Idle loops por tier (identidades distintas; hover intensifica) —— */
+
+/* Rookie: casi quieto — solo un susurro en el borde */
+@keyframes player-card-idle-rookie-border {
+  0%,
+  100% {
+    border-color: color-mix(in oklab, var(--card-border) 92%, transparent);
+    box-shadow: 0 18px 40px color-mix(in oklab, #03140f 55%, transparent);
+  }
+  50% {
+    border-color: color-mix(in oklab, var(--card-border) 100%, white 4%);
+    box-shadow:
+      0 18px 40px color-mix(in oklab, #03140f 55%, transparent),
+      0 0 6px color-mix(in oklab, var(--card-glow) 12%, transparent);
+  }
+}
+
+/* Club: pulse vertical del glow deportivo + halo turf en sombra */
+@keyframes player-card-idle-club-glow-drift {
+  0%,
+  100% {
+    opacity: 0.68;
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    opacity: 0.95;
+    transform: translateY(-3px) scale(1.05);
+  }
+}
+
+@keyframes player-card-idle-club-turf-shadow {
+  0%,
+  100% {
+    box-shadow:
+      0 16px 36px color-mix(in oklab, #03140f 58%, transparent),
+      0 0 0 var(--card-glow);
+  }
+  50% {
+    box-shadow:
+      0 22px 44px color-mix(in oklab, #03140f 52%, transparent),
+      0 0 20px var(--card-glow);
+  }
+}
+
+/* Oro: halo dorado (ritmo 4.8s) + barrido horizontal del borde */
+@keyframes player-card-idle-oro-halo {
+  0%,
+  100% {
+    box-shadow:
+      0 18px 40px color-mix(in oklab, #03140f 55%, transparent),
+      0 0 22px color-mix(in oklab, var(--card-gold) 32%, transparent);
+  }
+  50% {
+    box-shadow:
+      0 18px 40px color-mix(in oklab, #03140f 55%, transparent),
+      0 0 36px color-mix(in oklab, var(--card-gold) 52%, transparent);
+  }
+}
+
+@keyframes player-card-idle-oro-border-shimmer {
+  0% {
+    background-position: 140% 0;
+    opacity: 0;
+  }
+  18% {
+    opacity: 0.28;
+  }
+  62% {
+    background-position: -40% 0;
+    opacity: 0.1;
+  }
+  100% {
+    background-position: -40% 0;
+    opacity: 0;
+  }
+}
+
+/* Elite: órbita cónica del shell hex + pulso hexagonal (sin shimmer horizontal de oro) */
+@keyframes player-card-idle-elite-orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes player-card-idle-elite-hex-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 24px color-mix(in oklab, var(--card-gold) 34%, transparent),
+      inset 0 0 0 0 color-mix(in oklab, var(--card-gold) 0%, transparent);
+    filter: brightness(1);
+  }
+  50% {
+    box-shadow:
+      0 0 44px color-mix(in oklab, var(--card-gold) 58%, transparent),
+      inset 0 0 18px color-mix(in oklab, var(--card-gold) 14%, transparent);
+    filter: brightness(1.07);
+  }
+}
+
+@keyframes player-card-idle-elite-diagonal-glint {
+  0% {
+    background-position: 120% 120%;
+    opacity: 0;
+  }
+  24% {
+    opacity: 0.2;
+  }
+  56% {
+    background-position: -20% -20%;
+    opacity: 0.08;
+  }
+  100% {
+    background-position: -20% -20%;
+    opacity: 0;
+  }
+}
+
+/* Hover: burst oro (más rápido que idle) */
+@keyframes player-card-hover-oro-burst {
+  0% {
+    background-position: 130% 0;
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.72;
+  }
+  45% {
+    background-position: -30% 0;
+    opacity: 0.35;
+  }
+  100% {
+    background-position: -30% 0;
+    opacity: 0;
+  }
+}
+
+/* Hover elite: acelera órbita + destello diagonal */
+@keyframes player-card-hover-elite-orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes player-card-hover-elite-glint {
+  0% {
+    background-position: 110% 110%;
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.55;
+  }
+  40% {
+    background-position: -10% -10%;
+    opacity: 0.25;
+  }
+  100% {
+    background-position: -10% -10%;
+    opacity: 0;
+  }
+}
+
+@keyframes player-card-crop-pulse {
+  0% {
+    box-shadow: inset 0 0 0 0 color-mix(in oklab, var(--flood) 0%, transparent);
+  }
+  45% {
+    box-shadow: inset 0 0 0 3px color-mix(in oklab, var(--flood) 75%, transparent);
+  }
+  100% {
+    box-shadow: inset 0 0 0 0 color-mix(in oklab, var(--flood) 0%, transparent);
+  }
+}
+
+/* —— Idle activo por tier —— */
+.player-card[data-tier="rookie"]:not(.player-card--inner) {
+  animation: player-card-idle-rookie-border 5.2s ease-in-out infinite;
+}
+
+.player-card[data-tier="club"]:not(.player-card--inner) {
+  animation: player-card-idle-club-turf-shadow 2.8s ease-in-out infinite;
+}
+
+.player-card[data-tier="club"]:not(.player-card--inner) .player-card-glow {
+  animation: player-card-idle-club-glow-drift 2.8s ease-in-out infinite;
+}
+
+.player-card[data-tier="oro"]:not(.player-card--inner) {
+  animation: player-card-idle-oro-halo 4.8s ease-in-out infinite;
+}
+
+/* Oro: barrido horizontal sobre el borde grueso */
+.player-card[data-tier="oro"]:not(.player-card--inner)::after {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: -2px;
+  z-index: 2;
+  opacity: 0;
+  border-radius: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 36%,
+    color-mix(in oklab, var(--card-gold) 78%, white 32%) 50%,
+    transparent 64%
+  );
+  background-size: 240% 100%;
+  mix-blend-mode: screen;
+  animation: player-card-idle-oro-border-shimmer 5.5s ease-in-out infinite;
+}
+
+/* Elite: anillo orbital en el shell + destello diagonal (no reutiliza oro) */
+.player-card-wrap--elite[data-tier="elite"] .player-card-shell {
+  animation: player-card-idle-elite-hex-pulse 3.4s ease-in-out infinite;
+}
+
+.player-card-wrap--elite[data-tier="elite"] .player-card-shell::before {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: -3px;
+  z-index: 0;
+  clip-path: var(--poly-hexagon);
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg 250deg,
+    color-mix(in oklab, var(--card-gold) 65%, white 18%) 280deg,
+    color-mix(in oklab, var(--card-gold) 35%, transparent) 310deg,
+    transparent 340deg
+  );
+  opacity: 0.42;
+  animation: player-card-idle-elite-orbit 10s linear infinite;
+}
+
+.player-card-wrap--elite[data-tier="elite"] .player-card-shell::after {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  clip-path: var(--poly-hexagon);
+  background: linear-gradient(
+    135deg,
+    transparent 42%,
+    color-mix(in oklab, var(--card-gold) 50%, white 24%) 50%,
+    transparent 58%
+  );
+  background-size: 260% 260%;
+  mix-blend-mode: screen;
+  opacity: 0;
+  animation: player-card-idle-elite-diagonal-glint 6.2s ease-in-out infinite;
+}
+
+/* Montaje one-shot oro (enter complementario a Motion) */
+.player-card[data-tier="oro"].player-card-mount:not(.player-card--inner) {
+  animation:
+    player-card-oro-mount-flash 560ms ease-out,
+    player-card-idle-oro-halo 4.8s ease-in-out infinite;
+}
+
+.player-card[data-tier="oro"].player-card-mount:not(.player-card--inner)::after {
+  animation: player-card-idle-oro-border-shimmer 5.5s ease-in-out infinite;
+}
+
+/* Montaje one-shot del shell elite (enter complementario a Motion) */
+.player-card-wrap--elite[data-tier="elite"] .player-card-shell-mount {
+  animation:
+    player-card-elite-shell-mount 680ms ease-out,
+    player-card-idle-elite-hex-pulse 3.4s ease-in-out infinite;
+}
+
+.player-card-wrap--elite[data-tier="elite"] .player-card-shell-mount::before {
+  animation: player-card-idle-elite-orbit 10s linear infinite;
+}
+
+.player-card-wrap--elite[data-tier="elite"] .player-card-shell-mount::after {
+  animation: player-card-idle-elite-diagonal-glint 6.2s ease-in-out infinite;
+}
+
+.player-card-shot.is-crop-saved {
+  animation: player-card-crop-pulse 180ms ease-out 1;
+}
+
+/* —— Hover sinérgico por tier (glow/idle; lift → Motion) —— */
+@media (hover: hover) and (pointer: fine) {
+  .player-card[data-tier="rookie"]:not(.player-card--inner):hover {
+    box-shadow:
+      0 18px 40px color-mix(in oklab, #03140f 55%, transparent),
+      0 0 14px color-mix(in oklab, var(--card-glow) 38%, transparent);
+  }
+
+  .player-card[data-tier="club"]:not(.player-card--inner):hover {
+    animation: player-card-idle-club-turf-shadow 1.6s ease-in-out infinite;
+  }
+
+  .player-card[data-tier="club"]:not(.player-card--inner):hover .player-card-glow {
+    animation: player-card-idle-club-glow-drift 1.6s ease-in-out infinite;
+  }
+
+  .player-card[data-tier="oro"]:not(.player-card--inner):hover {
+    animation: player-card-idle-oro-halo 2.4s ease-in-out infinite;
+  }
+
+  .player-card[data-tier="oro"]:not(.player-card--inner):hover::after {
+    animation:
+      player-card-idle-oro-border-shimmer 3.2s ease-in-out infinite,
+      player-card-hover-oro-burst 0.95s ease-in-out infinite;
+  }
+
+  .player-card[data-level="high"]:not(.player-card--inner):not([data-tier="oro"]):hover {
+    box-shadow:
+      0 22px 44px color-mix(in oklab, #03140f 50%, transparent),
+      0 0 22px color-mix(in oklab, #fca5a5 22%, transparent);
+  }
+
+  .player-card-wrap--elite[data-tier="elite"]:hover {
+    filter:
+      drop-shadow(0 26px 52px color-mix(in oklab, #03140f 48%, transparent))
+      drop-shadow(0 0 56px color-mix(in oklab, var(--card-gold) 68%, transparent));
+  }
+
+  .player-card-wrap--elite[data-tier="elite"]:hover .player-card-shell {
+    animation: player-card-idle-elite-hex-pulse 1.75s ease-in-out infinite;
+  }
+
+  .player-card-wrap--elite[data-tier="elite"]:hover .player-card-shell::before {
+    opacity: 0.62;
+    animation: player-card-hover-elite-orbit 4.5s linear infinite;
+  }
+
+  .player-card-wrap--elite[data-tier="elite"]:hover .player-card-shell::after {
+    animation:
+      player-card-idle-elite-diagonal-glint 3.8s ease-in-out infinite,
+      player-card-hover-elite-glint 0.9s ease-in-out infinite;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .player-card,
+  .player-card-wrap--elite,
+  .player-card-shell,
+  .player-card-glow {
+    transition: none;
+  }
+
+  .player-card[data-tier="rookie"]:not(.player-card--inner),
+  .player-card[data-tier="club"]:not(.player-card--inner),
+  .player-card[data-tier="club"]:not(.player-card--inner) .player-card-glow,
+  .player-card[data-tier="oro"]:not(.player-card--inner),
+  .player-card[data-tier="oro"]:not(.player-card--inner)::after,
+  .player-card-wrap--elite[data-tier="elite"] .player-card-shell,
+  .player-card-wrap--elite[data-tier="elite"] .player-card-shell::before,
+  .player-card-wrap--elite[data-tier="elite"] .player-card-shell::after,
+  .player-card-shell-mount,
+  .player-card-shell-mount::before,
+  .player-card-shell-mount::after,
+  .player-card[data-tier="oro"].player-card-mount:not(.player-card--inner),
+  .player-card[data-tier="oro"].player-card-mount:not(.player-card--inner)::after,
+  .player-card-shot.is-crop-saved {
+    animation: none;
+  }
+
+  .player-card-wrap--elite[data-tier="elite"] .player-card-shell {
+    filter: none;
+    box-shadow: 0 0 32px color-mix(in oklab, var(--card-gold) 48%, transparent);
+  }
+
+  .player-card[data-tier="oro"]:not(.player-card--inner)::after,
+  .player-card-wrap--elite[data-tier="elite"] .player-card-shell::before,
+  .player-card-wrap--elite[data-tier="elite"] .player-card-shell::after {
+    opacity: 0;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .player-card[data-tier="rookie"]:not(.player-card--inner):hover,
+    .player-card[data-tier="club"]:not(.player-card--inner):hover,
+    .player-card[data-tier="club"]:not(.player-card--inner):hover .player-card-glow,
+    .player-card[data-tier="oro"]:not(.player-card--inner):hover,
+    .player-card[data-tier="oro"]:not(.player-card--inner):hover::after,
+    .player-card-wrap--elite[data-tier="elite"]:hover,
+    .player-card-wrap--elite[data-tier="elite"]:hover .player-card-shell,
+    .player-card-wrap--elite[data-tier="elite"]:hover .player-card-shell::before,
+    .player-card-wrap--elite[data-tier="elite"]:hover .player-card-shell::after {
+      animation: none;
+    }
+  }
+}
+
+/* —— Onboarding / ficha (compartido con perfil) —— */
+.ficha-step {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.ficha-progress {
+  display: flex;
+  gap: 0.35rem;
+  margin: 0;
+}
+
+.ficha-progress span {
+  flex: 1;
+  height: 0.28rem;
+  background: color-mix(in oklab, var(--ink) 14%, transparent);
+}
+
+.ficha-progress span.is-on {
+  background: var(--flood);
+}
+
+.ficha-kicker {
+  margin: 0;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--ink) 62%, transparent);
+}
+
+.ficha-choice-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(6.8rem, 1fr));
+  gap: 0.45rem;
+}
+
+.ficha-choice {
+  min-height: 2.75rem;
+  padding: 0.45rem 0.55rem;
+  border: 1px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.ficha-choice.is-on {
+  background: var(--flood);
+  box-shadow: inset 0 -2px 0 var(--ink);
+}
+
+.ficha-choice:focus-visible {
+  outline: 3px solid var(--flood);
+  outline-offset: 2px;
+}
+
+.ficha-zoom {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.ficha-zoom .field-help {
+  margin-top: 0.15rem;
+}
+
+.ficha-zoom input[type="range"] {
+  width: 100%;
+  min-height: 2.75rem;
+  accent-color: var(--flood);
+}
+
+.ficha-photo {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.ficha-photo input[type="file"] {
+  min-height: 2.75rem;
+}
+
+.ficha-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-top: 0.35rem;
+}
+
+.ficha-legend {
+  margin: 0.65rem 0 0;
+  font-size: 0.88rem;
+  color: color-mix(in oklab, var(--ink) 70%, transparent);
+}
+
+.ficha-step fieldset,
+.ficha-extras fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.ficha-step legend,
+.ficha-extras legend {
+  font-weight: 650;
+}
+
+.ficha-extras {
+  display: grid;
+  gap: 1.25rem;
+  margin-top: 0;
+}
+
+.ficha-extras details {
+  border-top: 1px solid color-mix(in oklab, var(--ink) 16%, transparent);
+  padding-top: 0.85rem;
+}
+
+.ficha-extras summary {
+  cursor: pointer;
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.ficha-extras summary:focus-visible {
+  outline: 3px solid var(--flood);
+  outline-offset: 2px;
+}
+
+.player-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.player-chip img {
+  width: 1.7rem;
+  height: 1.7rem;
+  object-fit: cover;
+  background: var(--mist);
+}

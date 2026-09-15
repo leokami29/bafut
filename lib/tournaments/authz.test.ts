@@ -131,6 +131,13 @@ describe("resolveVenueTournamentsGate", () => {
 });
 
 describe("venueTournamentsGateCopy", () => {
+  it("muestra copy Exclusivo en el gate no_premium", () => {
+    const copy = venueTournamentsGateCopy("no_premium");
+    expect(copy.title).toBe("Se necesita Exclusivo");
+    expect(copy.body).toContain("plan Exclusivo");
+    expect(copy.ctaPremium).toBe(true);
+  });
+
   it("incluye CTA premium solo en no_premium y CTA flags en flag_off", () => {
     expect(venueTournamentsGateCopy("no_premium").ctaPremium).toBe(true);
     expect(venueTournamentsGateCopy("flag_off").ctaFlags).toBe(true);

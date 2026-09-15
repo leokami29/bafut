@@ -25,6 +25,7 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
+  transpilePackages: ["@bafut/venue-ops"],
   images: {
     remotePatterns: [
       {

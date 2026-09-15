@@ -417,7 +417,7 @@ describe("LiveMatchBoard — EMPIRICAL CHALLENGE SUITE", () => {
       expect(html).toContain("Los Leones");
       expect(html).toContain("live-board-rival-crest");
       expect(html).toContain("RIVAL COMPLETO (7)");
-      expect(html).toContain("⚔");
+      expect(html).toContain("VS");
       expect(html).toContain("live-board-center-vs");
     });
 

@@ -23,7 +23,7 @@ const ENV_BY_KEY = FEATURE_FLAG_ENV;
 /**
  * Default si no hay env ni fila DB.
  * Excepción: `venue_booking` y `venue_tournaments` arrancan OFF (kill-switch).
- * Torneos: además del flag, cada cancha necesita Premium activo
+ * Torneos: además del flag, cada cancha necesita Exclusivo activo
  * (`venueHasActivePremium` / `canManageVenueTournaments`).
  */
 const DEFAULT_BY_KEY: Record<FeatureFlagKey, boolean> = {

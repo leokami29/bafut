@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { siteUrl } from "@/lib/env";
 import { VenueOwnerCta } from "@/components/VenueOwnerCta";
+import { adminAppUrl } from "@/lib/admin-app-url";
 import { whatsappChatHref } from "@/lib/whatsapp-contact";
 
 function ownerWhatsappHref(venueName: string, venueSlug: string) {
@@ -102,9 +103,9 @@ export function VenueOwnerBlock({
         </div>
       ) : isVenueOwner ? (
         <div className="venue-owner-actions">
-          <Link className="btn-flood" href={`/canchas/${venueSlug}/admin`}>
+          <a className="btn-flood" href={adminAppUrl(`/canchas/${venueSlug}/admin`)}>
             Ir a mi panel
-          </Link>
+          </a>
         </div>
       ) : claimPending ? null : (
         wa || mail ? (

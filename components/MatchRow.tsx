@@ -28,12 +28,12 @@ export function MatchRow({ match }: { match: MatchDetail }) {
   if (isChallenge) {
     const sideBOpen = openSideBSlotCount(match);
     phrase = match.host_team_name
-      ? `⚔️ ${match.host_team_name} busca rival`
-      : "⚔️ Se busca rival completo";
+      ? `${match.host_team_name} busca rival`
+      : "Se busca rival completo";
     badgeTag = sideBOpen > 0 ? `Rival ${sideBOpen} cupos` : "Reto pactado";
   } else if (displayStatus === "bench_only") {
     const benchOpen = openBenchSlotCount(match);
-    phrase = "🔄 Cupos en rotación / banca";
+    phrase = "Cupos en rotación / banca";
     badgeTag = `${benchOpen} en banca`;
   }
 

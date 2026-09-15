@@ -8,7 +8,7 @@ import { MatchFormationSection } from "@/components/MatchFormationSection";
 import { MatchHashScroll } from "@/components/MatchHashScroll";
 import { MatchSeekerCta } from "@/components/MatchSeekerCta";
 import { AcceptChallengeCard } from "@/components/AcceptChallengeCard";
-import { HostShareBanner, ShareWhatsApp } from "@/components/ShareWhatsApp";
+import { ShareWhatsApp } from "@/components/ShareWhatsApp";
 import { SlotList } from "@/components/SlotList";
 import { VenueMapLazy } from "@/components/VenueMapLazy";
 import { getHostMatchCount, getMatchByCode, getProfile, getSessionUserId, getUpcomingMatches } from "@/lib/data";
@@ -58,15 +58,24 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     hole,
   });
   const url = absoluteUrl(`/p/${match.share_code}`);
+  const ogImage = absoluteUrl(`/p/${match.share_code}/opengraph-image`);
   const ogTitle = fullTitle(title);
   const indexable = matchIsIndexable(match.status, match.starts_at);
+  const images = [
+    {
+      url: ogImage,
+      width: 1200,
+      height: 630,
+      alt: title,
+    },
+  ];
   return {
     title,
     description,
     robots: indexable ? robotsIndex : robotsNoIndex,
     alternates: { canonical: url },
-    openGraph: defaultOg({ title: ogTitle, description, url }),
-    twitter: defaultTwitter({ title: ogTitle, description }),
+    openGraph: defaultOg({ title: ogTitle, description, url, images }),
+    twitter: defaultTwitter({ title: ogTitle, description, images }),
   };
 }
 
@@ -136,10 +145,10 @@ export default async function PartidoPage({ params }: Props) {
     ? matchStatusLabel.cancelled
     : isChallenge
       ? open > 0
-        ? "⚔️ Reto Abierto"
-        : "⚔️ Reto Pactado"
+        ? "Reto abierto"
+        : "Reto pactado"
       : displayStatus === "bench_only"
-        ? "🔄 Solo Rotación"
+        ? "Solo rotación"
         : open > 0
           ? "Abierto"
           : "Completo";
@@ -155,8 +164,8 @@ export default async function PartidoPage({ params }: Props) {
           : "is-full";
 
   const challengeHeading = match.host_team_name
-    ? `⚔️ ${match.host_team_name} busca rival`
-    : `⚔️ Se busca rival (${formatLabel[match.format as keyof typeof formatLabel] ?? match.format})`;
+    ? `${match.host_team_name} busca rival`
+    : `Se busca rival (${formatLabel[match.format as keyof typeof formatLabel] ?? match.format})`;
 
   const headingText = cancelled
     ? "Partido cancelado"
@@ -224,11 +233,10 @@ export default async function PartidoPage({ params }: Props) {
             <MatchSeekerCta open={open} canOpenRival={canOpenRival} cancelled={cancelled} />
           ) : null}
 
-          {isHost && !cancelled && open > 0 ? <HostShareBanner {...shareProps} /> : null}
           {!cancelled ? (
             <ShareWhatsApp
               {...shareProps}
-              hidePrimary={isHost && open > 0}
+              highlight={isHost && open > 0}
               sticky={isHost && open > 0}
             />
           ) : null}

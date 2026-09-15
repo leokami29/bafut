@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import {
   CITY_COOKIE,
   DEFAULT_CITY_SLUG,
+  FORMATS,
   GENDERS,
   LEVELS,
   POSITIONS,
@@ -637,7 +638,13 @@ export async function claimSlotAction(formData: FormData): Promise<MutationActio
   const { supabase, userId } = await requireUserId(shareCode ? `/p/${shareCode}` : "/partidos");
 
   const profile = await (async () => {
-    const { data, error } = await supabase.from("profiles").select("display_name").eq("id", userId).maybeSingle();
+    const { data, error } = await supabase
+      .from("profiles")
+      .select(
+        "display_name, avatar_path, preferred_sport, preferred_format, preferred_position, terms_accepted_at",
+      )
+      .eq("id", userId)
+      .maybeSingle();
     if (error || !data) return null;
     const { data: contact } = await supabase
       .from("profile_contacts")
@@ -845,6 +852,14 @@ export async function updateProfileAction(formData: FormData): Promise<MutationA
   }
 
   const preferredSport = asOne(formData.get("preferred_sport"), SPORTS, "futbol") as Sport;
+  let preferredFormat = asOne(
+    formData.get("preferred_format"),
+    FORMATS,
+    defaultFormatForSport(preferredSport),
+  ) as Format;
+  if (!formatAllowedForSport(preferredSport, preferredFormat)) {
+    preferredFormat = defaultFormatForSport(preferredSport);
+  }
   let preferredPosition = asOne(formData.get("preferred_position"), POSITIONS, "any") as Position;
   if (!positionAllowedForSport(preferredSport, preferredPosition)) {
     preferredPosition = "any";
@@ -857,6 +872,7 @@ export async function updateProfileAction(formData: FormData): Promise<MutationA
       display_name: displayName,
       city_id: city?.id ?? null,
       preferred_sport: preferredSport,
+      preferred_format: preferredFormat,
       preferred_position: preferredPosition,
       level: asOne(formData.get("level"), LEVELS, "mid"),
       updated_at: new Date().toISOString(),

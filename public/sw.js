@@ -1,4 +1,4 @@
-const STATIC_CACHE = "bafut-static-v2";
+const STATIC_CACHE = "bafut-static-v3";
 const STATIC_ASSETS = ["/icon-192.png", "/icon-512.png", "/manifest.webmanifest"];
 
 self.addEventListener("install", (event) => {
@@ -20,14 +20,6 @@ self.addEventListener("activate", (event) => {
     ).then(() => self.clients.claim()),
   );
 });
-
-function isPrivatePath(pathname) {
-  return (
-    pathname.startsWith("/perfil") ||
-    pathname.startsWith("/entrar") ||
-    pathname.startsWith("/auth")
-  );
-}
 
 self.addEventListener("push", (event) => {
   let data = { title: "BaFut", body: "Hay un partido nuevo", url: "/partidos" };
@@ -89,30 +81,24 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Nunca cachear HTML con sesión / rutas privadas.
-  if (request.mode === "navigate" || request.headers.get("accept")?.includes("text/html")) {
-    if (isPrivatePath(url.pathname)) {
-      event.respondWith(fetch(request));
-      return;
-    }
-    event.respondWith(
-      fetch(request)
-        .then((response) => response)
-        .catch(() => caches.match("/") || Response.error()),
-    );
+  // Solo iconos/manifesto. Interceptar RSC o /_next rompe acciones del servidor
+  // (subida de foto) y dispara "Failed to convert value to Response".
+  if (!STATIC_ASSETS.includes(url.pathname)) {
     return;
   }
 
-  // Network-first para assets públicos; fallback a cache.
   event.respondWith(
     fetch(request)
       .then((response) => {
-        const copy = response.clone();
-        if (response.ok && (url.pathname.startsWith("/icon") || url.pathname.endsWith(".css") || url.pathname.endsWith(".js"))) {
+        if (response.ok) {
+          const copy = response.clone();
           caches.open(STATIC_CACHE).then((cache) => cache.put(request, copy));
         }
         return response;
       })
-      .catch(() => caches.match(request)),
+      .catch(async () => {
+        const cached = await caches.match(request);
+        return cached || Response.error();
+      }),
   );
 });

@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { AUTH_NEXT_COOKIE } from "@/lib/constants";
 import { isNonCanonicalOrigin, siteUrl } from "@/lib/env";
+import { isProfileComplete } from "@/lib/profile";
 import { createClient } from "@/lib/supabase/server";
 import { safeNextPath } from "@/lib/safe-next";
 
@@ -61,6 +62,34 @@ export async function GET(request: Request) {
     const entrar = new URL("/entrar", origin);
     entrar.searchParams.set("next", safeNext);
     return clearNextCookie(NextResponse.redirect(entrar));
+  }
+
+  if (type !== "recovery") {
+    const {
+      data: { user: sessionUser },
+    } = await supabase.auth.getUser();
+    if (sessionUser) {
+      const [{ data: profile }, { data: contact }] = await Promise.all([
+        supabase
+          .from("profiles")
+          .select(
+            "display_name, avatar_path, preferred_sport, preferred_format, preferred_position, terms_accepted_at",
+          )
+          .eq("id", sessionUser.id)
+          .maybeSingle(),
+        supabase.from("profile_contacts").select("whatsapp").eq("user_id", sessionUser.id).maybeSingle(),
+      ]);
+      if (
+        !profile ||
+        !isProfileComplete({ ...profile, whatsapp: contact?.whatsapp ?? null }, sessionUser.email)
+      ) {
+        const perfil = new URL("/perfil", origin);
+        if (safeNext && safeNext !== "/" && safeNext !== "/perfil") {
+          perfil.searchParams.set("next", safeNext);
+        }
+        return clearNextCookie(NextResponse.redirect(perfil));
+      }
+    }
   }
 
   return clearNextCookie(NextResponse.redirect(new URL(safeNext, origin)));

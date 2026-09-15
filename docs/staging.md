@@ -54,7 +54,7 @@ Prod sigue con las keys de `pwbyxumeozgzkupppxds` y `https://bafut.macuttech.com
 
 1. Escribí SQL en `supabase/migrations/` (orden por timestamp del nombre).
 2. Aplicá en **staging** (dashboard SQL, `supabase db push` linkeado a staging, o CLI local).
-3. Probá RLS, claims, premium, cron, etc. contra staging.
+3. Probá RLS, claims, Exclusivo, cron, etc. contra staging.
 4. Solo entonces aplicá las mismas migraciones en **prod**.
 5. Regenerá tipos si hace falta:
 

@@ -161,19 +161,19 @@ export function venueTournamentsGateCopy(reason: VenueTournamentsGateReason): {
     case "flag_off":
       return {
         title: "Torneos desactivados",
-        body: "El módulo de torneos está apagado a nivel plataforma (flag venue_tournaments). Un admin de BaFut (billing/super) puede activarlo en Mesa → Flags. Tener Premium solo no alcanza mientras el flag esté OFF.",
+        body: "El módulo de torneos está apagado a nivel plataforma (flag venue_tournaments). Un admin de BaFut (billing/super) puede activarlo en Mesa → Flags. Tener Exclusivo solo no alcanza mientras el flag esté OFF.",
         ctaFlags: true,
       };
     case "no_premium":
       return {
-        title: "Se necesita Premium",
-        body: "Los torneos son una función del plan Premium activo. Activá o renová Premium para crear llaves, inscribir equipos y cargar resultados.",
+        title: "Se necesita Exclusivo",
+        body: "Los torneos son una función del plan Exclusivo activo. Activá o renová Exclusivo para crear llaves, inscribir equipos y cargar resultados.",
         ctaPremium: true,
       };
     case "ok":
       return {
         title: "Torneos",
-        body: "Organizá campeonatos premium con llaves y actas.",
+        body: "Organizá campeonatos exclusivos con llaves y actas.",
       };
   }
 }

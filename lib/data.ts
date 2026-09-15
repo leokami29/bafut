@@ -2,9 +2,10 @@ import { cache } from "react";
 import { cookies } from "next/headers";
 import { CITY_COOKIE, DEFAULT_CITY_SLUG } from "@/lib/constants";
 import { mapDayOccupancyRpcRow } from "@/lib/occupancy";
+import { statsFromActivity, type PlayerCardStats } from "@/lib/player-card";
 import { createClient } from "@/lib/supabase/server";
 import { tryCreateServiceClient } from "@/lib/supabase/admin";
-import type { MatchDetail, ProfileWithContact, VenueWithPremium } from "@/lib/types";
+import type { MatchDetail, Profile, ProfileWithContact, VenueWithPremium } from "@/lib/types";
 import { venueHasActivePremium } from "@/lib/venue-premium";
 
 export type {
@@ -24,12 +25,12 @@ const matchSelect = `
   *,
   venues (*),
   cities (*),
-  profiles!host_id (id, display_name),
+  profiles!host_id (id, display_name, avatar_path),
   match_slots (
     *,
     slot_claims (
       *,
-      profiles (id, display_name)
+      profiles (id, display_name, avatar_path)
     )
   )
 `;
@@ -39,12 +40,12 @@ const matchDetailSelect = `
   *,
   venues (*),
   cities (*),
-  profiles!host_id (id, display_name, level_feedback_count, level_ok_count),
+  profiles!host_id (id, display_name, avatar_path, level_feedback_count, level_ok_count),
   match_slots (
     *,
     slot_claims (
       *,
-      profiles (id, display_name)
+      profiles (id, display_name, avatar_path)
     )
   )
 `;
@@ -204,6 +205,87 @@ export const getProfile = cache(async (userId: string): Promise<ProfileWithConta
     return null;
   }
   return { ...profile, whatsapp: contact?.whatsapp ?? null };
+});
+
+export type PublicPlayerCard = {
+  profile: Profile;
+  cityName: string | null;
+  stats: PlayerCardStats;
+};
+
+/** Carta pública por código corto — sin WhatsApp ni contacto. */
+export const getPublicPlayerCardByCode = cache(async (cardCode: string): Promise<PublicPlayerCard | null> => {
+  const supabase = await createClient();
+  const { data: profile, error } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("card_share_code", cardCode)
+    .maybeSingle();
+  if (error) {
+    throw error;
+  }
+  if (!profile) {
+    return null;
+  }
+
+  const [stats, cityResult] = await Promise.all([
+    getPlayerCardStats(profile.id),
+    profile.city_id
+      ? supabase.from("cities").select("name").eq("id", profile.city_id).maybeSingle()
+      : Promise.resolve({ data: null, error: null }),
+  ]);
+  if (cityResult.error) {
+    throw cityResult.error;
+  }
+
+  return {
+    profile: profile as Profile,
+    cityName: cityResult.data?.name ?? null,
+    stats,
+  };
+});
+
+function matchFromClaim(row: { matches: unknown }) {
+  const match = Array.isArray(row.matches) ? row.matches[0] : row.matches;
+  return match as { starts_at?: string; status?: string } | null;
+}
+
+export const getPlayerCardStats = cache(async (userId: string): Promise<PlayerCardStats> => {
+  const supabase = await createClient();
+  const now = new Date().toISOString();
+  const [{ data: claims }, { data: hosted }, { data: counters }] = await Promise.all([
+    supabase
+      .from("slot_claims")
+      .select("status, matches!inner(starts_at, status)")
+      .eq("player_id", userId),
+    supabase.from("matches").select("starts_at, status").eq("host_id", userId),
+    supabase
+      .from("profiles")
+      .select("level_ok_count, level_feedback_count")
+      .eq("id", userId)
+      .maybeSingle(),
+  ]);
+
+  const accepted = (claims ?? []).filter((claim) => claim.status === "accepted");
+  const decided = (claims ?? []).filter(
+    (claim) => claim.status === "accepted" || claim.status === "rejected",
+  );
+  const played = accepted.filter((claim) => {
+    const match = matchFromClaim(claim);
+    return Boolean(match?.starts_at && match.starts_at < now && match.status !== "cancelled");
+  }).length;
+  const hostedPlayed = (hosted ?? []).filter(
+    (match) => match.starts_at < now && match.status !== "cancelled",
+  ).length;
+
+  return statsFromActivity({
+    played,
+    hosted: hostedPlayed,
+    confirmed: accepted.length,
+    decidedClaims: decided.length,
+    levelOk: counters?.level_ok_count ?? 0,
+    levelFeedback: counters?.level_feedback_count ?? 0,
+  });
 });
 
 export type HostPendingInbox = {

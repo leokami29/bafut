@@ -35,7 +35,7 @@ export default function PrivacidadPage() {
     <LegalDocShell
       eyebrow="BaFut · Legal"
       title="Política de privacidad"
-      updated="7 de septiembre de 2026"
+      updated="15 de septiembre de 2026"
       sibling="terminos"
     >
       <p>
@@ -56,8 +56,12 @@ export default function PrivacidadPage() {
       <h2>2. Datos que tratamos</h2>
       <ul>
         <li>
-          <strong>Cuenta y perfil:</strong> correo, nombre para mostrar, ciudad, nivel
-          declarado, preferencias básicas.
+          <strong>Cuenta y ficha de jugador:</strong> correo, nombre para mostrar, foto de
+          perfil, ciudad, barrio, deporte y formato preferidos, posiciones, pierna hábil,
+          nivel declarado, días y horarios preferidos, género, fecha de nacimiento (en la
+          carta se muestra la edad), altura, peso, si cobrás por jugar, y la aceptación de
+          términos. WhatsApp queda en un contacto privado: solo lo ve la otra parte cuando
+          confirman un cupo.
         </li>
         <li>
           <strong>Uso del producto:</strong> partidos publicados, pedidos de cupo,
@@ -80,7 +84,7 @@ export default function PrivacidadPage() {
           controles de la app (p. ej. URL firmada).
         </li>
         <li>
-          <strong>Solicitud premium / comprobantes:</strong> plan solicitado, referencia de
+          <strong>Solicitud Exclusivo / comprobantes:</strong> plan solicitado, referencia de
           pago, imagen o archivo del comprobante y decisión administrativa. Los
           comprobantes no se publican en el directorio; se usan para validar el pago.
         </li>
@@ -99,10 +103,11 @@ export default function PrivacidadPage() {
 
       <h2>3. Finalidades</h2>
       <ul>
+        <li>Mostrar tu ficha de jugador (carta) a otros usuarios en pedidos de cupo y partidos.</li>
         <li>Prestar y mejorar el servicio de partidos, cupos, reservas y directorio de canchas.</li>
         <li>
           Autenticar usuarios, prevenir abuso, fraude en reclamos y uso indebido de
-          comprobantes (premium o reservas).
+          comprobantes (Exclusivo o reservas).
         </li>
         <li>
           Verificar titularidad o autorización sobre una ficha de cancha y gestionar el
@@ -113,7 +118,7 @@ export default function PrivacidadPage() {
           custodia el pago del alquiler).
         </li>
         <li>
-          Revisar solicitudes de planes de cancha (verificada / premium) y emitir o
+          Revisar solicitudes de planes de cancha (verificada / Exclusivo) y emitir o
           asociar comprobantes/facturas internas cuando corresponda.
         </li>
         <li>
@@ -126,11 +131,11 @@ export default function PrivacidadPage() {
       <h2>4. Base del tratamiento y autorización</h2>
       <p>
         Tratamos datos con base en la ejecución del servicio que solicitás, el
-        consentimiento cuando marcás la aceptación en formularios (reclamar cancha,
-        solicitud premium, reservar u otros), el interés legítimo de seguridad/moderación y las
+        consentimiento cuando marcás la aceptación en formularios (armar ficha, reclamar cancha,
+        solicitud Exclusivo, reservar u otros), el interés legítimo de seguridad/moderación y las
         obligaciones legales. Podés negar o retirar el consentimiento cuando la ley lo
         permita; en ese caso es posible que no podamos completar el reclamo, la reserva o la
-        solicitud premium.
+        solicitud Exclusivo.
       </p>
 
       <h2>5. Encargados y transferencias</h2>
@@ -145,7 +150,7 @@ export default function PrivacidadPage() {
       <h2>6. Conservación</h2>
       <p>
         Conservamos los datos mientras la cuenta esté activa y el tiempo adicional
-        necesario para reclamos, auditoría de pagos/comprobantes (premium y reservas), defensa
+        necesario para reclamos, auditoría de pagos/comprobantes (Exclusivo y reservas), defensa
         legal y retención mínima exigida por ley. Los comprobantes se retienen el plazo
         razonable para conciliación y prevención de fraude; después pueden eliminarse o
         anonimizarse. Si una cancha se retira del directorio activo, los historiales

@@ -443,7 +443,7 @@ describe("LiveMatchBoard — Tactical Dual Board & WCAG 2.2 AA Accessibility Sui
 
       expect(html).toContain("live-board-rival-crest");
       expect(html).toContain("RIVAL COMPLETO (5)");
-      expect(html).toContain("⚔");
+      expect(html).toContain("VS");
     });
 
     it("TS5.03 (Mode open_slots): Side B renders individual rival spots with is-rival-open", () => {

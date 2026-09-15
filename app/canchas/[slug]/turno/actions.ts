@@ -243,7 +243,6 @@ export async function submitVenueBookingAction(
   revalidatePath(nextPath);
   revalidatePath(`/canchas/${slug}`);
   revalidatePath("/perfil/turnos");
-  revalidatePath(`/canchas/${slug}/admin/turnos`);
 
   return {
     ok: true,
@@ -273,7 +272,6 @@ export async function cancelVenueBookingAction(
   if (slug) {
     revalidatePath(`/canchas/${slug}`);
     revalidatePath(`/canchas/${slug}/turno`);
-    revalidatePath(`/canchas/${slug}/admin/turnos`);
   }
   return { ok: true };
 }

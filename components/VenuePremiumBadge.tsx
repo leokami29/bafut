@@ -1,9 +1,12 @@
-/** Badge tipográfico Premium (texto + color flood — no solo color). */
+/** Badge tipográfico Exclusivo (texto + color flood — no solo color). */
+import { planLabel } from "@/lib/plan-labels";
+
 export function VenuePremiumBadge() {
+  const label = planLabel("premium");
   return (
     <span
       className="venue-premium-badge"
-      title="Cancha con plan Premium activo"
+      title={`Cancha con plan ${label} activo`}
     >
       <svg
         width="14"
@@ -17,7 +20,7 @@ export function VenuePremiumBadge() {
           fill="currentColor"
         />
       </svg>
-      Premium
+      {label}
     </span>
   );
 }

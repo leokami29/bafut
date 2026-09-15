@@ -17,6 +17,7 @@ import {
   type DeclaredLevel,
 } from "@/lib/level-trust";
 import { slotIsOpen, type SlotWithClaims } from "@/lib/types";
+import { profileAvatarPublicUrl } from "@/lib/profile-photos";
 import { whatsappChatHref } from "@/lib/whatsapp-contact";
 
 type ClaimState = { error?: string; ok?: boolean } | null;
@@ -56,8 +57,8 @@ export function SlotList({
   const sideB = ordered.filter((slot) => slot.side === "b");
 
   const rotationBanner = rotationRule ? (
-    <p className="slot-rotation-rule" style={{ fontSize: "0.9rem", color: "#a8e6cf", marginBottom: "1rem" }}>
-      ⏱️ <strong>Pacto de juego:</strong> {rotationRule}
+    <p className="slot-rotation-rule">
+      <strong>Pacto de juego:</strong> {rotationRule}
     </p>
   ) : null;
 
@@ -226,27 +227,22 @@ function SlotRow({
         <p className="slot-index">
           Cupo {index + 1}
           {isBench ? (
-            <span
-              className="bench-badge"
-              style={{
-                marginLeft: "0.5rem",
-                fontSize: "0.75rem",
-                background: "rgba(168, 230, 207, 0.2)",
-                color: "#a8e6cf",
-                padding: "2px 6px",
-                borderRadius: "4px",
-                border: "1px solid rgba(168, 230, 207, 0.4)",
-              }}
-            >
-              🔄 Rotación / Banca
-            </span>
+            <span className="bench-badge">Rotación / Banca</span>
           ) : null}
         </p>
         <p className="slot-need">
           {positionLabel[slot.position as Position] ?? slot.position} ·{" "}
           {levelLabel[slot.level as Level] ?? slot.level}
         </p>
-        {accepted ? <p className="slot-filled">Entra {accepted.profiles?.display_name}</p> : null}
+        {accepted ? (
+          <p className="slot-filled player-chip">
+            {accepted.profiles?.avatar_path ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={profileAvatarPublicUrl(accepted.profiles.avatar_path)} alt="" />
+            ) : null}
+            <span>Entra {accepted.profiles?.display_name}</span>
+          </p>
+        ) : null}
         {mine && !accepted ? (
           <p className="slot-mine">
             {mine.status === "pending"
@@ -333,7 +329,13 @@ function SlotRow({
               const claimMismatch = isMismatch(slot.level, claim.declared_level);
               return (
                 <li key={claim.id}>
-                  <span className="claim-name">{claim.profiles?.display_name ?? "Jugador"}</span>
+                  <span className="claim-name player-chip">
+                    {claim.profiles?.avatar_path ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={profileAvatarPublicUrl(claim.profiles.avatar_path)} alt="" />
+                    ) : null}
+                    {claim.profiles?.display_name ?? "Jugador"}
+                  </span>
                   <p className="claim-level-meta">
                     declarado {declaredLabel} · hueco {slotLabel}
                     {claimMismatch ? " · si no cierra, rechaza" : ""}

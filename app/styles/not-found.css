@@ -1,0 +1,317 @@
+/* 404 — cancha animada con los 5 deportes */
+
+.nf-page {
+  --nf-ink: var(--ink);
+  --nf-turf: var(--turf);
+  --nf-deep: var(--turf-deep);
+  --nf-chalk: var(--chalk);
+  --nf-flood: var(--flood);
+  --nf-paper: var(--paper);
+  min-height: min(100dvh, 56rem);
+  display: grid;
+  place-items: center;
+  padding: 2rem 1.25rem 3rem;
+  background:
+    radial-gradient(ellipse 80% 55% at 50% 18%, color-mix(in oklab, var(--nf-flood) 28%, transparent), transparent 70%),
+    linear-gradient(165deg, var(--nf-deep) 0%, var(--nf-turf) 48%, color-mix(in oklab, var(--nf-turf) 70%, #041a12) 100%);
+  color: var(--nf-chalk);
+  overflow: clip;
+}
+
+.nf-stage {
+  width: min(100%, 42rem);
+  display: grid;
+  gap: 1rem;
+  justify-items: center;
+  text-align: center;
+}
+
+.nf-brand {
+  margin: 0;
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(1.75rem, 5vw, 2.75rem);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--nf-flood);
+  text-shadow: 0 2px 0 color-mix(in oklab, var(--nf-deep) 55%, transparent);
+  animation: nf-brand-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.nf-scoreboard {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-top: 0.25rem;
+  animation: nf-score-in 0.85s 0.08s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.nf-score-digit {
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(4.5rem, 18vw, 7.5rem);
+  font-weight: 800;
+  line-height: 0.85;
+  color: var(--nf-paper);
+  text-shadow:
+    0 3px 0 color-mix(in oklab, var(--nf-deep) 70%, transparent),
+    0 0 40px color-mix(in oklab, var(--nf-chalk) 25%, transparent);
+}
+
+.nf-score-ball {
+  width: clamp(1.6rem, 5vw, 2.4rem);
+  height: clamp(1.6rem, 5vw, 2.4rem);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 30%, #fff8e8, var(--nf-flood) 45%, #c99412 100%);
+  box-shadow:
+    inset 0 -4px 8px rgba(0, 0, 0, 0.25),
+    0 0 0 2px color-mix(in oklab, var(--nf-deep) 35%, transparent);
+  animation: nf-ball-spin 2.8s linear infinite;
+}
+
+.nf-title {
+  margin: 0.35rem 0 0;
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(1.55rem, 4.5vw, 2.35rem);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--nf-paper);
+  animation: nf-copy-in 0.7s 0.16s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.nf-lede {
+  margin: 0;
+  max-width: 32rem;
+  font-family: var(--font-sans), sans-serif;
+  font-size: 1.05rem;
+  line-height: 1.45;
+  color: color-mix(in oklab, var(--nf-chalk) 88%, white);
+  animation: nf-copy-in 0.7s 0.22s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.nf-pitch {
+  position: relative;
+  width: min(100%, 36rem);
+  height: clamp(13rem, 42vw, 17rem);
+  margin: 0.75rem 0 0.25rem;
+  animation: nf-copy-in 0.8s 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.nf-pitch-field {
+  position: absolute;
+  inset: 12% 4% 18%;
+  border: 2px solid color-mix(in oklab, var(--nf-chalk) 55%, transparent);
+  border-radius: 1.1rem;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      color-mix(in oklab, var(--nf-turf) 88%, #0a5a40) 0 12%,
+      color-mix(in oklab, var(--nf-turf) 78%, #084c36) 12% 24%
+    );
+  box-shadow:
+    inset 0 0 0 1px color-mix(in oklab, var(--nf-deep) 25%, transparent),
+    0 18px 40px color-mix(in oklab, var(--nf-deep) 45%, transparent);
+  overflow: hidden;
+}
+
+.nf-pitch-line-mid {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: color-mix(in oklab, var(--nf-chalk) 50%, transparent);
+  transform: translateX(-50%);
+}
+
+.nf-pitch-circle {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 4.5rem;
+  height: 4.5rem;
+  border: 2px solid color-mix(in oklab, var(--nf-chalk) 45%, transparent);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.nf-pitch-glow {
+  position: absolute;
+  inset: auto 20% -30% 20%;
+  height: 55%;
+  background: radial-gradient(ellipse, color-mix(in oklab, var(--nf-flood) 35%, transparent), transparent 70%);
+  filter: blur(8px);
+  animation: nf-glow-pulse 3.2s ease-in-out infinite;
+}
+
+.nf-sports {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  inset: 0;
+}
+
+.nf-sport {
+  position: absolute;
+  display: grid;
+  justify-items: center;
+  gap: 0.35rem;
+  color: var(--nf-deep);
+}
+
+.nf-sport-1 { left: 6%; top: 18%; }
+.nf-sport-2 { left: 26%; top: 48%; }
+.nf-sport-3 { left: 48%; top: 12%; }
+.nf-sport-4 { left: 66%; top: 44%; }
+.nf-sport-5 { left: 84%; top: 20%; }
+
+.nf-sport-orb {
+  display: grid;
+  place-items: center;
+  width: 3.15rem;
+  height: 3.15rem;
+  border-radius: 50%;
+  background: color-mix(in oklab, var(--nf-paper) 92%, white);
+  border: 2px solid color-mix(in oklab, var(--nf-flood) 70%, white);
+  box-shadow:
+    0 8px 18px color-mix(in oklab, var(--nf-deep) 35%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.65);
+}
+
+.nf-sport-name {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--nf-chalk);
+  text-shadow: 0 1px 2px color-mix(in oklab, var(--nf-deep) 70%, transparent);
+  white-space: nowrap;
+}
+
+/* Motions por deporte */
+.nf-sport.is-bounce .nf-sport-orb {
+  animation: nf-bounce 1.15s cubic-bezier(0.33, 1.4, 0.48, 1) infinite;
+}
+
+.nf-sport.is-dash .nf-sport-orb {
+  animation: nf-dash 1.6s ease-in-out infinite;
+}
+
+.nf-sport.is-hoop .nf-sport-orb {
+  animation: nf-hoop 1.45s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+}
+
+.nf-sport.is-float .nf-sport-orb {
+  animation: nf-float 2.2s ease-in-out infinite;
+}
+
+.nf-sport.is-swing .nf-sport-orb {
+  animation: nf-swing 1.8s ease-in-out infinite;
+  transform-origin: 50% 80%;
+}
+
+.nf-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-top: 0.35rem;
+  animation: nf-copy-in 0.7s 0.36s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.nf-page .btn-flood,
+.nf-page .btn-ghost {
+  min-height: 2.75rem;
+}
+
+.nf-page .btn-ghost {
+  color: var(--nf-chalk);
+  border-color: color-mix(in oklab, var(--nf-chalk) 45%, transparent);
+}
+
+.nf-page .btn-ghost:hover {
+  background: color-mix(in oklab, var(--nf-chalk) 12%, transparent);
+}
+
+@keyframes nf-brand-in {
+  from { opacity: 0; transform: translateY(-0.6rem) scale(0.96); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes nf-score-in {
+  from { opacity: 0; transform: scale(0.85) rotate(-2deg); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes nf-copy-in {
+  from { opacity: 0; transform: translateY(0.7rem); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes nf-ball-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes nf-glow-pulse {
+  0%, 100% { opacity: 0.55; transform: scaleX(1); }
+  50% { opacity: 1; transform: scaleX(1.08); }
+}
+
+@keyframes nf-bounce {
+  0%, 100% { transform: translateY(0) scale(1, 1); }
+  35% { transform: translateY(-1.35rem) scale(1, 1); }
+  50% { transform: translateY(0) scale(1.12, 0.82); }
+  65% { transform: translateY(-0.45rem) scale(1, 1); }
+}
+
+@keyframes nf-dash {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(0.55rem) translateY(-0.35rem); }
+  50% { transform: translateX(0) translateY(0); }
+  75% { transform: translateX(-0.55rem) translateY(-0.25rem); }
+}
+
+@keyframes nf-hoop {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  40% { transform: translateY(-1.7rem) rotate(18deg); }
+  55% { transform: translateY(0.15rem) rotate(-6deg) scale(1.08, 0.88); }
+}
+
+@keyframes nf-float {
+  0%, 100% { transform: translateY(0) rotate(-4deg); }
+  50% { transform: translateY(-1.1rem) rotate(4deg); }
+}
+
+@keyframes nf-swing {
+  0%, 100% { transform: rotate(-18deg); }
+  50% { transform: rotate(22deg); }
+}
+
+@media (max-width: 520px) {
+  .nf-sport-name { display: none; }
+  .nf-sport-orb {
+    width: 2.7rem;
+    height: 2.7rem;
+  }
+  .nf-pitch { height: 12.5rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nf-brand,
+  .nf-scoreboard,
+  .nf-title,
+  .nf-lede,
+  .nf-pitch,
+  .nf-actions,
+  .nf-score-ball,
+  .nf-pitch-glow,
+  .nf-sport.is-bounce .nf-sport-orb,
+  .nf-sport.is-dash .nf-sport-orb,
+  .nf-sport.is-hoop .nf-sport-orb,
+  .nf-sport.is-float .nf-sport-orb,
+  .nf-sport.is-swing .nf-sport-orb {
+    animation: none !important;
+  }
+}

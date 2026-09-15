@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { VenueClaimForm } from "@/components/VenueClaimForm";
 import { requireUserId } from "@/lib/auth";
+import { adminAppUrl } from "@/lib/admin-app-url";
 import { getActiveCity, getVenueBySlug, getVenueClaimState } from "@/lib/data";
 import { siteUrl } from "@/lib/env";
 import { LEGAL_CONTACT_EMAIL } from "@/lib/legal";
@@ -65,9 +66,9 @@ export default async function VenueClaimPage({ params }: Props) {
           ahí.
         </p>
         <div className="empty-home-actions">
-          <Link href={`/canchas/${slug}/admin`} className="btn-flood">
+          <a href={adminAppUrl(`/canchas/${slug}/admin`)} className="btn-flood">
             Ir al panel de la cancha
-          </Link>
+          </a>
         </div>
       </ClaimShell>
     );
@@ -133,9 +134,9 @@ export default async function VenueClaimPage({ params }: Props) {
           panel a completar el contacto.
         </p>
         <div className="empty-home-actions">
-          <Link href={`/canchas/${slug}/admin`} className="btn-flood">
+          <a href={adminAppUrl(`/canchas/${slug}/admin`)} className="btn-flood">
             Ir al panel de la cancha
-          </Link>
+          </a>
         </div>
       </ClaimShell>
     );

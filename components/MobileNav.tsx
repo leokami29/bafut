@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
 import { signOutAction } from "@/app/actions";
+import { adminAppUrl } from "@/lib/admin-app-url";
 
 const primaryItems = [
   {
@@ -49,9 +50,7 @@ export function MobileNav({
     : (p: string) => p === "/entrar";
 
   const moreActive =
-    pathname.startsWith("/apoyar") ||
-    pathname === "/perfil" ||
-    (Boolean(userId) && (pathname === "/admin" || pathname.startsWith("/admin/")));
+    pathname.startsWith("/apoyar") || pathname === "/perfil";
 
   useEffect(() => {
     setMoreOpen(false);
@@ -159,18 +158,13 @@ export function MobileNav({
                   Perfil
                 </Link>
                 {isAdmin ? (
-                  <Link
-                    href="/admin"
-                    aria-current={
-                      pathname === "/admin" || pathname.startsWith("/admin/") ? "page" : undefined
-                    }
-                    className={`nav-link-admin${
-                      pathname === "/admin" || pathname.startsWith("/admin/") ? " is-active" : ""
-                    }`}
+                  <a
+                    href={adminAppUrl("/admin")}
+                    className="nav-link-admin"
                     onClick={() => setMoreOpen(false)}
                   >
                     Admin
-                  </Link>
+                  </a>
                 ) : null}
               </>
             ) : null}

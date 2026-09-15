@@ -231,16 +231,31 @@
 
 .page-canchas {
   --page-content-max: 87.5rem;
+  padding-top: 0.7rem;
+  padding-bottom: 1rem;
 }
 
 .page-canchas .page-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: flex-start;
+  gap: 0.2rem 1rem;
   max-width: var(--page-content-max);
   margin-inline: auto;
   width: 100%;
+  margin-bottom: 0.45rem;
+}
+
+.page-canchas .page-head h1 {
+  margin: 0;
+  font-size: clamp(1.4rem, 3.2vw, 1.85rem);
 }
 
 .page-canchas .lede {
-  max-width: 44rem;
+  margin: 0;
+  max-width: none;
+  font-size: 0.88rem;
 }
 
 .venue-hero-lede {
@@ -253,6 +268,10 @@
   width: 100%;
   max-width: var(--page-content-max);
   margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-height: 0;
 }
 
 .venue-directory {
@@ -261,16 +280,32 @@
 
 .venue-toolbar {
   display: grid;
-  gap: 0.85rem;
-  margin-bottom: 1.15rem;
-  padding: 0.95rem 1rem 1rem;
-  background: color-mix(in oklab, var(--turf) 6%, var(--paper));
-  border-left: 3px solid var(--turf);
+  grid-template-columns: 1fr;
+  align-items: center;
+  gap: 0.35rem 0.85rem;
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: 0;
 }
 
 .venue-toolbar-filters {
   display: grid;
   gap: 0.75rem;
+}
+
+.venue-toolbar-actions {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0.4rem 0.55rem;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.venue-toolbar-actions::-webkit-scrollbar {
+  display: none;
 }
 
 .venue-filter-row {
@@ -285,7 +320,7 @@
   font-family: var(--font-mono), ui-monospace, monospace;
   font-size: 0.7rem;
   font-weight: 600;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: color-mix(in oklab, var(--ink) 72%, transparent);
 }
@@ -295,60 +330,53 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 0.65rem 1rem;
-  padding-top: 0.15rem;
-  border-top: 1px solid color-mix(in oklab, var(--turf) 18%, transparent);
 }
 
 .venue-toolbar .filter-chips,
-.venue-toolbar .view-toggle,
+.venue-toolbar .view-toggle {
+  margin: 0;
+  flex-wrap: nowrap;
+}
+
 .venue-filters-sheet .filter-chips {
   margin: 0;
 }
 
 .venue-toolbar .filter-chips,
 .venue-filters-sheet .filter-chips {
-  gap: 0.4rem;
+  gap: 0.35rem;
 }
 
 .venue-toolbar .filter-chips button,
 .venue-filters-sheet .filter-chips button {
   min-height: 2.75rem;
   min-width: 2.75rem;
-  padding: 0.5rem 0.9rem;
+  padding: 0.45rem 0.8rem;
   touch-action: manipulation;
-  transition:
-    background 0.2s ease,
-    border-color 0.2s ease,
-    color 0.2s ease,
-    transform 0.2s ease;
 }
 
-.venue-toolbar .filter-chips button:active:not(.is-on),
-.venue-filters-sheet .filter-chips button:active:not(.is-on) {
-  transform: scale(0.97);
+.venue-sort-chips button {
+  min-height: 2.5rem;
+  padding: 0.35rem 0.7rem;
 }
 
 .venue-search {
-  display: grid;
-  gap: 0.4rem;
+  display: block;
   min-width: 0;
 }
 
 .venue-search input {
   width: 100%;
   min-height: 2.75rem;
-  padding: 0.65rem 0.85rem;
-  border: 1px solid color-mix(in oklab, var(--ink) 22%, transparent);
-  background: color-mix(in oklab, var(--paper) 70%, white);
+  padding: 0.55rem 0.8rem;
+  border: 0;
+  border-bottom: 1px solid color-mix(in oklab, var(--ink) 28%, transparent);
+  background: transparent;
   color: var(--ink);
   font-family: var(--font-sans), system-ui, sans-serif;
   font-size: 1rem;
   line-height: 1.35;
   touch-action: manipulation;
-  transition:
-    border-color 0.2s ease,
-    background 0.2s ease,
-    box-shadow 0.2s ease;
 }
 
 .venue-search input::placeholder {
@@ -356,14 +384,13 @@
 }
 
 .venue-search input:hover {
-  border-color: color-mix(in oklab, var(--turf) 40%, transparent);
+  border-bottom-color: var(--turf);
 }
 
 .venue-search input:focus-visible {
   outline: 2px solid var(--flood);
   outline-offset: 2px;
-  border-color: var(--turf);
-  background: var(--paper);
+  border-bottom-color: var(--turf);
 }
 
 .venue-filter-select {
@@ -408,6 +435,8 @@
 
 .venue-count {
   margin: 0;
+  flex-shrink: 0;
+  white-space: nowrap;
   font-family: var(--font-mono), monospace;
   font-size: 0.82rem;
   letter-spacing: 0.02em;
@@ -426,30 +455,26 @@
 
 .venue-layout {
   display: grid;
-  gap: 1rem;
+  gap: 0.85rem;
+  min-height: 0;
 }
 
-.venue-layout.has-both .venue-panel-map {
-  order: -1;
+.venue-panel-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  min-width: 0;
 }
 
 .venue-panel-map {
   display: grid;
-  gap: 0.35rem;
-}
-
-.venue-map-label {
-  margin: 0;
-  font-family: var(--font-mono), monospace;
-  font-size: 0.72rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--turf);
+  min-width: 0;
+  min-height: 0;
 }
 
 .venue-groups {
   display: grid;
-  gap: 0.75rem;
+  gap: 0.35rem;
 }
 
 .venue-group {
@@ -463,18 +488,27 @@
   align-items: baseline;
   justify-content: space-between;
   gap: 0.75rem;
-  margin: 0 0 0.35rem;
-  font-size: 0.92rem;
-  letter-spacing: 0.06em;
+  margin: 0;
+  padding: 0.55rem 0 0.3rem;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   list-style: none;
   cursor: default;
+  background: var(--paper);
+}
+
+.venue-panel-list .venue-group-title {
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 
 details.venue-group > summary.venue-group-title {
   cursor: pointer;
-  padding: 0.45rem 0;
-  border-bottom: 1px solid color-mix(in oklab, var(--ink) 15%, transparent);
+  border-bottom: 1px solid color-mix(in oklab, var(--ink) 14%, transparent);
 }
 
 details.venue-group > summary.venue-group-title::-webkit-details-marker {
@@ -499,159 +533,233 @@ details.venue-group[open] > summary.venue-group-title::before {
   color: color-mix(in oklab, var(--ink) 50%, transparent);
 }
 
+.venue-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.venue-group-name {
+  flex: 1;
+  min-width: 0;
+}
+
 .venue-list-row {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 0.45rem 0.7rem;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid color-mix(in oklab, var(--ink) 12%, transparent);
 }
 
 .venue-list-row.is-premium {
-  padding: 0.15rem 0.35rem 0.15rem 0.55rem;
-  margin-inline: -0.35rem;
+  padding-left: 0.55rem;
   border-left: 3px solid var(--flood);
-  background: color-mix(in oklab, var(--flood) 12%, transparent);
+  background: color-mix(in oklab, var(--flood) 16%, var(--paper));
+}
+
+.venue-list-row.is-verified {
+  padding-left: 0.55rem;
+  border-left: 1px solid color-mix(in oklab, var(--turf) 50%, transparent);
 }
 
 .venue-list-row .venue-list-link {
   flex: 1;
   min-width: 0;
+  display: grid;
+  gap: 0.12rem;
+  padding: 0;
+  color: inherit;
+  text-decoration: none;
 }
 
 .venue-publish-cta {
   flex-shrink: 0;
-  font-size: 0.72rem;
-  padding: 0.15rem 0.5rem;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--turf);
+  text-decoration: none;
+  min-height: 2.75rem;
+  display: inline-flex;
+  align-items: center;
   white-space: nowrap;
 }
 
-.venue-sort-row {
-  margin-bottom: 0.25rem;
+.venue-publish-cta:hover,
+.venue-publish-cta:focus-visible {
+  color: var(--ink);
 }
 
 .venue-list-compact a,
 .venue-list-compact .venue-list-link {
-  grid-template-columns: 1fr auto;
-  align-items: center;
-  padding: 0.5rem 0.1rem;
-  font-size: 0.92rem;
-}
-
-.venue-list-main {
-  display: grid;
-  gap: 0.15rem;
-  min-width: 0;
+  grid-template-columns: none;
+  font-size: 0.95rem;
 }
 
 .venue-list-name {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: baseline;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.venue-list-title {
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+.venue-list-name .venue-marks {
+  flex-shrink: 0;
+}
+
+.venue-marks {
   display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.35rem 0.45rem;
+  gap: 0.25rem;
 }
 
-.venue-list-badges {
+.venue-mark {
   display: inline-flex;
-  flex-wrap: wrap;
   align-items: center;
-  gap: 0.3rem;
+  gap: 0.2rem;
+  color: inherit;
+  line-height: 1;
 }
 
-.venue-list-verified,
-.venue-list-premium {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.12rem 0.4rem;
+.venue-mark svg {
+  display: block;
+  flex-shrink: 0;
+}
+
+.venue-mark-exclusive {
+  color: color-mix(in oklab, var(--ink) 82%, var(--flood));
+}
+
+.venue-mark-exclusive.is-loud,
+.venue-mark-verified.is-loud {
+  padding: 0.12rem 0.4rem 0.12rem 0.28rem;
   font-family: var(--font-mono), ui-monospace, monospace;
   font-size: 0.62rem;
   font-weight: 700;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  line-height: 1.2;
-  border-radius: 2px;
 }
 
-.venue-list-verified {
-  color: var(--turf);
-  border: 1px solid color-mix(in oklab, var(--turf) 45%, transparent);
-  background: color-mix(in oklab, var(--turf) 8%, transparent);
-}
-
-.venue-list-premium {
+.venue-mark-exclusive.is-loud {
   color: var(--ink);
   background: var(--flood);
-  border: 1px solid color-mix(in oklab, var(--ink) 18%, transparent);
 }
 
-.venue-premium-rail {
-  margin-bottom: 1.1rem;
-  padding: 0.75rem 0.85rem 0.9rem;
-  background: color-mix(in oklab, var(--flood) 18%, var(--paper));
-  border-left: 3px solid var(--flood);
+.venue-mark-verified {
+  color: var(--turf);
 }
 
-.venue-premium-rail-title {
+.venue-mark-verified.is-loud {
+  color: var(--paper);
+  background: var(--turf);
+}
+
+.venue-spot-rail {
+  display: grid;
+  gap: 0.3rem;
+  padding: 0 0 0.45rem;
+  background: none;
+  border: 0;
+  border-top: 3px solid var(--flood);
+}
+
+.venue-spot-rail-title {
   display: flex;
   align-items: baseline;
-  gap: 0.5rem;
-  margin: 0 0 0.55rem;
+  gap: 0.45rem;
+  margin: 0.35rem 0 0;
   font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: color-mix(in oklab, var(--ink) 78%, transparent);
+  color: var(--ink);
 }
 
-.venue-premium-rail-list {
+.venue-spot-rail-list {
   list-style: none;
   margin: 0;
   padding: 0;
-  display: grid;
-  gap: 0.15rem;
+  display: flex;
+  gap: 0.4rem;
+  overflow-x: auto;
+  padding-bottom: 0.2rem;
+  scroll-snap-type: x proximity;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklab, var(--ink) 35%, var(--flood)) transparent;
 }
 
-@media (min-width: 640px) {
-  .venue-premium-rail-list {
-    display: flex;
-    gap: 0.35rem;
-    overflow-x: auto;
-    padding-bottom: 0.15rem;
-    scroll-snap-type: x proximity;
-  }
-
-  .venue-premium-rail-list > li {
-    flex: 0 0 min(16.5rem, 78vw);
-    scroll-snap-align: start;
-  }
-
-  .venue-premium-rail-list .venue-list-row {
-    height: 100%;
-  }
-
-  .venue-premium-rail-list .venue-list-link {
-    border: 1px solid color-mix(in oklab, var(--ink) 12%, transparent);
-    background: var(--paper);
-    padding: 0.55rem 0.65rem;
-  }
-
-  .venue-premium-rail-list .venue-list-meta {
-    white-space: normal;
-  }
+.venue-spot-rail-list::-webkit-scrollbar {
+  height: 6px;
 }
 
-.venue-list-demand {
-  font-family: var(--font-mono), monospace;
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.01em;
+.venue-spot-rail-list::-webkit-scrollbar-thumb {
+  background: color-mix(in oklab, var(--ink) 35%, var(--flood));
+}
+
+.venue-spot-rail-list > li {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+}
+
+.venue-spot {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  min-width: 9.5rem;
+  max-width: 14rem;
+  padding: 0.4rem 0.55rem;
+  background: color-mix(in oklab, var(--flood) 18%, var(--paper));
+  color: inherit;
+  text-decoration: none;
+  overflow: hidden;
+}
+
+.venue-spot:hover .venue-spot-name,
+.venue-spot:focus-visible .venue-spot-name {
   color: var(--turf);
 }
 
-.venue-list-meta {
-  font-family: var(--font-mono), monospace;
-  font-size: 0.72rem;
-  color: color-mix(in oklab, var(--ink) 55%, transparent);
+.venue-spot-name {
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  line-height: 1;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.venue-spot-demand {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--turf);
+  white-space: nowrap;
+}
+
+.venue-list-sub {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: color-mix(in oklab, var(--ink) 58%, transparent);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .venue-lede {

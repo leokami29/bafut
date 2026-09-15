@@ -13,6 +13,7 @@ import { VenueOwnerBlock } from "@/components/VenueOwnerBlock";
 import { VenuePricingSection } from "@/components/VenuePricingSection";
 import { VenuePremiumBadge } from "@/components/VenuePremiumBadge";
 import { VenueVerifiedBadge } from "@/components/VenueVerifiedBadge";
+import { adminAppUrl } from "@/lib/admin-app-url";
 import { venueHasUsableBookingPricing } from "@/lib/booking";
 import type { Sport } from "@/lib/constants";
 import {
@@ -280,7 +281,7 @@ export default async function CanchaPage({ params }: Props) {
           <aside className="venue-premium-cta" aria-labelledby="venue-premium-cta-title">
             <div className="venue-premium-cta-copy">
               <p className="venue-premium-cta-eyebrow" id="venue-premium-cta-title">
-                {showTournamentsCta ? "Campeonatos" : "Cancha Premium"}
+                {showTournamentsCta ? "Campeonatos" : "Cancha exclusiva"}
               </p>
               <p className="venue-premium-cta-text">
                 {showTournamentsCta
@@ -331,7 +332,7 @@ export default async function CanchaPage({ params }: Props) {
         {isVenueOwner ? (
           <p className="venue-claim-note" role="note">
             Sos el dueño registrado de esta cancha ·{" "}
-            <Link href={`/canchas/${venue.slug}/admin`}>Ir al panel</Link>
+            <a href={adminAppUrl(`/canchas/${venue.slug}/admin`)}>Ir al panel</a>
             {!showBookingCta &&
             venueHasUsableBookingPricing(publicPricing, venue.sports ?? undefined) &&
             bookingFlagOn &&
@@ -339,7 +340,7 @@ export default async function CanchaPage({ params }: Props) {
               <>
                 {" "}
                 · Tenés precios, pero &quot;Reservar&quot; está apagado — activá{" "}
-                <Link href={`/canchas/${venue.slug}/admin`}>Aceptar reservas</Link> en
+                <a href={adminAppUrl(`/canchas/${venue.slug}/admin`)}>Aceptar reservas</a> en
                 Mesa
               </>
             ) : null}

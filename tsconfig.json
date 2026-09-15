@@ -19,7 +19,8 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@bafut/venue-ops": ["./packages/venue-ops/src/index.ts"]
     }
   },
   "include": [

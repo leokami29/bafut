@@ -18,7 +18,7 @@ import {
   type ClaimWithPlayer,
   type MatchDetail,
 } from "@/lib/types";
-import { matchShareText, whatsappShareHref } from "@/lib/whatsapp";
+import { facebookShareHref, matchShareText, matchUrl, whatsappShareHref } from "@/lib/match-share";
 
 export type MyMatchRole = "host" | "claim";
 
@@ -93,18 +93,19 @@ export function MyMatchCard({
   });
   const canEdit = role === "host" && !cancelled && !past;
   const canShare = role === "host" && !cancelled && !past && open > 0;
-  const shareHref = canShare
-    ? whatsappShareHref(
-        matchShareText({
-          hole,
-          when,
-          venue: match.venues.name,
-          neighborhood: match.venues.neighborhood,
-          price,
-          shareCode: match.share_code,
-        }),
-      )
+  const pageUrl = `/p/${match.share_code}`;
+  const shareText = canShare
+    ? matchShareText({
+        hole,
+        when,
+        venue: match.venues.name,
+        neighborhood: match.venues.neighborhood,
+        price,
+        shareCode: match.share_code,
+      })
     : null;
+  const waHref = shareText ? whatsappShareHref(shareText) : null;
+  const fbHref = canShare ? facebookShareHref(matchUrl(match.share_code)) : null;
 
   const title =
     role === "host" && !past && !cancelled
@@ -184,10 +185,20 @@ export function MyMatchCard({
               Editar
             </Link>
           ) : null}
-          {shareHref ? (
-            <a className="btn-ghost" href={shareHref} target="_blank" rel="noopener noreferrer">
-              Mandar al grupo
+          {waHref ? (
+            <a className="btn-ghost" href={waHref} target="_blank" rel="noopener noreferrer">
+              WhatsApp
             </a>
+          ) : null}
+          {fbHref ? (
+            <a className="btn-ghost" href={fbHref} target="_blank" rel="noopener noreferrer">
+              Facebook
+            </a>
+          ) : null}
+          {canShare ? (
+            <Link className="btn-ghost" href={`${pageUrl}#compartir`}>
+              Instagram
+            </Link>
           ) : null}
           {canEdit ? (
             <form action={cancelMatchAction}>

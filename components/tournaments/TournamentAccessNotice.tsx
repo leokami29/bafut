@@ -28,7 +28,7 @@ export function TournamentAccessNotice({
         {copy.ctaPremium && adminBase ? (
           <p>
             <Link href={`${adminBase}?tab=premium`} className="btn-flood">
-              Ver plan Premium
+              Ver plan Exclusivo
             </Link>
           </p>
         ) : null}

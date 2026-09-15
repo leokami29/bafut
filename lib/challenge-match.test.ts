@@ -39,7 +39,7 @@ function makeSlot(
             player_id: "p1",
             status: "accepted",
             created_at: "2026-01-01T00:00:00Z",
-            profiles: { id: "p1", display_name: "Jugador" },
+            profiles: { id: "p1", display_name: "Jugador", avatar_path: null },
           } as MatchDetail["match_slots"][number]["slot_claims"][number],
         ]
       : [],

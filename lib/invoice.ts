@@ -1,3 +1,4 @@
+import { planLabel } from "@/lib/plan-labels";
 import { formatCop, paymentMethodLabel } from "@/lib/premium-payment";
 
 export type InvoiceData = {
@@ -30,7 +31,7 @@ export function buildInvoiceViewModel(data: InvoiceData) {
   const tz = data.timezone ?? "America/Bogota";
   return {
     ...data,
-    planLabel: data.plan === "premium" ? "Premium" : data.plan,
+    planLabel: planLabel(data.plan),
     methodLabel: paymentMethodLabel(data.paymentMethod),
     amountLabel: formatCop(data.amountCop),
     startedLabel: formatDate(data.startedAt, tz),

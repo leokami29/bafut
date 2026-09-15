@@ -192,7 +192,8 @@ export function AuthForm({
     }
 
     await finishSignupProfile(supabase, session.user.id, name, phone);
-    router.push(nextPath);
+    const dest = nextPath && nextPath !== "/" ? `/perfil?next=${encodeURIComponent(nextPath)}` : "/perfil";
+    router.push(dest);
     router.refresh();
   }
 

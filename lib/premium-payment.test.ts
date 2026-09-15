@@ -46,7 +46,7 @@ describe("invoice", () => {
       expiresAt: "2026-10-06T12:00:00.000Z",
       issuedAt: "2026-09-06T12:00:00.000Z",
     });
-    expect(vm.planLabel).toBe("Premium");
+    expect(vm.planLabel).toBe("Exclusivo");
     expect(vm.methodLabel).toBe("Nequi");
     expect(vm.invoiceNumber).toBe("BF-202609-0001");
   });

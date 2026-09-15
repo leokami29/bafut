@@ -1010,40 +1010,91 @@ export type Database = {
       }
       profiles: {
         Row: {
+          avatar_focus_x: number
+          avatar_focus_y: number
+          avatar_path: string | null
+          avatar_zoom: number
+          birth_date: string | null
+          card_share_code: string
           city_id: string | null
           created_at: string
           display_name: string
+          gender: string | null
+          height_cm: number | null
           id: string
           level: string
           level_feedback_count: number
           level_ok_count: number
+          neighborhood: string | null
+          plays_for_pay: boolean
+          preferred_days: string[]
+          preferred_foot: string | null
+          preferred_format: string | null
           preferred_position: string
           preferred_sport: string
+          preferred_time_slots: string[]
+          secondary_position: string | null
+          terms_accepted_at: string | null
           updated_at: string
+          weight_kg: number | null
         }
         Insert: {
+          avatar_focus_x?: number
+          avatar_focus_y?: number
+          avatar_path?: string | null
+          avatar_zoom?: number
+          birth_date?: string | null
+          card_share_code?: string
           city_id?: string | null
           created_at?: string
           display_name: string
+          gender?: string | null
+          height_cm?: number | null
           id: string
           level?: string
           level_feedback_count?: number
           level_ok_count?: number
+          neighborhood?: string | null
+          plays_for_pay?: boolean
+          preferred_days?: string[]
+          preferred_foot?: string | null
+          preferred_format?: string | null
           preferred_position?: string
           preferred_sport?: string
+          preferred_time_slots?: string[]
+          secondary_position?: string | null
+          terms_accepted_at?: string | null
           updated_at?: string
+          weight_kg?: number | null
         }
         Update: {
+          avatar_focus_x?: number
+          avatar_focus_y?: number
+          avatar_path?: string | null
+          avatar_zoom?: number
+          birth_date?: string | null
+          card_share_code?: string
           city_id?: string | null
           created_at?: string
           display_name?: string
+          gender?: string | null
+          height_cm?: number | null
           id?: string
           level?: string
           level_feedback_count?: number
           level_ok_count?: number
+          neighborhood?: string | null
+          plays_for_pay?: boolean
+          preferred_days?: string[]
+          preferred_foot?: string | null
+          preferred_format?: string | null
           preferred_position?: string
           preferred_sport?: string
+          preferred_time_slots?: string[]
+          secondary_position?: string | null
+          terms_accepted_at?: string | null
           updated_at?: string
+          weight_kg?: number | null
         }
         Relationships: [
           {
@@ -1674,6 +1725,7 @@ export type Database = {
           promo_id: string | null
           proof_path: string | null
           reject_reason: string | null
+          source: string
           sport: string
           starts_at: string
           status: string
@@ -1704,6 +1756,7 @@ export type Database = {
           promo_id?: string | null
           proof_path?: string | null
           reject_reason?: string | null
+          source?: string
           sport: string
           starts_at: string
           status?: string
@@ -1734,6 +1787,7 @@ export type Database = {
           promo_id?: string | null
           proof_path?: string | null
           reject_reason?: string | null
+          source?: string
           sport?: string
           starts_at?: string
           status?: string
@@ -2550,6 +2604,7 @@ export type Database = {
         Returns: undefined
       }
       delete_price_slot: { Args: { p_slot_id: string }; Returns: undefined }
+      delete_own_account: { Args: never; Returns: undefined }
       delete_venue: { Args: { p_venue_id: string }; Returns: undefined }
       expire_venue_booking_holds: { Args: never; Returns: number }
       expire_venue_subscriptions: { Args: never; Returns: number }
@@ -2739,6 +2794,28 @@ export type Database = {
       set_venue_booking_enabled: {
         Args: { p_enabled: boolean; p_venue_id: string }
         Returns: undefined
+      }
+      create_owner_venue_booking: {
+        Args: {
+          p_venue_id: string
+          p_sport: string
+          p_starts_at: string
+          p_duration_min: number
+          p_final_cop?: number
+          p_contact_whatsapp?: string | null
+          p_note?: string | null
+        }
+        Returns: string
+      }
+      create_venue_block: {
+        Args: {
+          p_venue_id: string
+          p_sport: string
+          p_starts_at: string
+          p_duration_min: number
+          p_note?: string | null
+        }
+        Returns: string
       }
       start_venue_booking_hold: {
         Args: {

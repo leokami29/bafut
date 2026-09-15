@@ -11,7 +11,7 @@ export type MatchSlot = Tables<"match_slots">;
 export type SlotClaim = Tables<"slot_claims">;
 
 export type ClaimWithPlayer = SlotClaim & {
-  profiles: Pick<Profile, "id" | "display_name"> | null;
+  profiles: Pick<Profile, "id" | "display_name" | "avatar_path"> | null;
 };
 
 export type SlotWithClaims = MatchSlot & {
@@ -22,7 +22,7 @@ export type MatchDetail = Match & {
   venues: Venue;
   cities: City;
   /** Feed omit level counters; match detail may include them for the host badge. */
-  profiles: Pick<Profile, "id" | "display_name"> &
+  profiles: Pick<Profile, "id" | "display_name" | "avatar_path"> &
     Partial<Pick<Profile, "level_feedback_count" | "level_ok_count">>;
   match_slots: SlotWithClaims[];
 };

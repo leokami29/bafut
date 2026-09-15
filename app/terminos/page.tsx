@@ -41,7 +41,7 @@ export default function TerminosPage() {
       <p>
         Estos términos regulan el uso de BaFut (el sitio y la aplicación web operados por
         Macuttech). Al crear una cuenta, publicar un partido, pedir un cupo, reservar un horario,
-        reclamar una cancha o solicitar un plan premium, aceptás estas condiciones.
+        reclamar una cancha o solicitar un plan Exclusivo, aceptás estas condiciones.
       </p>
 
       <h2>1. Qué es BaFut (y qué no es)</h2>
@@ -135,10 +135,10 @@ export default function TerminosPage() {
         </li>
       </ul>
 
-      <h2>6. Planes verificada / premium y comprobantes</h2>
+      <h2>6. Planes verificada / Exclusivo y comprobantes</h2>
       <p>
         BaFut puede ofrecer beneficios B2B para canchas (por ejemplo, verificación o
-        destacada premium). Cuando exista solicitud de pago manual:
+        destacada exclusiva). Cuando exista solicitud de pago manual:
       </p>
       <ul>
         <li>
@@ -175,7 +175,7 @@ export default function TerminosPage() {
         respondemos por daños indirectos, lucro cesante ni por acuerdos entre usuarios o
         entre usuarios y canchas. En la máxima medida permitida por la ley colombiana,
         nuestra responsabilidad agregada se limita a lo efectivamente pagado a BaFut por el
-        servicio premium en los tres meses anteriores al reclamo, o a cero si no hubo pago.
+        servicio Exclusivo en los tres meses anteriores al reclamo, o a cero si no hubo pago.
       </p>
 
       <h2>9. Privacidad</h2>

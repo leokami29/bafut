@@ -8,6 +8,7 @@ import { sportLabel, venueKindLabel } from "@/lib/labels";
 import { venueDemandLabel, venueDemandScore, type VenueDemand } from "@/lib/venue-demand";
 import { trackEvent } from "@/lib/analytics";
 import { VenueMapLazy } from "@/components/VenueMapLazy";
+import { VenueMarks, VerifiedMark } from "@/components/VenueMarks";
 
 type KindFilter = "all" | "alquiler" | "publica" | "club";
 type SportFilter = "all" | Sport;
@@ -51,46 +52,60 @@ function VenueListLink({
     .filter(Boolean)
     .join(" · ");
   const demandText = demand ? venueDemandLabel(demand) : null;
+  const sub = [demandText, meta].filter(Boolean).join(" · ");
   const showPublishCta = demand && demand.matchCount > 0;
 
   return (
-    <div className={`venue-list-row${venue.is_premium ? " is-premium" : ""}`}>
+    <div
+      className={`venue-list-row${venue.is_premium ? " is-premium" : ""}${venue.is_verified && !venue.is_premium ? " is-verified" : ""}`}
+    >
       <Link
         href={`/canchas/${venue.slug}`}
         className="venue-list-link"
         onMouseEnter={onActivate}
         onFocus={onActivate}
       >
-        <span className="venue-list-main">
-          <strong className="venue-list-name">
-            {venue.name}
-            <span className="venue-list-badges">
-              {venue.is_premium ? (
-                <span className="venue-list-premium" title="Cancha con plan Premium activo">
-                  Premium
-                </span>
-              ) : null}
-              {venue.is_verified ? (
-                <span className="venue-list-verified" title="Cancha verificada por su dueño">
-                  Verificada
-                </span>
-              ) : null}
-            </span>
-          </strong>
-          {demandText ? <span className="venue-list-demand">{demandText}</span> : null}
-        </span>
-        {meta ? <span className="venue-list-meta">{meta}</span> : null}
+        <strong className="venue-list-name">
+          <span className="venue-list-title">{venue.name}</span>
+          <VenueMarks exclusive={venue.is_premium} verified={venue.is_verified} tone="quiet" />
+        </strong>
+        {sub ? <span className="venue-list-sub">{sub}</span> : null}
       </Link>
       {showPublishCta ? (
         <Link
           href={`/partidos/nuevo?venue=${venue.slug}`}
-          className="btn-ghost venue-publish-cta"
+          className="venue-publish-cta"
           onClick={() => trackEvent("canchas_venue_publish_cta_clicked", { venue_slug: venue.slug })}
         >
-          Publicar aquí
+          Publicar
         </Link>
       ) : null}
     </div>
+  );
+}
+
+function VenueSpotCard({
+  venue,
+  demand,
+  onActivate,
+}: {
+  venue: VenueWithPremium;
+  demand?: VenueDemand;
+  onActivate?: () => void;
+}) {
+  const demandText = demand ? venueDemandLabel(demand) : null;
+
+  return (
+    <Link
+      href={`/canchas/${venue.slug}`}
+      className="venue-spot"
+      onMouseEnter={onActivate}
+      onFocus={onActivate}
+    >
+      <span className="venue-spot-name">{venue.name}</span>
+      {venue.is_verified ? <VerifiedMark /> : null}
+      {demandText ? <span className="venue-spot-demand">{demandText}</span> : null}
+    </Link>
   );
 }
 
@@ -125,7 +140,7 @@ export function VenueDirectory({
   const [kind, setKind] = useState<KindFilter>("all");
   const [sport, setSport] = useState<SportFilter>("all");
   const [neighborhood, setNeighborhood] = useState<string>("all");
-  const [mobileView, setMobileView] = useState<MobileView>("both");
+  const [mobileView, setMobileView] = useState<MobileView>("list");
   const [focusId, setFocusId] = useState<string | undefined>();
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
@@ -192,6 +207,7 @@ export function VenueDirectory({
     return sortVenues(
       venues.filter((venue) => {
         if (!venue.is_premium) return false;
+        if (statusFilter === "verified" && !venue.is_verified) return false;
         if (kind !== "all" && venue.venue_kind !== kind) return false;
         if (sport !== "all" && !venue.sports?.includes(sport)) return false;
         if (neighborhood !== "all" && venue.neighborhood !== neighborhood) return false;
@@ -292,7 +308,7 @@ export function VenueDirectory({
       {verifiedCount > 0 || premiumCount > 0 ? (
         <div className="venue-filter-row">
           <span className="venue-filter-label" id="venue-filter-state-label">
-            Estado
+            Marca
           </span>
           <div className="filter-chips" role="group" aria-labelledby="venue-filter-state-label">
             <button
@@ -303,16 +319,6 @@ export function VenueDirectory({
             >
               Todas
             </button>
-            {verifiedCount > 0 ? (
-              <button
-                type="button"
-                className={statusFilter === "verified" ? "is-on" : undefined}
-                aria-pressed={statusFilter === "verified"}
-                onClick={() => setStatusFilter("verified")}
-              >
-                Verificadas ({verifiedCount})
-              </button>
-            ) : null}
             {premiumCount > 0 ? (
               <button
                 type="button"
@@ -320,7 +326,17 @@ export function VenueDirectory({
                 aria-pressed={statusFilter === "premium"}
                 onClick={() => setStatusFilter("premium")}
               >
-                Solo premium ({premiumCount})
+                En reflector ({premiumCount})
+              </button>
+            ) : null}
+            {verifiedCount > 0 ? (
+              <button
+                type="button"
+                className={statusFilter === "verified" ? "is-on" : undefined}
+                aria-pressed={statusFilter === "verified"}
+                onClick={() => setStatusFilter("verified")}
+              >
+                Con dueño ({verifiedCount})
               </button>
             ) : null}
           </div>
@@ -389,7 +405,7 @@ export function VenueDirectory({
     <div className="venue-directory">
       <div className="venue-toolbar">
         <label className="venue-search">
-          <span className="venue-filter-label" id="venue-search-label">
+          <span className="sr-only" id="venue-search-label">
             Buscar
           </span>
           <input
@@ -405,9 +421,11 @@ export function VenueDirectory({
           />
         </label>
 
-        <div className="venue-filter-row venue-sort-row">
-          <span className="venue-filter-label" id="venue-sort-label">Orden</span>
-          <div className="filter-chips" role="group" aria-labelledby="venue-sort-label">
+        <div className="venue-toolbar-actions">
+          <div className="filter-chips venue-sort-chips" role="group" aria-labelledby="venue-sort-label">
+            <span className="sr-only" id="venue-sort-label">
+              Orden
+            </span>
             {([["relevancia", "Relevancia"], ["az", "A-Z"]] as const).map(([value, label]) => (
               <button
                 key={value}
@@ -420,54 +438,48 @@ export function VenueDirectory({
               </button>
             ))}
           </div>
-        </div>
 
-        {isDesktop ? filterControls : null}
+          <button
+            type="button"
+            className="btn-ghost venue-filters-trigger"
+            aria-expanded={filtersOpen}
+            aria-haspopup="dialog"
+            onClick={() => setFiltersOpen(true)}
+          >
+            Filtros{activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}
+          </button>
 
-        <div className="venue-toolbar-meta">
           <p className="venue-count" aria-live="polite">
             <span className="venue-count-num">{filtered.length}</span>
-            <span className="venue-count-sep"> de </span>
+            <span className="venue-count-sep">/</span>
             <span className="venue-count-total">{venues.length}</span>
-            <span className="venue-count-unit"> canchas</span>
           </p>
 
           {!isDesktop ? (
-            <>
-              <button
-                type="button"
-                className="btn-ghost venue-filters-trigger"
-                aria-expanded={filtersOpen}
-                aria-haspopup="dialog"
-                onClick={() => setFiltersOpen(true)}
-              >
-                Filtros{activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}
-              </button>
-              <div className="view-toggle view-toggle-mobile" role="group" aria-label="Vista">
-                {(
-                  [
-                    ["both", "Mapa y lista"],
-                    ["map", "Solo mapa"],
-                    ["list", "Solo lista"],
-                  ] as const
-                ).map(([value, label]) => (
-                  <button
-                    key={value}
-                    type="button"
-                    className={mobileView === value ? "is-on" : undefined}
-                    aria-pressed={mobileView === value}
-                    onClick={() => setMobileView(value)}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
-            </>
+            <div className="view-toggle view-toggle-mobile" role="group" aria-label="Vista">
+              {(
+                [
+                  ["list", "Lista"],
+                  ["map", "Mapa"],
+                  ["both", "Las dos"],
+                ] as const
+              ).map(([value, label]) => (
+                <button
+                  key={value}
+                  type="button"
+                  className={mobileView === value ? "is-on" : undefined}
+                  aria-pressed={mobileView === value}
+                  onClick={() => setMobileView(value)}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
           ) : null}
         </div>
       </div>
 
-      {!isDesktop && filtersOpen ? (
+      {filtersOpen ? (
         <div
           className="venue-filters-drawer"
           role="dialog"
@@ -492,19 +504,21 @@ export function VenueDirectory({
         </div>
       ) : null}
 
-      <div className={`venue-layout${showMap && showList ? " has-both" : ""}`}>
+      <div
+        className={`venue-layout${showMap && showList ? " has-both" : ""}${showMap && !showList ? " is-map-only" : ""}`}
+      >
         {showList ? (
           <div className="venue-panel-list">
             {premiumRail.length > 0 ? (
-              <section className="venue-premium-rail" aria-labelledby="venue-premium-rail-title">
-                <h2 className="venue-premium-rail-title" id="venue-premium-rail-title">
-                  Premium
+              <section className="venue-spot-rail" aria-labelledby="venue-spot-rail-title">
+                <h2 className="venue-spot-rail-title" id="venue-spot-rail-title">
+                  En el reflector
                   <span className="venue-group-count">{premiumRail.length}</span>
                 </h2>
-                <ul className="venue-premium-rail-list">
+                <ul className="venue-spot-rail-list">
                   {premiumRail.map((venue) => (
                     <li key={venue.id}>
-                      <VenueListLink
+                      <VenueSpotCard
                         venue={venue}
                         demand={demandByVenueId[venue.id]}
                         onActivate={() => setFocusId(venue.id)}
@@ -514,14 +528,13 @@ export function VenueDirectory({
                 </ul>
               </section>
             ) : null}
-
             {filtered.length > 0 ? (
               <div id="venue-list" className="venue-groups">
                 {grouped.map(([barrio, list]) =>
                   isDesktop ? (
                     <section key={barrio} aria-labelledby={`barrio-${barrio}`} className="venue-group">
                       <h2 className="venue-group-title" id={`barrio-${barrio}`}>
-                        {barrio}
+                        <span className="venue-group-name">{barrio}</span>
                         <span className="venue-group-count">{list.length}</span>
                       </h2>
                       <ul className="venue-list venue-list-compact">
@@ -540,10 +553,10 @@ export function VenueDirectory({
                     <details
                       key={barrio}
                       className="venue-group"
-                      open={groupDefaultOpen(barrio) || undefined}
+                      open={groupDefaultOpen(barrio) || grouped[0]?.[0] === barrio || undefined}
                     >
                       <summary className="venue-group-title">
-                        {barrio}
+                        <span className="venue-group-name">{barrio}</span>
                         <span className="venue-group-count">{list.length}</span>
                       </summary>
                       <ul className="venue-list venue-list-compact">
@@ -568,8 +581,7 @@ export function VenueDirectory({
         ) : null}
 
         {showMap ? (
-          <div className="venue-panel-map">
-            <p className="venue-map-label">Mapa de canchas</p>
+          <div className="venue-panel-map" role="region" aria-label="Mapa de canchas">
             <VenueMapLazy venues={filtered} center={center} focusId={focusId} />
           </div>
         ) : null}
